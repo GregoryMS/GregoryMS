@@ -6,24 +6,28 @@
     <meta name="color-scheme" content="light dark" />
     <title>Gregle</title>
     <meta name="description" content="Simple Web‑1 style homepage with a centred search bar, links, weather, news ticker, and world clocks."/>
-    <link href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIsAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIsAAAD/AAAAlQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAAEkAAAAAAAAAAAAAAIsAAAD/AAAAlQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAH8AAADMAAAA/wAAAP8AAAD/AAAAlgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAXgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADHAAAAQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAAAAH8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAAAAAAAAAAAAAAAAAFQAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAD/AAAA/wAAAP8AAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//8AAP//AAD/9wAA/+MAAP3HAADyDwAA758AAN/fAADf3wAA3/8AAN/fAADv3wAA578AAPh/AAD//wAA//8AAA==" rel="icon" type="image/x-icon">
+    <link href="https://github.com/GregoryMS/GregoryMS/blob/main/favicon/android-chrome-512x512.png">
     <style>
-      :root { --link:#0b57d0; --visited:#5b46a7; --text:#1f2937; --bg:#f7f8fb; --border:#d6d9e0; --accent:#22d3ee; --logo-grad-1:#3b82f6; --logo-grad-2:#06b6d4; --logo-grad-3:#10b981; --logo-grad-4:#0ea5e9; --panel:#ffffff; --panel-alpha:#ffffffd9; --ticker-bg:#ffffff; --label-bg:#bb1919; --label-text:#ffffff; --clocks-h:28px; --wx-h:28px; --safe-top:calc(36px + var(--wx-h) + var(--clocks-h) + 16px); --lift:clamp(8px,3vh,48px);} 
-      [data-theme="dark"]{ --link:#4ade80; --visited:#a7f3d0; --text:#e5e7eb; --bg:#121212; --border:#2a2a2a; --accent:#34d399; --logo-grad-1:#34d399; --logo-grad-2:#10b981; --logo-grad-3:#22d3ee; --logo-grad-4:#2dd4bf; --panel:#1e1e1e; --panel-alpha:#1e1e1ecc; --ticker-bg:#111111; --label-bg:#bb1919; --label-text:#ffffff; }
-      html,body{height:100%}
+      :root { --link:#0b57d0; --visited:#5b46a7; --text:#1f2937; --bg:#f7f8fb; --border:#d6d9e0; --accent:#22d3ee; --logo-grad-1:#3b82f6; --logo-grad-2:#06b6d4; --logo-grad-3:#10b981; --logo-grad-4:#0ea5e9; --panel:#ffffff; --panel-alpha:#ffffffd9; --ticker-bg:#ffffff; --label-bg:var(--link); --label-text:#ffffff; --clocks-h:28px; --wx-h:28px; --safe-top:calc(36px + var(--wx-h) + var(--clocks-h) + 16px); --lift:clamp(8px,3vh,48px); }
+      [data-theme="dark"]{ --link:#4ade80; --visited:#a7f3d0; --text:#e5e7eb; --bg:#121212; --border:#2a2a2a; --accent:#34d399; --logo-grad-1:#34d399; --logo-grad-2:#10b981; --logo-grad-3:#22d3ee; --logo-grad-4:#2dd4bf; --panel:#1e1e1e; --panel-alpha:#1e1e1ecc; --ticker-bg:#111111; --label-bg:var(--link); --label-text:#ffffff; } html,body{height:100%}
       body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 "Segoe UI",Arial,Helvetica,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
 
       /* Ticker: make 100% opaque, no glass/blur */
-      .ticker{position:fixed;top:0;left:0;right:0;background:var(--ticker-bg) !important;border-bottom:1px solid var(--border);overflow:hidden;white-space:nowrap;z-index:1200;height:36px;display:flex;align-items:center;gap:10px;padding:0 10px;backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+      .ticker{position:fixed;top:0;left:0;right:0;background:var(--ticker-bg)!important;border-bottom:1px solid var(--border);overflow:hidden;white-space:nowrap;z-index:1200;height:36px;display:flex;align-items:center;gap:10px;padding:0 10px;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;isolation:isolate}
+      .ticker::before{content:"";position:absolute;inset:0 auto 0 0;width:var(--bbc-w,84px);background:var(--ticker-bg);z-index:1;pointer-events:none} 
       /* BBC label pill: solid BBC red; ensure no inherited opacity */
-      .ticker label{font-size:11px;margin-right:6px;padding:3px 7px;border-radius:3px;background:#bb1919 !important;color:#ffffff !important;font-weight:800;opacity:1 !important;filter:none !important;mix-blend-mode:normal !important}
-      .ticker .track{display:inline-block;will-change:transform;animation:marquee 30s linear infinite}
+      .ticker label{font-size:11px;margin-right:8px;padding:4px 8px;border-radius:4px;background:var(--label-bg);color:var(--label-text);font-weight:800;line-height:1;white-space:nowrap;position:relative;z-index:2}  
+/* extend red background to the right so marquee text can't peek at the rounded edge */
+
+      
+.ticker .track{display:inline-block;will-change:transform;animation:marquee 30s linear infinite;position:relative;z-index:0}
       .ticker:hover .track{animation-play-state:paused}
       @media (prefers-reduced-motion: reduce) { .ticker .track { animation: none !important; } }
-      .ticker a{color:var(--link);text-decoration:none;margin:0 14px}
-      .ticker a:hover{text-decoration:underline;color:var(--accent)}
+      .ticker a{color:var(--link);text-decoration:none} 
+      .ticker #tickerTrack a:first-of-type{ margin-left:6px; }
+      .ticker a:hover{text-decoration:none;color:var(--accent)}
       .ticker a:visited{color:var(--link)}
-      .ticker a:visited:hover{color:var(--accent)}
+      .ticker a:visited:hover{text-decoration:none;color:var(--accent)}
       .ticker .dot{opacity:.5}
       @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
@@ -34,7 +38,7 @@
       .clock .time{font-variant-numeric:tabular-nums;font-weight:600;font-size:13px}
       .sep{opacity:.35;font-size:12px}
 
-      .wrap{width:100%;max-width:700px;padding:24px;text-align:center;position:relative;padding-top:var(--safe-top);transform:translateY(calc(-1 * var(--lift)))}
+      .wrap{width:100%;max-width:700px;padding:24px;text-align:center;position:relative;padding-top:var(--safe-top);transform:translateY(calc(-1 * var(--lift)));z-index:1305} 
       nav{margin:0 0 28px 0}
       nav ul{list-style:none;padding:0;margin:0}
       nav li{display:inline-block;margin:0 6px}
@@ -43,7 +47,7 @@
       nav a:visited{color:var(--link)}
       nav a:visited:hover{color:var(--accent)}
 
-      .logo{font-size:52px;margin:0 0 22px;font-weight:700;background:linear-gradient(90deg,var(--logo-grad-1),var(--logo-grad-2),var(--logo-grad-3),var(--logo-grad-4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+      .logo{font-size:52px;margin:0 0 22px;font-weight:700;background:linear-gradient(90deg,var(--logo-grad-1),var(--logo-grad-2),var(--logo-grad-3),var(--logo-grad-4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;position:relative;z-index:1306}
 
       form{margin:0 auto;max-width:600px}
       .search-box{display:flex;align-items:center;border:1px solid var(--border);border-radius:28px;padding:12px 16px;box-shadow:0 3px 6px rgba(0,0,0,.08);background:var(--panel)}
@@ -74,6 +78,10 @@
       .quick-links{position:fixed;right:8px;bottom:8px;z-index:950}
       .ql-btn{border:1px solid var(--border);background:var(--panel-alpha);color:var(--text);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px)}
       .ql-menu{position:absolute;right:0;left:auto;bottom:calc(100% + 6px);display:flex;flex-direction:column;gap:6px;align-items:flex-end;text-align:right;background:var(--panel-alpha);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:0 6px 14px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .15s ease,transform .15s ease,visibility .15s ease;min-width:180px}
+      .ql-menu a{color:var(--link);text-decoration:none;font-weight:500}
+      .ql-menu a:hover{text-decoration:none;color:var(--accent)}
+      .ql-menu a:visited{color:var(--link)}
+      .ql-menu a:visited:hover{text-decoration:none;color:var(--accent)}
       .quick-links:hover .ql-menu, .quick-links:focus-within .ql-menu{opacity:1;visibility:visible;transform:translateY(0)}
 
       @media (max-width:700px){.clocks{gap:4px;padding:2px 4px}.clock{padding:1px 3px;min-width:60px}.clock .city{font-size:10px}}
@@ -163,14 +171,27 @@
         });
       }
       async function reverseGeocode(lat, lon){
+        const pick = (g)=>{
+          if(!g) return null;
+          const name = g.city || g.town || g.village || g.locality || g.hamlet || g.suburb || g.neighbourhood || g.municipality || g.name || g.admin2 || g.admin1;
+          return (typeof name === 'string' && name.trim()) ? name.trim() : null;
+        };
+        // 1) Try Open‑Meteo reverse geocoding
         try{
           const r = await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en`);
           const j = await r.json();
-          const g = j?.results?.[0] || {};
-          // City-only label preference
-          const place = g.city || g.town || g.village || g.hamlet || g.suburb || g.neighbourhood || g.municipality || g.locality || g.name || g.admin2 || g.admin1;
-          return place || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-        }catch{ return `${lat.toFixed(2)}, ${lon.toFixed(2)}`; }
+          const place = pick(j?.results?.[0]);
+          if(place) return place;
+        }catch{}
+        // 2) Fallback: BigDataCloud (no key, CORS-friendly)
+        try{
+          const r2 = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+          const j2 = await r2.json();
+          const place2 = j2.city || j2.locality || (j2.localityInfo && j2.localityInfo.locality && j2.localityInfo.locality.name) || j2.principalSubdivision;
+          if(typeof place2 === 'string' && place2.trim()) return place2.trim();
+        }catch{}
+        // 3) Final fallback: human-friendly default (never show raw coords)
+        return 'Victoria';
       }
       function symbolToEmoji(code){
         if(!code) return '☀️';
@@ -253,6 +274,17 @@
         clone.style.animationDuration = dur + 's';
       }
       loadTicker();
+
+      // --- BBC label mask: prevent marquee text under the badge without changing markup ---
+      function bbcMaskInit(){
+        const label = document.querySelector('.ticker label');
+        if(!label) return;
+        const gap = 4; // tighter mask so headlines sit closer to the badge
+        const w = label.offsetWidth + gap;
+        document.documentElement.style.setProperty('--bbc-w', w + 'px');
+      }
+      bbcMaskInit();
+      window.addEventListener('resize', bbcMaskInit);
 
       // --- World clocks (24h, no seconds) ---
       const zones=[{label:'UTC',tz:'UTC'},{label:'London',tz:'Europe/London'},{label:'Berlin',tz:'Europe/Berlin'},{label:'Vancouver',tz:'America/Vancouver'},{label:'São Paulo',tz:'America/Sao_Paulo'}];
