@@ -3,193 +3,87 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <title>Gregle</title>
     <meta name="description" content="Simple Web‑1 style homepage with a centred search bar, links, weather, news ticker, and world clocks."/>
     <link href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIsAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIsAAAD/AAAAlQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAAEkAAAAAAAAAAAAAAIsAAAD/AAAAlQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAH8AAADMAAAA/wAAAP8AAAD/AAAAlgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAXgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADHAAAAQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAAAAH8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAAAAAAAAAAAAAAAAAFQAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAD/AAAA/wAAAP8AAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//8AAP//AAD/9wAA/+MAAP3HAADyDwAA758AAN/fAADf3wAA3/8AAN/fAADv3wAA578AAPh/AAD//wAA//8AAA==" rel="icon" type="image/x-icon">
     <style>
-      :root {
-        --link: #0b57d0;
-        --visited: #5b46a7;
-        --text: #1f2937;
-        --bg: #f7f8fb;
-        --border: #d6d9e0;
-        --accent: #22d3ee;
-        --logo-grad-1: #3b82f6;
-        --logo-grad-2: #06b6d4;
-        --logo-grad-3: #10b981;
-        --logo-grad-4: #0ea5e9;
-        --panel: #ffffff;
-        --panel-alpha: #ffffffd9;
-        --ticker-bg: #ffffffee;
-        --label-bg: #6b7280;
-        --label-text: #f9fafb;
-        --clocks-h: 28px;
-        --wx-h: 28px;
-        --safe-top: calc(36px + var(--wx-h) + var(--clocks-h) + 16px);
-        --lift: clamp(8px, 3vh, 48px);
-      }
-      [data-theme="dark"] {
-        --link: #4ade80;
-        --visited: #a7f3d0;
-        --text: #e5e7eb;
-        --bg: #121212;
-        --border: #2a2a2a;
-        --accent: #34d399;
-        --logo-grad-1: #34d399;
-        --logo-grad-2: #10b981;
-        --logo-grad-3: #22d3ee;
-        --logo-grad-4: #2dd4bf;
-        --panel: #1e1e1e;
-        --panel-alpha: #1e1e1ecc;
-        --ticker-bg: #1b1b1bcc;
-        --label-bg: #374151;
-        --label-text: #f3f4f6;
-      }
+      :root { --link:#0b57d0; --visited:#5b46a7; --text:#1f2937; --bg:#f7f8fb; --border:#d6d9e0; --accent:#22d3ee; --logo-grad-1:#3b82f6; --logo-grad-2:#06b6d4; --logo-grad-3:#10b981; --logo-grad-4:#0ea5e9; --panel:#ffffff; --panel-alpha:#ffffffd9; --ticker-bg:#ffffff; --label-bg:#bb1919; --label-text:#ffffff; --clocks-h:28px; --wx-h:28px; --safe-top:calc(36px + var(--wx-h) + var(--clocks-h) + 16px); --lift:clamp(8px,3vh,48px);} 
+      [data-theme="dark"]{ --link:#4ade80; --visited:#a7f3d0; --text:#e5e7eb; --bg:#121212; --border:#2a2a2a; --accent:#34d399; --logo-grad-1:#34d399; --logo-grad-2:#10b981; --logo-grad-3:#22d3ee; --logo-grad-4:#2dd4bf; --panel:#1e1e1e; --panel-alpha:#1e1e1ecc; --ticker-bg:#111111; --label-bg:#bb1919; --label-text:#ffffff; }
+      html,body{height:100%}
+      body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 "Segoe UI",Arial,Helvetica,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
 
-      html, body { height: 100%; }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font: 15px/1.4 "Segoe UI", Arial, Helvetica, sans-serif;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+      /* Ticker: make 100% opaque, no glass/blur */
+      .ticker{position:fixed;top:0;left:0;right:0;background:var(--ticker-bg) !important;border-bottom:1px solid var(--border);overflow:hidden;white-space:nowrap;z-index:1200;height:36px;display:flex;align-items:center;gap:10px;padding:0 10px;backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+      /* BBC label pill: solid BBC red; ensure no inherited opacity */
+      .ticker label{font-size:11px;margin-right:6px;padding:3px 7px;border-radius:3px;background:#bb1919 !important;color:#ffffff !important;font-weight:800;opacity:1 !important;filter:none !important;mix-blend-mode:normal !important}
+      .ticker .track{display:inline-block;will-change:transform;animation:marquee 30s linear infinite}
+      .ticker:hover .track{animation-play-state:paused}
+      @media (prefers-reduced-motion: reduce) { .ticker .track { animation: none !important; } }
+      .ticker a{color:var(--link);text-decoration:none;margin:0 14px}
+      .ticker a:hover{text-decoration:underline;color:var(--accent)}
+      .ticker a:visited{color:var(--link)}
+      .ticker a:visited:hover{color:var(--accent)}
+      .ticker .dot{opacity:.5}
+      @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-      .ticker { position: fixed; top: 0; left: 0; right: 0; background: var(--ticker-bg); border-bottom: 1px solid var(--border); overflow: hidden; white-space: nowrap; z-index: 1200; height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 10px; backdrop-filter: blur(4px);} 
-      .ticker label { font-size: 11px; margin-right: 6px; padding: 3px 7px; border-radius: 3px; background: var(--label-bg); color: var(--label-text); font-weight: 500; opacity: 0.8; z-index: 1300; position: relative; }
-      .ticker .track { display: inline-block; will-change: transform; animation: marquee 30s linear infinite; }
-      /* Pause ticker on hover */
-      .ticker:hover .track { animation-play-state: paused; }
-      .ticker a { color: var(--link); text-decoration: none; margin: 0 14px; }
-      .ticker a:hover { text-decoration: underline; color: var(--accent); }
-      .ticker a:visited { color: var(--link); }
-      .ticker a:visited:hover { color: var(--accent); }
-      .ticker .dot { opacity: .5; }
-      @keyframes marquee { 0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
+      .clocks{position:fixed;top:calc(38px + var(--wx-h) + 8px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:2px 6px;background:var(--panel-alpha);border:1px solid var(--border);border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:1100;width:fit-content;max-width:calc(100vw - 16px);flex-wrap:wrap;justify-content:center}
+      .clocks::-webkit-scrollbar{display:none}
+      .clock{display:grid;grid-template-rows:auto auto;align-items:center;padding:2px 4px;border-radius:6px;min-width:64px}
+      .clock .city{font-size:10px;opacity:.72}
+      .clock .time{font-variant-numeric:tabular-nums;font-weight:600;font-size:13px}
+      .sep{opacity:.35;font-size:12px}
 
-      .clocks { position: fixed; top: calc(38px + var(--wx-h) + 8px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 2px 6px; background: var(--panel-alpha); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); backdrop-filter: blur(4px); z-index: 1100; width: fit-content; max-width: calc(100vw - 16px); flex-wrap: wrap; justify-content: center; }
-      .clocks::-webkit-scrollbar { display:none; }
-      .clock { display: grid; grid-template-rows: auto auto; align-items: center; padding: 2px 4px; border-radius: 6px; min-width: 64px; }
-      .clock .city { font-size: 10px; opacity: 0.72; }
-      .clock .time { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13px; }
-      .sep { opacity: 0.35; font-size: 12px; }
+      .wrap{width:100%;max-width:700px;padding:24px;text-align:center;position:relative;padding-top:var(--safe-top);transform:translateY(calc(-1 * var(--lift)))}
+      nav{margin:0 0 28px 0}
+      nav ul{list-style:none;padding:0;margin:0}
+      nav li{display:inline-block;margin:0 6px}
+      nav a{color:var(--link);text-decoration:none;font-weight:500;transition:color .2s}
+      nav a:hover{color:var(--accent);text-decoration:underline}
+      nav a:visited{color:var(--link)}
+      nav a:visited:hover{color:var(--accent)}
 
-      .wrap { width: 100%; max-width: 700px; padding: 24px; text-align: center; position: relative; padding-top: var(--safe-top); transform: translateY(calc(-1 * var(--lift))); }
+      .logo{font-size:52px;margin:0 0 22px;font-weight:700;background:linear-gradient(90deg,var(--logo-grad-1),var(--logo-grad-2),var(--logo-grad-3),var(--logo-grad-4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-      nav { margin: 0 0 28px 0; }
-      nav ul { list-style:none;padding:0;margin:0; }
-      nav li { display:inline-block;margin:0 6px; }
-      nav a { color:var(--link);text-decoration:none;font-weight:500;transition:color .2s; }
-      nav a:hover { color:var(--accent);text-decoration:underline; }
-      nav a:visited { color: var(--link); }
-      nav a:visited:hover { color: var(--accent); }
+      form{margin:0 auto;max-width:600px}
+      .search-box{display:flex;align-items:center;border:1px solid var(--border);border-radius:28px;padding:12px 16px;box-shadow:0 3px 6px rgba(0,0,0,.08);background:var(--panel)}
+      input[type=search]{flex:1;border:0;outline:none;font-size:16px;padding:6px 8px;background:transparent;color:var(--text)}
+      .buttons{margin-top:20px}
+      .btn{display:inline-block;font-size:14px;padding:9px 18px;border:1px solid var(--border);border-radius:6px;background:var(--panel);cursor:pointer;transition:background .2s,transform .1s,border-color .2s;color:var(--text)}
+      .btn:hover{background:rgba(255,255,255,.05);border-color:var(--link)}
+      .btn:active{transform:scale(.97)}
 
-      .logo { font-size:52px;margin:0 0 22px;font-weight:700;background:linear-gradient(90deg,var(--logo-grad-1),var(--logo-grad-2),var(--logo-grad-3),var(--logo-grad-4));-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+      .weather{position:fixed;top:38px;left:8px;font-size:14px;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;background:var(--panel-alpha);box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:1250;max-width:60vw}
+      .weather a{color:inherit;text-decoration:none;display:block}
 
-      form { margin:0 auto;max-width:600px; }
-      .search-box { display:flex;align-items:center;border:1px solid var(--border);border-radius:28px;padding:12px 16px;box-shadow:0 3px 6px rgba(0,0,0,.08);background:var(--panel); }
-      input[type="search"] { flex:1;border:0;outline:none;font-size:16px;padding:6px 8px;background:transparent;color:var(--text); }
-      .buttons { margin-top:20px; }
-      .btn { display:inline-block;font-size:14px;padding:9px 18px;border:1px solid var(--border);border-radius:6px;background:var(--panel);cursor:pointer;transition:background .2s,transform .1s,border-color .2s;color:var(--text); }
-      .btn:hover { background:rgba(255,255,255,.05);border-color:var(--link); }
-      .btn:active { transform:scale(.97); }
+      .theme-toggle{position:fixed;top:38px;right:8px;border:1px solid var(--border);background:var(--panel-alpha);color:var(--text);border-radius:20px;padding:4px 8px;font-size:13px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:1250}
+      .theme-toggle:hover{border-color:var(--link)}
 
-      /* Weather and theme toggle pinned very top above ticker */
-      .weather {
-        position: fixed;
-        top: 38px; /* just below ticker (36px) */
-        left: 8px;
-        font-size: 14px;
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 4px 8px;
-        background: var(--panel-alpha);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        backdrop-filter: blur(4px);
-        z-index: 1250;
-        max-width: 40vw;
-      }
-      .weather a { color: inherit; text-decoration: none; display: block; }
+      footer{margin-top:40px;font-size:13px;color:#5f6368}
+      [data-theme=dark] footer{color:#9aa0a6}
+      footer span{display:inline-block;margin:0 4px}
+      footer a.hidden-link{color:inherit;text-decoration:none;font-weight:500;transition:color .2s}
+      footer a.hidden-link:hover{color:var(--accent)}
+      footer a.hidden-link:visited{color:inherit}
+      footer a.hidden-link:visited:hover{color:var(--accent)}
 
-      .theme-toggle {
-        position: fixed;
-        top: 38px; /* just below ticker */
-        right: 8px;
-        border: 1px solid var(--border);
-        background: var(--panel-alpha);
-        color: var(--text);
-        border-radius: 20px;
-        padding: 4px 8px;
-        font-size: 13px;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        backdrop-filter: blur(4px);
-        z-index: 1250;
-      }
-      .theme-toggle:hover { border-color: var(--link); }
+      .fx{position:fixed;left:8px;bottom:8px;border:1px solid var(--border);background:var(--panel-alpha);color:var(--text);border-radius:8px;padding:6px 8px;font-size:13px;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:900;white-space:nowrap;text-decoration:none;display:inline-block}
+      .fx:hover{border-color:var(--link)}
+      .fx:visited{color:var(--text)}
 
-      footer { margin-top:40px;font-size:13px;color:#5f6368; }
-      [data-theme="dark"] footer { color:#9aa0a6; }
-      footer span { display:inline-block;margin:0 4px; }
-      footer a.hidden-link { color:inherit;text-decoration:none;font-weight:500;transition:color .2s; }
-      footer a.hidden-link:hover { color: var(--accent); }
-      footer a.hidden-link:visited { color: inherit; }
-      footer a.hidden-link:visited:hover { color: var(--accent); }
-      /* GBP→CAD widget (bottom-left) */
-      .fx {
-        position: fixed;
-        left: 8px;
-        bottom: 8px;
-        border: 1px solid var(--border);
-        background: var(--panel-alpha);
-        color: var(--text);
-        border-radius: 8px;
-        padding: 6px 8px;
-        font-size: 13px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        backdrop-filter: blur(4px);
-        z-index: 900; /* below clocks/weather/ticker */
-        white-space: nowrap;
-        text-decoration: none; /* clickable but unstyled */
-        display: inline-block;
-      }
-      .fx:hover { border-color: var(--link); }
-      .fx:visited { color: var(--text); }
-      /* Quick Links (bottom-right hover-up) */
-      .quick-links{ position:fixed; right:8px; bottom:8px; z-index:950; }
-      .ql-btn{ border:1px solid var(--border); background:var(--panel-alpha); color:var(--text); border-radius:8px; padding:6px 10px; font-size:13px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,.08); backdrop-filter:blur(4px); }
-      .ql-menu{ position:absolute; right:0; left:auto; bottom:calc(100% + 6px); display:flex; flex-direction:column; gap:6px; align-items:flex-end; text-align:right; background:var(--panel-alpha); border:1px solid var(--border); border-radius:8px; padding:8px; box-shadow:0 6px 14px rgba(0,0,0,.12); opacity:0; visibility:hidden; transform:translateY(6px); transition:opacity .15s ease, transform .15s ease, visibility .15s ease; min-width:180px; }
-      .quick-links:hover .ql-menu, .quick-links:focus-within .ql-menu{ opacity:1; visibility:visible; transform:translateY(0); }
-      .ql-menu a{ color:var(--link); text-decoration:none; font-weight:500; }
-      .ql-menu a:hover{ color:var(--accent); text-decoration:underline; }
-      .ql-menu a:visited{ color:var(--link); }
-      .ql-menu a:visited:hover{ color:var(--accent); }
-      @media (max-width: 700px) {
-      .clocks { gap: 4px; padding: 2px 4px; }
-      .clock { padding: 1px 3px; min-width: 60px; }
-      .clock .city { font-size: 10px; }
-    }
-    @media (max-width: 560px) {
-      .clocks { gap: 2px; padding: 1px 3px; }
-      .clock { padding: 1px 2px; min-width: 54px; }
-      .clock .city { font-size: 9px; }
-      .clock .time { font-size: 12px; }
-      .sep { display: none; } /* drop separators to save space */
-    }
-    @media (max-width: 400px) {
-      .clock { min-width: 48px; }
-      .clock .city { font-size: 8.5px; }
-      .clock .time { font-size: 12px; }
-    }
+      .quick-links{position:fixed;right:8px;bottom:8px;z-index:950}
+      .ql-btn{border:1px solid var(--border);background:var(--panel-alpha);color:var(--text);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px)}
+      .ql-menu{position:absolute;right:0;left:auto;bottom:calc(100% + 6px);display:flex;flex-direction:column;gap:6px;align-items:flex-end;text-align:right;background:var(--panel-alpha);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:0 6px 14px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .15s ease,transform .15s ease,visibility .15s ease;min-width:180px}
+      .quick-links:hover .ql-menu, .quick-links:focus-within .ql-menu{opacity:1;visibility:visible;transform:translateY(0)}
+
+      @media (max-width:700px){.clocks{gap:4px;padding:2px 4px}.clock{padding:1px 3px;min-width:60px}.clock .city{font-size:10px}}
+      @media (max-width:560px){.clocks{gap:2px;padding:1px 3px}.clock{padding:1px 2px;min-width:54px}.clock .city{font-size:9px}.clock .time{font-size:12px}.sep{display:none}}
+      @media (max-width:400px){.clock{min-width:48px}.clock .city{font-size:8.5px}.clock .time{font-size:12px}}
     </style>
   </head>
   <body>
-    <!-- Weather and theme toggle pinned at very top corners -->
-    <div class="weather" id="weather"><a href="https://www.metoffice.gov.uk/weather/forecast/gcpmx6z1w" target="_blank" rel="noopener">Loading weather...</a></div>
+    <!-- Weather and theme toggle -->
+    <div class="weather" id="weather"><a href="#" target="_blank" rel="noopener noreferrer">Loading weather...</a></div>
     <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle dark mode">🌙 Dark</button>
 
     <!-- BBC news ticker -->
@@ -205,31 +99,32 @@
     <main class="wrap" role="main">
       <nav aria-label="Primary">
         <ul>
-          <li><a href="https://google.co.uk" rel="noopener">Search</a></li>
-          <li><a href="https://news.ycombinator.com/" rel="noopener">News</a></li>
-          <li><a href="https://chatgpt.com/" rel="noopener">GPT</a></li>
-          <li><a href="https://maps.apple.com/" rel="noopener">Maps</a></li>
-          <li><a href="https://cloud.gsuth.uk/" rel="noopener">Cloud</a></li>
-          <li><a href="https://42.gsuth.uk/" rel="noopener">42</a></li>
-          <li><a href="https://mailbox.org/" rel="noopener">Mail</a></li>
+          <li><a href="https://google.co.uk" rel="noopener noreferrer">Search</a></li>
+          <li><a href="https://news.ycombinator.com/" rel="noopener noreferrer">News</a></li>
+          <li><a href="https://chatgpt.com/" rel="noopener noreferrer">GPT</a></li>
+          <li><a href="https://maps.apple.com/" rel="noopener noreferrer">Maps</a></li>
+          <li><a href="https://cloud.gsuth.uk/" rel="noopener noreferrer">Cloud</a></li>
+          <li><a href="https://42.gsuth.uk/" rel="noopener noreferrer">42</a></li>
+          <li><a href="https://mailbox.org/" rel="noopener noreferrer">Mail</a></li>
         </ul>
       </nav>
 
       <h1 class="logo">Gregle</h1>
 
-      <form action="https://search.brave.com/search" method="get" role="search">
+      <form action="https://search.brave.com/search" method="get" role="search" autocomplete="off">
         <div class="search-box">
           <input type="search" name="q" placeholder="Search the web" aria-label="Search" autofocus />
         </div>
         <div class="buttons">
-          <button class="btn" type="submit">Search with Brave</button>
+          <button class="btn" type="submit" title="Search on Brave">Search with Brave</button>
+          <button class="btn" type="button" id="btnSearx" title="Search on Gregle (gregle.de)">Search with Gregle</button>
         </div>
       </form>
 
       <footer>
         <span>Simple homepage</span> •
         <span>No tracking</span> •
-        <a class="hidden-link" href="https://gsuth.uk" rel="noopener">gsuth.uk</a>
+        <a class="hidden-link" href="https://gsuth.uk" rel="noopener noreferrer">gsuth.uk</a>
       </footer>
     </main>
 
@@ -237,35 +132,84 @@
     <div class="quick-links" id="quickLinks">
       <button class="ql-btn" aria-haspopup="true" aria-expanded="false" title="Open quick links">Quick Links ▴</button>
       <div class="ql-menu" role="menu">
-        <a href="https://www.spaceweather.com/" target="_blank" rel="noopener" role="menuitem">SpaceWeather.com</a>
-        <a href="https://xkcd.com/" target="_blank" rel="noopener" role="menuitem">xkcd</a>
+        <a href="https://www.spaceweather.com/" target="_blank" rel="noopener noreferrer" role="menuitem">SpaceWeather.com</a>
+        <a href="https://xkcd.com/" target="_blank" rel="noopener noreferrer" role="menuitem">xkcd</a>
       </div>
     </div>
 
     <!-- GBP → CAD rate -->
-    <a class="fx" id="gbpcad" href="https://www.google.com/search?q=1+GBP+to+CAD" target="_blank" rel="noopener" aria-live="polite" title="GBP to CAD exchange rate">£1 = C$…</a>
+    <a class="fx" id="gbpcad" href="https://www.google.com/search?q=1+GBP+to+CAD" target="_blank" rel="noopener noreferrer" aria-live="polite" title="GBP to CAD exchange rate">£1 = C$…</a>
 
     <script>
-      // --- Weather (Victoria, BC) ---
-      async function loadWeather(){
+      // ---- Utility: safe set CSS var after layout ----
+      function updateLayoutVars(){
+        const wrap = document.getElementById('clocks');
+        const h = wrap ? (wrap.offsetHeight || 28) : 28;
+        document.documentElement.style.setProperty('--clocks-h', h + 'px');
+        const wx = document.getElementById('weather');
+        const wxh = wx ? (wx.offsetHeight || 28) : 28;
+        document.documentElement.style.setProperty('--wx-h', wxh + 'px');
+      }
+
+      // --- Weather via MET Norway with geolocation; click → yr.no detailed report ---
+      async function getCoords(){
+        return new Promise((resolve) => {
+          if(!('geolocation' in navigator)) return resolve(null);
+          navigator.geolocation.getCurrentPosition(
+            pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+            () => resolve(null),
+            { enableHighAccuracy:true, timeout:8000, maximumAge:5*60*1000 }
+          );
+        });
+      }
+      async function reverseGeocode(lat, lon){
         try{
-          const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=48.4284&longitude=-123.3656&current_weather=true");
-          const data = await res.json();
-          const w = data.current_weather;
-          let emoji = "☀️";
-          if (w.weathercode >= 51 && w.weathercode <= 67) emoji = "🌧️"; // drizzle/rain
-          else if (w.weathercode >= 71 && w.weathercode <= 77) emoji = "❄️"; // snow
-          else if (w.weathercode >= 95) emoji = "⛈️"; // thunder
-          else if (w.weathercode > 1) emoji = "☁️"; // clouds
-          document.querySelector('#weather a').textContent = `${emoji} Victoria: ${w.temperature}°C`;
-        } catch (e) {
-          document.querySelector('#weather a').textContent = 'Weather unavailable.';
-        } finally {
-          requestAnimationFrame(() => {
-            const wx = document.getElementById('weather');
-            const wxh = wx ? (wx.offsetHeight || 28) : 28;
-            document.documentElement.style.setProperty('--wx-h', wxh + 'px');
-          });
+          const r = await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en`);
+          const j = await r.json();
+          const g = j?.results?.[0] || {};
+          // City-only label preference
+          const place = g.city || g.town || g.village || g.hamlet || g.suburb || g.neighbourhood || g.municipality || g.locality || g.name || g.admin2 || g.admin1;
+          return place || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+        }catch{ return `${lat.toFixed(2)}, ${lon.toFixed(2)}`; }
+      }
+      function symbolToEmoji(code){
+        if(!code) return '☀️';
+        const c = String(code);
+        if(c.includes('thunder')) return '⛈️';
+        if(c.includes('snow')) return '❄️';
+        if(c.includes('sleet')) return '🌨️';
+        if(c.includes('rain')) return '🌧️';
+        if(c.includes('fog')) return '🌫️';
+        if(c.includes('cloud')) return '☁️';
+        return '☀️';
+      }
+      async function loadWeather(){
+        const el = document.querySelector('#weather a');
+        try{
+          let coords = await getCoords();
+          let usedFallback = false;
+          if(!coords){ coords = { lat: 48.4284, lon: -123.3656 }; usedFallback = true; }
+          const { lat, lon } = coords;
+          const url = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`;
+          const r = await fetch(url, { headers:{'Accept':'application/json'} });
+          const j = await r.json();
+          const ts = j?.properties?.timeseries?.[0];
+          const inst = ts?.data?.instant?.details || {};
+          const next = ts?.data?.next_1_hours || ts?.data?.next_6_hours || null;
+          const sym = next?.summary?.symbol_code || '';
+          const T = Math.round(Number(inst.air_temperature));
+          const emoji = symbolToEmoji(sym);
+          const label = usedFallback ? 'Victoria' : await reverseGeocode(lat, lon);
+          // City-only label in UI
+          el.textContent = `${emoji} ${label}: ${isFinite(T)?T:'—'}°C`;
+          el.href = `https://www.yr.no/en/forecast/daily-table/${lat.toFixed(4)},${lon.toFixed(4)}`;
+          el.title = `Open detailed weather report for ${label}`;
+        }catch(e){
+          const el = document.querySelector('#weather a');
+          el.textContent = 'Weather unavailable.';
+          el.removeAttribute('href');
+        }finally{
+          requestAnimationFrame(updateLayoutVars);
         }
       }
       loadWeather();
@@ -296,122 +240,58 @@
           const a = document.createElement('a');
           a.href = it.querySelector('link')?.textContent || '#';
           a.textContent = it.querySelector('title')?.textContent || 'Untitled';
-          a.target = '_blank'; a.rel = 'noopener';
+          a.target = '_blank'; a.rel = 'noopener noreferrer';
           frag.appendChild(a);
-          if (i !== items.length - 1) {
-            const dot = document.createElement('span'); dot.className = 'dot'; dot.textContent = ' • '; frag.appendChild(dot);
-          }
+          if (i !== items.length - 1) { const dot = document.createElement('span'); dot.className = 'dot'; dot.textContent = ' • '; frag.appendChild(dot); }
         });
         const track = document.getElementById('tickerTrack');
         track.innerHTML = ''; track.appendChild(frag);
-        document.getElementById('tickerTrackClone').innerHTML = track.innerHTML; // seamless loop
+        const clone = document.getElementById('tickerTrackClone');
+        clone.innerHTML = track.innerHTML;
+        const w = track.scrollWidth; const dur = Math.max(20, Math.min(60, Math.round(w / 60)));
+        track.style.animationDuration = dur + 's';
+        clone.style.animationDuration = dur + 's';
       }
       loadTicker();
 
       // --- World clocks (24h, no seconds) ---
-      const zones = [
-        { label: 'UTC', tz: 'UTC' },
-        { label: 'London', tz: 'Europe/London' },
-        { label: 'Berlin', tz: 'Europe/Berlin' },
-        { label: 'Vancouver', tz: 'America/Vancouver' },
-        { label: 'São Paulo', tz: 'America/Sao_Paulo' }
-      ];
+      const zones=[{label:'UTC',tz:'UTC'},{label:'London',tz:'Europe/London'},{label:'Berlin',tz:'Europe/Berlin'},{label:'Vancouver',tz:'America/Vancouver'},{label:'São Paulo',tz:'America/Sao_Paulo'}];
       function renderClocks(){
-        const wrap = document.getElementById('clocks');
-        if (!wrap) return;
-        wrap.innerHTML = '';
-        // Responsive visibility: hide Berlin & São Paulo on small screens
-        const w = window.innerWidth;
-        let list = zones.slice();
-        if (w <= 640) list = list.filter(z => z.label !== 'Berlin' && z.label !== 'São Paulo');
-        list.forEach((z, i) => {
-          const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: z.tz }).format(new Date());
-          const item = document.createElement('div'); item.className = 'clock'; item.setAttribute('data-city', z.label);
-          const city = document.createElement('div'); city.className = 'city'; city.textContent = z.label;
-          const t = document.createElement('div'); t.className = 'time'; t.textContent = time;
+        const wrap=document.getElementById('clocks'); if (!wrap) return; wrap.innerHTML='';
+        const w=window.innerWidth; let list=zones.slice(); if(w<=640) list=list.filter(z=>z.label!=='Berlin'&&z.label!=='São Paulo');
+        list.forEach((z,i)=>{
+          const time=new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:z.tz}).format(new Date());
+          const item=document.createElement('div'); item.className='clock'; item.setAttribute('data-city',z.label);
+          const city=document.createElement('div'); city.className='city'; city.textContent=z.label;
+          const t=document.createElement('div'); t.className='time'; t.textContent=time;
           item.appendChild(city); item.appendChild(t); wrap.appendChild(item);
-          if (i !== list.length - 1) { const sep = document.createElement('span'); sep.className = 'sep'; sep.textContent = '•'; wrap.appendChild(sep); }
+          if(i!==list.length-1){ const sep=document.createElement('span'); sep.className='sep'; sep.textContent='•'; wrap.appendChild(sep); }
         });
-        // Update layout vars based on actual element heights
-        const h = wrap.offsetHeight || 28;
-        document.documentElement.style.setProperty('--clocks-h', h + 'px');
-        const wx = document.getElementById('weather');
-        const wxh = wx ? (wx.offsetHeight || 28) : 28;
-        document.documentElement.style.setProperty('--wx-h', wxh + 'px');
+        updateLayoutVars();
       }
-      renderClocks();
-      setInterval(renderClocks, 30000);
-      window.addEventListener('resize', renderClocks);
+      function scheduleClockUpdates(){
+        renderClocks(); const now=new Date(); const msToNextMinute=(60-now.getSeconds())*1000-now.getMilliseconds();
+        setTimeout(()=>{ renderClocks(); setInterval(renderClocks,60000); }, Math.max(500, msToNextMinute));
+      }
+      scheduleClockUpdates(); window.addEventListener('resize', renderClocks);
 
-      // --- GBP -> CAD (bottom-left) ---
+      // --- GBP -> CAD (exchangerate.host primary; ECB fallback) ---
       async function loadFX(){
-        const el = document.getElementById('gbpcad');
-        if(!el) return;
-        try {
-          // Primary: static JSON via jsDelivr (CORS-friendly, no API key)
-          const r = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/gbp.min.json', { cache: 'no-store' });
-          const j = await r.json();
-          const rate = j?.gbp?.cad;
-          if(rate){ el.textContent = `£1 = C$${rate.toFixed(2)}`; el.title = `As of ${j?.date} · GBP→CAD: ${rate}`; return; }
-          throw new Error('no rate');
-        } catch (e) {
-          try {
-            // Fallback 1
-            const r2 = await fetch('https://open.er-api.com/v6/latest/GBP');
-            const j2 = await r2.json();
-            const rate2 = j2?.rates?.CAD;
-            if(rate2){ el.textContent = `£1 = C$${rate2.toFixed(2)}`; el.title = `Mid-market rate: ${rate2}`; return; }
-            throw new Error('no rate2');
-          } catch (e2) {
-            try {
-              // Fallback 2
-              const r3 = await fetch('https://api.frankfurter.app/latest?from=GBP&to=CAD');
-              const j3 = await r3.json();
-              const rate3 = j3?.rates?.CAD;
-              if(rate3){ el.textContent = `£1 = C$${rate3.toFixed(2)}`; el.title = `Mid-market rate: ${rate3}`; return; }
-              throw new Error('no rate3');
-            } catch (e3) {
-              el.textContent = '£1 = C$—';
-            }
-          }
-        }
+        const el=document.getElementById('gbpcad'); if(!el) return;
+        const set=(rate,meta)=>{ const n=Number(rate); if(!isFinite(n)) return false; el.textContent=`£1 = C$${n.toFixed(4)}`; el.title=meta; return true; };
+        try{ const r=await fetch('https://api.exchangerate.host/convert?from=GBP&to=CAD'); const j=await r.json(); const rate=j?.result ?? j?.info?.rate; if(set(rate,`exchangerate.host · ${j?.date||'latest'}`)) return; throw new Error('primary failed'); }
+        catch{ try{ const r3=await fetch('https://api.frankfurter.app/latest?from=GBP&to=CAD'); const j3=await r3.json(); if(set(j3?.rates?.CAD,`ECB via Frankfurter · ${j3?.date}`)) return; throw new Error('fallback failed'); } catch { el.textContent='£1 = C$—'; el.title='FX unavailable'; } }
       }
-      loadFX();
-      setInterval(loadFX, 30*60*1000);
+      loadFX(); setInterval(loadFX, 15*60*1000);
 
-      // --- Quick Links aria state (for screen readers) ---
-      (function(){
-        const ql = document.getElementById('quickLinks');
-        if(!ql) return; const btn = ql.querySelector('.ql-btn');
-        const open = ()=> btn && btn.setAttribute('aria-expanded','true');
-        const close = ()=> btn && btn.setAttribute('aria-expanded','false');
-        ql.addEventListener('mouseenter', open);
-        ql.addEventListener('mouseleave', close);
-        ql.addEventListener('focusin', open);
-        ql.addEventListener('focusout', (e)=>{ if(!ql.contains(e.relatedTarget)) close(); });
-      })();
+      // --- Quick Links aria state ---
+      (function(){ const ql=document.getElementById('quickLinks'); if(!ql) return; const btn=ql.querySelector('.ql-btn'); const open=()=>btn&&btn.setAttribute('aria-expanded','true'); const close=()=>btn&&btn.setAttribute('aria-expanded','false'); ql.addEventListener('mouseenter',open); ql.addEventListener('mouseleave',close); ql.addEventListener('focusin',open); ql.addEventListener('focusout',e=>{ if(!ql.contains(e.relatedTarget)) close(); }); })();
 
       // --- Theme toggle with persistence + system preference ---
-      (function themeInit(){
-        const root = document.documentElement;
-        const btn = document.getElementById('themeToggle');
-        const saved = localStorage.getItem('gregle-theme');
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initial = saved || (prefersDark ? 'dark' : 'light');
-        root.setAttribute('data-theme', initial);
-        updateToggleBtn(initial);
-        btn.addEventListener('click', () => {
-          const current = root.getAttribute('data-theme');
-          const next = current === 'dark' ? 'light' : 'dark';
-          root.setAttribute('data-theme', next);
-          localStorage.setItem('gregle-theme', next);
-          updateToggleBtn(next);
-        });
-        function updateToggleBtn(mode){
-          if(mode === 'dark'){ btn.innerText = '☀️ Light'; btn.setAttribute('aria-pressed','true'); }
-          else { btn.innerText = '🌙 Dark'; btn.setAttribute('aria-pressed','false'); }
-        }
-      })();
+      (function(){ const root=document.documentElement; const btn=document.getElementById('themeToggle'); const saved=localStorage.getItem('gregle-theme'); const prefersDark=window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; const initial=saved||(prefersDark?'dark':'light'); root.setAttribute('data-theme',initial); update(initial); btn.addEventListener('click',()=>{ const cur=root.getAttribute('data-theme'); const next=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',next); localStorage.setItem('gregle-theme',next); update(next); }); function update(mode){ if(mode==='dark'){ btn.innerText='☀️ Light'; btn.setAttribute('aria-pressed','true'); } else { btn.innerText='🌙 Dark'; btn.setAttribute('aria-pressed','false'); } } })();
+
+      // --- SearXNG button (gregle.de) ---
+      (function(){ const btn=document.getElementById('btnSearx'); if(!btn) return; const q=document.querySelector('form input[type=\"search\"]'); btn.addEventListener('click',()=>{ const s=(q?.value||'').trim(); if(!s){ q?.focus(); return; } window.location.href='https://gregle.de/search?q='+encodeURIComponent(s); }); })();
     </script>
   </body>
 </html>
