@@ -4,7 +4,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
   <link rel="shortcut icon" href="/favicons/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
@@ -621,11 +621,12 @@
           id="searchInput"
           type="text"
           placeholder="Search the web"
-          autocomplete="on"
+          autocomplete="off"
           spellcheck="false"
+          autocapitalize="off"
+          autocorrect="off"
           aria-label="Search query"
         />
-                <datalist id="searchSuggestions"></datalist>
 <ul class="autocomplete-list" id="autocompleteList" role="listbox" aria-label="Search suggestions"></ul>
       </form>
 
@@ -642,7 +643,6 @@
     const braveSearchButton = document.getElementById('braveSearch');
     const searchForm = document.getElementById('searchForm');
     const autocompleteList = document.getElementById('autocompleteList');
-    const searchSuggestions = document.getElementById('searchSuggestions');
     const weatherChip = document.getElementById('weatherChip');
     const utcClock = document.getElementById('utcClock');
     const tickerTrack = document.getElementById('tickerTrack');
@@ -724,12 +724,12 @@
     }
 
     function updateDatalist(items) {
-      if (!searchSuggestions) return;
-      searchSuggestions.innerHTML = items.map(item => `<option value="${escapeHtml(item)}"></option>`).join('');
-      searchInput.setAttribute('list', 'searchSuggestions');
+      return;
     }
 
     function closeAutocomplete() {
+      autocompleteRequestSeq++;
+      clearTimeout(autocompleteTimer);
       autocompleteList.classList.remove('open');
       autocompleteList.innerHTML = '';
       suggestionItems = [];
@@ -757,6 +757,7 @@
         button.addEventListener('mousedown', (event) => {
           event.preventDefault();
           searchInput.value = suggestionItems[index];
+          activeSuggestionIndex = -1;
           closeAutocomplete();
         });
 
@@ -773,20 +774,26 @@
       return new Promise((resolve, reject) => {
         const callbackName = `gregleAutocomplete_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
         const script = document.createElement('script');
+        let finished = false;
+
         const timeoutId = setTimeout(() => {
+          if (finished) return;
+          finished = true;
           cleanup();
           reject(new Error('Autocomplete timeout'));
         }, 3000);
 
         function cleanup() {
           clearTimeout(timeoutId);
-          script.remove();
+          if (script.parentNode) script.parentNode.removeChild(script);
           try {
             delete window[callbackName];
           } catch {}
         }
 
         window[callbackName] = (data) => {
+          if (finished) return;
+          finished = true;
           cleanup();
           if (!Array.isArray(data)) {
             resolve([]);
@@ -800,10 +807,13 @@
         };
 
         script.onerror = () => {
+          if (finished) return;
+          finished = true;
           cleanup();
           reject(new Error('Autocomplete request failed'));
         };
 
+        script.async = true;
         script.src = `https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&callback=${callbackName}`;
         document.head.appendChild(script);
       });
@@ -838,7 +848,12 @@
       } catch {
         if (seq !== autocompleteRequestSeq) return;
         activeSuggestionIndex = -1;
-        renderSuggestionList(getLocalSuggestions(trimmed));
+        const local = getLocalSuggestions(trimmed);
+        if (local.length) {
+          renderSuggestionList(local);
+        } else {
+          closeAutocomplete();
+        }
       }
     }
 
