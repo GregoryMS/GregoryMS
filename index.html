@@ -1,343 +1,827 @@
-<!doctype html>
-<html lang="en-GB" data-theme="light">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <title>Gregle</title>
-    <meta name="description" content="Simple Web‑1 style homepage with a centred search bar, links, weather, news ticker, and world clocks."/>
-    <link rel="icon" href="/favicon/favicon.ico" type="image/x-icon">
-    <style>
-      :root { --link:#0b57d0; --visited:#5b46a7; --text:#1f2937; --bg:#f7f8fb; --border:#d6d9e0; --accent:#22d3ee; --logo-grad-1:#3b82f6; --logo-grad-2:#06b6d4; --logo-grad-3:#10b981; --logo-grad-4:#0ea5e9; --panel:#ffffff; --panel-alpha:#ffffffd9; --ticker-bg:#ffffff; --label-bg:var(--link); --label-text:#ffffff; --clocks-h:28px; --wx-h:28px; --safe-top:calc(36px + var(--wx-h) + var(--clocks-h) + 16px); --lift:clamp(8px,3vh,48px); }
-      [data-theme="dark"]{ --link:#4ade80; --visited:#a7f3d0; --text:#e5e7eb; --bg:#121212; --border:#2a2a2a; --accent:#34d399; --logo-grad-1:#34d399; --logo-grad-2:#10b981; --logo-grad-3:#22d3ee; --logo-grad-4:#2dd4bf; --panel:#1e1e1e; --panel-alpha:#1e1e1ecc; --ticker-bg:#111111; --label-bg:var(--link); --label-text:#ffffff; } html,body{height:100%}
-      body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 "Segoe UI",Arial,Helvetica,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gregle</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel-strong: #ffffff;
+      --text: #0b1726;
+      --muted: #5c6b7a;
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 10px 30px rgba(0,0,0,0.06);
+      --accent: #222;
+      --accent-hover: #000;
+      --button-secondary: rgba(0,0,0,0.04);
+      --ticker-hover: rgba(187,25,25,0.08);
+    }
 
-      /* Ticker: make 100% opaque, no glass/blur */
-      .ticker{position:fixed;top:0;left:0;right:0;background:var(--ticker-bg)!important;border-bottom:1px solid var(--border);overflow:hidden;white-space:nowrap;z-index:1200;height:36px;display:flex;align-items:center;gap:10px;padding:0 10px;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;isolation:isolate}
-      .ticker::before{content:"";position:absolute;inset:0 auto 0 0;width:var(--bbc-w,84px);background:var(--ticker-bg);z-index:1;pointer-events:none} 
-      /* BBC label pill: solid BBC red; ensure no inherited opacity */
-      .ticker label{font-size:11px;margin-right:8px;padding:4px 8px;border-radius:4px;background:var(--label-bg);color:var(--label-text);font-weight:800;line-height:1;white-space:nowrap;position:relative;z-index:2}  
-/* extend red background to the right so marquee text can't peek at the rounded edge */
+    body.dark-mode {
+      --bg: #242424;
+      --panel-strong: #2c2c2c;
+      --text: #f1f1f1;
+      --muted: #b5b5b5;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 10px 30px rgba(0,0,0,0.5);
+      --accent: #444;
+      --accent-hover: #666;
+      --button-secondary: rgba(255,255,255,0.08);
+      --ticker-hover: rgba(255,255,255,0.08);
+    }
 
-      
-.ticker .track{display:inline-block;will-change:transform;animation:marquee 30s linear infinite;position:relative;z-index:0}
-      .ticker:hover .track{animation-play-state:paused}
-      @media (prefers-reduced-motion: reduce) { .ticker .track { animation: none !important; } }
-      .ticker a{color:var(--link);text-decoration:none} 
-      .ticker #tickerTrack a:first-of-type{ margin-left:6px; }
-      .ticker a:hover{text-decoration:none;color:var(--accent)}
-      .ticker a:visited{color:var(--link)}
-      .ticker a:visited:hover{text-decoration:none;color:var(--accent)}
-      .ticker .dot{opacity:.5}
-      @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    * {
+      box-sizing: border-box;
+    }
 
-      .clocks{position:fixed;top:calc(38px + var(--wx-h) + 8px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:2px 6px;background:var(--panel-alpha);border:1px solid var(--border);border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:1100;width:fit-content;max-width:calc(100vw - 16px);flex-wrap:wrap;justify-content:center}
-      .clocks::-webkit-scrollbar{display:none}
-      .clock{display:grid;grid-template-rows:auto auto;align-items:center;padding:2px 4px;border-radius:6px;min-width:64px}
-      .clock .city{font-size:10px;opacity:.72}
-      .clock .time{font-variant-numeric:tabular-nums;font-weight:600;font-size:13px}
-      .sep{opacity:.35;font-size:12px}
+    html {
+      color-scheme: light;
+    }
 
-      .wrap{width:100%;max-width:700px;padding:24px;text-align:center;position:relative;padding-top:var(--safe-top);transform:translateY(calc(-1 * var(--lift)));z-index:1305} 
-      nav{margin:0 0 28px 0}
-      nav ul{list-style:none;padding:0;margin:0}
-      nav li{display:inline-block;margin:0 6px}
-      nav a{color:var(--link);text-decoration:none;font-weight:500;transition:color .2s}
-      nav a:hover{color:var(--accent);text-decoration:underline}
-      nav a:visited{color:var(--link)}
-      nav a:visited:hover{color:var(--accent)}
+    body.dark-mode {
+      color-scheme: dark;
+    }
 
-      .logo{font-size:52px;margin:0 0 22px;font-weight:700;background:linear-gradient(90deg,var(--logo-grad-1),var(--logo-grad-2),var(--logo-grad-3),var(--logo-grad-4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;position:relative;z-index:1306}
+    a, button, input, .ticker-wrap, .menu-panel, .search-input, .weather-chip, .utc-chip {
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.18s ease;
+    }
 
-      form{margin:0 auto;max-width:600px}
-      .search-box{display:flex;align-items:center;border:1px solid var(--border);border-radius:28px;padding:12px 16px;box-shadow:0 3px 6px rgba(0,0,0,.08);background:var(--panel)}
-      input[type=search]{flex:1;border:0;outline:none;font-size:16px;padding:6px 8px;background:transparent;color:var(--text)}
-      .buttons{margin-top:20px}
-      .btn{display:inline-block;font-size:14px;padding:9px 18px;border:1px solid var(--border);border-radius:6px;background:var(--panel);cursor:pointer;transition:background .2s,transform .1s,border-color .2s;color:var(--text)}
-      .btn:hover{background:rgba(255,255,255,.05);border-color:var(--link)}
-      .btn:active{transform:scale(.97)}
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      background-repeat: no-repeat;
+      background-size: cover;
+      transition: background 0.35s ease, color 0.35s ease;
+    }
 
-      .weather{position:fixed;top:38px;left:8px;font-size:14px;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;background:var(--panel-alpha);box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:1250;max-width:60vw}
-      .weather a{color:inherit;text-decoration:none;display:block}
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
 
-      .theme-toggle{position:fixed;top:38px;right:8px;border:1px solid var(--border);background:var(--panel-alpha);color:var(--text);border-radius:20px;padding:4px 8px;font-size:13px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:1250}
-      .theme-toggle:hover{border-color:var(--link)}
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 22px 0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-      footer{margin-top:40px;font-size:13px;color:#5f6368}
-      [data-theme=dark] footer{color:#9aa0a6}
-      footer span{display:inline-block;margin:0 4px}
-      footer a.hidden-link{color:inherit;text-decoration:none;font-weight:500;transition:color .2s}
-      footer a.hidden-link:hover{color:var(--accent)}
-      footer a.hidden-link:visited{color:inherit}
-      footer a.hidden-link:visited:hover{color:var(--accent)}
+    .left-tools,
+    .nav-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-      .fx{position:fixed;left:8px;bottom:8px;border:1px solid var(--border);background:var(--panel-alpha);color:var(--text);border-radius:8px;padding:6px 8px;font-size:13px;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px);z-index:900;white-space:nowrap;text-decoration:none;display:inline-block}
-      .fx:hover{border-color:var(--link)}
-      .fx:visited{color:var(--text)}
+    .left-tools {
+      justify-content: flex-start;
+    }
 
-      .quick-links{position:fixed;right:8px;bottom:8px;z-index:950}
-      .ql-btn{border:1px solid var(--border);background:var(--panel-alpha);color:var(--text);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.08);backdrop-filter:blur(4px)}
-      .ql-menu{position:absolute;right:0;left:auto;bottom:calc(100% + 6px);display:flex;flex-direction:column;gap:6px;align-items:flex-end;text-align:right;background:var(--panel-alpha);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:0 6px 14px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .15s ease,transform .15s ease,visibility .15s ease;min-width:180px}
-      .ql-menu a{color:var(--link);text-decoration:none;font-weight:500}
-      .ql-menu a:hover{text-decoration:none;color:var(--accent)}
-      .ql-menu a:visited{color:var(--link)}
-      .ql-menu a:visited:hover{text-decoration:none;color:var(--accent)}
-      .quick-links:hover .ql-menu, .quick-links:focus-within .ql-menu{opacity:1;visibility:visible;transform:translateY(0)}
+    .nav-tools {
+      justify-content: flex-end;
+      margin-left: auto;
+    }
 
-      @media (max-width:700px){.clocks{gap:4px;padding:2px 4px}.clock{padding:1px 3px;min-width:60px}.clock .city{font-size:10px}}
-      @media (max-width:560px){.clocks{gap:2px;padding:1px 3px}.clock{padding:1px 2px;min-width:54px}.clock .city{font-size:9px}.clock .time{font-size:12px}.sep{display:none}}
-      @media (max-width:400px){.clock{min-width:48px}.clock .city{font-size:8.5px}.clock .time{font-size:12px}}
-    </style>
-  </head>
-  <body>
-    <!-- Weather and theme toggle -->
-    <div class="weather" id="weather"><a href="#" target="_blank" rel="noopener noreferrer">Loading weather...</a></div>
-    <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle dark mode">🌙 Dark</button>
+    .menu-wrap {
+      position: relative;
+    }
 
-    <!-- BBC news ticker -->
-    <div class="ticker" role="region" aria-label="BBC News ticker">
-      <label>BBC</label>
-      <div class="track" id="tickerTrack"></div>
-      <div class="track" aria-hidden="true" id="tickerTrackClone"></div>
+    .menu-button,
+    .login-button,
+    .quick-link,
+    .search-button {
+      border: 1px solid var(--border);
+      background: var(--panel-strong);
+      color: var(--text);
+      border-radius: 999px;
+      height: 42px;
+      padding: 0 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-soft);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .menu-button:hover,
+    .login-button:hover,
+    .quick-link:hover,
+    .search-button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0,0,0,0.08);
+    }
+
+    .menu-button {
+      min-width: 42px;
+      padding: 0 14px;
+      font-weight: 600;
+    }
+
+    .menu-panel {
+      position: absolute;
+      top: 52px;
+      right: 0;
+      width: 240px;
+      background: color-mix(in srgb, var(--panel-strong) 96%, transparent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: none;
+      z-index: 10;
+    }
+
+    .menu-panel.open {
+      display: block;
+    }
+
+    .menu-title {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 8px 10px 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .menu-link {
+      display: block;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.96rem;
+    }
+
+    .menu-link:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--text);
+    }
+
+    body.dark-mode .menu-link:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text);
+    }
+
+    .utc-chip,
+    .weather-chip {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      background: var(--panel-strong);
+      border-radius: 999px;
+      padding: 0 14px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .weather-chip strong,
+    .utc-chip strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .ticker-wrap {
+      width: min(92vw, 980px);
+      margin: 18px auto 0;
+      border: 1px solid rgba(16, 24, 40, 0.08);
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--panel-strong) 96%, transparent);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      min-height: 56px;
+      z-index: 5;
+    }
+
+    .ticker-label {
+      flex: 0 0 auto;
+      padding: 0 14px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      background: color-mix(in srgb, var(--panel-strong) 98%, transparent);
+      border-right: 1px solid var(--border);
+    }
+
+    .bbc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bbc-blocks {
+      display: inline-flex;
+      gap: 2px;
+    }
+
+    .bbc-block {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #d82929, #bb1919);
+      color: #ffffff;
+      font-size: 0.72rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.14);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .bbc-text {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #bb1919;
+    }
+
+    .ticker {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      mask-image: linear-gradient(to right, transparent 0, black 4%, black 96%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0, black 4%, black 96%, transparent 100%);
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      will-change: transform;
+      transform: translateX(0);
+    }
+
+    .ticker-group {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 18px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.96rem;
+      padding: 8px 12px;
+      border-radius: 999px;
+      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+      flex: 0 0 auto;
+    }
+
+    .ticker-item:hover {
+      background: var(--ticker-hover);
+      color: #bb1919;
+      transform: translateY(-1px);
+    }
+
+    .ticker-sep {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #98a2b3;
+      margin-right: 18px;
+      font-size: 0.95rem;
+      flex: 0 0 auto;
+      user-select: none;
+    }
+
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding-top: 14vh; /* ~Google vertical alignment */
+      padding-bottom: 40px;
+      text-align: center;
+    }
+
+    .quick-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 0 24px;
+    }
+
+    .brand {
+      font-family: 'Montserrat', sans-serif !important;
+      font-size: clamp(3.8rem, 8vw, 6.2rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin: 0 0 36px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .brand:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    .brand:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    .brand:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    .logo-main {
+      color: var(--text);
+      font-weight: 300;
+      letter-spacing: -0.015em;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .brand:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    
+
+    .search-shell {
+      width: min(92vw, 720px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .search-form {
+      width: 100%;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 64px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel-strong) 98%, transparent);
+      padding: 0 24px;
+      font-size: 1.05rem;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      caret-color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .search-input:focus {
+      border-color: rgba(0,0,0,0.08);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .search-button {
+      min-width: 156px;
+      height: 46px;
+      padding: 0 20px;
+      font-weight: 600;
+      border-radius: 999px;
+    }
+
+    .search-button.default {
+
+      background: #222;
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .search-button.default:hover {
+      background: var(--accent-hover);
+    }
+
+    .search-button.secondary {
+      background: var(--button-secondary);
+    }
+
+    .quick-link {
+      background: color-mix(in srgb, var(--panel-strong) 90%, transparent);
+    }
+
+    @media (max-width: 800px) {
+      .topbar {
+        padding: 14px 12px 0;
+      }
+
+      .ticker-wrap {
+        width: min(94vw, 980px);
+        margin: 14px auto 0;
+      }
+
+      .ticker-label {
+        padding: 0 10px;
+      }
+
+      .bbc-text {
+        display: none;
+      }
+
+      .hero {
+        min-height: 100vh;
+        padding-top: 12vh;
+        padding-bottom: 8vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="left-tools">
+      <a class="weather-chip" id="weatherChip" href="#" target="_blank" rel="noreferrer" aria-label="Open full weather forecast for current location"><strong>☁</strong>&nbsp; --°C</a>
+      <div class="utc-chip" id="utcClock"><strong>UTC</strong>&nbsp; --:--</div>
     </div>
 
-    <!-- World clocks -->
-    <div class="clocks" id="clocks" role="group" aria-label="World clocks"></div>
-
-    <main class="wrap" role="main">
-      <nav aria-label="Primary">
-        <ul>
-          <li><a href="https://google.co.uk" rel="noopener noreferrer">Search</a></li>
-          <li><a href="https://news.ycombinator.com/" rel="noopener noreferrer">News</a></li>
-          <li><a href="https://chatgpt.com/" rel="noopener noreferrer">GPT</a></li>
-          <li><a href="https://music.apple.com/gb/home" rel="noopener noreferrer">Music</a></li>
-          <li><a href="https://maps.apple.com/" rel="noopener noreferrer">Maps</a></li>
-          <li><a href="https://cloud.gsuth.uk/" rel="noopener noreferrer">Cloud</a></li>
-          <li><a href="https://42.gsuth.uk/" rel="noopener noreferrer">42</a></li>
-          <li><a href="https://mail.proton.me/u/6/inbox" rel="noopener noreferrer">Mail</a></li>
-        </ul>
-      </nav>
-
-      <h1 class="logo"><a href="https://gregle.de">Gregle</a></h1>
-
-      <form action="https://search.brave.com/search" method="get" role="search" autocomplete="off">
-        <div class="search-box">
-          <input type="search" name="q" placeholder="Search the web" aria-label="Search" autofocus />
-        </div>
-        <div class="buttons">
-          <button class="btn" type="submit" title="Search on Brave">Search with Brave</button>
-          <button class="btn" type="button" id="btnSearx" title="Search on Gregle (gregle.de)">Search with Gregle</button>
-        </div>
-      </form>
-
-      <footer>
-        <span>Simple homepage</span> •
-        <span>No tracking</span> •
-        <a class="hidden-link" href="https://gsuth.uk" rel="noopener noreferrer">gsuth.uk</a>
-      </footer>
-    </main>
-
-    <!-- Quick Links -->
-    <div class="quick-links" id="quickLinks">
-      <button class="ql-btn" aria-haspopup="true" aria-expanded="false" title="Open quick links">Quick Links ▴</button>
-      <div class="ql-menu" role="menu">
-        <a href="https://www.feynmanlectures.caltech.edu/" target="_blank" rel="noopener noreferrer" role="menuitem">FLP</a>
-        <a href="https://zlib.li/" target="_blank" rel="noopener noreferrer" role="menuitem">Z-Lib</a>
-        <a href="https://annas-archive.gl/" target="_blank" rel="noopener noreferrer" role="menuitem">Annas Archive</a>
-        <a href="https://arxiv.org/" target="_blank" rel="noopener noreferrer" role="menuitem">arxiv</a>
-        <a href="https://xkcd.com/" target="_blank" rel="noopener noreferrer" role="menuitem">xkcd</a>
-        <a href="https://excalidraw.com/" target="_blank" rel="noopener noreferrer" role="menuitem">Draw</a>
-        <a href="https://youtube.com/" target="_blank" rel="noopener noreferrer" role="menuitem">YT</a>
-        <a href="https://www.icloud.com/" target="_blank" rel="noopener noreferrer" role="menuitem">iCloud</a>
-        <a href="https://overleaf.com/" target="_blank" rel="noopener noreferrer" role="menuitem">Overleaf</a>
-        <a href="https://amprad.io/" target="_blank" rel="noopener noreferrer" role="menuitem">Radio</a>
-        <a href="https://cocalc.com/auth/sign-in" target="_blank" rel="noopener noreferrer" role="menuitem">CoCalc</a>
-        <a href="https://www.spaceweather.com/" target="_blank" rel="noopener noreferrer" role="menuitem">SpaceWeather</a>
-        <a href="https://gregsuther.land/" target="_blank" rel="noopener noreferrer" role="menuitem">Home</a>
-        <a href="https://gsuth.uk" target="_blank" rel="noopener noreferrer" role="menuitem">Contact</a>        
-        <a href="https://portal.gregle.de/" target="_blank" rel="noopener noreferrer" role="menuitem">Login</a>
+    <div class="nav-tools">
+      <a class="login-button" href="https://cloud.gregle.de" target="_blank" rel="noreferrer">Login</a>
+      <a class="quick-link" href="https://mail.proton.me" target="_blank" rel="noreferrer">Mail</a>
+      <div class="menu-wrap">
+        <button class="menu-button" id="menuToggle" aria-expanded="false" aria-controls="menuPanel">☰ Menu</button>
+        <nav class="menu-panel" id="menuPanel" aria-label="Custom links menu">
+          <div class="menu-title">Menu Links</div>
+          <a class="menu-link" href="https://portal.gregle.de" target="_blank" rel="noreferrer">Portal</a>
+          <a class="menu-link" href="https://42.gsuth.uk" target="_blank" rel="noreferrer">Notes</a>
+          <a class="menu-link" href="https://maps.apple.com" target="_blank" rel="noreferrer">Maps</a>
+          <a class="menu-link" href="https://chatgpt.com" target="_blank" rel="noreferrer">ChatGPT</a>
+          <a class="menu-link" href="https://music.apple.com" target="_blank" rel="noreferrer">Music</a>
+          <a class="menu-link" href="https://amprad.io" target="_blank" rel="noreferrer">Radio</a>
+          <a class="menu-link" href="https://www.overleaf.com" target="_blank" rel="noreferrer">Overleaf</a>
+          <a class="menu-link" href="https://excalidraw.com" target="_blank" rel="noreferrer">Draw</a>
+          <a class="menu-link" href="https://icloud.com" target="_blank" rel="noreferrer">iCloud</a>
+          <a class="menu-link" href="https://t3.chat" target="_blank" rel="noreferrer">T3 Chat</a>
+          <a class="menu-link" href="https://spaceweathercom" target="_blank" rel="noreferrer">SpaceWeather</a>
+          <a class="menu-link" href="https://news.ycombinator.com" target="_blank" rel="noreferrer">Hacker News</a>
+          <a class="menu-link" href="https://xkcd.com" target="_blank" rel="noreferrer">xkcd</a>
+          <a class="menu-link" href="https://www.bbc.co.uk/news" target="_blank" rel="noreferrer">BBC News</a>
+          <a class="menu-link" href="https://tradingview.com">Finance</a>
+        </nav>
       </div>
     </div>
+  </header>
 
-    <!-- GBP → CAD rate -->
-    <a class="fx" id="gbpcad" href="https://www.google.com/search?q=1+GBP+to+CAD" target="_blank" rel="noopener noreferrer" aria-live="polite" title="GBP to CAD exchange rate">£1 = C$…</a>
+  <div class="ticker-wrap" aria-label="BBC headlines ticker">
+    <div class="ticker-label">
+      <div class="bbc-badge" aria-hidden="true">
+        <div class="bbc-blocks">
+          <span class="bbc-block">B</span>
+          <span class="bbc-block">B</span>
+          <span class="bbc-block">C</span>
+        </div>
+        <span class="bbc-text">News</span>
+      </div>
+    </div>
+    <div class="ticker">
+      <div class="ticker-track" id="tickerTrack">
+        <div class="ticker-group" id="tickerGroup">
+          <span class="ticker-item">Loading headlines…</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-      // ---- Utility: safe set CSS var after layout ----
-      function updateLayoutVars(){
-        const wrap = document.getElementById('clocks');
-        const h = wrap ? (wrap.offsetHeight || 28) : 28;
-        document.documentElement.style.setProperty('--clocks-h', h + 'px');
-        const wx = document.getElementById('weather');
-        const wxh = wx ? (wx.offsetHeight || 28) : 28;
-        document.documentElement.style.setProperty('--wx-h', wxh + 'px');
+  <main class="hero">
+    <h1 class="brand" id="brandToggle" title="Toggle dark mode"><span class="logo-main">Gregle</span></h1>
+
+    <div class="search-shell">
+      <form class="search-form" id="searchForm">
+        <input
+          class="search-input"
+          id="searchInput"
+          type="text"
+          placeholder="Search the web"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Search query"
+        />
+      </form>
+
+      <div class="button-row">
+        <button class="search-button default" id="gregleSearch" type="button">Search Gregle</button>
+        <button class="search-button secondary" id="braveSearch" type="button">Search Brave</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const gregleSearchButton = document.getElementById('gregleSearch');
+    const braveSearchButton = document.getElementById('braveSearch');
+    const searchForm = document.getElementById('searchForm');
+    const weatherChip = document.getElementById('weatherChip');
+    const utcClock = document.getElementById('utcClock');
+    const tickerTrack = document.getElementById('tickerTrack');
+    const menuToggle = document.getElementById('menuToggle');
+    const menuPanel = document.getElementById('menuPanel');
+    const brandToggle = document.getElementById('brandToggle');
+
+    function getQuery() {
+      return searchInput.value.trim();
+    }
+
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.body.classList.toggle('dark-mode', isDark);
+      try {
+        localStorage.setItem('gregle-theme', isDark ? 'dark' : 'light');
+      } catch {}
+    }
+
+    function initTheme() {
+      let savedTheme = null;
+      try {
+        savedTheme = localStorage.getItem('gregle-theme');
+      } catch {}
+
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        applyTheme(savedTheme);
+        return;
       }
 
-      // --- Weather via MET Norway with geolocation; click → yr.no detailed report ---
-      async function getCoords(){
-        return new Promise((resolve) => {
-          if(!('geolocation' in navigator)) return resolve(null);
-          navigator.geolocation.getCurrentPosition(
-            pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-            () => resolve(null),
-            { enableHighAccuracy:true, timeout:8000, maximumAge:5*60*1000 }
-          );
-        });
-      }
-      async function reverseGeocode(lat, lon){
-        const pick = (g)=>{
-          if(!g) return null;
-          const name = g.city || g.town || g.village || g.locality || g.hamlet || g.suburb || g.neighbourhood || g.municipality || g.name || g.admin2 || g.admin1;
-          return (typeof name === 'string' && name.trim()) ? name.trim() : null;
-        };
-        // 1) Try Open‑Meteo reverse geocoding
-        try{
-          const r = await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en`);
-          const j = await r.json();
-          const place = pick(j?.results?.[0]);
-          if(place) return place;
-        }catch{}
-        // 2) Fallback: BigDataCloud (no key, CORS-friendly)
-        try{
-          const r2 = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-          const j2 = await r2.json();
-          const place2 = j2.city || j2.locality || (j2.localityInfo && j2.localityInfo.locality && j2.localityInfo.locality.name) || j2.principalSubdivision;
-          if(typeof place2 === 'string' && place2.trim()) return place2.trim();
-        }catch{}
-        // 3) Final fallback: human-friendly default (never show raw coords)
-        return 'Victoria';
-      }
-      function symbolToEmoji(code){
-        if(!code) return '☀️';
-        const c = String(code);
-        if(c.includes('thunder')) return '⛈️';
-        if(c.includes('snow')) return '❄️';
-        if(c.includes('sleet')) return '🌨️';
-        if(c.includes('rain')) return '🌧️';
-        if(c.includes('fog')) return '🌫️';
-        if(c.includes('cloud')) return '☁️';
-        return '☀️';
-      }
-      async function loadWeather(){
-        const el = document.querySelector('#weather a');
-        try{
-          let coords = await getCoords();
-          let usedFallback = false;
-          if(!coords){ coords = { lat: 48.4284, lon: -123.3656 }; usedFallback = true; }
-          const { lat, lon } = coords;
-          const url = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`;
-          const r = await fetch(url, { headers:{'Accept':'application/json'} });
-          const j = await r.json();
-          const ts = j?.properties?.timeseries?.[0];
-          const inst = ts?.data?.instant?.details || {};
-          const next = ts?.data?.next_1_hours || ts?.data?.next_6_hours || null;
-          const sym = next?.summary?.symbol_code || '';
-          const T = Math.round(Number(inst.air_temperature));
-          const emoji = symbolToEmoji(sym);
-          const label = usedFallback ? 'Victoria' : await reverseGeocode(lat, lon);
-          // City-only label in UI
-          el.textContent = `${emoji} ${label}: ${isFinite(T)?T:'—'}°C`;
-          el.href = `https://www.yr.no/en/forecast/daily-table/${lat.toFixed(4)},${lon.toFixed(4)}`;
-          el.title = `Open detailed weather report for ${label}`;
-        }catch(e){
-          const el = document.querySelector('#weather a');
-          el.textContent = 'Weather unavailable.';
-          el.removeAttribute('href');
-        }finally{
-          requestAnimationFrame(updateLayoutVars);
-        }
-      }
-      loadWeather();
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
 
-      // --- BBC News Ticker (RSS) ---
-      async function loadTicker(){
-        const feed = 'https://feeds.bbci.co.uk/news/rss.xml';
-        const proxied = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feed);
-        const fallback = 'https://r.jina.ai/http://feeds.bbci.co.uk/news/rss.xml';
-        try {
-          const r = await fetch(proxied);
-          if (!r.ok) throw new Error('proxy failed');
-          buildTicker(await r.text());
-        } catch (e) {
+    function runSearch(baseUrl) {
+      const query = getQuery();
+      if (!query) {
+        searchInput.focus();
+        return;
+      }
+      window.location.href = `${baseUrl}${encodeURIComponent(query)}`;
+    }
+
+    gregleSearchButton.addEventListener('click', () => {
+      runSearch('https://gregle.de/search?q=');
+    });
+
+    braveSearchButton.addEventListener('click', () => {
+      runSearch('https://search.brave.com/search?q=');
+    });
+
+    searchForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      runSearch('https://gregle.de/search?q=');
+    });
+
+    function updateUTCClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('en-GB', {
+        timeZone: 'UTC',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      utcClock.innerHTML = `<strong>UTC</strong>&nbsp; ${time}`;
+    }
+
+    initTheme();
+
+    updateUTCClock();
+    setInterval(updateUTCClock, 30000);
+
+
+    brandToggle.addEventListener('click', () => {
+      const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+      applyTheme(nextTheme);
+    });
+
+    menuToggle.addEventListener('click', () => {
+      const open = menuPanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(open));
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!menuPanel.contains(event.target) && !menuToggle.contains(event.target)) {
+        menuPanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    async function fetchWeather(lat, lon) {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&temperature_unit=celsius&timezone=auto`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Weather request failed');
+      return response.json();
+    }
+
+    function weatherIcon(code) {
+      if (code === 0) return '☀';
+      if ([1, 2].includes(code)) return '⛅';
+      if ([3, 45, 48].includes(code)) return '☁';
+      if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧';
+      if ([71, 73, 75].includes(code)) return '❄';
+      if (code === 95) return '⛈';
+      return '☁';
+    }
+
+    async function loadWeather() {
+      if (!navigator.geolocation) {
+        weatherChip.innerHTML = '<strong>☁</strong>&nbsp; --°C';
+        weatherChip.href = 'https://open-meteo.com/';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async ({ coords }) => {
           try {
-            const r2 = await fetch(fallback);
-            buildTicker(await r2.text());
+            const data = await fetchWeather(coords.latitude, coords.longitude);
+            const current = data.current;
+            const temp = Math.round(current.temperature_2m);
+            weatherChip.innerHTML = `<strong>${weatherIcon(current.weather_code)}</strong>&nbsp; ${temp}°C`;
+            weatherChip.href = `https://www.windy.com/${coords.latitude}/${coords.longitude}`;
           } catch {
-            document.getElementById('tickerTrack').textContent = 'BBC headlines unavailable.';
+            weatherChip.innerHTML = '<strong>☁</strong>&nbsp; --°C';
+            weatherChip.href = 'https://open-meteo.com/';
           }
+        },
+        () => {
+          weatherChip.innerHTML = '<strong>☁</strong>&nbsp; --°C';
+          weatherChip.href = 'https://open-meteo.com/';
+        },
+        { timeout: 8000, maximumAge: 600000 }
+      );
+    }
+
+    let tickerPaused = false;
+    let tickerOffset = 0;
+    let tickerSpeed = 0.12;
+    let tickerGroupWidth = 0;
+    let animationFrameId = null;
+    let lastTimestamp = 0;
+
+    function makeTickerMarkup(items) {
+      return items.map(item => {
+        const href = item.link || '#';
+        const title = item.title || '';
+        return `
+          <a class="ticker-item" href="${href}" target="_blank" rel="noreferrer">${title}</a>
+          <span class="ticker-sep" aria-hidden="true">•</span>
+        `;
+      }).join('');
+    }
+
+    function startTicker() {
+      const primaryGroup = document.getElementById('tickerGroup');
+      if (!primaryGroup) return;
+
+      const cloneGroup = primaryGroup.nextElementSibling;
+      tickerGroupWidth = primaryGroup.scrollWidth;
+
+      if (cloneGroup) {
+        cloneGroup.style.marginLeft = '0px';
+      }
+
+      tickerOffset = 0;
+      lastTimestamp = 0;
+
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
+      function step(timestamp) {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const delta = timestamp - lastTimestamp;
+        lastTimestamp = timestamp;
+
+        if (!tickerPaused && tickerGroupWidth > 0) {
+          tickerOffset -= tickerSpeed * delta;
+          if (Math.abs(tickerOffset) >= tickerGroupWidth) {
+            tickerOffset += tickerGroupWidth;
+          }
+          tickerTrack.style.transform = `translateX(${tickerOffset}px)`;
         }
-      }
-      function buildTicker(xmlText){
-        const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-        const items = Array.from(doc.querySelectorAll('item')).slice(0,12);
-        const frag = document.createDocumentFragment();
-        items.forEach((it,i)=>{
-          const a = document.createElement('a');
-          a.href = it.querySelector('link')?.textContent || '#';
-          a.textContent = it.querySelector('title')?.textContent || 'Untitled';
-          a.target = '_blank'; a.rel = 'noopener noreferrer';
-          frag.appendChild(a);
-          if (i !== items.length - 1) { const dot = document.createElement('span'); dot.className = 'dot'; dot.textContent = ' • '; frag.appendChild(dot); }
-        });
-        const track = document.getElementById('tickerTrack');
-        track.innerHTML = ''; track.appendChild(frag);
-        const clone = document.getElementById('tickerTrackClone');
-        clone.innerHTML = track.innerHTML;
-        const w = track.scrollWidth; const dur = Math.max(20, Math.min(60, Math.round(w / 60)));
-        track.style.animationDuration = dur + 's';
-        clone.style.animationDuration = dur + 's';
-      }
-      loadTicker();
 
-      // --- BBC label mask: prevent marquee text under the badge without changing markup ---
-      function bbcMaskInit(){
-        const label = document.querySelector('.ticker label');
-        if(!label) return;
-        const gap = 4; // tighter mask so headlines sit closer to the badge
-        const w = label.offsetWidth + gap;
-        document.documentElement.style.setProperty('--bbc-w', w + 'px');
+        animationFrameId = requestAnimationFrame(step);
       }
-      bbcMaskInit();
-      window.addEventListener('resize', bbcMaskInit);
 
-      // --- World clocks (24h, no seconds) ---
-      const zones=[{label:'UTC',tz:'UTC'},{label:'London',tz:'Europe/London'},{label:'Berlin',tz:'Europe/Berlin'},{label:'Vancouver',tz:'America/Vancouver'},{label:'São Paulo',tz:'America/Sao_Paulo'}];
-      function renderClocks(){
-        const wrap=document.getElementById('clocks'); if (!wrap) return; wrap.innerHTML='';
-        const w=window.innerWidth; let list=zones.slice(); if(w<=640) list=list.filter(z=>z.label!=='Berlin'&&z.label!=='São Paulo');
-        list.forEach((z,i)=>{
-          const time=new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:z.tz}).format(new Date());
-          const item=document.createElement('div'); item.className='clock'; item.setAttribute('data-city',z.label);
-          const city=document.createElement('div'); city.className='city'; city.textContent=z.label;
-          const t=document.createElement('div'); t.className='time'; t.textContent=time;
-          item.appendChild(city); item.appendChild(t); wrap.appendChild(item);
-          if(i!==list.length-1){ const sep=document.createElement('span'); sep.className='sep'; sep.textContent='•'; wrap.appendChild(sep); }
-        });
-        updateLayoutVars();
+      animationFrameId = requestAnimationFrame(step);
+    }
+
+    function bindTickerPause() {
+      const ticker = document.querySelector('.ticker');
+      if (!ticker) return;
+
+      ticker.addEventListener('mouseenter', () => {
+        tickerPaused = true;
+      });
+
+      ticker.addEventListener('mouseleave', () => {
+        tickerPaused = false;
+      });
+
+      ticker.addEventListener('focusin', () => {
+        tickerPaused = true;
+      });
+
+      ticker.addEventListener('focusout', () => {
+        tickerPaused = false;
+      });
+    }
+
+    async function loadBBCNews() {
+      try {
+        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://feeds.bbci.co.uk/news/rss.xml');
+        if (!response.ok) throw new Error('Ticker request failed');
+        const data = await response.json();
+
+        const headlines = (data.items || []).slice(0, 10);
+        if (!headlines.length) throw new Error('No headlines found');
+
+        const markup = makeTickerMarkup(headlines);
+        tickerTrack.innerHTML = `
+          <div class="ticker-group" id="tickerGroup">${markup}</div>
+          <div class="ticker-group" aria-hidden="true">${markup}</div>
+        `;
+      } catch {
+        const fallbackItems = [
+          { link: 'https://www.bbc.com/news', title: 'Open BBC News' },
+          { link: 'https://www.bbc.com/news', title: 'Live headlines unavailable' }
+        ];
+        const markup = makeTickerMarkup(fallbackItems);
+        tickerTrack.innerHTML = `
+          <div class="ticker-group" id="tickerGroup">${markup}</div>
+          <div class="ticker-group" aria-hidden="true">${markup}</div>
+        `;
       }
-      function scheduleClockUpdates(){
-        renderClocks(); const now=new Date(); const msToNextMinute=(60-now.getSeconds())*1000-now.getMilliseconds();
-        setTimeout(()=>{ renderClocks(); setInterval(renderClocks,60000); }, Math.max(500, msToNextMinute));
-      }
-      scheduleClockUpdates(); window.addEventListener('resize', renderClocks);
 
-      // --- GBP -> CAD (exchangerate.host primary; ECB fallback) ---
-      async function loadFX(){
-        const el=document.getElementById('gbpcad'); if(!el) return;
-        const set=(rate,meta)=>{ const n=Number(rate); if(!isFinite(n)) return false; el.textContent=`£1 = C$${n.toFixed(4)}`; el.title=meta; return true; };
-        try{ const r=await fetch('https://api.exchangerate.host/convert?from=GBP&to=CAD'); const j=await r.json(); const rate=j?.result ?? j?.info?.rate; if(set(rate,`exchangerate.host · ${j?.date||'latest'}`)) return; throw new Error('primary failed'); }
-        catch{ try{ const r3=await fetch('https://api.frankfurter.app/latest?from=GBP&to=CAD'); const j3=await r3.json(); if(set(j3?.rates?.CAD,`ECB via Frankfurter · ${j3?.date}`)) return; throw new Error('fallback failed'); } catch { el.textContent='£1 = C$—'; el.title='FX unavailable'; } }
-      }
-      loadFX(); setInterval(loadFX, 15*60*1000);
+      bindTickerPause();
+      startTicker();
+      window.addEventListener('resize', startTicker);
+    }
 
-      // --- Quick Links aria state ---
-      (function(){ const ql=document.getElementById('quickLinks'); if(!ql) return; const btn=ql.querySelector('.ql-btn'); const open=()=>btn&&btn.setAttribute('aria-expanded','true'); const close=()=>btn&&btn.setAttribute('aria-expanded','false'); ql.addEventListener('mouseenter',open); ql.addEventListener('mouseleave',close); ql.addEventListener('focusin',open); ql.addEventListener('focusout',e=>{ if(!ql.contains(e.relatedTarget)) close(); }); })();
-
-      // --- Theme toggle with persistence + system preference ---
-      (function(){ const root=document.documentElement; const btn=document.getElementById('themeToggle'); const saved=localStorage.getItem('gregle-theme'); const prefersDark=window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; const initial=saved||(prefersDark?'dark':'light'); root.setAttribute('data-theme',initial); update(initial); btn.addEventListener('click',()=>{ const cur=root.getAttribute('data-theme'); const next=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',next); localStorage.setItem('gregle-theme',next); update(next); }); function update(mode){ if(mode==='dark'){ btn.innerText='☀️ Light'; btn.setAttribute('aria-pressed','true'); } else { btn.innerText='🌙 Dark'; btn.setAttribute('aria-pressed','false'); } } })();
-
-      // --- SearXNG button (gregle.de) ---
-      (function(){ const btn=document.getElementById('btnSearx'); if(!btn) return; const q=document.querySelector('form input[type=\"search\"]'); btn.addEventListener('click',()=>{ const s=(q?.value||'').trim(); if(!s){ q?.focus(); return; } window.location.href='https://gregle.de/search?q='+encodeURIComponent(s); }); })();
-    </script>
-  </body>
+    loadWeather();
+    loadBBCNews();
+    searchInput.focus();
+  </script>
+</body>
 </html>
+
+
+<style>
+body.dark-mode .search-button.default {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+}
+
+body.dark-mode .search-button.default:hover {
+  background: #eaeaea;
+}
+</style>
