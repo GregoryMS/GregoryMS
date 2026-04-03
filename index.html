@@ -678,7 +678,7 @@
     });
 
     const DEFAULT_WEATHER_LOCATION = {
-      name: 'Victoria, BC',
+      name: ', BC',
       latitude: 48.4284,
       longitude: -123.3656
     };
@@ -724,7 +724,7 @@
     }
 
     function setWeatherFallback() {
-      weatherChip.innerHTML = '<strong>☁</strong>&nbsp; Victoria';
+      weatherChip.innerHTML = '<strong>☁</strong>&nbsp; ';
       weatherChip.href = `https://www.windy.com/${DEFAULT_WEATHER_LOCATION.latitude}/${DEFAULT_WEATHER_LOCATION.longitude}`;
     }
 
