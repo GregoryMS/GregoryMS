@@ -46,7 +46,7 @@
       color-scheme: light;
     }
 
-    body.dark-mode {
+    html.dark-mode {
       color-scheme: dark;
     }
 
@@ -71,6 +71,11 @@
       flex-direction: column;
       overflow-x: hidden;
       min-height: 100vh;
+    }
+
+    html.dark-mode,
+    html.dark-mode body {
+      background: #242424;
     }
 
     .topbar {
@@ -334,7 +339,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      min-height: 100vh;
+      min-height: 0;
       padding-top: 14vh; /* ~Google vertical alignment */
       padding-bottom: 40px;
       text-align: center;
@@ -461,6 +466,18 @@
       background: color-mix(in srgb, var(--panel-strong) 90%, transparent);
     }
 
+
+    @media (max-width: 720px) {
+      .nav-tools {
+        flex-wrap: nowrap;
+        min-width: 0;
+      }
+
+      .mail-link {
+        display: none;
+      }
+    }
+
     @media (max-width: 800px) {
       .topbar {
         padding: 14px 12px 0;
@@ -480,7 +497,7 @@
       }
 
       .hero {
-        min-height: 100vh;
+        min-height: 0;
         padding-top: 12vh;
         padding-bottom: 8vh;
       }
@@ -496,7 +513,7 @@
 
     <div class="nav-tools">
       <a class="login-button" href="https://cloud.gregle.de" target="_blank" rel="noreferrer">Login</a>
-      <a class="quick-link" href="https://mail.proton.me" target="_blank" rel="noreferrer">Mail</a>
+      <a class="quick-link mail-link" href="https://mail.proton.me" target="_blank" rel="noreferrer">Mail</a>
       <div class="menu-wrap">
         <button class="menu-button" id="menuToggle" aria-expanded="false" aria-controls="menuPanel">☰</button>
         <nav class="menu-panel" id="menuPanel" aria-label="Custom links menu">
@@ -583,6 +600,7 @@
     function applyTheme(theme) {
       const isDark = theme === 'dark';
       document.body.classList.toggle('dark-mode', isDark);
+      document.documentElement.classList.toggle('dark-mode', isDark);
       try {
         localStorage.setItem('gregle-theme', isDark ? 'dark' : 'light');
       } catch {}
@@ -659,11 +677,34 @@
       }
     });
 
-    async function fetchWeather(lat, lon) {
+    const DEFAULT_WEATHER_LOCATION = {
+      name: 'Victoria, BC',
+      latitude: 48.4284,
+      longitude: -123.3656
+    };
+    const WEATHER_CACHE_KEY = 'gregle-weather-cache';
+    const WEATHER_CACHE_MAX_AGE = 30 * 60 * 1000;
+
+    async function fetchWeather(lat, lon, retries = 1) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&temperature_unit=celsius&timezone=auto`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Weather request failed');
-      return response.json();
+
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          cache: 'no-store'
+        });
+        if (!response.ok) throw new Error('Weather request failed');
+        return response.json();
+      } catch (error) {
+        if (retries > 0) {
+          return fetchWeather(lat, lon, retries - 1);
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeoutId);
+      }
     }
 
     function weatherIcon(code) {
@@ -676,32 +717,83 @@
       return '☁';
     }
 
+    function setWeatherChip(temp, code, lat, lon, label = '') {
+      const prefix = label ? `${label} ` : '';
+      weatherChip.innerHTML = `<strong>${weatherIcon(code)}</strong>&nbsp; ${prefix}${Math.round(temp)}°C`;
+      weatherChip.href = `https://www.windy.com/${lat}/${lon}`;
+    }
+
+    function setWeatherFallback() {
+      weatherChip.innerHTML = '<strong>☁</strong>&nbsp; Victoria';
+      weatherChip.href = `https://www.windy.com/${DEFAULT_WEATHER_LOCATION.latitude}/${DEFAULT_WEATHER_LOCATION.longitude}`;
+    }
+
+    function readCachedWeather() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY) || 'null');
+        if (!cached || !cached.savedAt) return null;
+        if (Date.now() - cached.savedAt > WEATHER_CACHE_MAX_AGE) return null;
+        return cached;
+      } catch {
+        return null;
+      }
+    }
+
+    function writeCachedWeather(payload) {
+      try {
+        localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+          ...payload,
+          savedAt: Date.now()
+        }));
+      } catch {}
+    }
+
+    function getCurrentPosition(options) {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocation unavailable'));
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+    }
+
+    async function loadWeatherForLocation(location, label = '') {
+      const data = await fetchWeather(location.latitude, location.longitude);
+      const current = data.current;
+      setWeatherChip(current.temperature_2m, current.weather_code, location.latitude, location.longitude, label);
+      writeCachedWeather({
+        temperature: current.temperature_2m,
+        weatherCode: current.weather_code,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        label
+      });
+    }
+
     async function loadWeather() {
-      if (!navigator.geolocation) {
-        weatherChip.innerHTML = '<strong>☁</strong>&nbsp; --°C';
-        weatherChip.href = 'https://open-meteo.com/';
+      const cached = readCachedWeather();
+      if (cached) {
+        setWeatherChip(cached.temperature, cached.weatherCode, cached.latitude, cached.longitude, cached.label || '');
+      } else {
+        setWeatherFallback();
+      }
+
+      try {
+        const { coords } = await getCurrentPosition({ timeout: 10000, maximumAge: 900000, enableHighAccuracy: false });
+        await loadWeatherForLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        return;
+      } catch {}
+
+      if (cached) {
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        async ({ coords }) => {
-          try {
-            const data = await fetchWeather(coords.latitude, coords.longitude);
-            const current = data.current;
-            const temp = Math.round(current.temperature_2m);
-            weatherChip.innerHTML = `<strong>${weatherIcon(current.weather_code)}</strong>&nbsp; ${temp}°C`;
-            weatherChip.href = `https://www.windy.com/${coords.latitude}/${coords.longitude}`;
-          } catch {
-            weatherChip.innerHTML = '<strong>☁</strong>&nbsp; --°C';
-            weatherChip.href = 'https://open-meteo.com/';
-          }
-        },
-        () => {
-          weatherChip.innerHTML = '<strong>☁</strong>&nbsp; --°C';
-          weatherChip.href = 'https://open-meteo.com/';
-        },
-        { timeout: 8000, maximumAge: 600000 }
-      );
+      try {
+        await loadWeatherForLocation(DEFAULT_WEATHER_LOCATION, DEFAULT_WEATHER_LOCATION.name);
+      } catch {
+        setWeatherFallback();
+      }
     }
 
     let tickerPaused = false;
@@ -812,6 +904,7 @@
     }
 
     loadWeather();
+    setInterval(loadWeather, 15 * 60 * 1000);
     loadBBCNews();
     searchInput.focus();
   </script>
