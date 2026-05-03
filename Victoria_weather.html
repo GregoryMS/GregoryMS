@@ -3,43 +3,31 @@
 <head>
   <meta charset="utf-8">
   <title>Victoria Weather</title>
-  <style>
-    body { font-family: system-ui; background:#eef4f8; padding:30px; }
-    main { max-width:700px; margin:auto; background:white; padding:24px; border-radius:16px; }
-    .item { border-top:1px solid #ddd; padding:14px 0; }
-  </style>
 </head>
 <body>
-<main>
   <h1>Victoria, BC Forecast</h1>
   <p>Environment Canada</p>
-  <div id="forecast">Loading…</div>
-</main>
+  <div id="forecast">Loading...</div>
 
-<script>
-async function loadForecast() {
-  const ecUrl = "https://weather.gc.ca/rss/city/bc-85_e.xml";
-  const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(ecUrl);
-
-  const res = await fetch(proxyUrl);
-  const text = await res.text();
-
-  const xml = new DOMParser().parseFromString(text, "application/xml");
-  const entries = [...xml.querySelectorAll("entry")];
-
-  document.getElementById("forecast").innerHTML = entries.slice(0, 8).map(entry => `
-    <div class="item">
-      <h2>${entry.querySelector("title")?.textContent || ""}</h2>
-      <p>${entry.querySelector("summary")?.textContent || ""}</p>
-    </div>
-  `).join("");
-}
-
-loadForecast().catch(err => {
-  document.getElementById("forecast").textContent =
-    "Could not load Environment Canada forecast.";
-  console.error(err);
-});
-</script>
+  <script>
+    fetch("./weather.json?cache=" + Date.now())
+      .then(response => {
+        if (!response.ok) throw new Error("weather.json not found");
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById("forecast").innerHTML = data.map(item => `
+          <div style="border-top:1px solid #ddd;padding:12px 0">
+            <h2>${item.title}</h2>
+            <p>${item.summary}</p>
+          </div>
+        `).join("");
+      })
+      .catch(error => {
+        document.getElementById("forecast").innerHTML =
+          "Could not load weather.json. Check that weather.json exists in the same folder as index.html.";
+        console.error(error);
+      });
+  </script>
 </body>
 </html>
