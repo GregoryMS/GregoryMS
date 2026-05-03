@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Environment Canada Weather</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef3f1;
+      --ink: #12201c;
+      --muted: #5a6b64;
+      --panel: #ffffff;
+      --line: #d6dfda;
+      --accent: #006f7c;
+      --accent-ink: #ffffff;
+      --warm: #f4b860;
+      --cool: #7ea7c8;
+      --shadow: 0 18px 48px rgba(18, 32, 28, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(0, 111, 124, 0.12), transparent 38%),
+        linear-gradient(315deg, rgba(244, 184, 96, 0.22), transparent 32%),
+        var(--bg);
+      color: var(--ink);
+    }
+
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 6vw, 4.3rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .source-link {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      text-decoration: none;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .source-link:focus-visible,
+    .source-link:hover {
+      outline: 3px solid rgba(0, 111, 124, 0.25);
+      outline-offset: 2px;
+    }
+
+    .status {
+      margin: 0 0 18px;
+      color: var(--muted);
+      min-height: 24px;
+    }
+
+    .current {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .current-label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .condition {
+      margin: 0;
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      line-height: 1.05;
+      font-weight: 800;
+    }
+
+    .temp {
+      font-size: clamp(3.2rem, 12vw, 6rem);
+      line-height: 0.9;
+      font-weight: 900;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .details {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 68ch;
+    }
+
+    .forecast-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .updated {
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: right;
+    }
+
+    .forecast-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .forecast-card {
+      min-height: 154px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .period {
+      margin: 0 0 9px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .forecast-text {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .fallback {
+      display: none;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff8eb;
+      color: #4f3514;
+      line-height: 1.5;
+    }
+
+    .fallback a {
+      color: #874d00;
+      font-weight: 800;
+    }
+
+    footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 680px) {
+      header,
+      .current,
+      .forecast-head {
+        display: block;
+      }
+
+      .source-link {
+        margin-top: 14px;
+        width: 100%;
+      }
+
+      .temp {
+        margin-top: 18px;
+      }
+
+      .updated {
+        margin-top: 6px;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>Environment Canada</h1>
+        <p class="subtitle">Current conditions and weekly forecast for Vancouver, BC.</p>
+      </div>
+      <a class="source-link" href="https://weather.gc.ca/city/pages/bc-74_metric_e.html" rel="noreferrer">Official forecast</a>
+    </header>
+
+    <p class="status" id="status">Loading Environment Canada feed...</p>
+
+    <section class="current" aria-labelledby="current-heading">
+      <div>
+        <p class="current-label" id="current-heading">Current conditions</p>
+        <p class="condition" id="condition">Loading...</p>
+        <p class="details" id="currentDetails"></p>
+      </div>
+      <div class="temp" id="temperature">--&deg;C</div>
+    </section>
+
+    <section aria-labelledby="forecast-heading">
+      <div class="forecast-head">
+        <h2 id="forecast-heading">Weekly forecast</h2>
+        <div class="updated" id="updated"></div>
+      </div>
+      <div class="forecast-grid" id="forecastGrid"></div>
+      <div class="fallback" id="fallback">
+        The live feed could not be loaded in this browser. Open the
+        <a href="https://weather.gc.ca/city/pages/bc-74_metric_e.html" rel="noreferrer">Environment Canada Vancouver forecast</a>
+        for the current report.
+      </div>
+    </section>
+
+    <footer>
+      Data source: Environment and Climate Change Canada public city RSS feed.
+    </footer>
+  </main>
+
+  <script>
+    const FEED_URL = 'https://weather.gc.ca/rss/city/bc-74_e.xml';
+    const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(FEED_URL);
+
+    const statusEl = document.getElementById('status');
+    const conditionEl = document.getElementById('condition');
+    const temperatureEl = document.getElementById('temperature');
+    const currentDetailsEl = document.getElementById('currentDetails');
+    const forecastGridEl = document.getElementById('forecastGrid');
+    const updatedEl = document.getElementById('updated');
+    const fallbackEl = document.getElementById('fallback');
+
+    function textFrom(node, selector) {
+      return node.querySelector(selector)?.textContent?.trim() || '';
+    }
+
+    function clean(value) {
+      return value.replace(/\s+/g, ' ').trim();
+    }
+
+    function stripPrefix(value) {
+      return clean(value.replace(/^(Current Conditions|Forecast):\s*/i, ''));
+    }
+
+    function parseTemperature(value) {
+      const match = value.match(/(-?\d+(?:\.\d+)?)\s*\u00b0?C/i);
+      return match ? Math.round(Number(match[1])) : null;
+    }
+
+    function parseCondition(title) {
+      return stripPrefix(title).replace(/,?\s*-?\d+(?:\.\d+)?\s*\u00b0?C.*$/i, '').trim() || 'Current report';
+    }
+
+    function renderCurrent(entry) {
+      if (!entry) {
+        conditionEl.textContent = 'Unavailable';
+        temperatureEl.innerHTML = '--&deg;C';
+        currentDetailsEl.textContent = '';
+        return;
+      }
+
+      const title = textFrom(entry, 'title');
+      const summary = clean(textFrom(entry, 'summary'));
+      const temp = parseTemperature(title + ' ' + summary);
+
+      conditionEl.textContent = parseCondition(title);
+      temperatureEl.innerHTML = temp === null ? '--&deg;C' : `${temp}&deg;C`;
+      currentDetailsEl.textContent = stripPrefix(summary || title);
+    }
+
+    function renderForecast(entries) {
+      forecastGridEl.innerHTML = '';
+
+      entries.slice(0, 14).forEach((entry) => {
+        const title = stripPrefix(textFrom(entry, 'title'));
+        const summary = stripPrefix(textFrom(entry, 'summary')) || title;
+        const card = document.createElement('article');
+        card.className = 'forecast-card';
+        card.innerHTML = `
+          <p class="period"></p>
+          <p class="forecast-text"></p>
+        `;
+        card.querySelector('.period').textContent = title.split(':')[0] || 'Forecast';
+        card.querySelector('.forecast-text').textContent = title.includes(':') ? title : summary;
+        forecastGridEl.appendChild(card);
+      });
+    }
+
+    function renderUpdated(xml) {
+      const updated = textFrom(xml, 'updated');
+      if (!updated) return;
+
+      const date = new Date(updated);
+      if (Number.isNaN(date.getTime())) return;
+
+      updatedEl.textContent = 'Updated ' + date.toLocaleString('en-CA', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      });
+    }
+
+    async function loadWeather() {
+      try {
+        const response = await fetch(PROXY_URL, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Feed request failed');
+
+        const xmlText = await response.text();
+        const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+        if (xml.querySelector('parsererror')) throw new Error('Feed parse failed');
+
+        const entries = Array.from(xml.querySelectorAll('entry'));
+        const current = entries.find((entry) => /Current Conditions/i.test(textFrom(entry, 'title')));
+        const forecast = entries.filter((entry) => !/Current Conditions/i.test(textFrom(entry, 'title')));
+
+        renderCurrent(current);
+        renderForecast(forecast);
+        renderUpdated(xml);
+        statusEl.textContent = 'Live feed loaded from Environment Canada.';
+      } catch (error) {
+        statusEl.textContent = 'Live feed unavailable.';
+        conditionEl.textContent = 'Open official forecast';
+        temperatureEl.innerHTML = '--&deg;C';
+        currentDetailsEl.textContent = 'Environment Canada may block direct browser loading from static pages.';
+        fallbackEl.style.display = 'block';
+      }
+    }
+
+    loadWeather();
+  </script>
+</body>
+</html>
