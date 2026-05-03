@@ -14,14 +14,10 @@
       --line: #d6dfda;
       --accent: #006f7c;
       --accent-ink: #ffffff;
-      --warm: #f4b860;
-      --cool: #7ea7c8;
       --shadow: 0 18px 48px rgba(18, 32, 28, 0.12);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -76,12 +72,6 @@
       text-decoration: none;
       font-weight: 700;
       white-space: nowrap;
-    }
-
-    .source-link:focus-visible,
-    .source-link:hover {
-      outline: 3px solid rgba(0, 111, 124, 0.25);
-      outline-offset: 2px;
     }
 
     .status {
@@ -179,8 +169,9 @@
       line-height: 1.45;
     }
 
-    .fallback {
+    .weatherlink-fallback {
       display: none;
+      margin-top: 18px;
       padding: 18px;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -189,10 +180,18 @@
       line-height: 1.5;
     }
 
-    .fallback a {
-      color: #874d00;
-      font-weight: 800;
+    .weatherlink-frame {
+      display: block;
+      width: 100%;
+      max-width: 420px;
+      height: 240px;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
     }
+
+    .weatherlink-fallback a { color: #874d00; font-weight: 800; }
 
     footer {
       margin-top: 26px;
@@ -201,25 +200,10 @@
     }
 
     @media (max-width: 680px) {
-      header,
-      .current,
-      .forecast-head {
-        display: block;
-      }
-
-      .source-link {
-        margin-top: 14px;
-        width: 100%;
-      }
-
-      .temp {
-        margin-top: 18px;
-      }
-
-      .updated {
-        margin-top: 6px;
-        text-align: left;
-      }
+      header, .current, .forecast-head { display: block; }
+      .source-link { margin-top: 14px; width: 100%; }
+      .temp { margin-top: 18px; }
+      .updated { margin-top: 6px; text-align: left; }
     }
   </style>
 </head>
@@ -250,21 +234,23 @@
         <div class="updated" id="updated"></div>
       </div>
       <div class="forecast-grid" id="forecastGrid"></div>
-      <div class="fallback" id="fallback">
-        The live feed could not be loaded in this browser. Open the
-        <a href="https://weather.gc.ca/city/pages/bc-74_metric_e.html" rel="noreferrer">Environment Canada Vancouver forecast</a>
-        for the current report.
+      <div class="weatherlink-fallback" id="weatherlinkFallback">
+        The full feed could not be converted in this browser, so this embedded Environment Canada WeatherLink is shown instead.
+        <iframe class="weatherlink-frame" title="Environment Canada WeatherLink for Vancouver" src="https://weather.gc.ca/wxlink/wxlink.html?cityCode=bc-74&amp;lang=e"></iframe>
+        <p><a href="https://weather.gc.ca/city/pages/bc-74_metric_e.html" rel="noreferrer">Open the official Vancouver forecast</a></p>
       </div>
     </section>
 
     <footer>
-      Data source: Environment and Climate Change Canada public city RSS feed.
+      Data source: Environment and Climate Change Canada public city feed and WeatherLink.
     </footer>
   </main>
 
   <script>
     const FEED_URL = 'https://weather.gc.ca/rss/city/bc-74_e.xml';
-    const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(FEED_URL);
+    const RSS_JSON_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED_URL);
+    const ALL_ORIGINS_RAW_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(FEED_URL);
+    const ALL_ORIGINS_GET_URL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(FEED_URL);
 
     const statusEl = document.getElementById('status');
     const conditionEl = document.getElementById('condition');
@@ -272,69 +258,85 @@
     const currentDetailsEl = document.getElementById('currentDetails');
     const forecastGridEl = document.getElementById('forecastGrid');
     const updatedEl = document.getElementById('updated');
-    const fallbackEl = document.getElementById('fallback');
-
-    function textFrom(node, selector) {
-      return node.querySelector(selector)?.textContent?.trim() || '';
-    }
+    const weatherlinkFallbackEl = document.getElementById('weatherlinkFallback');
 
     function clean(value) {
-      return value.replace(/\s+/g, ' ').trim();
+      const div = document.createElement('div');
+      div.innerHTML = String(value || '');
+      return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
     }
 
     function stripPrefix(value) {
-      return clean(value.replace(/^(Current Conditions|Forecast):\s*/i, ''));
+      return clean(value).replace(/^(Current Conditions|Forecast):\s*/i, '').trim();
     }
 
     function parseTemperature(value) {
-      const match = value.match(/(-?\d+(?:\.\d+)?)\s*\u00b0?C/i);
+      const match = clean(value).match(/(-?\d+(?:\.\d+)?)\s*(?:°|&deg;)?\s*C/i);
       return match ? Math.round(Number(match[1])) : null;
     }
 
     function parseCondition(title) {
-      return stripPrefix(title).replace(/,?\s*-?\d+(?:\.\d+)?\s*\u00b0?C.*$/i, '').trim() || 'Current report';
+      return stripPrefix(title).replace(/,?\s*-?\d+(?:\.\d+)?\s*(?:°|&deg;)?\s*C.*$/i, '').trim() || 'Current report';
     }
 
-    function renderCurrent(entry) {
-      if (!entry) {
+    function splitForecastTitle(title, description) {
+      const cleanedTitle = stripPrefix(title);
+      const cleanedDescription = stripPrefix(description);
+      const parts = cleanedTitle.split(':');
+
+      if (parts.length > 1) {
+        return {
+          period: parts.shift().trim(),
+          text: parts.join(':').trim()
+        };
+      }
+
+      return {
+        period: cleanedTitle || 'Forecast',
+        text: cleanedDescription || cleanedTitle
+      };
+    }
+
+    function renderCurrent(item) {
+      if (!item) {
         conditionEl.textContent = 'Unavailable';
         temperatureEl.innerHTML = '--&deg;C';
         currentDetailsEl.textContent = '';
         return;
       }
 
-      const title = textFrom(entry, 'title');
-      const summary = clean(textFrom(entry, 'summary'));
-      const temp = parseTemperature(title + ' ' + summary);
+      const title = item.title || '';
+      const details = item.description || item.summary || item.content || '';
+      const temp = parseTemperature(title + ' ' + details);
 
       conditionEl.textContent = parseCondition(title);
       temperatureEl.innerHTML = temp === null ? '--&deg;C' : `${temp}&deg;C`;
-      currentDetailsEl.textContent = stripPrefix(summary || title);
+      currentDetailsEl.textContent = stripPrefix(details || title);
     }
 
-    function renderForecast(entries) {
+    function renderForecast(items) {
       forecastGridEl.innerHTML = '';
 
-      entries.slice(0, 14).forEach((entry) => {
-        const title = stripPrefix(textFrom(entry, 'title'));
-        const summary = stripPrefix(textFrom(entry, 'summary')) || title;
+      items.slice(0, 14).forEach((item) => {
+        const forecast = splitForecastTitle(item.title, item.description || item.summary || item.content);
         const card = document.createElement('article');
         card.className = 'forecast-card';
-        card.innerHTML = `
-          <p class="period"></p>
-          <p class="forecast-text"></p>
-        `;
-        card.querySelector('.period').textContent = title.split(':')[0] || 'Forecast';
-        card.querySelector('.forecast-text').textContent = title.includes(':') ? title : summary;
+
+        const period = document.createElement('p');
+        period.className = 'period';
+        period.textContent = forecast.period;
+
+        const text = document.createElement('p');
+        text.className = 'forecast-text';
+        text.textContent = forecast.text;
+
+        card.append(period, text);
         forecastGridEl.appendChild(card);
       });
     }
 
-    function renderUpdated(xml) {
-      const updated = textFrom(xml, 'updated');
-      if (!updated) return;
-
-      const date = new Date(updated);
+    function renderUpdated(value) {
+      const date = new Date(value);
       if (Number.isNaN(date.getTime())) return;
 
       updatedEl.textContent = 'Updated ' + date.toLocaleString('en-CA', {
@@ -347,30 +349,84 @@
       });
     }
 
-    async function loadWeather() {
-      try {
-        const response = await fetch(PROXY_URL, { cache: 'no-store' });
-        if (!response.ok) throw new Error('Feed request failed');
+    function renderFeed(items, updated, sourceName) {
+      const current = items.find((item) => /Current Conditions/i.test(item.title || ''));
+      const forecast = items.filter((item) => !/Current Conditions/i.test(item.title || ''));
 
-        const xmlText = await response.text();
-        const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
-        if (xml.querySelector('parsererror')) throw new Error('Feed parse failed');
+      if (!current && !forecast.length) throw new Error('No weather entries found');
 
-        const entries = Array.from(xml.querySelectorAll('entry'));
-        const current = entries.find((entry) => /Current Conditions/i.test(textFrom(entry, 'title')));
-        const forecast = entries.filter((entry) => !/Current Conditions/i.test(textFrom(entry, 'title')));
+      renderCurrent(current);
+      renderForecast(forecast);
+      renderUpdated(updated);
+      weatherlinkFallbackEl.style.display = 'none';
+      statusEl.textContent = 'Live feed loaded from Environment Canada via ' + sourceName + '.';
+    }
 
-        renderCurrent(current);
-        renderForecast(forecast);
-        renderUpdated(xml);
-        statusEl.textContent = 'Live feed loaded from Environment Canada.';
-      } catch (error) {
-        statusEl.textContent = 'Live feed unavailable.';
-        conditionEl.textContent = 'Open official forecast';
-        temperatureEl.innerHTML = '--&deg;C';
-        currentDetailsEl.textContent = 'Environment Canada may block direct browser loading from static pages.';
-        fallbackEl.style.display = 'block';
+    async function fetchRssJson() {
+      const response = await fetch(RSS_JSON_URL, { cache: 'no-store' });
+      if (!response.ok) throw new Error('RSS JSON request failed');
+
+      const data = await response.json();
+      if (data.status !== 'ok' || !Array.isArray(data.items)) throw new Error('RSS JSON response failed');
+
+      renderFeed(data.items, data.feed && data.feed.pubDate, 'RSS-to-JSON');
+    }
+
+    function xmlTextFrom(node, selectors) {
+      for (const selector of selectors) {
+        const value = node.querySelector(selector)?.textContent;
+        if (value) return value.trim();
       }
+      return '';
+    }
+
+    async function fetchXml(url, wrapped) {
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error('XML request failed');
+
+      let xmlText = await response.text();
+      if (wrapped) {
+        const json = JSON.parse(xmlText);
+        xmlText = json.contents || '';
+      }
+
+      const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+      if (xml.querySelector('parsererror')) throw new Error('XML parse failed');
+
+      const entries = Array.from(xml.querySelectorAll('entry')).map((entry) => ({
+        title: xmlTextFrom(entry, ['title']),
+        description: xmlTextFrom(entry, ['summary', 'content']),
+        pubDate: xmlTextFrom(entry, ['updated', 'published'])
+      }));
+
+      renderFeed(entries, xmlTextFrom(xml, ['feed > updated', 'updated']), wrapped ? 'AllOrigins JSON' : 'AllOrigins raw');
+    }
+
+    function renderWeatherLinkFallback() {
+      statusEl.textContent = 'Showing Environment Canada WeatherLink fallback.';
+      conditionEl.textContent = 'WeatherLink loaded below';
+      temperatureEl.innerHTML = '--&deg;C';
+      currentDetailsEl.textContent = 'The browser could not read the RSS feed, but the official Environment Canada widget is embedded below.';
+      forecastGridEl.innerHTML = '';
+      updatedEl.textContent = '';
+      weatherlinkFallbackEl.style.display = 'block';
+    }
+
+    async function loadWeather() {
+      const attempts = [
+        () => fetchRssJson(),
+        () => fetchXml(ALL_ORIGINS_RAW_URL, false),
+        () => fetchXml(ALL_ORIGINS_GET_URL, true)
+      ];
+
+      for (const attempt of attempts) {
+        try {
+          await attempt();
+          return;
+        } catch (error) {}
+      }
+
+      renderWeatherLinkFallback();
     }
 
     loadWeather();
