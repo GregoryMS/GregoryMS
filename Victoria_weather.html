@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Victoria BC Weather</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background: #eef4f8;
+      color: #17202a;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+    main {
+      width: min(720px, 92vw);
+      background: white;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 12px 30px #0002;
+    }
+    h1 { margin-top: 0; }
+    .forecast {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .card {
+      border: 1px solid #d9e2ea;
+      border-radius: 12px;
+      padding: 14px;
+      background: #fafcfd;
+    }
+    .temp {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    a { color: #006cb5; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Victoria, BC Weather</h1>
+    <p id="updated">Loading Environment Canada forecast…</p>
+    <section id="forecast" class="forecast"></section>
+    <p>
+      Source:
+      <a href="https://weather.gc.ca/en/location/index.html?coords=48.433%2C-123.362">
+        Environment Canada
+      </a>
+    </p>
+  </main>
+
+  <script>
+    async function loadWeather() {
+      const forecastEl = document.getElementById("forecast");
+      const updatedEl = document.getElementById("updated");
+
+      try {
+        const url =
+          "https://api.weather.gc.ca/collections/citypageweather-realtime/items?f=json&lang=en&bbox=-123.5,48.3,-123.2,48.6";
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const victoria = data.features.find(f =>
+          f.properties.location?.name?.en?.toLowerCase().includes("victoria")
+        ) || data.features[0];
+
+        const p = victoria.properties;
+
+        updatedEl.textContent =
+          `Updated by Environment Canada: ${p.dateTime?.[0]?.textStamp || "latest available"}`;
+
+        const forecasts = p.forecastGroup?.forecast || [];
+
+        forecastEl.innerHTML = forecasts.slice(0, 7).map(day => `
+          <article class="card">
+            <h2>${day.period?.textForecastName || "Forecast"}</h2>
+            <div class="temp">
+              ${day.temperatures?.temperature?.[0]?.value || ""}°C
+            </div>
+            <p>${day.abbreviatedForecast?.textSummary || ""}</p>
+            <p>${day.textSummary || ""}</p>
+          </article>
+        `).join("");
+
+      } catch (err) {
+        updatedEl.textContent = "Could not load the forecast.";
+        forecastEl.innerHTML =
+          "<p>Try opening this from a web server rather than directly as a file.</p>";
+      }
+    }
+
+    loadWeather();
+  </script>
+</body>
+</html>
