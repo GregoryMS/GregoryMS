@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xkcd Context Search</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:light dark}body{margin:0;background:#f5f6f8;color:#1f2328}main{max-width:950px;margin:32px auto;padding:0 16px}.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 3px 18px #0001}h1{margin:0 0 6px}.sub{margin-top:0;color:#59636e}label{display:block;font-weight:700;margin:18px 0 8px}input{width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid #b7bec7;border-radius:12px;font-size:17px}button{margin:12px 8px 0 0;padding:12px 16px;border:0;border-radius:12px;background:#0969da;color:white;font-size:16px;cursor:pointer}.secondary{background:#59636e}.status,.result{margin-top:14px;padding:14px 16px;border-radius:14px;border:1px solid #d0d7de;background:#f6f8fa}.result h2{margin:0 0 8px;font-size:20px}.muted{color:#59636e;font-size:14px}.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#dbeafe;font-size:13px;color:#1e3a8a}a{color:#0969da}details{margin-top:14px}.row{display:flex;gap:8px;flex-wrap:wrap}.small{font-size:14px}.warn{background:#fff8c5;border-color:#eac54f}@media(prefers-color-scheme:dark){body{background:#0d1117;color:#e6edf3}.card{background:#161b22}.sub,.muted{color:#9aa4af}input{background:#0d1117;color:#e6edf3;border-color:#30363d}.status,.result{background:#0d1117;border-color:#30363d}.pill{background:#1f2a44;color:#bfdbfe}.warn{background:#332b00;border-color:#7d6500}}
+</style>
+</head>
+<body>
+<main><section class="card">
+<h1>xkcd Context Search</h1>
+<p class="sub">Search xkcd by title or vague context. It indexes every comic title from the official archive, then adds hand-written context clues for famous hard-to-search comics.</p>
+<div id="status" class="status">Starting…</div>
+<label for="q">Search</label>
+<input id="q" placeholder="the whole internet is maintained by one random guy" autocomplete="off">
+<div class="row"><button id="search">Search</button><button id="refresh" class="secondary">Reload archive</button><button id="clear" class="secondary">Clear cache</button></div>
+<div id="results"></div>
+<details><summary>How it works</summary><p class="small muted">The official xkcd archive has every comic title and link. This page fetches that archive and caches it in your browser. Because some hosts block cross-site fetches, it tries several readable mirrors/proxies. If all live loading fails, it still has a small emergency index. Context search is local and private; only archive loading and the optional Google links touch the network.</p></details>
+</section></main>
+<script>
+(function(){
+'use strict';
+const ARCHIVE='https://xkcd.com/archive/';
+const SOURCES=[
+  ARCHIVE,
+  'https://r.jina.ai/http://r.jina.ai/http://https://xkcd.com/archive/',
+  'https://r.jina.ai/http://r.jina.ai/http://http://xkcd.com/archive/',
+  'https://api.allorigins.win/raw?url='+encodeURIComponent(ARCHIVE),
+  'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(ARCHIVE)
+];
+const CACHE='gregoryms.xkcd.archive.v4';
+let comics=[];
+const context={
+2347:'dependency dependencies whole internet maintained by one random guy one person random volunteer open source infrastructure tiny project critical dependency maintained thank you',
+386:'someone is wrong on the internet duty calls arguing online staying up late internet argument',
+927:'standards too many standards universal standard now there are fifteen competing standards competing standards problem',
+936:'password strength correct horse battery staple entropy memorable secure passwords passphrase',
+149:'sudo make me a sandwich linux command admin root',
+303:'compiling compile code sword fight programming waiting build time',
+979:'wisdom of the ancients old forum answer stack overflow unanswered programming problem',
+1205:'is it worth the time automation optimize optimise time saved chart efficiency',
+1319:'automation automate task spending more time automating workflow',
+1172:'workflow bug feature odd behaviour behavior depended on bug broken workflow',
+1732:'earth temperature timeline climate global warming',
+1354:'heartbleed security bug open source vulnerability ssl',
+538:'security wrench cryptography rubber hose password',
+208:'regular expressions regex perl problem now you have two problems',
+327:'exploits of a mom little bobby tables sql injection database',
+353:'python programming import antigravity',
+722:'computer problems tech support computer help',
+162:'angular momentum spinning chair physics',
+552:'correlation causation correlation does not imply causation',
+1053:'ten thousand lucky learning new thing today',
+356:'nerd sniping bridge problem physics mathematician',
+612:'estimation fermi problem approximation',
+798:'password reuse security hacked accounts',
+1110:'click and drag huge interactive world exploration',
+1190:'time interactive comic wait for it castle sea',
+1506:'xkcloud cloud computing',
+1810:'chat systems messaging standards protocols',
+1782:'team chat communication standards messaging apps',
+1425:'tasks phones automation reminders',
+1897:'self driving car trolley problem ethics',
+1969:'not available error message unavailable',
+2116:'plutonium space probe RTG radioactive',
+2200:'unreachable state machine',
+2261:'worst thing that could happen',
+2501:'average familiar phrase',
+2529:'universal routing road directions',
+2730:'code quality software engineering',
+3030:'crowdstrike outage windows blue screen update',
+311:'network configuration internet router dns ip address',
+705:'notifications phone alerts unread messages',
+530:'code lifespan old software dependency maintenance',
+273:'electromagnetic spectrum',
+195:'map of the internet',
+802:'online communities map internet',
+181:'interblag internet tubes',
+908:'the cloud files computers servers',
+908:'cloud computing internet server',
+1236:'seashell mac terminal sudo rm',
+1597:'git version control commit merge',
+1296:'git commit messages',
+2106:'sharing options copy link'
+};
+function $(id){return document.getElementById(id)}
+function status(msg,cls){$('status').className='status '+(cls||'');$('status').textContent=msg}
+function norm(s){return String(s||'').toLowerCase().replace(/&amp;/g,' and ').replace(/[“”‘’«».,!?;:()[\]{}'"`~/_\\|\-–—+*=<>]/g,' ').replace(/\s+/g,' ').trim()}
+function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function parseArchive(text){
+  const out=[], seen=new Set();
+  let m;
+  const htmlRe=/<a[^>]+href=["']\/(\d+)\/["'][^>]*>([\s\S]*?)<\/a>/gi;
+  while((m=htmlRe.exec(text))){add(+m[1],m[2].replace(/<[^>]+>/g,''))}
+  const mdRe=/\[(.*?)\]\(https?:\/\/xkcd\.com\/(\d+)\/?\)/gi;
+  while((m=mdRe.exec(text))){add(+m[2],m[1])}
+  // Reader-style fallback: lines like [Title] or bare titles are not enough to recover IDs, so avoid guessing.
+  function add(id,title){title=String(title||'').replace(/\s+/g,' ').trim(); if(!id||!title||seen.has(id))return; seen.add(id); out.push({id,title,url:'https://xkcd.com/'+id+'/',context:context[id]||''})}
+  return out.sort((a,b)=>b.id-a.id)
+}
+async function load(force){
+  $('results').innerHTML='';
+  if(!force){try{const c=JSON.parse(localStorage.getItem(CACHE)||'null');if(c&&c.length>1000){comics=c;status('Loaded '+c.length+' comics from browser cache.');return}}catch(e){}}
+  status('Loading official xkcd archive…');
+  let errors=[];
+  for(const url of SOURCES){
+    try{
+      status('Trying archive source '+(SOURCES.indexOf(url)+1)+' of '+SOURCES.length+'…');
+      const r=await fetch(url,{cache:'no-store'});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const text=await r.text();
+      const parsed=parseArchive(text);
+      if(parsed.length<1000)throw new Error('Only found '+parsed.length+' comics');
+      comics=parsed; localStorage.setItem(CACHE,JSON.stringify(comics));
+      status('Loaded '+comics.length+' comics from the xkcd archive. Ready to search.');
+      return;
+    }catch(e){errors.push(e.message)}
+  }
+  comics=emergency();
+  status('Live archive loading failed, so I loaded the small emergency index. Try again later or host this page with a cached index. Last error: '+errors[errors.length-1],'warn');
+}
+function emergency(){return Object.keys(context).map(id=>({id:+id,title:knownTitle(+id),url:'https://xkcd.com/'+id+'/',context:context[id]})).sort((a,b)=>b.id-a.id)}
+function knownTitle(id){return ({2347:'Dependency',386:'Duty Calls',927:'Standards',936:'Password Strength',149:'Sandwich',303:'Compiling',979:'Wisdom of the Ancients',1205:'Is It Worth the Time?',1319:'Automation',1172:'Workflow',1732:'Earth Temperature Timeline',1354:'Heartbleed Explanation',538:'Security',208:'Regular Expressions',327:'Exploits of a Mom',353:'Python',552:'Correlation',1053:'Ten Thousand',356:'Nerd Sniping',1110:'Click and Drag',1190:'Time',311:'Action Movies',530:'Ineffective Sorts'})[id]||('xkcd '+id)}
+function score(q,c){
+  q=norm(q); if(!q)return 0;
+  const terms=q.split(' ').filter(w=>w.length>2);
+  const title=norm(c.title), ctx=norm(c.context), hay=title+' '+ctx;
+  let s=0;
+  if(title===q)s+=1000; if(title.includes(q))s+=250; if(ctx.includes(q))s+=180;
+  for(const t of terms){if(title.split(' ').includes(t))s+=40;else if(title.includes(t))s+=18;if(ctx.split(' ').includes(t))s+=25;else if(ctx.includes(t))s+=10}
+  if((q.includes('random guy')||q.includes('one random')||q.includes('one person')||q.includes('one guy'))&&(q.includes('internet')||q.includes('infrastructure')||q.includes('maintained')||q.includes('dependency')))if(c.id===2347)s+=2000;
+  if(q.includes('wrong on the internet')&&c.id===386)s+=1000;
+  if(q.includes('too many standards')&&c.id===927)s+=1000;
+  if(q.includes('correct horse')&&c.id===936)s+=1000;
+  if(q.includes('bobby tables')&&c.id===327)s+=1000;
+  return s;
+}
+function search(){
+  const q=$('q').value.trim(), box=$('results');
+  if(!q){box.innerHTML='<div class="result">Type something to search.</div>';return}
+  if(!comics.length){box.innerHTML='<div class="result">The archive has not loaded yet. Press Reload archive.</div>';return}
+  const ranked=comics.map(c=>Object.assign({},c,{score:score(q,c)})).filter(c=>c.score>0).sort((a,b)=>b.score-a.score||b.id-a.id).slice(0,15);
+  const gx='https://www.google.com/search?q='+encodeURIComponent(q+' site:xkcd.com');
+  const ge='https://www.google.com/search?q='+encodeURIComponent(q+' site:explainxkcd.com/wiki/index.php');
+  if(!ranked.length){box.innerHTML='<div class="result"><b>No local match.</b><p class="muted">The archive only provides titles; context clues are added for well-known comics. Try these full-text searches:</p><p><a target="_blank" rel="noopener" href="'+ge+'">Search Explain xkcd</a> · <a target="_blank" rel="noopener" href="'+gx+'">Search xkcd</a></p></div>';return}
+  box.innerHTML=ranked.map(c=>'<div class="result"><h2>#'+c.id+' — '+escape(c.title)+' <span class="pill">score '+c.score+'</span></h2>'+(c.context?'<p class="muted">Context clue: '+escape(c.context).slice(0,220)+'…</p>':'<p class="muted">Matched archive title.</p>')+'<p><a target="_blank" rel="noopener" href="'+c.url+'">Open comic</a> · <a target="_blank" rel="noopener" href="https://www.explainxkcd.com/wiki/index.php/'+c.id+'">Explain xkcd</a></p></div>').join('')+'<p class="muted small">Tip: for obscure plot/context searches, the “Explain xkcd” link is often better because xkcd’s official archive only contains titles.</p>';
+}
+document.addEventListener('DOMContentLoaded',()=>{status('JavaScript loaded. Loading archive index…');$('search').onclick=search;$('refresh').onclick=()=>load(true);$('clear').onclick=()=>{localStorage.removeItem(CACHE);comics=[];status('Cache cleared. Press Reload archive.','warn')};$('q').addEventListener('keydown',e=>{if(e.key==='Enter')search()});load(false)});
+})();
+</script>
+</body>
+</html>
