@@ -1,33 +1,59 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Victoria Weather</title>
+  <style>
+    body { max-width: 48rem; margin: 2rem auto; padding: 0 1rem; font-family: system-ui, sans-serif; }
+    article { border-top: 1px solid #ddd; padding: 12px 0; }
+  </style>
 </head>
 <body>
   <h1>Victoria, BC Forecast</h1>
-  <p>Environment Canada</p>
-  <div id="forecast">Loading...</div>
+  <p>Source: Environment and Climate Change Canada.</p>
+  <p><a href="https://weather.gc.ca/en/location/index.html?coords=48.433%2C-123.372">Open the official Victoria forecast and weather alerts</a></p>
+  <p id="status" role="status">Loading forecast…</p>
+  <div id="forecast"></div>
+  <noscript><p>Enable JavaScript to load the forecast here, or use the official forecast link above.</p></noscript>
 
   <script>
-    fetch("./weather.json?cache=" + Date.now())
-      .then(response => {
-        if (!response.ok) throw new Error("weather.json not found");
-        return response.json();
-      })
-      .then(data => {
-        document.getElementById("forecast").innerHTML = data.map(item => `
-          <div style="border-top:1px solid #ddd;padding:12px 0">
-            <h2>${item.title}</h2>
-            <p>${item.summary}</p>
-          </div>
-        `).join("");
-      })
-      .catch(error => {
-        document.getElementById("forecast").innerHTML =
-          "Could not load weather.json. Check that weather.json exists in the same folder as index.html.";
-        console.error(error);
-      });
+    const FORECAST_URL = "https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-85?f=json";
+
+    async function loadForecast() {
+      const status = document.getElementById("status");
+      const forecast = document.getElementById("forecast");
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(FORECAST_URL, { signal: controller.signal });
+        if (!response.ok) throw new Error("Forecast request failed");
+        const data = await response.json();
+        const group = data.properties?.forecastGroup;
+        const items = group?.forecasts;
+        if (!Array.isArray(items) || !items.length) throw new Error("No forecast available");
+
+        const cards = items.map(item => {
+          const card = document.createElement("article");
+          const title = document.createElement("h2");
+          title.textContent = item.period?.textForecastName?.en || item.period?.value?.en || "Forecast";
+          const summary = document.createElement("p");
+          summary.textContent = item.textSummary?.en || "Forecast details unavailable.";
+          card.append(title, summary);
+          return card;
+        });
+        forecast.replaceChildren(...cards);
+        const issued = new Date(group.timestamp?.en);
+        status.textContent = Number.isNaN(issued.getTime()) ? "Forecast loaded." :
+          "Forecast issued " + issued.toLocaleString("en-CA", { timeZone: "America/Vancouver", timeZoneName: "short" });
+      } catch (_) {
+        status.textContent = "The forecast is temporarily unavailable. Use the official forecast link above.";
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    loadForecast();
   </script>
 </body>
 </html>

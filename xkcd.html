@@ -113,7 +113,8 @@ async function load(force){
       const text=await r.text();
       const parsed=parseArchive(text);
       if(parsed.length<1000)throw new Error('Only found '+parsed.length+' comics');
-      comics=parsed; localStorage.setItem(CACHE,JSON.stringify(comics));
+      comics=parsed;
+      try{localStorage.setItem(CACHE,JSON.stringify(comics))}catch(e){}
       status('Loaded '+comics.length+' comics from the xkcd archive. Ready to search.');
       return;
     }catch(e){errors.push(e.message)}

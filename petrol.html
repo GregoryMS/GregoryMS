@@ -382,7 +382,7 @@
     }
 
     function setStatus(message, isWarn = false) {
-      statusBox.innerHTML = message;
+      statusBox.textContent = message;
       statusBox.className = isWarn ? "status warn" : "status";
     }
 
@@ -454,8 +454,22 @@
     let endMarker = null;
     let routeLine = null;
     let clickStage = "start";
+    let startPoint = null;
+    let endPoint = null;
+    let routeRequestId = 0;
+
+    function invalidateRoute() {
+      routeRequestId++;
+      routeButton.disabled = false;
+      routeButton.textContent = "Calculate route distance";
+      if (routeLine) {
+        map.removeLayer(routeLine);
+        routeLine = null;
+      }
+    }
 
     function clearRouteVisuals() {
+      invalidateRoute();
       if (startMarker) {
         map.removeLayer(startMarker);
         startMarker = null;
@@ -464,25 +478,31 @@
         map.removeLayer(endMarker);
         endMarker = null;
       }
-      if (routeLine) {
-        map.removeLayer(routeLine);
-        routeLine = null;
-      }
+      startPoint = null;
+      endPoint = null;
+      startLocationInput.value = "";
+      endLocationInput.value = "";
       clickStage = "start";
+    }
+
+    function popupText(label) {
+      const element = document.createElement("span");
+      element.textContent = label;
+      return element;
     }
 
     function setStartPoint(lat, lon, label = "Start point") {
       if (startMarker) {
         map.removeLayer(startMarker);
       }
-      startMarker = L.marker([lat, lon]).addTo(map).bindPopup(label);
+      startMarker = L.marker([lat, lon]).addTo(map).bindPopup(popupText(label));
     }
 
     function setEndPoint(lat, lon, label = "End point") {
       if (endMarker) {
         map.removeLayer(endMarker);
       }
-      endMarker = L.marker([lat, lon]).addTo(map).bindPopup(label);
+      endMarker = L.marker([lat, lon]).addTo(map).bindPopup(popupText(label));
     }
 
     async function geocodePlace(query) {
@@ -524,11 +544,8 @@
 
     async function fetchRoute(start, end) {
       const coords = `${start.lon},${start.lat};${end.lon},${end.lat}`;
-      const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson}`;
-
-      // Fix accidental stray brace if present
-      const cleanUrl = url.replace(/}\s*$/, "");
-      const response = await fetch(cleanUrl, {
+      const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+      const response = await fetch(url, {
         headers: { "Accept": "application/json" }
       });
 
@@ -563,20 +580,27 @@
         return;
       }
 
+      const requestId = ++routeRequestId;
       try {
         routeButton.disabled = true;
         routeButton.textContent = "Calculating…";
         setStatus("Looking up locations and route…");
 
         const [start, end] = await Promise.all([
-          geocodePlace(startText),
-          geocodePlace(endText)
+          startPoint && startPoint.inputText === startText
+            ? startPoint : geocodePlace(startText).then(point => ({ ...point, inputText: startText })),
+          endPoint && endPoint.inputText === endText
+            ? endPoint : geocodePlace(endText).then(point => ({ ...point, inputText: endText }))
         ]);
+        if (requestId !== routeRequestId) return;
 
+        startPoint = start;
+        endPoint = end;
         setStartPoint(start.lat, start.lon, start.label);
         setEndPoint(end.lat, end.lon, end.label);
 
         const route = await fetchRoute(start, end);
+        if (requestId !== routeRequestId) return;
         drawRoute(route);
 
         const km = route.distance / 1000;
@@ -584,48 +608,71 @@
         calculateFuelCost();
 
         setStatus(
-          `Route found from <strong>${start.label}</strong> to <strong>${end.label}</strong>. Distance set to <strong>${km.toFixed(1)} km</strong>.`
+          `Route found from ${start.label} to ${end.label}. Distance set to ${km.toFixed(1)} km.`
         );
       } catch (error) {
-        setStatus(error.message || "Could not calculate the route.", true);
+        if (requestId === routeRequestId) {
+          setStatus(error.message || "Could not calculate the route.", true);
+        }
       } finally {
-        routeButton.disabled = false;
-        routeButton.textContent = "Calculate route distance";
+        if (requestId === routeRequestId) {
+          routeButton.disabled = false;
+          routeButton.textContent = "Calculate route distance";
+        }
       }
     }
 
-    map.on("click", async (event) => {
-      const { lat, lng } = event.latlng;
-
+    async function labelMapPoint(point, isStart) {
       try {
-        if (clickStage === "start") {
-          clearRouteVisuals();
-          setStartPoint(lat, lng);
-          const label = await reverseGeocode(lat, lng);
-          if (startMarker) startMarker.bindPopup(label);
-          startLocationInput.value = label;
-          clickStage = "end";
-          setStatus("Start point set. Click the map again to choose the end point.");
-        } else {
-          setEndPoint(lat, lng);
-          const label = await reverseGeocode(lat, lng);
-          if (endMarker) endMarker.bindPopup(label);
-          endLocationInput.value = label;
-          clickStage = "start";
-          setStatus("End point set. Calculating route…");
-          await calculateRouteDistance();
-        }
-      } catch (error) {
-        setStatus(error.message || "Could not use that map point.", true);
+        const label = await reverseGeocode(point.lat, point.lon);
+        const current = isStart ? startPoint : endPoint;
+        const input = isStart ? startLocationInput : endLocationInput;
+        if (current !== point || input.value !== point.inputText) return;
+        point.label = label;
+        point.inputText = label;
+        input.value = label;
+        const marker = isStart ? startMarker : endMarker;
+        if (marker) marker.bindPopup(popupText(label));
+      } catch (_) {} // Coordinates remain usable when address lookup fails.
+    }
+
+    map.on("click", (event) => {
+      const { lat, lng } = event.latlng;
+      const label = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      const point = { lat, lon: lng, label, inputText: label };
+
+      if (clickStage === "start") {
+        clearRouteVisuals();
+        startPoint = point;
+        startLocationInput.value = label;
+        setStartPoint(lat, lng, label);
+        clickStage = "end";
+        void labelMapPoint(point, true);
+        setStatus("Start point set. Click the map again to choose the end point.");
+      } else {
+        invalidateRoute();
+        endPoint = point;
+        endLocationInput.value = label;
+        setEndPoint(lat, lng, label);
+        clickStage = "start";
+        void labelMapPoint(point, false);
+        return calculateRouteDistance();
       }
+    });
+
+    startLocationInput.addEventListener("input", () => {
+      startPoint = null;
+      invalidateRoute();
+    });
+    endLocationInput.addEventListener("input", () => {
+      endPoint = null;
+      invalidateRoute();
     });
 
     routeButton.addEventListener("click", calculateRouteDistance);
 
     clearRouteButton.addEventListener("click", () => {
       clearRouteVisuals();
-      startLocationInput.value = "";
-      endLocationInput.value = "";
       setStatus("Route cleared. Enter two places or click two points on the map.");
     });
 

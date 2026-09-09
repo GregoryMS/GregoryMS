@@ -1,5 +1,11 @@
 ## Hi there 👋
 
+To run the site's regression checks with Node.js 18 or newer (no dependencies required):
+
+```sh
+node --test tests/*.test.cjs
+```
+
 <!--
 **GregoryMS/GregoryMS** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
