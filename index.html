@@ -1104,10 +1104,16 @@
 
     function makeTickerMarkup(items) {
       return items.map(item => {
-        const href = item.link || '#';
-        const title = item.title || '';
+        let href = '#';
+        try {
+          const url = new URL(item.link);
+          if (url.protocol === 'https:' || url.protocol === 'http:') {
+            href = url.href;
+          }
+        } catch {}
+        const title = escapeHtml(item.title || '');
         return `
-          <a class="ticker-item" href="${href}" target="_blank" rel="noreferrer">${title}</a>
+          <a class="ticker-item" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${title}</a>
           <span class="ticker-sep" aria-hidden="true">•</span>
         `;
       }).join('');
