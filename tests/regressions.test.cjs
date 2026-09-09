@@ -34,6 +34,8 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}) {
   const nodes = {};
   const get = id => nodes[id] ||= element();
   const ready = {};
+  const timers = new Map();
+  let timerId = 0;
   const map = { handlers: {}, setView() { return this; }, removeLayer() {}, fitBounds() {},
     on(name, callback) { this.handlers[name] = callback; } };
   const markers = [];
@@ -42,7 +44,8 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}) {
     querySelector: get, querySelectorAll: () => [], body: element(), documentElement: element(), head: element(),
     addEventListener(name, callback) { ready[name] = callback; } };
   const context = vm.createContext({ document, console, URL, AbortController,
-    setTimeout: () => 1, clearTimeout() {}, setInterval() {}, requestAnimationFrame: () => 1, cancelAnimationFrame() {},
+    setTimeout(callback) { timers.set(++timerId, callback); return timerId; },
+    clearTimeout(id) { timers.delete(id); }, setInterval() {}, requestAnimationFrame: () => 1, cancelAnimationFrame() {},
     localStorage: { getItem: () => null, setItem() {}, ...storage },
     navigator: { geolocation: { getCurrentPosition() {} } },
     matchMedia: () => ({ matches: false }), addEventListener() {}, fetch,
@@ -52,7 +55,7 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}) {
   Object.entries({ fuelPrice: '1.85', currency: '$', consumptionMode: 'lPer100', consumptionValue: '8.5', distance: '100' })
     .forEach(([id, value]) => { get(id).value = value; });
   vm.runInContext(scripts(file), context, { filename: file });
-  return { context, get, ready, map, markers };
+  return { context, get, ready, map, markers, timers };
 }
 
 const click = (env, lat, lng) => env.map.handlers.click({ latlng: { lat, lng } });
@@ -229,4 +232,78 @@ test('Victoria shows a useful fallback for network or missing forecast failures'
   const html = fs.readFileSync(path.join(root, 'Victoria_weather.html'), 'utf8');
   assert(html.includes('href="https://weather.gc.ca/en/location/'));
   assert(!html.includes('weather.json'));
+});
+
+function vancouverWeather() {
+  return { properties: {
+    currentConditions: {
+      condition: { en: '<img src=x> Clear' }, temperature: { value: { en: 0 } },
+      station: { value: { en: "Vancouver Int'l Airport" } },
+      timestamp: { en: '2026-09-09T04:00:00Z' },
+      relativeHumidity: { value: { en: 80 } },
+      wind: { direction: { value: { en: 'W' } }, speed: { value: { en: 5 } } }
+    },
+    forecastGroup: { timestamp: { en: '2026-09-08T23:00:00Z' },
+      forecasts: [{ period: { textForecastName: { en: 'Tonight' } }, textSummary: { en: '<img src=x> Low 13.' } }] }
+  } };
+}
+
+test('Vancouver loads current conditions and forecasts directly and safely', async () => {
+  let requested;
+  const env = environment('environment-canada.html', async url => { requested = url; return response(vancouverWeather()); });
+  await flush();
+  assert.equal(requested, 'https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-74?f=json');
+  assert.equal(env.get('temperature').textContent, '0°C');
+  assert.equal(env.get('condition').textContent, '<img src=x> Clear');
+  assert.equal(env.get('condition').innerHTML, '');
+  assert.match(env.get('currentDetails').textContent, /Vancouver.*Observed.*Humidity 80%.*Wind W 5 km\/h/);
+  const [card] = env.get('forecastGrid').children;
+  assert.equal(card.children[0].textContent, 'Tonight');
+  assert.equal(card.children[1].textContent, '<img src=x> Low 13.');
+  assert.equal(card.children[1].innerHTML, '');
+  assert.match(env.get('updated').textContent, /^Forecast issued/);
+  assert.equal(env.get('weatherFallback').style.display, 'none');
+  assert.equal(env.timers.size, 0);
+});
+
+test('Vancouver keeps the forecast available if observations are missing', async () => {
+  const data = vancouverWeather();
+  delete data.properties.currentConditions;
+  const env = environment('environment-canada.html', async () => response(data));
+  await flush();
+  assert.equal(env.get('temperature').textContent, '--°C');
+  assert.equal(env.get('condition').textContent, 'Unavailable');
+  assert.equal(env.get('forecastGrid').children.length, 1);
+});
+
+test('Vancouver recovers with retry after HTTP or malformed forecast failures', async () => {
+  for (const badResponse of [{ ok: false }, response({}), response({ properties: { forecastGroup: { forecasts: [] } } })]) {
+    let fail = true;
+    const env = environment('environment-canada.html', async () => fail ? badResponse : response(vancouverWeather()));
+    await flush();
+    assert.match(env.get('status').textContent, /temporarily unavailable/);
+    assert.equal(env.get('weatherFallback').style.display, 'block');
+    assert.equal(env.get('retryWeather').disabled, false);
+    fail = false;
+    await env.get('retryWeather').listeners.click();
+    assert.equal(env.get('weatherFallback').style.display, 'none');
+    assert.equal(env.get('forecastGrid').children.length, 1);
+    assert.equal(env.get('retryWeather').disabled, false);
+  }
+  const html = fs.readFileSync(path.join(root, 'environment-canada.html'), 'utf8');
+  assert(!/rss2json|allorigins|wxlink|<iframe/.test(html));
+  assert(html.includes('href="https://weather.gc.ca/en/location/'));
+});
+
+test('Vancouver aborts a stalled request and offers retry', async () => {
+  const env = environment('environment-canada.html', (url, options) => new Promise((resolve, reject) => {
+    options.signal.addEventListener('abort', () => reject(new Error('Timed out')));
+  }));
+  assert.equal(env.get('retryWeather').disabled, true);
+  [...env.timers.values()][0]();
+  await flush();
+  assert.equal(env.get('weatherFallback').style.display, 'block');
+  assert.equal(env.get('retryWeather').disabled, false);
+  assert.match(env.get('status').textContent, /temporarily unavailable/);
+  assert.equal(env.timers.size, 0);
 });
