@@ -169,7 +169,7 @@
       line-height: 1.45;
     }
 
-    .weatherlink-fallback {
+    .weather-fallback {
       display: none;
       margin-top: 18px;
       padding: 18px;
@@ -180,18 +180,7 @@
       line-height: 1.5;
     }
 
-    .weatherlink-frame {
-      display: block;
-      width: 100%;
-      max-width: 420px;
-      height: 240px;
-      margin-top: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-    }
-
-    .weatherlink-fallback a { color: #874d00; font-weight: 800; }
+    .weather-fallback a { color: #874d00; font-weight: 800; }
 
     footer {
       margin-top: 26px;
@@ -214,10 +203,11 @@
         <h1>Environment Canada</h1>
         <p class="subtitle">Current conditions and weekly forecast for Vancouver, BC.</p>
       </div>
-      <a class="source-link" href="https://weather.gc.ca/city/pages/bc-74_metric_e.html" rel="noreferrer">Official forecast</a>
+      <a class="source-link" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12" rel="noreferrer">Official forecast</a>
     </header>
+    <noscript><p>Enable JavaScript to load the weather here, or use the official forecast link above.</p></noscript>
 
-    <p class="status" id="status">Loading Environment Canada feed...</p>
+    <p class="status" id="status" role="status">Loading Environment Canada weather…</p>
 
     <section class="current" aria-labelledby="current-heading">
       <div>
@@ -234,202 +224,107 @@
         <div class="updated" id="updated"></div>
       </div>
       <div class="forecast-grid" id="forecastGrid"></div>
-      <div class="weatherlink-fallback" id="weatherlinkFallback">
-        The full feed could not be converted in this browser, so this embedded Environment Canada WeatherLink is shown instead.
-        <iframe class="weatherlink-frame" title="Environment Canada WeatherLink for Vancouver" src="https://weather.gc.ca/wxlink/wxlink.html?cityCode=bc-74&amp;lang=e"></iframe>
-        <p><a href="https://weather.gc.ca/city/pages/bc-74_metric_e.html" rel="noreferrer">Open the official Vancouver forecast</a></p>
+      <div class="weather-fallback" id="weatherFallback">
+        The weather service could not be reached. You can retry or open the official forecast and weather alerts.
+        <button class="source-link" type="button" id="retryWeather">Try again</button>
+        <p><a href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12" rel="noreferrer">Open the official Vancouver forecast</a></p>
       </div>
     </section>
 
     <footer>
-      Data source: Environment and Climate Change Canada public city feed and WeatherLink.
+      Data source: Environment and Climate Change Canada.
     </footer>
   </main>
 
   <script>
-    const FEED_URL = 'https://weather.gc.ca/rss/city/bc-74_e.xml';
-    const RSS_JSON_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED_URL);
-    const ALL_ORIGINS_RAW_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(FEED_URL);
-    const ALL_ORIGINS_GET_URL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(FEED_URL);
-
+    const WEATHER_URL = 'https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-74?f=json';
     const statusEl = document.getElementById('status');
     const conditionEl = document.getElementById('condition');
     const temperatureEl = document.getElementById('temperature');
     const currentDetailsEl = document.getElementById('currentDetails');
     const forecastGridEl = document.getElementById('forecastGrid');
     const updatedEl = document.getElementById('updated');
-    const weatherlinkFallbackEl = document.getElementById('weatherlinkFallback');
+    const fallbackEl = document.getElementById('weatherFallback');
+    const retryButton = document.getElementById('retryWeather');
 
-    function clean(value) {
-      const div = document.createElement('div');
-      div.innerHTML = String(value || '');
-      return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+    function formatDate(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleString('en-CA', {
+        weekday: 'short', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit',
+        timeZone: 'America/Vancouver', timeZoneName: 'short'
+      });
     }
 
-    function stripPrefix(value) {
-      return clean(value).replace(/^(Current Conditions|Forecast):\s*/i, '').trim();
-    }
-
-    function parseTemperature(value) {
-      const match = clean(value).match(/(-?\d+(?:\.\d+)?)\s*(?:°|&deg;)?\s*C/i);
-      return match ? Math.round(Number(match[1])) : null;
-    }
-
-    function parseCondition(title) {
-      return stripPrefix(title).replace(/,?\s*-?\d+(?:\.\d+)?\s*(?:°|&deg;)?\s*C.*$/i, '').trim() || 'Current report';
-    }
-
-    function splitForecastTitle(title, description) {
-      const cleanedTitle = stripPrefix(title);
-      const cleanedDescription = stripPrefix(description);
-      const parts = cleanedTitle.split(':');
-
-      if (parts.length > 1) {
-        return {
-          period: parts.shift().trim(),
-          text: parts.join(':').trim()
-        };
-      }
-
-      return {
-        period: cleanedTitle || 'Forecast',
-        text: cleanedDescription || cleanedTitle
-      };
-    }
-
-    function renderCurrent(item) {
-      if (!item) {
-        conditionEl.textContent = 'Unavailable';
-        temperatureEl.innerHTML = '--&deg;C';
-        currentDetailsEl.textContent = '';
-        return;
-      }
-
-      const title = item.title || '';
-      const details = item.description || item.summary || item.content || '';
-      const temp = parseTemperature(title + ' ' + details);
-
-      conditionEl.textContent = parseCondition(title);
-      temperatureEl.innerHTML = temp === null ? '--&deg;C' : `${temp}&deg;C`;
-      currentDetailsEl.textContent = stripPrefix(details || title);
+    function renderCurrent(current) {
+      conditionEl.textContent = current?.condition?.en || 'Unavailable';
+      const temperature = current?.temperature?.value?.en;
+      temperatureEl.textContent = Number.isFinite(temperature) ? `${Math.round(temperature)}°C` : '--°C';
+      const details = [];
+      const station = current?.station?.value?.en;
+      if (station) details.push(station);
+      const observed = formatDate(current?.timestamp?.en);
+      if (observed) details.push('Observed ' + observed);
+      const humidity = current?.relativeHumidity?.value?.en;
+      if (Number.isFinite(humidity)) details.push(`Humidity ${humidity}%`);
+      const speed = current?.wind?.speed?.value?.en;
+      const direction = current?.wind?.direction?.value?.en || '';
+      if (Number.isFinite(speed)) details.push(`Wind ${direction} ${speed} km/h`.replace(/\s+/g, ' '));
+      currentDetailsEl.textContent = details.join(' · ');
     }
 
     function renderForecast(items) {
-      forecastGridEl.innerHTML = '';
-
-      items.slice(0, 14).forEach((item) => {
-        const forecast = splitForecastTitle(item.title, item.description || item.summary || item.content);
+      const cards = items.slice(0, 14).map(item => {
         const card = document.createElement('article');
         card.className = 'forecast-card';
-
         const period = document.createElement('p');
         period.className = 'period';
-        period.textContent = forecast.period;
-
+        period.textContent = item.period?.textForecastName?.en || item.period?.value?.en || 'Forecast';
         const text = document.createElement('p');
         text.className = 'forecast-text';
-        text.textContent = forecast.text;
-
+        text.textContent = item.textSummary?.en || 'Forecast details unavailable.';
         card.append(period, text);
-        forecastGridEl.appendChild(card);
+        return card;
       });
-    }
-
-    function renderUpdated(value) {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return;
-
-      updatedEl.textContent = 'Updated ' + date.toLocaleString('en-CA', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        timeZoneName: 'short'
-      });
-    }
-
-    function renderFeed(items, updated, sourceName) {
-      const current = items.find((item) => /Current Conditions/i.test(item.title || ''));
-      const forecast = items.filter((item) => !/Current Conditions/i.test(item.title || ''));
-
-      if (!current && !forecast.length) throw new Error('No weather entries found');
-
-      renderCurrent(current);
-      renderForecast(forecast);
-      renderUpdated(updated);
-      weatherlinkFallbackEl.style.display = 'none';
-      statusEl.textContent = 'Live feed loaded from Environment Canada via ' + sourceName + '.';
-    }
-
-    async function fetchRssJson() {
-      const response = await fetch(RSS_JSON_URL, { cache: 'no-store' });
-      if (!response.ok) throw new Error('RSS JSON request failed');
-
-      const data = await response.json();
-      if (data.status !== 'ok' || !Array.isArray(data.items)) throw new Error('RSS JSON response failed');
-
-      renderFeed(data.items, data.feed && data.feed.pubDate, 'RSS-to-JSON');
-    }
-
-    function xmlTextFrom(node, selectors) {
-      for (const selector of selectors) {
-        const value = node.querySelector(selector)?.textContent;
-        if (value) return value.trim();
-      }
-      return '';
-    }
-
-    async function fetchXml(url, wrapped) {
-      const response = await fetch(url, { cache: 'no-store' });
-      if (!response.ok) throw new Error('XML request failed');
-
-      let xmlText = await response.text();
-      if (wrapped) {
-        const json = JSON.parse(xmlText);
-        xmlText = json.contents || '';
-      }
-
-      const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
-      if (xml.querySelector('parsererror')) throw new Error('XML parse failed');
-
-      const entries = Array.from(xml.querySelectorAll('entry')).map((entry) => ({
-        title: xmlTextFrom(entry, ['title']),
-        description: xmlTextFrom(entry, ['summary', 'content']),
-        pubDate: xmlTextFrom(entry, ['updated', 'published'])
-      }));
-
-      renderFeed(entries, xmlTextFrom(xml, ['feed > updated', 'updated']), wrapped ? 'AllOrigins JSON' : 'AllOrigins raw');
-    }
-
-    function renderWeatherLinkFallback() {
-      statusEl.textContent = 'Showing Environment Canada WeatherLink fallback.';
-      conditionEl.textContent = 'WeatherLink loaded below';
-      temperatureEl.innerHTML = '--&deg;C';
-      currentDetailsEl.textContent = 'The browser could not read the RSS feed, but the official Environment Canada widget is embedded below.';
-      forecastGridEl.innerHTML = '';
-      updatedEl.textContent = '';
-      weatherlinkFallbackEl.style.display = 'block';
+      forecastGridEl.replaceChildren(...cards);
     }
 
     async function loadWeather() {
-      const attempts = [
-        () => fetchRssJson(),
-        () => fetchXml(ALL_ORIGINS_RAW_URL, false),
-        () => fetchXml(ALL_ORIGINS_GET_URL, true)
-      ];
-
-      for (const attempt of attempts) {
-        try {
-          await attempt();
-          return;
-        } catch (error) {}
+      if (retryButton.disabled) return;
+      retryButton.disabled = true;
+      statusEl.textContent = 'Loading Environment Canada weather…';
+      fallbackEl.style.display = 'none';
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(WEATHER_URL, { signal: controller.signal });
+        if (!response.ok) throw new Error('Weather request failed');
+        const data = await response.json();
+        const weather = data.properties;
+        const forecasts = weather?.forecastGroup?.forecasts;
+        if (!Array.isArray(forecasts) || !forecasts.length) throw new Error('No forecast available');
+        renderCurrent(weather.currentConditions);
+        renderForecast(forecasts);
+        const issued = formatDate(weather.forecastGroup.timestamp?.en);
+        updatedEl.textContent = issued ? 'Forecast issued ' + issued : '';
+        statusEl.textContent = 'Weather loaded from Environment Canada.';
+      } catch (_) {
+        renderCurrent(null);
+        forecastGridEl.replaceChildren();
+        updatedEl.textContent = '';
+        statusEl.textContent = 'Weather is temporarily unavailable. Try again or open the official forecast.';
+        fallbackEl.style.display = 'block';
+      } finally {
+        clearTimeout(timeout);
+        retryButton.disabled = false;
       }
-
-      renderWeatherLinkFallback();
     }
 
+    retryButton.addEventListener('click', loadWeather);
     loadWeather();
   </script>
 </body>
 </html>
+
