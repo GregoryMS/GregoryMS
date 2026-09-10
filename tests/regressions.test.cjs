@@ -17,9 +17,13 @@ const deferred = () => {
 
 // Minimal DOM and Leaflet doubles keep these regressions runnable without packages or network access.
 function element(tag = 'div') {
+  const classes = new Set();
   return {
     tagName: tag.toUpperCase(), value: '', textContent: '', innerHTML: '', children: [],
-    style: { setProperty() {} }, classList: { toggle() {}, add() {}, remove() {}, contains: () => false },
+    style: { setProperty() {} }, classList: {
+      toggle(name, force) { if (force ?? !classes.has(name)) classes.add(name); else classes.delete(name); },
+      add(name) { classes.add(name); }, remove(name) { classes.delete(name); }, contains: name => classes.has(name)
+    },
     listeners: {}, attributes: {}, disabled: false,
     addEventListener(name, callback) { this.listeners[name] = callback; },
     setAttribute(name, value) { this.attributes[name] = value; },
@@ -244,7 +248,8 @@ function vancouverWeather() {
       wind: { direction: { value: { en: 'W' } }, speed: { value: { en: 5 } } }
     },
     forecastGroup: { timestamp: { en: '2026-09-08T23:00:00Z' },
-      forecasts: [{ period: { textForecastName: { en: 'Tonight' } }, textSummary: { en: '<img src=x> Low 13.' } }] }
+      forecasts: [{ period: { textForecastName: { en: 'Tonight' }, value: { en: 'Tuesday night' } }, textSummary: { en: '<img src=x> Low 13.' },
+        abbreviatedForecast: { textSummary: { en: 'Clear' } }, temperatures: { temperature: [{ class: { en: 'low' }, value: { en: 13 } }] } }] }
   } };
 }
 
@@ -256,11 +261,17 @@ test('Vancouver loads current conditions and forecasts directly and safely', asy
   assert.equal(env.get('temperature').textContent, '0°C');
   assert.equal(env.get('condition').textContent, '<img src=x> Clear');
   assert.equal(env.get('condition').innerHTML, '');
-  assert.match(env.get('currentDetails').textContent, /Vancouver.*Observed.*Humidity 80%.*Wind W 5 km\/h/);
+  assert.match(env.get('currentDetails').textContent, /Vancouver.*Sep/);
+  assert.equal(env.get('humidity').textContent, '80%');
+  assert.equal(env.get('wind').textContent, 'W 5 km/h');
   const [card] = env.get('forecastGrid').children;
   assert.equal(card.children[0].textContent, 'Tonight');
-  assert.equal(card.children[1].textContent, '<img src=x> Low 13.');
-  assert.equal(card.children[1].innerHTML, '');
+  assert.match(card.children[1].innerHTML, /^<svg/);
+  const copy = card.children[4].children[1].children[1];
+  assert.equal(copy.textContent, '<img src=x> Low 13.');
+  assert.equal(copy.innerHTML, '');
+  assert.equal(env.get('currentHigh').textContent, '—');
+  assert.equal(env.get('currentLow').textContent, '13°');
   assert.match(env.get('updated').textContent, /^Forecast issued/);
   assert.equal(env.get('weatherFallback').style.display, 'none');
   assert.equal(env.timers.size, 0);
@@ -306,4 +317,75 @@ test('Vancouver aborts a stalled request and offers retry', async () => {
   assert.equal(env.get('retryWeather').disabled, false);
   assert.match(env.get('status').textContent, /temporarily unavailable/);
   assert.equal(env.timers.size, 0);
+});
+
+test('daily forecasts pair a daytime high with that night’s low', () => {
+  const env = environment('environment-canada.html');
+  const period = (name, type, value) => ({ period:{ value:{en:name}, textForecastName:{en:name} },
+    temperatures:{ temperature:[{class:{en:type},value:{en:value}}] },
+    abbreviatedForecast:{textSummary:{en:'Sunny'}}, textSummary:{en:name} });
+  env.context.forecasts = [period('Tuesday night','low',-2), period('Wednesday','high',0), period('Wednesday night','low',-5), period('Thursday','high',4)];
+  const days = vm.runInContext('forecastDays(forecasts,"2026-09-08T23:00:00Z")',env.context);
+  assert.equal(days.length,3);
+  assert.equal(days[0].high,null);
+  assert.equal(days[0].low,-2);
+  assert.equal(days[1].high,0);
+  assert.equal(days[1].low,-5);
+  assert.equal(days[1].periods.length,2);
+  assert.equal(days[2].low,null);
+  assert.equal(vm.runInContext('degrees(0)',env.context),'0°');
+  assert.equal(vm.runInContext('degrees(null)',env.context),'—');
+});
+
+test('icons distinguish common conditions and night without accepting remote markup', () => {
+  const env = environment('environment-canada.html');
+  const samples = [['Sunny',false,'sun'],['Clear',true,'moon'],['Partly cloudy',true,'partly-night'],['Chance of showers',false,'rain'],['Snow',false,'snow'],['Rain and snow',false,'sleet'],['Thunderstorms',false,'storm'],['Fog patches',false,'fog']];
+  for (const [condition,night,expected] of samples) {
+    env.context.sample = {condition,night};
+    assert.equal(vm.runInContext('iconKind(sample.condition,sample.night)',env.context),expected);
+  }
+  assert(!vm.runInContext('weatherIcon("<img src=x onerror=alert(1)>")',env.context).includes('<img'));
+});
+
+test('all three city choices use the right endpoint and official forecast link', async () => {
+  const urls = [];
+  const env = environment('environment-canada.html',async url => { urls.push(url); return response(vancouverWeather()); });
+  await flush();
+  for (const [city,id,coords] of [['victoria','bc-85','48.43,-123.36'],['chilliwack','bc-24','49.17,-121.94'],['vancouver','bc-74','49.24,-123.12']]) {
+    env.context.city = city;
+    await vm.runInContext('selectCity(city)',env.context);
+    assert(urls.at(-1).includes(`/items/${id}?`));
+    assert.equal(env.get('officialLink').href, 'https://weather.gc.ca/en/location/index.html?coords='+encodeURIComponent(coords));
+    assert.equal(env.get('cityName').textContent.toLowerCase(),city);
+  }
+});
+
+test('switching cities aborts the old request and ignores its late response', async () => {
+  const requests=[];
+  const env = environment('environment-canada.html',(url,options) => {const pending=deferred(); requests.push({url,signal:options.signal,...pending});return pending.promise;});
+  const next=vm.runInContext('selectCity("victoria")',env.context);
+  assert.equal(requests[0].signal.aborted,true);
+  assert.equal(env.get('cityName').textContent,'Victoria');
+  assert.equal(env.get('temperature').textContent,'--°C');
+  const victoria=vancouverWeather(); victoria.properties.currentConditions.temperature.value.en=22;
+  requests[1].resolve(response(victoria)); await next;
+  requests[0].resolve(response(vancouverWeather())); await flush();
+  assert.equal(env.get('temperature').textContent,'22°C');
+  assert.match(env.get('status').textContent,/^Victoria weather loaded/);
+  assert.equal(env.get('weatherContent').attributes['aria-busy'],'false');
+});
+
+test('saved city and Gregle theme are restored and storage failure is harmless', async () => {
+  const env=environment('environment-canada.html',async () => response(vancouverWeather()),{
+    getItem:key => key==='gregle-weather-city' ? 'chilliwack' : 'dark',
+    setItem(){throw new Error('Storage blocked');}
+  });
+  await flush();
+  assert.equal(env.get('cityName').textContent,'Chilliwack');
+  assert.equal(env.context.document.documentElement.classList.contains('dark-mode'),true);
+  env.get('themeToggle').listeners.click();
+  assert.equal(env.context.document.documentElement.classList.contains('dark-mode'),false);
+  const invalid=environment('environment-canada.html',async () => response(vancouverWeather()),{getItem:()=> 'not-a-city'});
+  await flush();
+  assert.equal(invalid.get('cityName').textContent,'Vancouver');
 });
