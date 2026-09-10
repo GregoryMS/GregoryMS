@@ -255,7 +255,7 @@ function vancouverWeather() {
 
 test('Vancouver loads current conditions and forecasts directly and safely', async () => {
   let requested;
-  const env = environment('environment-canada.html', async url => { requested = url; return response(vancouverWeather()); });
+  const env = environment('weather.html', async url => { requested = url; return response(vancouverWeather()); });
   await flush();
   assert.equal(requested, 'https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-74?f=json');
   assert.equal(env.get('temperature').textContent, '0°C');
@@ -280,7 +280,7 @@ test('Vancouver loads current conditions and forecasts directly and safely', asy
 test('Vancouver keeps the forecast available if observations are missing', async () => {
   const data = vancouverWeather();
   delete data.properties.currentConditions;
-  const env = environment('environment-canada.html', async () => response(data));
+  const env = environment('weather.html', async () => response(data));
   await flush();
   assert.equal(env.get('temperature').textContent, '--°C');
   assert.equal(env.get('condition').textContent, 'Unavailable');
@@ -290,7 +290,7 @@ test('Vancouver keeps the forecast available if observations are missing', async
 test('Vancouver recovers with retry after HTTP or malformed forecast failures', async () => {
   for (const badResponse of [{ ok: false }, response({}), response({ properties: { forecastGroup: { forecasts: [] } } })]) {
     let fail = true;
-    const env = environment('environment-canada.html', async () => fail ? badResponse : response(vancouverWeather()));
+    const env = environment('weather.html', async () => fail ? badResponse : response(vancouverWeather()));
     await flush();
     assert.match(env.get('status').textContent, /temporarily unavailable/);
     assert.equal(env.get('weatherFallback').style.display, 'block');
@@ -301,13 +301,13 @@ test('Vancouver recovers with retry after HTTP or malformed forecast failures', 
     assert.equal(env.get('forecastGrid').children.length, 1);
     assert.equal(env.get('retryWeather').disabled, false);
   }
-  const html = fs.readFileSync(path.join(root, 'environment-canada.html'), 'utf8');
+  const html = fs.readFileSync(path.join(root, 'weather.html'), 'utf8');
   assert(!/rss2json|allorigins|wxlink|<iframe/.test(html));
   assert(html.includes('href="https://weather.gc.ca/en/location/'));
 });
 
 test('Vancouver aborts a stalled request and offers retry', async () => {
-  const env = environment('environment-canada.html', (url, options) => new Promise((resolve, reject) => {
+  const env = environment('weather.html', (url, options) => new Promise((resolve, reject) => {
     options.signal.addEventListener('abort', () => reject(new Error('Timed out')));
   }));
   assert.equal(env.get('retryWeather').disabled, true);
@@ -320,7 +320,7 @@ test('Vancouver aborts a stalled request and offers retry', async () => {
 });
 
 test('daily forecasts pair a daytime high with that night’s low', () => {
-  const env = environment('environment-canada.html');
+  const env = environment('weather.html');
   const period = (name, type, value) => ({ period:{ value:{en:name}, textForecastName:{en:name} },
     temperatures:{ temperature:[{class:{en:type},value:{en:value}}] },
     abbreviatedForecast:{textSummary:{en:'Sunny'}}, textSummary:{en:name} });
@@ -338,7 +338,7 @@ test('daily forecasts pair a daytime high with that night’s low', () => {
 });
 
 test('icons distinguish common conditions and night without accepting remote markup', () => {
-  const env = environment('environment-canada.html');
+  const env = environment('weather.html');
   const samples = [['Sunny',false,'sun'],['Clear',true,'moon'],['Partly cloudy',true,'partly-night'],['Chance of showers',false,'rain'],['Snow',false,'snow'],['Rain and snow',false,'sleet'],['Thunderstorms',false,'storm'],['Fog patches',false,'fog']];
   for (const [condition,night,expected] of samples) {
     env.context.sample = {condition,night};
@@ -349,7 +349,7 @@ test('icons distinguish common conditions and night without accepting remote mar
 
 test('all three city choices use the right endpoint and official forecast link', async () => {
   const urls = [];
-  const env = environment('environment-canada.html',async url => { urls.push(url); return response(vancouverWeather()); });
+  const env = environment('weather.html',async url => { urls.push(url); return response(vancouverWeather()); });
   await flush();
   for (const [city,id,coords] of [['victoria','bc-85','48.43,-123.36'],['chilliwack','bc-24','49.17,-121.94'],['vancouver','bc-74','49.24,-123.12']]) {
     env.context.city = city;
@@ -362,7 +362,7 @@ test('all three city choices use the right endpoint and official forecast link',
 
 test('switching cities aborts the old request and ignores its late response', async () => {
   const requests=[];
-  const env = environment('environment-canada.html',(url,options) => {const pending=deferred(); requests.push({url,signal:options.signal,...pending});return pending.promise;});
+  const env = environment('weather.html',(url,options) => {const pending=deferred(); requests.push({url,signal:options.signal,...pending});return pending.promise;});
   const next=vm.runInContext('selectCity("victoria")',env.context);
   assert.equal(requests[0].signal.aborted,true);
   assert.equal(env.get('cityName').textContent,'Victoria');
@@ -376,7 +376,7 @@ test('switching cities aborts the old request and ignores its late response', as
 });
 
 test('saved city and Gregle theme are restored and storage failure is harmless', async () => {
-  const env=environment('environment-canada.html',async () => response(vancouverWeather()),{
+  const env=environment('weather.html',async () => response(vancouverWeather()),{
     getItem:key => key==='gregle-weather-city' ? 'chilliwack' : 'dark',
     setItem(){throw new Error('Storage blocked');}
   });
@@ -385,7 +385,7 @@ test('saved city and Gregle theme are restored and storage failure is harmless',
   assert.equal(env.context.document.documentElement.classList.contains('dark-mode'),true);
   env.get('themeToggle').listeners.click();
   assert.equal(env.context.document.documentElement.classList.contains('dark-mode'),false);
-  const invalid=environment('environment-canada.html',async () => response(vancouverWeather()),{getItem:()=> 'not-a-city'});
+  const invalid=environment('weather.html',async () => response(vancouverWeather()),{getItem:()=> 'not-a-city'});
   await flush();
   assert.equal(invalid.get('cityName').textContent,'Vancouver');
 });
