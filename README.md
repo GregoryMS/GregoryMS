@@ -32,7 +32,7 @@ GitHub Actions runs the suite on pull requests and pushes to `main`. The tests e
 
 ## Adding a tool
 
-Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Links** menu item opens this directory. `links.html` and `xkcd.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference.
+Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Links** menu item opens this directory. `links.html`, `xkcd.html` and `petrol.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference. The fuel calculator adds its page layout in `assets/fuel.css`.
 
 ## Refreshing the xkcd index
 
