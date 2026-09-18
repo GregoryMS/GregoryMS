@@ -613,10 +613,10 @@ test('shared tool theme restores preference and works with blocked storage', () 
   }
 });
 
-test('homepage links menu and tool cards resolve to the intended local pages', () => {
+test('homepage tools menu and tool cards resolve to the intended local pages', () => {
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const links = fs.readFileSync(path.join(root, 'links.html'), 'utf8');
-  assert.match(home, /href="\/links.html">Links<\/a>/);
+  assert.match(home, /href="\/links.html">Tools<\/a>/);
   for (const target of ['petrol.html', 'xkcd.html']) {
     assert(links.includes('href="' + target + '"'));
     assert(fs.existsSync(path.join(root, target)));
