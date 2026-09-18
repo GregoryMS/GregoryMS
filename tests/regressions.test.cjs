@@ -6,7 +6,10 @@ const { test } = require('node:test');
 
 const root = path.join(__dirname, '..');
 const scripts = file => [...fs.readFileSync(path.join(root, file), 'utf8')
-  .matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => match[1]).join('\n');
+  .matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => {
+    const src = match[0].match(/src="(assets\/[^"]+\.js)"/);
+    return src ? fs.readFileSync(path.join(root, src[1]), 'utf8') : match[1];
+  }).join('\n');
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const response = data => ({ ok: true, json: async () => data });
 const deferred = () => {
@@ -34,7 +37,7 @@ function element(tag = 'div') {
   };
 }
 
-function environment(file, fetch = () => new Promise(() => {}), storage = {}) {
+function environment(file, fetch = () => new Promise(() => {}), storage = {}, overrides = {}) {
   const nodes = {};
   const get = id => nodes[id] ||= element();
   const ready = {};
@@ -58,6 +61,10 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}) {
   context.window = context;
   Object.entries({ fuelPrice: '1.85', currency: '$', consumptionMode: 'lPer100', consumptionValue: '8.5', distance: '100' })
     .forEach(([id, value]) => { get(id).value = value; });
+  if (file === 'ev.html') Object.entries({ electricityPrice: '0.30', currency: '$', consumptionMode: 'kwh100',
+    consumptionValue: '18', distance: '100', distanceUnit: 'km', journeyType: '1', chargingEfficiency: '90' })
+    .forEach(([id, value]) => { get(id).value = value; });
+  Object.assign(context, overrides);
   vm.runInContext(scripts(file), context, { filename: file });
   return { context, get, ready, map, markers, timers };
 }
@@ -65,7 +72,7 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}) {
 const click = (env, lat, lng) => env.map.handlers.click({ latlng: { lat, lng } });
 const routeResponse = (distance = 1500) => response({ routes: [{ distance, geometry: {} }] });
 
-test('all inline scripts parse', () => {
+test('all page scripts parse', () => {
   for (const file of fs.readdirSync(root).filter(file => file.endsWith('.html'))) {
     new vm.Script(scripts(file), { filename: file });
   }
@@ -190,8 +197,9 @@ test('route error messages and marker popups treat markup as text', async () => 
   await env.get('routeButton').listeners.click();
   assert(env.get('statusBox').textContent.includes(payload));
   assert.equal(env.get('statusBox').innerHTML, '');
-  env.context.label = payload;
-  vm.runInContext('setStartPoint(1, 2, label)', env.context);
+  env.context.fetch = async () => response({ display_name: payload });
+  click(env, 1, 2);
+  await flush();
   assert.equal(env.markers.at(-1).popup.textContent, payload);
   assert.equal(env.markers.at(-1).popup.innerHTML, '');
 });
@@ -617,7 +625,7 @@ test('homepage tools menu and tool cards resolve to the intended local pages', (
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const links = fs.readFileSync(path.join(root, 'links.html'), 'utf8');
   assert.match(home, /href="\/links.html">Tools<\/a>/);
-  for (const target of ['petrol.html', 'xkcd.html']) {
+  for (const target of ['petrol.html', 'ev.html', 'xkcd.html']) {
     assert(links.includes('href="' + target + '"'));
     assert(fs.existsSync(path.join(root, target)));
   }
@@ -625,5 +633,115 @@ test('homepage tools menu and tool cards resolve to the intended local pages', (
     const html = fs.readFileSync(path.join(root, page), 'utf8');
     assert(html.includes('href="assets/tools.css"'));
     assert(html.includes('src="assets/theme.js"'));
+  }
+});
+
+test('EV estimate includes charging losses and doubles energy and cost for a return trip', () => {
+  const env = environment('ev.html');
+  assert.equal(env.get('tripCost').textContent, '$6.00');
+  assert.equal(env.get('energyUsed').textContent, '18.00 kWh');
+  assert.equal(env.get('energyPurchased').textContent, '20.00 kWh');
+  env.get('journeyType').value = '2';
+  env.get('journeyType').listeners.input();
+  assert.equal(env.get('tripCost').textContent, '$12.00');
+  assert.equal(env.get('energyPurchased').textContent, '40.00 kWh');
+  assert.equal(env.get('routeDistance').textContent, '200.0 km');
+});
+
+test('EV distance and efficiency unit changes preserve the same journey cost', () => {
+  const env = environment('ev.html');
+  env.get('distanceUnit').value = 'miles';
+  env.get('distanceUnit').listeners.change();
+  assert(Math.abs(Number(env.get('distance').value) - 62.137119) < 0.000001);
+  assert.equal(env.get('tripCost').textContent, '$6.00');
+  assert.equal(env.get('costPerUnitLabel').textContent, 'Cost per mile');
+  assert.equal(env.get('costPerUnit').textContent, '$0.097');
+  for (const mode of ['milesKwh', 'kmKwh', 'kwh100']) {
+    env.get('consumptionMode').value = mode;
+    env.get('consumptionMode').listeners.change();
+    assert.equal(env.get('tripCost').textContent, '$6.00');
+  }
+  env.get('distanceUnit').value = 'km';
+  env.get('distanceUnit').listeners.change();
+  assert.equal(env.get('routeDistance').textContent, '100.0 km');
+});
+
+test('EV miles per kWh estimates use reciprocal efficiency and the selected distance unit', () => {
+  const env = environment('ev.html');
+  Object.entries({ distance: '120', distanceUnit: 'miles', consumptionMode: 'milesKwh',
+    consumptionValue: '4', chargingEfficiency: '100', electricityPrice: '0.25' })
+    .forEach(([id, value]) => { env.get(id).value = value; });
+  env.get('distance').listeners.input();
+  assert.equal(env.get('energyUsed').textContent, '30.00 kWh');
+  assert.equal(env.get('energyPurchased').textContent, '30.00 kWh');
+  assert.equal(env.get('tripCost').textContent, '$7.50');
+});
+
+test('EV incomplete or invalid numbers clear the estimate and recover after correction', () => {
+  for (const [id, value] of [['electricityPrice', ''], ['electricityPrice', '-1'], ['consumptionValue', '0'],
+    ['distance', '-10'], ['distance', 'Infinity'], ['chargingEfficiency', '0'], ['chargingEfficiency', '101']]) {
+    const env = environment('ev.html');
+    const original = env.get(id).value;
+    env.get(id).value = value;
+    env.get(id).listeners.input();
+    assert.equal(env.get('tripCost').textContent, '—');
+    assert.equal(env.get(id).attributes['aria-invalid'], 'true');
+    assert(env.get('validationMessage').textContent);
+    env.get(id).value = original;
+    env.get(id).listeners.input();
+    assert.equal(env.get('tripCost').textContent, '$6.00');
+    assert.equal(env.get(id).attributes['aria-invalid'], 'false');
+    assert.equal(env.get('validationMessage').textContent, '');
+  }
+});
+
+test('EV free charging and zero distance are valid and currency is rendered as text', () => {
+  const env = environment('ev.html');
+  env.get('electricityPrice').value = '0';
+  env.get('electricityPrice').listeners.input();
+  assert.equal(env.get('tripCost').textContent, '$0.00');
+  assert.equal(env.get('energyPurchased').textContent, '20.00 kWh');
+  env.get('distance').value = '0';
+  env.get('distance').listeners.input();
+  assert.equal(env.get('energyPurchased').textContent, '0.00 kWh');
+  env.get('currency').value = '<img src=x onerror=alert(1)>';
+  env.get('currency').listeners.input();
+  assert.match(env.get('tripCost').textContent, /^<img/);
+  assert.equal(env.get('tripCost').innerHTML, '');
+});
+
+test('EV routing converts kilometres to miles and respects a return journey', async () => {
+  const env = environment('ev.html', async url => url.includes('/reverse') ? response({ display_name: 'Place' }) : routeResponse(160934.4));
+  env.get('distanceUnit').value = 'miles';
+  env.get('distanceUnit').listeners.change();
+  env.get('journeyType').value = '2';
+  click(env, 1, 2);
+  await click(env, 3, 4);
+  assert.equal(env.get('distance').value, '100');
+  assert.equal(env.get('routeDistance').textContent, '200.0 miles');
+  assert.equal(env.get('tripCost').textContent, '$19.31');
+});
+
+test('EV cleared routes ignore a late distance response', async () => {
+  const pending = deferred();
+  const env = environment('ev.html', url => url.includes('/reverse') ? Promise.resolve(response({ display_name: 'Place' })) : pending.promise);
+  click(env, 1, 2);
+  const routing = click(env, 3, 4);
+  await flush();
+  env.get('clearRouteButton').listeners.click();
+  pending.resolve(routeResponse(99000));
+  await routing;
+  assert.equal(env.get('distance').value, '100');
+  assert.equal(env.get('tripCost').textContent, '$6.00');
+});
+
+test('both trip calculators still update manually when the map library is unavailable', () => {
+  for (const file of ['petrol.html', 'ev.html']) {
+    const env = environment(file, undefined, {}, { L: undefined });
+    assert.equal(env.get('routeButton').disabled, true);
+    assert.match(env.get('statusBox').textContent, /Enter your distance above/);
+    env.get('distance').value = '200';
+    env.get('distance').listeners.input();
+    assert.equal(env.get('tripCost').textContent, file === 'ev.html' ? '$12.00' : '$31.45');
   }
 });

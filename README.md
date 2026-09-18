@@ -5,6 +5,7 @@ A static personal homepage and collection of browser tools, served at the domain
 - `index.html`: search, recent searches, local weather and BBC headlines.
 - `weather.html`: Environment Canada forecasts for Vancouver, Victoria and Chilliwack.
 - `petrol.html`: fuel-cost calculator with map-based routing.
+- `ev.html`: EV trip-cost calculator with charging losses, unit conversion and map-based routing.
 - `xkcd.html`: comic search using archive titles and context clues.
 - `contact.html` and `donate.html`: contact and support pages.
 
@@ -28,11 +29,11 @@ Run the regression suite with Node.js 18 or newer, without installing dependenci
 node --test tests/*.test.cjs
 ```
 
-GitHub Actions runs the suite on pull requests and pushes to `main`. The tests exercise inline JavaScript with small DOM and service doubles, covering escaping, stored data, asynchronous requests, routing, forecasts, wallet copying and local icon paths. They do not verify the availability of live external services or replace browser checks.
+GitHub Actions runs the suite on pull requests and pushes to `main`. The tests exercise page JavaScript with small DOM and service doubles, covering escaping, stored data, asynchronous requests, routing, EV energy and cost calculations, forecasts, wallet copying and local icon paths. They do not verify the availability of live external services or replace browser checks.
 
 ## Adding a tool
 
-Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Tools** menu item opens this directory. `links.html`, `xkcd.html` and `petrol.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference. The fuel calculator adds its page layout in `assets/fuel.css`.
+Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Tools** menu item opens this directory. `links.html`, `xkcd.html`, `petrol.html` and `ev.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference. The fuel and EV calculators share their layout in `assets/fuel.css` and routing in `assets/route-planner.js`. EV calculations run locally in `assets/ev.js`; electricity prices are examples that users replace with their own tariff.
 
 ## Refreshing the xkcd index
 

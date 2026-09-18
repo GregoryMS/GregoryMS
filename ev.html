@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Estimate electric vehicle charging costs and plan a driving route with Gregle’s EV cost calculator.">
+  <title>EV cost calculator · Gregle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="assets/tools.css">
+  <link rel="stylesheet" href="assets/fuel.css">
+  <script src="assets/theme.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">EV calculator</span></div>
+    <div class="top-actions"><a class="pill" href="links.html">← All tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+  </header>
+  <main class="page fuel-page">
+    <div class="hero">
+      <p class="eyebrow">Before you hit the road</p>
+      <h1>What will the trip cost?</h1>
+      <p class="subtitle">A little planning goes a long way.<br>Enter your electricity price, efficiency and distance, or find a route below.</p>
+    </div>
+    <section class="calculator-layout" aria-label="EV cost calculator">
+      <div class="fuel-panel">
+        <h2>Your charge &amp; distance</h2>
+        <p class="section-note">Adjust the example values to match your car and charging tariff.</p>
+        <div class="field-grid">
+          <div class="field">
+            <label for="electricityPrice">Electricity price per kWh</label>
+            <input id="electricityPrice" type="number" min="0" step="any" value="0.30" aria-describedby="priceHint">
+            <p class="hint" id="priceHint">Use dollars or pounds, not cents or pence: 0.30 means 30 cents or pence.</p>
+          </div>
+          <div class="field">
+            <label for="currency">Currency symbol</label>
+            <input id="currency" type="text" value="$" maxlength="3" aria-describedby="currencyHint">
+            <p class="hint" id="currencyHint">For example, $, £ or €</p>
+          </div>
+          <div class="field">
+            <label for="consumptionMode">Efficiency unit</label>
+            <select id="consumptionMode">
+              <option value="kwh100">kWh / 100 km</option>
+              <option value="milesKwh">Miles / kWh</option>
+              <option value="kmKwh">km / kWh</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="consumptionValue">Vehicle consumption</label>
+            <input id="consumptionValue" type="number" min="0" step="any" value="18" aria-describedby="consumptionHint">
+            <p class="hint" id="consumptionHint">Energy used by the car, in kWh / 100 km.</p>
+          </div>
+          <div class="field">
+            <label for="distance">One-way distance</label>
+            <input id="distance" type="number" min="0" step="any" value="100" aria-describedby="distanceHint">
+            <p class="hint" id="distanceHint">Enter a distance, or find a route below.</p>
+          </div>
+          <div class="field">
+            <label for="distanceUnit">Distance unit</label>
+            <select id="distanceUnit"><option value="km">Kilometres</option><option value="miles">Miles</option></select>
+          </div>
+          <div class="field">
+            <label for="journeyType">Journey</label>
+            <select id="journeyType"><option value="1">One way</option><option value="2">Return trip</option></select>
+            <p class="hint">A return trip doubles the entered distance.</p>
+          </div>
+          <div class="field">
+            <label for="chargingEfficiency">Charging efficiency (%)</label>
+            <input id="chargingEfficiency" type="number" min="1" max="100" step="any" value="90" aria-describedby="chargingHint">
+            <p class="hint" id="chargingHint">90% means 10% of purchased energy is lost. Use 100% if losses are already included in your consumption.</p>
+          </div>
+        </div>
+      </div>
+      <div class="estimate-panel" aria-label="Trip estimate" aria-live="polite" aria-atomic="true">
+        <p class="eyebrow">Your trip estimate</p>
+        <p class="trip-total" id="tripCost">—</p>
+        <p class="estimate-caption">Estimated electricity cost</p>
+        <p class="hint" id="validationMessage"></p>
+        <dl class="estimate-breakdown">
+          <div><dt id="costPerUnitLabel">Cost per km</dt><dd id="costPerUnit">—</dd></div>
+          <div><dt>Energy for driving</dt><dd id="energyUsed">—</dd></div>
+          <div><dt>Energy purchased</dt><dd id="energyPurchased">—</dd></div>
+          <div><dt>Total distance</dt><dd id="routeDistance">—</dd></div>
+        </dl>
+        <p class="estimate-note">Energy purchased includes your charging losses. This estimate uses one electricity rate; parking, session and idle fees are not included. Weather, speed and heating can change your car’s consumption.</p>
+      </div>
+    </section>
+    <noscript><p class="status warn">Enable JavaScript to calculate your EV trip cost.</p></noscript>
+    <section class="fuel-panel route-panel" aria-labelledby="routeHeading">
+      <div class="route-heading"><div><p class="eyebrow">Find your distance</p><h2 id="routeHeading">Plan a route</h2></div><span class="route-tag">Driving</span></div>
+      <p class="section-note">Enter two places, or click the map to choose your start and destination.</p>
+      <div class="field-grid">
+        <div class="field"><label for="startLocation">Start location</label><input id="startLocation" type="text" placeholder="e.g. Victoria, BC"></div>
+        <div class="field"><label for="endLocation">Destination</label><input id="endLocation" type="text" placeholder="e.g. Nanaimo, BC"></div>
+      </div>
+      <div class="route-actions"><button class="pill primary" id="routeButton" type="button">Calculate route distance</button><button class="pill" id="clearRouteButton" type="button">Clear route</button></div>
+      <div class="status" id="statusBox" role="status" aria-live="polite">First map click sets the start point. The second sets your destination.</div>
+      <div id="map" aria-label="Route map"></div>
+      <p class="map-note">When a route is found, its distance is added to your estimate above.</p>
+    </section>
+    <details class="calculation-details"><summary>How the estimate is calculated</summary><div class="formula" id="formulaBox">Units are converted to km and kWh per 100 km first. Driving energy = distance in km × kWh per 100 km ÷ 100. Energy purchased = driving energy ÷ (charging efficiency ÷ 100). Trip cost = energy purchased × electricity price per kWh. A return trip doubles the distance.</div></details>
+    <footer><p>Map and route data from OpenStreetMap-based services.</p><a href="links.html">More Gregle tools</a></footer>
+  </main>
+
+  <script src="assets/ev.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="assets/route-planner.js"></script>
+  <script>initialiseRoutePlanner(setEVRouteDistance);</script>
+</body>
+</html>
