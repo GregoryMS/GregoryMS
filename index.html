@@ -561,6 +561,17 @@
         padding-bottom: 8vh;
       }
     }
+
+    body.dark-mode .search-button.default {
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+    }
+
+    body.dark-mode .search-button.default:hover {
+      background: #eaeaea;
+    }
   </style>
 </head>
 <body>
@@ -665,7 +676,10 @@
 
     function getRecentSearches() {
       try {
-        return JSON.parse(localStorage.getItem('gregle-recent-searches') || '[]');
+        const saved = JSON.parse(localStorage.getItem('gregle-recent-searches') || '[]');
+        return Array.isArray(saved)
+          ? saved.filter(item => typeof item === 'string' && item.trim()).map(item => item.trim()).slice(0, 8)
+          : [];
       } catch {
         return [];
       }
@@ -731,10 +745,6 @@
       return unique.slice(0, 8);
     }
 
-    function updateDatalist(items) {
-      return;
-    }
-
     function closeAutocomplete() {
       autocompleteRequestSeq++;
       clearTimeout(autocompleteTimer);
@@ -746,7 +756,6 @@
 
     function renderSuggestionList(items) {
       suggestionItems = items.slice(0, 8);
-      updateDatalist(suggestionItems);
 
       if (!suggestionItems.length) {
         closeAutocomplete();
@@ -832,7 +841,6 @@
       const seq = ++autocompleteRequestSeq;
 
       if (trimmed.length < 1) {
-        updateDatalist([]);
         closeAutocomplete();
         return;
       }
@@ -866,7 +874,7 @@
     }
 
     function queueSuggestions() {
-      clearTimeout(autocompleteTimer);
+      closeAutocomplete();
       autocompleteTimer = setTimeout(() => {
         renderSuggestions(searchInput.value);
       }, 120);
@@ -916,6 +924,10 @@
     });
 
     searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAutocomplete();
+        return;
+      }
       if (!autocompleteList.classList.contains('open') || !suggestionItems.length) return;
 
       if (event.key === 'ArrowDown') {
@@ -931,8 +943,6 @@
         searchInput.value = suggestionItems[activeSuggestionIndex];
         closeAutocomplete();
         searchForm.requestSubmit();
-      } else if (event.key === 'Escape') {
-        closeAutocomplete();
       }
     });
 
@@ -1216,17 +1226,3 @@
   </script>
 </body>
 </html>
-
-
-<style>
-body.dark-mode .search-button.default {
-  background: #ffffff;
-  color: #000000;
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-}
-
-body.dark-mode .search-button.default:hover {
-  background: #eaeaea;
-}
-</style>

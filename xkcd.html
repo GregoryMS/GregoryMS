@@ -25,13 +25,14 @@
 const ARCHIVE='https://xkcd.com/archive/';
 const SOURCES=[
   ARCHIVE,
-  'https://r.jina.ai/http://r.jina.ai/http://https://xkcd.com/archive/',
-  'https://r.jina.ai/http://r.jina.ai/http://http://xkcd.com/archive/',
+  'https://r.jina.ai/'+ARCHIVE,
   'https://api.allorigins.win/raw?url='+encodeURIComponent(ARCHIVE),
   'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(ARCHIVE)
 ];
 const CACHE='gregoryms.xkcd.archive.v4';
 let comics=[];
+let loadId=0;
+let archiveController=null;
 const context={
 2347:'dependency dependencies whole internet maintained by one random guy one person random volunteer open source infrastructure tiny project critical dependency maintained thank you',
 386:'someone is wrong on the internet duty calls arguing online staying up late internet argument',
@@ -101,26 +102,36 @@ function parseArchive(text){
   return out.sort((a,b)=>b.id-a.id)
 }
 async function load(force){
+  const id=++loadId;
+  archiveController?.abort();
   $('results').innerHTML='';
-  if(!force){try{const c=JSON.parse(localStorage.getItem(CACHE)||'null');if(c&&c.length>1000){comics=c;status('Loaded '+c.length+' comics from browser cache.');return}}catch(e){}}
+  if(!force){try{
+    const cached=JSON.parse(localStorage.getItem(CACHE)||'null');
+    const c=Array.isArray(cached)?cached.filter(comic=>comic&&Number.isSafeInteger(comic.id)&&comic.id>0&&typeof comic.title==='string'&&comic.title.trim()).map(comic=>({id:comic.id,title:comic.title,url:'https://xkcd.com/'+comic.id+'/',context:context[comic.id]||''})):[];
+    if(c.length>1000){comics=c;status('Loaded '+c.length+' comics from browser cache.');return}
+  }catch(e){}}
   status('Loading official xkcd archive…');
-  let errors=[];
   for(const url of SOURCES){
+    const controller=new AbortController();
+    archiveController=controller;
+    const timeout=setTimeout(()=>controller.abort(),10000);
     try{
       status('Trying archive source '+(SOURCES.indexOf(url)+1)+' of '+SOURCES.length+'…');
-      const r=await fetch(url,{cache:'no-store'});
+      const r=await fetch(url,{cache:'no-store',signal:controller.signal});
       if(!r.ok)throw new Error('HTTP '+r.status);
       const text=await r.text();
+      if(id!==loadId)return;
       const parsed=parseArchive(text);
       if(parsed.length<1000)throw new Error('Only found '+parsed.length+' comics');
       comics=parsed;
       try{localStorage.setItem(CACHE,JSON.stringify(comics))}catch(e){}
       status('Loaded '+comics.length+' comics from the xkcd archive. Ready to search.');
       return;
-    }catch(e){errors.push(e.message)}
+    }catch(e){if(id!==loadId)return}
+    finally{clearTimeout(timeout);if(archiveController===controller)archiveController=null}
   }
   comics=emergency();
-  status('Live archive loading failed, so I loaded the small emergency index. Try again later or host this page with a cached index. Last error: '+errors[errors.length-1],'warn');
+  status('Live archive unavailable. Searching a small offline index. Use Reload archive to try again.','warn');
 }
 function emergency(){return Object.keys(context).map(id=>({id:+id,title:knownTitle(+id),url:'https://xkcd.com/'+id+'/',context:context[id]})).sort((a,b)=>b.id-a.id)}
 function knownTitle(id){return ({2347:'Dependency',386:'Duty Calls',927:'Standards',936:'Password Strength',149:'Sandwich',303:'Compiling',979:'Wisdom of the Ancients',1205:'Is It Worth the Time?',1319:'Automation',1172:'Workflow',1732:'Earth Temperature Timeline',1354:'Heartbleed Explanation',538:'Security',208:'Regular Expressions',327:'Exploits of a Mom',353:'Python',552:'Correlation',1053:'Ten Thousand',356:'Nerd Sniping',1110:'Click and Drag',1190:'Time',311:'Action Movies',530:'Ineffective Sorts'})[id]||('xkcd '+id)}
@@ -148,7 +159,19 @@ function search(){
   if(!ranked.length){box.innerHTML='<div class="result"><b>No local match.</b><p class="muted">The archive only provides titles; context clues are added for well-known comics. Try these full-text searches:</p><p><a target="_blank" rel="noopener" href="'+ge+'">Search Explain xkcd</a> · <a target="_blank" rel="noopener" href="'+gx+'">Search xkcd</a></p></div>';return}
   box.innerHTML=ranked.map(c=>'<div class="result"><h2>#'+c.id+' — '+escape(c.title)+' <span class="pill">score '+c.score+'</span></h2>'+(c.context?'<p class="muted">Context clue: '+escape(c.context).slice(0,220)+'…</p>':'<p class="muted">Matched archive title.</p>')+'<p><a target="_blank" rel="noopener" href="'+c.url+'">Open comic</a> · <a target="_blank" rel="noopener" href="https://www.explainxkcd.com/wiki/index.php/'+c.id+'">Explain xkcd</a></p></div>').join('')+'<p class="muted small">Tip: for obscure plot/context searches, the “Explain xkcd” link is often better because xkcd’s official archive only contains titles.</p>';
 }
-document.addEventListener('DOMContentLoaded',()=>{status('JavaScript loaded. Loading archive index…');$('search').onclick=search;$('refresh').onclick=()=>load(true);$('clear').onclick=()=>{localStorage.removeItem(CACHE);comics=[];status('Cache cleared. Press Reload archive.','warn')};$('q').addEventListener('keydown',e=>{if(e.key==='Enter')search()});load(false)});
+function clearArchive(){
+  loadId++;
+  archiveController?.abort();
+  comics=[];
+  $('results').innerHTML='';
+  try{
+    localStorage.removeItem(CACHE);
+    status('Cache cleared. Press Reload archive.','warn');
+  }catch(e){
+    status('Search results cleared, but browser storage could not be cleared. Press Reload archive to fetch a fresh index.','warn');
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{status('JavaScript loaded. Loading archive index…');$('search').onclick=search;$('refresh').onclick=()=>load(true);$('clear').onclick=clearArchive;$('q').addEventListener('keydown',e=>{if(e.key==='Enter')search()});load(false)});
 })();
 </script>
 </body>
