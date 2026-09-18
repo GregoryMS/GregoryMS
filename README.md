@@ -29,3 +29,25 @@ node --test tests/*.test.cjs
 ```
 
 GitHub Actions runs the suite on pull requests and pushes to `main`. The tests exercise inline JavaScript with small DOM and service doubles, covering escaping, stored data, asynchronous requests, routing, forecasts, wallet copying and local icon paths. They do not verify the availability of live external services or replace browser checks.
+
+## Adding a tool
+
+Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Links** menu item opens this directory. `links.html` and `xkcd.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference.
+
+## Refreshing the xkcd index
+
+The browser searches `data/xkcd-index.json` on this site, avoiding cross-origin archive requests and third-party proxies. The checked-in snapshot includes all official titles through the recorded `latest` comic, excluding xkcd’s deliberately missing #404. It is a title index with selected context clues, not a full-transcript index.
+
+To include newly published comics, run this with Python 3.10+ and curl, then commit the updated JSON:
+
+```sh
+python3 scripts/update_xkcd_index.py
+```
+
+The updater reads the official archive and latest-comic JSON, decodes HTML entities, and refuses to overwrite the existing index if comic IDs are missing or inconsistent. The page shows the index date and latest comic; **Reload index** fetches the copy currently deployed on Gregle. New comics appear after an updated index is committed and deployed.
+
+The parser has separate offline checks:
+
+```sh
+python3 -m unittest discover -s tests -p 'test_*.py'
+```

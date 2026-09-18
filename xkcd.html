@@ -1,178 +1,164 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>xkcd Context Search</title>
-<style>
-:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:light dark}body{margin:0;background:#f5f6f8;color:#1f2328}main{max-width:950px;margin:32px auto;padding:0 16px}.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 3px 18px #0001}h1{margin:0 0 6px}.sub{margin-top:0;color:#59636e}label{display:block;font-weight:700;margin:18px 0 8px}input{width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid #b7bec7;border-radius:12px;font-size:17px}button{margin:12px 8px 0 0;padding:12px 16px;border:0;border-radius:12px;background:#0969da;color:white;font-size:16px;cursor:pointer}.secondary{background:#59636e}.status,.result{margin-top:14px;padding:14px 16px;border-radius:14px;border:1px solid #d0d7de;background:#f6f8fa}.result h2{margin:0 0 8px;font-size:20px}.muted{color:#59636e;font-size:14px}.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#dbeafe;font-size:13px;color:#1e3a8a}a{color:#0969da}details{margin-top:14px}.row{display:flex;gap:8px;flex-wrap:wrap}.small{font-size:14px}.warn{background:#fff8c5;border-color:#eac54f}@media(prefers-color-scheme:dark){body{background:#0d1117;color:#e6edf3}.card{background:#161b22}.sub,.muted{color:#9aa4af}input{background:#0d1117;color:#e6edf3;border-color:#30363d}.status,.result{background:#0d1117;border-color:#30363d}.pill{background:#1f2a44;color:#bfdbfe}.warn{background:#332b00;border-color:#7d6500}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find an xkcd comic by title, number or a remembered clue. Search the archive right here on Gregle.">
+  <title>xkcd search · Gregle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <link rel="stylesheet" href="assets/tools.css">
+  <script src="assets/theme.js" defer></script>
 </head>
 <body>
-<main><section class="card">
-<h1>xkcd Context Search</h1>
-<p class="sub">Search xkcd by title or vague context. It indexes every comic title from the official archive, then adds hand-written context clues for famous hard-to-search comics.</p>
-<div id="status" class="status">Starting…</div>
-<label for="q">Search</label>
-<input id="q" placeholder="the whole internet is maintained by one random guy" autocomplete="off">
-<div class="row"><button id="search">Search</button><button id="refresh" class="secondary">Reload archive</button><button id="clear" class="secondary">Clear cache</button></div>
-<div id="results"></div>
-<details><summary>How it works</summary><p class="small muted">The official xkcd archive has every comic title and link. This page fetches that archive and caches it in your browser. Because some hosts block cross-site fetches, it tries several readable mirrors/proxies. If all live loading fails, it still has a small emergency index. Context search is local and private; only archive loading and the optional Google links touch the network.</p></details>
-</section></main>
-<script>
-(function(){
+  <header class="topbar">
+    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">xkcd search</span></div>
+    <div class="top-actions"><a class="pill" href="links.html">← All tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+  </header>
+  <main class="page">
+    <div class="hero">
+      <p class="eyebrow">A comic for almost everything</p>
+      <h1>Find that xkcd.</h1>
+      <p class="subtitle">A title, a number, or that one thing you remember.<br>Start here. Find the rabbit hole.</p>
+    </div>
+    <div class="search-area">
+      <div class="search-row" role="search" aria-label="Search xkcd comics">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+        <label class="sr-only" for="q">Search comics</label>
+        <input id="q" type="search" placeholder="Title, comic number or a clue…" autocomplete="off">
+        <button class="pill primary" id="search" type="button">Search</button>
+      </div>
+      <div class="examples"><span>Try</span><button class="example" data-example="one random guy internet">one random guy</button><button class="example" data-example="correct horse battery staple">password strength</button><button class="example" data-example="#927">#927</button></div>
+    </div>
+    <div class="status-row"><p id="status" class="status" role="status" aria-live="polite">Loading the comic index…</p><div class="index-actions"><button class="text-button" id="refresh" type="button">Reload index</button></div></div>
+    <p id="resultCount" class="result-count" role="status" aria-live="polite"></p>
+    <div id="results" class="results"><div class="empty"><strong>Remember the comic, not the title?</strong>Try a few words, or choose an example above.</div></div>
+    <noscript><p>Enable JavaScript to search here, or browse the <a href="https://xkcd.com/archive/">official xkcd archive</a>.</p></noscript>
+    <details><summary>About this search</summary><p>The title index is included with Gregle, so searching does not depend on outside archive services. It covers every published comic through the number shown above, except xkcd’s intentionally missing #404. Clues are added for a selection of well-known comics; this is not a full-text search of every comic. Your queries stay in your browser unless you open an external search link.</p><p>The index date shows when it was last refreshed on this site. Reload index checks for a newer copy on Gregle.</p><button class="text-button" id="clear" type="button">Clear saved index</button></details>
+    <footer><p>Comics by <a href="https://xkcd.com/about/" target="_blank" rel="noopener noreferrer">Randall Munroe</a> · <a href="https://xkcd.com/archive/" target="_blank" rel="noopener noreferrer">Official archive ↗</a></p><a href="links.html">More Gregle tools</a></footer>
+  </main>
+  <script>
+(() => {
 'use strict';
-const ARCHIVE='https://xkcd.com/archive/';
-const SOURCES=[
-  ARCHIVE,
-  'https://r.jina.ai/'+ARCHIVE,
-  'https://api.allorigins.win/raw?url='+encodeURIComponent(ARCHIVE),
-  'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(ARCHIVE)
-];
-const CACHE='gregoryms.xkcd.archive.v4';
-let comics=[];
-let loadId=0;
-let archiveController=null;
+const INDEX_URL='data/xkcd-index.json';
+const CACHE='gregoryms.xkcd.index.v1';
+let comics=[], loadId=0, archiveController=null;
 const context={
-2347:'dependency dependencies whole internet maintained by one random guy one person random volunteer open source infrastructure tiny project critical dependency maintained thank you',
-386:'someone is wrong on the internet duty calls arguing online staying up late internet argument',
-927:'standards too many standards universal standard now there are fifteen competing standards competing standards problem',
-936:'password strength correct horse battery staple entropy memorable secure passwords passphrase',
-149:'sudo make me a sandwich linux command admin root',
-303:'compiling compile code sword fight programming waiting build time',
-979:'wisdom of the ancients old forum answer stack overflow unanswered programming problem',
-1205:'is it worth the time automation optimize optimise time saved chart efficiency',
-1319:'automation automate task spending more time automating workflow',
-1172:'workflow bug feature odd behaviour behavior depended on bug broken workflow',
-1732:'earth temperature timeline climate global warming',
-1354:'heartbleed security bug open source vulnerability ssl',
-538:'security wrench cryptography rubber hose password',
-208:'regular expressions regex perl problem now you have two problems',
-327:'exploits of a mom little bobby tables sql injection database',
-353:'python programming import antigravity',
-722:'computer problems tech support computer help',
-162:'angular momentum spinning chair physics',
-552:'correlation causation correlation does not imply causation',
-1053:'ten thousand lucky learning new thing today',
-356:'nerd sniping bridge problem physics mathematician',
-612:'estimation fermi problem approximation',
-798:'password reuse security hacked accounts',
-1110:'click and drag huge interactive world exploration',
-1190:'time interactive comic wait for it castle sea',
-1506:'xkcloud cloud computing',
-1810:'chat systems messaging standards protocols',
-1782:'team chat communication standards messaging apps',
-1425:'tasks phones automation reminders',
-1897:'self driving car trolley problem ethics',
-1969:'not available error message unavailable',
-2116:'plutonium space probe RTG radioactive',
-2200:'unreachable state machine',
-2261:'worst thing that could happen',
-2501:'average familiar phrase',
-2529:'universal routing road directions',
-2730:'code quality software engineering',
-3030:'crowdstrike outage windows blue screen update',
-311:'network configuration internet router dns ip address',
-705:'notifications phone alerts unread messages',
-530:'code lifespan old software dependency maintenance',
-273:'electromagnetic spectrum',
-195:'map of the internet',
-802:'online communities map internet',
-181:'interblag internet tubes',
-908:'the cloud files computers servers',
-908:'cloud computing internet server',
-1236:'seashell mac terminal sudo rm',
-1597:'git version control commit merge',
-1296:'git commit messages',
-2106:'sharing options copy link'
+  "2347": "The whole internet depends on a tiny project maintained by one random guy. Open-source infrastructure and its unlikely foundations.",
+  "386": "Someone is wrong on the internet. Staying up late to finish an online argument.",
+  "927": "Too many competing standards? Create one universal standard. Now there are fifteen.",
+  "936": "Correct horse battery staple: password strength, entropy and memorable passphrases.",
+  "149": "Sudo make me a sandwich. A little command-line privilege escalation.",
+  "303": "Compiling code leaves just enough time for a sword fight.",
+  "979": "An old forum thread describes your exact problem, but the answer was never posted.",
+  "1205": "Is it worth the time? A chart comparing time spent automating with time saved.",
+  "1319": "Spending more time automating a task than the task itself would take.",
+  "1172": "A strange bug turns out to be part of somebody’s workflow.",
+  "1732": "Earth’s temperature through history, and the speed of modern global warming.",
+  "1354": "The Heartbleed security vulnerability explained with a conversation.",
+  "538": "Cryptography meets a five-dollar wrench. Security and the human weak point.",
+  "208": "Regular expressions to the rescue: matching text with regex.",
+  "327": "Little Bobby Tables, SQL injection and a school’s database.",
+  "353": "Python programming, import antigravity and the joy of a new language.",
+  "552": "Correlation does not imply causation.",
+  "1053": "One of today’s lucky ten thousand: the joy of learning something for the first time.",
+  "356": "A physics problem distracts a mathematician. Nerd sniping on the road.",
+  "1110": "Click and drag to explore an enormous illustrated world.",
+  "1190": "A slowly changing comic about a sandcastle, the sea and the passage of time.",
+  "1597": "Git version control is a beautiful graph theory model—until something goes wrong.",
+  "1296": "Git commit messages become less helpful as the night wears on."
 };
-function $(id){return document.getElementById(id)}
-function status(msg,cls){$('status').className='status '+(cls||'');$('status').textContent=msg}
-function norm(s){return String(s||'').toLowerCase().replace(/&amp;/g,' and ').replace(/[“”‘’«».,!?;:()[\]{}'"`~/_\\|\-–—+*=<>]/g,' ').replace(/\s+/g,' ').trim()}
-function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function parseArchive(text){
-  const out=[], seen=new Set();
-  let m;
-  const htmlRe=/<a[^>]+href=["']\/(\d+)\/["'][^>]*>([\s\S]*?)<\/a>/gi;
-  while((m=htmlRe.exec(text))){add(+m[1],m[2].replace(/<[^>]+>/g,''))}
-  const mdRe=/\[(.*?)\]\(https?:\/\/xkcd\.com\/(\d+)\/?\)/gi;
-  while((m=mdRe.exec(text))){add(+m[2],m[1])}
-  // Reader-style fallback: lines like [Title] or bare titles are not enough to recover IDs, so avoid guessing.
-  function add(id,title){title=String(title||'').replace(/\s+/g,' ').trim(); if(!id||!title||seen.has(id))return; seen.add(id); out.push({id,title,url:'https://xkcd.com/'+id+'/',context:context[id]||''})}
-  return out.sort((a,b)=>b.id-a.id)
+const knownTitles={2347:'Dependency',386:'Duty Calls',927:'Standards',936:'Password Strength',149:'Sandwich',303:'Compiling',979:'Wisdom of the Ancients',1205:'Is It Worth the Time?',1319:'Automation',1172:'Workflow',1732:'Earth Temperature Timeline',1354:'Heartbleed Explanation',538:'Security',208:'Regular Expressions',327:'Exploits of a Mom',353:'Python',552:'Correlation',1053:'Ten Thousand',356:'Nerd Sniping',1110:'Click and Drag',1190:'Time',1597:'Git',1296:'Git Commit'};
+const $=id=>document.getElementById(id);
+const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=value=>String(value||'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+function status(message,warning=false){$('status').textContent=message;$('status').className=warning?'status warn':'status'}
+function cleanComics(items){
+  if(!Array.isArray(items))return [];
+  const seen=new Set();
+  return items.filter(item=>item&&Number.isSafeInteger(item.id)&&item.id>0&&item.id!==404&&typeof item.title==='string'&&item.title.trim()&&!seen.has(item.id)&&seen.add(item.id))
+    .map(item=>({id:item.id,title:item.title.trim(),url:'https://xkcd.com/'+item.id+'/',context:context[item.id]||''})).sort((a,b)=>b.id-a.id);
 }
-async function load(force){
+function emergency(){return cleanComics(Object.entries(knownTitles).map(([id,title])=>({id:Number(id),title})))}
+function describeIndex(index,source=''){
+  const date=/^\d{4}-\d{2}-\d{2}$/.test(index.updated)?' · Updated '+index.updated:'';
+  return comics.length.toLocaleString()+' comics · Through #'+comics[0].id+date+source;
+}
+async function load(force=false){
   const id=++loadId;
   archiveController?.abort();
-  $('results').innerHTML='';
-  if(!force){try{
-    const cached=JSON.parse(localStorage.getItem(CACHE)||'null');
-    const c=Array.isArray(cached)?cached.filter(comic=>comic&&Number.isSafeInteger(comic.id)&&comic.id>0&&typeof comic.title==='string'&&comic.title.trim()).map(comic=>({id:comic.id,title:comic.title,url:'https://xkcd.com/'+comic.id+'/',context:context[comic.id]||''})):[];
-    if(c.length>1000){comics=c;status('Loaded '+c.length+' comics from browser cache.');return}
-  }catch(e){}}
-  status('Loading official xkcd archive…');
-  for(const url of SOURCES){
-    const controller=new AbortController();
-    archiveController=controller;
-    const timeout=setTimeout(()=>controller.abort(),10000);
+  if(!force&&!comics.length){
     try{
-      status('Trying archive source '+(SOURCES.indexOf(url)+1)+' of '+SOURCES.length+'…');
-      const r=await fetch(url,{cache:'no-store',signal:controller.signal});
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      const text=await r.text();
-      if(id!==loadId)return;
-      const parsed=parseArchive(text);
-      if(parsed.length<1000)throw new Error('Only found '+parsed.length+' comics');
-      comics=parsed;
-      try{localStorage.setItem(CACHE,JSON.stringify(comics))}catch(e){}
-      status('Loaded '+comics.length+' comics from the xkcd archive. Ready to search.');
-      return;
-    }catch(e){if(id!==loadId)return}
-    finally{clearTimeout(timeout);if(archiveController===controller)archiveController=null}
+      const cached=JSON.parse(localStorage.getItem(CACHE)||'null');
+      const saved=cleanComics(cached?.comics);
+      if(saved.length>1000){comics=saved;status(describeIndex(cached,' · Saved copy'))}
+    }catch(_){}
   }
-  comics=emergency();
-  status('Live archive unavailable. Searching a small offline index. Use Reload archive to try again.','warn');
+  if(!comics.length){comics=emergency();status('Loading the full comic index…')}
+  else if(force)status('Checking for an updated index…');
+  const controller=new AbortController();archiveController=controller;
+  const timeout=setTimeout(()=>controller.abort(),8000);
+  try{
+    const response=await fetch(INDEX_URL,{cache:'no-cache',signal:controller.signal});
+    if(!response.ok)throw new Error('Index request failed');
+    const index=await response.json();
+    if(id!==loadId)return;
+    const parsed=cleanComics(index.comics);
+    if(parsed.length<1000||parsed[0].id!==index.latest)throw new Error('Incomplete index');
+    comics=parsed;
+    try{localStorage.setItem(CACHE,JSON.stringify({updated:index.updated,comics}))}catch(_){}
+    status(describeIndex(index));
+    if($('q').value.trim())search();
+  }catch(_){
+    if(id!==loadId)return;
+    status(comics.length>1000?'Using '+comics.length.toLocaleString()+' saved comic titles. The updated index could not be loaded.':'Using a small starter collection. The full index could not be loaded; try Reload index.',true);
+  }finally{
+    clearTimeout(timeout);
+    if(archiveController===controller)archiveController=null;
+  }
 }
-function emergency(){return Object.keys(context).map(id=>({id:+id,title:knownTitle(+id),url:'https://xkcd.com/'+id+'/',context:context[id]})).sort((a,b)=>b.id-a.id)}
-function knownTitle(id){return ({2347:'Dependency',386:'Duty Calls',927:'Standards',936:'Password Strength',149:'Sandwich',303:'Compiling',979:'Wisdom of the Ancients',1205:'Is It Worth the Time?',1319:'Automation',1172:'Workflow',1732:'Earth Temperature Timeline',1354:'Heartbleed Explanation',538:'Security',208:'Regular Expressions',327:'Exploits of a Mom',353:'Python',552:'Correlation',1053:'Ten Thousand',356:'Nerd Sniping',1110:'Click and Drag',1190:'Time',311:'Action Movies',530:'Ineffective Sorts'})[id]||('xkcd '+id)}
-function score(q,c){
-  q=norm(q); if(!q)return 0;
-  const terms=q.split(' ').filter(w=>w.length>2);
-  const title=norm(c.title), ctx=norm(c.context), hay=title+' '+ctx;
-  let s=0;
-  if(title===q)s+=1000; if(title.includes(q))s+=250; if(ctx.includes(q))s+=180;
-  for(const t of terms){if(title.split(' ').includes(t))s+=40;else if(title.includes(t))s+=18;if(ctx.split(' ').includes(t))s+=25;else if(ctx.includes(t))s+=10}
-  if((q.includes('random guy')||q.includes('one random')||q.includes('one person')||q.includes('one guy'))&&(q.includes('internet')||q.includes('infrastructure')||q.includes('maintained')||q.includes('dependency')))if(c.id===2347)s+=2000;
-  if(q.includes('wrong on the internet')&&c.id===386)s+=1000;
-  if(q.includes('too many standards')&&c.id===927)s+=1000;
-  if(q.includes('correct horse')&&c.id===936)s+=1000;
-  if(q.includes('bobby tables')&&c.id===327)s+=1000;
-  return s;
+const stopwords=new Set(['the','and','that','this','with','from','about','where','which','there','have','does','comic','xkcd']);
+function score(query,comic){
+  const number=query.trim().match(/^(?:#|(?:xkcd|comic)\s*#?\s*)?(\d+)$/i);
+  if(number)return Number(number[1])===comic.id?10000:0;
+  const q=norm(query);if(!q)return 0;
+  const title=norm(comic.title),clue=norm(comic.context);
+  const terms=q.split(' ').filter(word=>word.length>1&&!stopwords.has(word));
+  let value=title===q?1000:title.includes(q)?250:0;
+  if(clue.includes(q))value+=180;
+  let matches=0;
+  for(const term of terms){
+    if(title.split(' ').includes(term)){value+=40;matches++}
+    else if(title.includes(term)){value+=18;matches++}
+    else if(clue.includes(term)){value+=12;matches++}
+  }
+  if(terms.length>1&&matches===terms.length)value+=100;
+  return value;
 }
 function search(){
-  const q=$('q').value.trim(), box=$('results');
-  if(!q){box.innerHTML='<div class="result">Type something to search.</div>';return}
-  if(!comics.length){box.innerHTML='<div class="result">The archive has not loaded yet. Press Reload archive.</div>';return}
-  const ranked=comics.map(c=>Object.assign({},c,{score:score(q,c)})).filter(c=>c.score>0).sort((a,b)=>b.score-a.score||b.id-a.id).slice(0,15);
-  const gx='https://www.google.com/search?q='+encodeURIComponent(q+' site:xkcd.com');
-  const ge='https://www.google.com/search?q='+encodeURIComponent(q+' site:explainxkcd.com/wiki/index.php');
-  if(!ranked.length){box.innerHTML='<div class="result"><b>No local match.</b><p class="muted">The archive only provides titles; context clues are added for well-known comics. Try these full-text searches:</p><p><a target="_blank" rel="noopener" href="'+ge+'">Search Explain xkcd</a> · <a target="_blank" rel="noopener" href="'+gx+'">Search xkcd</a></p></div>';return}
-  box.innerHTML=ranked.map(c=>'<div class="result"><h2>#'+c.id+' — '+escape(c.title)+' <span class="pill">score '+c.score+'</span></h2>'+(c.context?'<p class="muted">Context clue: '+escape(c.context).slice(0,220)+'…</p>':'<p class="muted">Matched archive title.</p>')+'<p><a target="_blank" rel="noopener" href="'+c.url+'">Open comic</a> · <a target="_blank" rel="noopener" href="https://www.explainxkcd.com/wiki/index.php/'+c.id+'">Explain xkcd</a></p></div>').join('')+'<p class="muted small">Tip: for obscure plot/context searches, the “Explain xkcd” link is often better because xkcd’s official archive only contains titles.</p>';
+  const query=$('q').value.trim(),box=$('results');
+  if(!query){box.innerHTML='<div class="empty"><strong>What do you remember?</strong>Enter a title, number or a few words to search.</div>';$('resultCount').textContent='';return}
+  const ranked=comics.map(comic=>({...comic,score:score(query,comic)})).filter(comic=>comic.score>0).sort((a,b)=>b.score-a.score||b.id-a.id);
+  $('resultCount').textContent=ranked.length?(ranked.length>20?'Top 20 of '+ranked.length:ranked.length)+' matching '+(ranked.length===1?'comic':'comics'):'No matching comics';
+  if(!ranked.length){
+    const url='https://www.google.com/search?q='+encodeURIComponent(query+' site:explainxkcd.com/wiki/index.php');
+    box.innerHTML='<div class="result empty"><strong>'+(query.replace(/^#/, '')==='404'?'#404 is intentionally missing from xkcd.':'No match this time.')+'</strong><p>Try fewer words or a comic number. This index searches titles and selected clues.</p><a href="'+url+'" target="_blank" rel="noopener noreferrer">Search Explain xkcd on Google ↗</a></div>';return;
+  }
+  box.innerHTML=ranked.slice(0,20).map(comic=>'<article class="result"><h2><span class="comic-number">#'+comic.id+'</span> <a href="'+comic.url+'" target="_blank" rel="noopener noreferrer">'+escape(comic.title)+'</a></h2>'+(comic.context?'<p>'+escape(comic.context)+'</p>':'')+'<div class="result-links"><a href="'+comic.url+'" target="_blank" rel="noopener noreferrer">Read comic ↗</a><a href="https://www.explainxkcd.com/wiki/index.php/'+comic.id+'" target="_blank" rel="noopener noreferrer">Read explanation ↗</a></div></article>').join('');
 }
 function clearArchive(){
-  loadId++;
-  archiveController?.abort();
-  comics=[];
-  $('results').innerHTML='';
-  try{
-    localStorage.removeItem(CACHE);
-    status('Cache cleared. Press Reload archive.','warn');
-  }catch(e){
-    status('Search results cleared, but browser storage could not be cleared. Press Reload archive to fetch a fresh index.','warn');
-  }
+  loadId++;archiveController?.abort();comics=[];
+  $('results').innerHTML='';$('resultCount').textContent='';
+  try{localStorage.removeItem(CACHE);status('Saved index cleared. Use Reload index to start again.')}
+  catch(_){status('Results cleared, but browser storage could not be cleared. Use Reload index to start again.',true)}
 }
-document.addEventListener('DOMContentLoaded',()=>{status('JavaScript loaded. Loading archive index…');$('search').onclick=search;$('refresh').onclick=()=>load(true);$('clear').onclick=clearArchive;$('q').addEventListener('keydown',e=>{if(e.key==='Enter')search()});load(false)});
+document.addEventListener('DOMContentLoaded',()=>{
+  $('search').onclick=search;$('refresh').onclick=()=>load(true);$('clear').onclick=clearArchive;
+  $('q').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();search()}});
+  document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{$('q').value=button.dataset.example;search()}));
+  load();
+});
 })();
-</script>
+  </script>
 </body>
 </html>

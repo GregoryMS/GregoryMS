@@ -200,12 +200,12 @@ test('xkcd keeps and searches the full archive when caching throws', async () =>
   let downloads = 0;
   const env = environment('xkcd.html', async () => {
     downloads++;
-    return { ok: true, text: async () => Array.from({ length: 1001 }, (_, i) => `<a href="/${i + 1}/">Comic ${i + 1}</a>`).join('') };
+    return archiveResponse('Comic');
   }, { setItem() { throw new Error('Quota exceeded'); } });
   env.ready.DOMContentLoaded();
   await flush();
   assert.equal(downloads, 1);
-  assert.match(env.get('status').textContent, /Loaded 1001 comics/);
+  assert.match(env.get('status').textContent, /1,001 comics/);
   env.get('q').value = 'Comic 1001';
   env.get('search').onclick();
   assert.match(env.get('results').innerHTML, /#1001/);
@@ -478,24 +478,24 @@ test('wallet arrow navigation focuses the newly rendered active tab', () => {
   assert.equal(focused, tabs[0]);
 });
 
-const archiveResponse = title => ({ ok: true, text: async () => Array.from({ length: 1001 }, (_, i) => `<a href="/${i + 1}/">${title} ${i + 1}</a>`).join('') });
+const archiveResponse = title => response({ latest: 1002, updated: '2026-09-18', comics: Array.from({ length: 1002 }, (_, i) => ({ id: i + 1, title: `${title} ${i + 1}` })).filter(comic => comic.id !== 404) });
 
 test('xkcd ignores malformed caches and rebuilds cached links from comic IDs', async () => {
   for (const cached of ['x'.repeat(1001), { length: 1001 }, Array(1001).fill(null)]) {
     let downloads = 0;
-    const env = environment('xkcd.html', async () => { downloads++; return archiveResponse('Fresh'); }, { getItem: () => JSON.stringify(cached) });
+    const env = environment('xkcd.html', async () => { downloads++; return archiveResponse('Fresh'); }, { getItem: () => JSON.stringify({ comics: cached }) });
     env.ready.DOMContentLoaded();
     await flush();
     assert.equal(downloads, 1);
     env.get('q').value = 'Fresh'; env.get('search').onclick();
     assert.match(env.get('results').innerHTML, /Fresh/);
   }
-  const cached = Array.from({ length: 1001 }, (_, i) => ({ id: i + 1, title: 'Cached', url: 'javascript:alert(1)', context: '<img src=x>' }));
-  const env = environment('xkcd.html', undefined, { getItem: () => JSON.stringify(cached) });
+  const cached = Array.from({ length: 1002 }, (_, i) => ({ id: i + 1, title: 'Cached', url: 'javascript:alert(1)', context: '<img src=x>' }));
+  const env = environment('xkcd.html', undefined, { getItem: () => JSON.stringify({ comics: cached }) });
   env.ready.DOMContentLoaded();
   env.get('q').value = 'Cached'; env.get('search').onclick();
   assert(!env.get('results').innerHTML.includes('javascript:'));
-  assert.match(env.get('results').innerHTML, /href="https:\/\/xkcd.com\/1001\/"/);
+  assert.match(env.get('results').innerHTML, /href="https:\/\/xkcd.com\/1002\/"/);
 });
 
 test('clearing xkcd survives blocked storage and ignores in-flight downloads', async () => {
@@ -513,7 +513,7 @@ test('clearing xkcd survives blocked storage and ignores in-flight downloads', a
   assert.equal(env.get('results').innerHTML, '');
   assert.match(env.get('status').textContent, /storage could not be cleared/);
   env.get('q').value = 'Stale'; env.get('search').onclick();
-  assert.match(env.get('results').innerHTML, /archive has not loaded/);
+  assert.match(env.get('results').innerHTML, /No match this time/);
 });
 
 test('an older xkcd download cannot overwrite a newer reload', async () => {
@@ -525,7 +525,7 @@ test('an older xkcd download cannot overwrite a newer reload', async () => {
   old.resolve(archiveResponse('Old'));
   await flush();
   env.get('q').value = 'Newest'; env.get('search').onclick();
-  assert.match(env.get('results').innerHTML, /#1001 — Newest 1001/);
+  assert.match(env.get('results').innerHTML, />Newest 1002<\/a>/);
 });
 
 test('manifest icons resolve to real image assets relative to the manifest', () => {
@@ -537,19 +537,93 @@ test('manifest icons resolve to real image assets relative to the manifest', () 
   }
 });
 
-test('xkcd times out a stalled source and loads the next fallback', async () => {
-  const requested = [];
-  const env = environment('xkcd.html', (url, { signal }) => {
-    requested.push(url);
-    if (requested.length > 1) return Promise.resolve(archiveResponse('Fallback'));
+test('xkcd aborts a stalled local index and keeps the starter collection searchable', async () => {
+  let signal;
+  const env = environment('xkcd.html', (url, options) => {
+    assert.equal(url, 'data/xkcd-index.json');
+    signal = options.signal;
     return new Promise((resolve, reject) => signal.addEventListener('abort', () => reject(new Error('Timed out'))));
   });
   env.ready.DOMContentLoaded();
-  assert.equal(env.timers.size, 1);
   [...env.timers.values()][0]();
   await flush();
-  assert.equal(requested[1], 'https://r.jina.ai/https://xkcd.com/archive/');
+  assert.equal(signal.aborted, true);
   assert.equal(env.timers.size, 0);
-  env.get('q').value = 'Fallback'; env.get('search').onclick();
-  assert.match(env.get('results').innerHTML, /#1001 — Fallback 1001/);
+  assert.match(env.get('status').textContent, /starter collection/);
+  env.get('q').value = 'random guy internet'; env.get('search').onclick();
+  assert.match(env.get('results').innerHTML, />Dependency<\/a>/);
+});
+
+const shippedIndex = JSON.parse(fs.readFileSync(path.join(root, 'data/xkcd-index.json'), 'utf8'));
+
+test('shipped xkcd index covers every official comic except the missing 404', () => {
+  const ids = new Set(shippedIndex.comics.map(comic => comic.id));
+  assert.equal(ids.size, shippedIndex.latest - 1);
+  assert.equal(shippedIndex.comics.length, ids.size);
+  assert.equal(ids.has(404), false);
+  for (let id = 1; id <= shippedIndex.latest; id++) if (id !== 404) assert(ids.has(id));
+  assert(shippedIndex.comics.every(comic => typeof comic.title === 'string' && comic.title.trim()));
+});
+
+test('xkcd searches the full local index by title, number and remembered clues', async () => {
+  const urls = [];
+  const env = environment('xkcd.html', async url => { urls.push(url); return response(shippedIndex); });
+  env.ready.DOMContentLoaded(); await flush();
+  assert.deepEqual(urls, ['data/xkcd-index.json']);
+  for (const [query, title] of [['#927', 'Standards'], ['xkcd 2347', 'Dependency'], ['comic 936', 'Password Strength'], ['one random guy internet', 'Dependency'], [shippedIndex.comics[0].title, shippedIndex.comics[0].title]]) {
+    env.get('q').value = query; env.get('search').onclick();
+    assert(env.get('results').innerHTML.includes(title));
+    if (/^(#|xkcd|comic)/.test(query)) assert.equal(env.get('resultCount').textContent, '1 matching comic');
+  }
+  env.get('q').value = '#404'; env.get('search').onclick();
+  assert.match(env.get('results').innerHTML, /intentionally missing/);
+});
+
+test('a failed or malformed index refresh keeps a working full archive', async () => {
+  let attempt = 0;
+  const env = environment('xkcd.html', async () => ++attempt === 1 ? response(shippedIndex) : response({ comics: [] }));
+  env.ready.DOMContentLoaded(); await flush();
+  await env.get('refresh').onclick();
+  assert.match(env.get('status').textContent, /saved comic titles/);
+  env.get('q').value = String(shippedIndex.latest); env.get('search').onclick();
+  assert(env.get('results').innerHTML.includes(shippedIndex.comics[0].title));
+});
+
+test('queries entered during index loading render when the index arrives', async () => {
+  const pending = deferred();
+  const env = environment('xkcd.html', () => pending.promise);
+  env.ready.DOMContentLoaded();
+  env.get('q').value = String(shippedIndex.latest); env.get('search').onclick();
+  pending.resolve(response(shippedIndex)); await flush();
+  assert.equal(env.get('resultCount').textContent, '1 matching comic');
+  assert(env.get('results').innerHTML.includes(shippedIndex.comics[0].title));
+});
+
+test('shared tool theme restores preference and works with blocked storage', () => {
+  for (const blocked of [false, true]) {
+    const env = environment('links.html', undefined, {
+      getItem: () => blocked ? null : 'dark',
+      setItem() { if (blocked) throw new Error('Blocked'); }
+    });
+    vm.runInContext(fs.readFileSync(path.join(root, 'assets/theme.js'), 'utf8'), env.context);
+    const before = env.context.document.documentElement.classList.contains('dark-mode');
+    assert.equal(before, !blocked);
+    env.get('themeToggle').listeners.click();
+    assert.equal(env.context.document.documentElement.classList.contains('dark-mode'), !before);
+  }
+});
+
+test('homepage links menu and tool cards resolve to the intended local pages', () => {
+  const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const links = fs.readFileSync(path.join(root, 'links.html'), 'utf8');
+  assert.match(home, /href="\/links.html">Links<\/a>/);
+  for (const target of ['petrol.html', 'xkcd.html']) {
+    assert(links.includes('href="' + target + '"'));
+    assert(fs.existsSync(path.join(root, target)));
+  }
+  for (const page of ['links.html', 'xkcd.html']) {
+    const html = fs.readFileSync(path.join(root, page), 'utf8');
+    assert(html.includes('href="assets/tools.css"'));
+    assert(html.includes('src="assets/theme.js"'));
+  }
 });
