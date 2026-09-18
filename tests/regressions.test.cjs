@@ -30,7 +30,7 @@ function element(tag = 'div') {
     append(...children) { this.children.push(...children); },
     appendChild(child) { this.children.push(child); },
     replaceChildren(...children) { this.children = children; },
-    querySelectorAll: () => [], focus() {}, contains: () => false
+    querySelectorAll: () => [], focus() {}, select() {}, remove() {}, contains: () => false
   };
 }
 
@@ -388,4 +388,168 @@ test('saved city and Gregle theme are restored and storage failure is harmless',
   const invalid=environment('weather.html',async () => response(vancouverWeather()),{getItem:()=> 'not-a-city'});
   await flush();
   assert.equal(invalid.get('cityName').textContent,'Vancouver');
+});
+
+test('malformed stored search history never blocks search navigation', () => {
+  for (const saved of ['null', '{}', '42', '"text"', '[null,42,{}," valid "]', 'invalid json']) {
+    const env = environment('index.html', undefined, { getItem: key => key === 'gregle-recent-searches' ? saved : null });
+    env.context.location = { href: '' };
+    env.get('searchInput').value = 'test query';
+    env.get('braveSearch').listeners.click();
+    assert.equal(env.context.location.href, 'https://search.brave.com/search?q=test%20query');
+    assert(Array.isArray(vm.runInContext('getRecentSearches()', env.context)));
+  }
+});
+
+test('typing invalidates old autocomplete responses before the debounce fires', async () => {
+  const env = environment('index.html');
+  const pending = deferred();
+  env.context.pendingSuggestions = pending.promise;
+  vm.runInContext('fetchDuckDuckGoSuggestions = () => pendingSuggestions', env.context);
+  const render = vm.runInContext('renderSuggestions("old")', env.context);
+  env.get('searchInput').value = 'new';
+  env.get('searchInput').listeners.input();
+  pending.resolve(['old suggestion']);
+  await render;
+  assert.equal(env.get('autocompleteList').innerHTML, '');
+  assert.equal(env.get('autocompleteList').classList.contains('open'), false);
+});
+
+test('Escape cancels pending autocomplete even before the list opens', async () => {
+  const env = environment('index.html');
+  const pending = deferred();
+  env.context.pendingSuggestions = pending.promise;
+  vm.runInContext('fetchDuckDuckGoSuggestions = () => pendingSuggestions', env.context);
+  const render = vm.runInContext('renderSuggestions("query")', env.context);
+  env.get('searchInput').listeners.keydown({ key: 'Escape' });
+  pending.resolve(['suggestion']);
+  await render;
+  assert.equal(env.get('autocompleteList').classList.contains('open'), false);
+});
+
+test('wallet copying reports failure honestly and always cleans up fallback controls', async () => {
+  for (const outcome of [false, true, 'throw']) {
+    const env = environment('donate.html');
+    let removed = false, restored = false;
+    const create = env.context.document.createElement;
+    env.context.document.createElement = tag => {
+      const node = create(tag);
+      node.remove = () => { removed = true; };
+      return node;
+    };
+    env.context.document.activeElement = { focus() { restored = true; } };
+    env.context.document.execCommand = () => {
+      if (outcome === 'throw') throw new Error('Copy blocked');
+      return outcome;
+    };
+    await vm.runInContext('copyAddress(CRYPTO_WALLETS[0])', env.context);
+    assert.equal(removed, true);
+    assert.equal(restored, true);
+    assert.match(env.get('toast').textContent, outcome === true ? /address copied/ : /Could not copy/);
+  }
+  const env = environment('donate.html');
+  let copied;
+  env.context.navigator.clipboard = { async writeText(text) { copied = text; } };
+  await vm.runInContext('copyAddress(CRYPTO_WALLETS[0])', env.context);
+  assert.equal(copied, vm.runInContext('CRYPTO_WALLETS[0].address', env.context));
+  assert.match(env.get('toast').textContent, /address copied/);
+});
+
+test('wallet arrow navigation focuses the newly rendered active tab', () => {
+  const env = environment('donate.html');
+  const selector = env.get('walletSelector');
+  let tabs = [], focused;
+  Object.defineProperty(selector, 'innerHTML', { set(html) {
+    tabs = [...html.matchAll(/data-wallet-id="([^"]+)"/g)].map(match => {
+      const tab = element('button');
+      tab.dataset = { walletId: match[1] };
+      tab.focus = () => { focused = tab; };
+      return tab;
+    });
+  } });
+  selector.querySelectorAll = () => tabs;
+  env.context.document.getElementById = id => tabs.find(tab => id === 'tab-' + tab.dataset.walletId) || env.get(id);
+  vm.runInContext('renderWalletSelector()', env.context);
+  const first = tabs[0], oldSecond = tabs[1];
+  first.listeners.keydown({ key: 'ArrowRight', currentTarget: first, preventDefault() {} });
+  assert.equal(focused, tabs[1]);
+  assert.notEqual(focused, oldSecond);
+  tabs[1].listeners.keydown({ key: 'ArrowLeft', currentTarget: tabs[1], preventDefault() {} });
+  assert.equal(focused, tabs[0]);
+});
+
+const archiveResponse = title => ({ ok: true, text: async () => Array.from({ length: 1001 }, (_, i) => `<a href="/${i + 1}/">${title} ${i + 1}</a>`).join('') });
+
+test('xkcd ignores malformed caches and rebuilds cached links from comic IDs', async () => {
+  for (const cached of ['x'.repeat(1001), { length: 1001 }, Array(1001).fill(null)]) {
+    let downloads = 0;
+    const env = environment('xkcd.html', async () => { downloads++; return archiveResponse('Fresh'); }, { getItem: () => JSON.stringify(cached) });
+    env.ready.DOMContentLoaded();
+    await flush();
+    assert.equal(downloads, 1);
+    env.get('q').value = 'Fresh'; env.get('search').onclick();
+    assert.match(env.get('results').innerHTML, /Fresh/);
+  }
+  const cached = Array.from({ length: 1001 }, (_, i) => ({ id: i + 1, title: 'Cached', url: 'javascript:alert(1)', context: '<img src=x>' }));
+  const env = environment('xkcd.html', undefined, { getItem: () => JSON.stringify(cached) });
+  env.ready.DOMContentLoaded();
+  env.get('q').value = 'Cached'; env.get('search').onclick();
+  assert(!env.get('results').innerHTML.includes('javascript:'));
+  assert.match(env.get('results').innerHTML, /href="https:\/\/xkcd.com\/1001\/"/);
+});
+
+test('clearing xkcd survives blocked storage and ignores in-flight downloads', async () => {
+  const pending = deferred();
+  let writes = 0;
+  const env = environment('xkcd.html', () => pending.promise, {
+    removeItem() { throw new Error('Storage blocked'); }, setItem() { writes++; }
+  });
+  env.ready.DOMContentLoaded();
+  env.get('results').innerHTML = 'Old results';
+  env.get('clear').onclick();
+  pending.resolve(archiveResponse('Stale'));
+  await flush();
+  assert.equal(writes, 0);
+  assert.equal(env.get('results').innerHTML, '');
+  assert.match(env.get('status').textContent, /storage could not be cleared/);
+  env.get('q').value = 'Stale'; env.get('search').onclick();
+  assert.match(env.get('results').innerHTML, /archive has not loaded/);
+});
+
+test('an older xkcd download cannot overwrite a newer reload', async () => {
+  const old = deferred();
+  let calls = 0;
+  const env = environment('xkcd.html', () => ++calls === 1 ? old.promise : Promise.resolve(archiveResponse('Newest')));
+  env.ready.DOMContentLoaded();
+  await env.get('refresh').onclick();
+  old.resolve(archiveResponse('Old'));
+  await flush();
+  env.get('q').value = 'Newest'; env.get('search').onclick();
+  assert.match(env.get('results').innerHTML, /#1001 — Newest 1001/);
+});
+
+test('manifest icons resolve to real image assets relative to the manifest', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'favicons/site.webmanifest'), 'utf8'));
+  for (const icon of manifest.icons) {
+    const url = new URL(icon.src, 'https://example.test/favicons/site.webmanifest');
+    const bytes = fs.readFileSync(path.join(root, url.pathname));
+    assert.equal(bytes.subarray(1, 4).toString(), 'PNG');
+  }
+});
+
+test('xkcd times out a stalled source and loads the next fallback', async () => {
+  const requested = [];
+  const env = environment('xkcd.html', (url, { signal }) => {
+    requested.push(url);
+    if (requested.length > 1) return Promise.resolve(archiveResponse('Fallback'));
+    return new Promise((resolve, reject) => signal.addEventListener('abort', () => reject(new Error('Timed out'))));
+  });
+  env.ready.DOMContentLoaded();
+  assert.equal(env.timers.size, 1);
+  [...env.timers.values()][0]();
+  await flush();
+  assert.equal(requested[1], 'https://r.jina.ai/https://xkcd.com/archive/');
+  assert.equal(env.timers.size, 0);
+  env.get('q').value = 'Fallback'; env.get('search').onclick();
+  assert.match(env.get('results').innerHTML, /#1001 — Fallback 1001/);
 });

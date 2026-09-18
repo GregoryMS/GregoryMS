@@ -684,7 +684,7 @@
           if (next !== current) {
             event.preventDefault();
             selectWallet(tabs[next].dataset.walletId);
-            tabs[next].focus();
+            document.getElementById(`tab-${activeWalletId}`).focus();
           }
         });
       });
@@ -727,8 +727,10 @@
     }
 
     async function copyAddress(wallet) {
+      let copied = false;
       try {
         await navigator.clipboard.writeText(wallet.address);
+        copied = true;
       } catch (_) {
         const textArea = document.createElement("textarea");
         textArea.value = wallet.address;
@@ -736,11 +738,18 @@
         textArea.style.position = "fixed";
         textArea.style.opacity = "0";
         document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        textArea.remove();
+        const previousFocus = document.activeElement;
+        try {
+          textArea.select();
+          copied = document.execCommand("copy");
+        } catch (_) {
+          copied = false;
+        } finally {
+          textArea.remove();
+          previousFocus?.focus();
+        }
       }
-      showToast(`${wallet.name} address copied`);
+      showToast(copied ? `${wallet.name} address copied` : "Could not copy. Please select and copy the wallet address manually.");
     }
 
     document.querySelectorAll("[data-payment]").forEach((link) => {
