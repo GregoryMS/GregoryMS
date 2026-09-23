@@ -30,6 +30,8 @@ function element(tag = 'div') {
     listeners: {}, attributes: {}, disabled: false,
     addEventListener(name, callback) { this.listeners[name] = callback; },
     setAttribute(name, value) { this.attributes[name] = value; },
+    removeAttribute(name) { delete this.attributes[name]; },
+    scrollIntoView() {},
     append(...children) { this.children.push(...children); },
     appendChild(child) { this.children.push(child); },
     replaceChildren(...children) { this.children = children; },
@@ -413,7 +415,7 @@ test('typing invalidates old autocomplete responses before the debounce fires', 
   const env = environment('index.html');
   const pending = deferred();
   env.context.pendingSuggestions = pending.promise;
-  vm.runInContext('fetchDuckDuckGoSuggestions = () => pendingSuggestions', env.context);
+  vm.runInContext('fetchSearchSuggestions = () => pendingSuggestions', env.context);
   const render = vm.runInContext('renderSuggestions("old")', env.context);
   env.get('searchInput').value = 'new';
   env.get('searchInput').listeners.input();
@@ -427,7 +429,7 @@ test('Escape cancels pending autocomplete even before the list opens', async () 
   const env = environment('index.html');
   const pending = deferred();
   env.context.pendingSuggestions = pending.promise;
-  vm.runInContext('fetchDuckDuckGoSuggestions = () => pendingSuggestions', env.context);
+  vm.runInContext('fetchSearchSuggestions = () => pendingSuggestions', env.context);
   const render = vm.runInContext('renderSuggestions("query")', env.context);
   env.get('searchInput').listeners.keydown({ key: 'Escape' });
   pending.resolve(['suggestion']);
@@ -744,4 +746,115 @@ test('both trip calculators still update manually when the map library is unavai
     env.get('distance').listeners.input();
     assert.equal(env.get('tripCost').textContent, file === 'ev.html' ? '$12.00' : '$31.45');
   }
+});
+
+
+function suggestionCallback(env) {
+  const script = env.context.document.head.children.at(-1);
+  const callback = new URL(script.src).searchParams.get('callback');
+  return { script, callback, respond: data => env.context[callback](data) };
+}
+
+test('autocomplete decodes the live provider format, filters invalid entries and reuses cached results', async () => {
+  const env = environment('index.html');
+  const request = vm.runInContext('fetchSearchSuggestions("café & tea")', env.context);
+  const { script, callback, respond } = suggestionCallback(env);
+  const url = new URL(script.src);
+  assert.equal(url.origin, 'https://suggestqueries.google.com');
+  assert.equal(url.searchParams.get('q'), 'café & tea');
+  let removed = false;
+  script.remove = () => { removed = true; };
+  respond(['café & tea', ['café recipes', null, {}, '', 'tea shop']]);
+  assert.deepEqual(Array.from(await request), ['café recipes', 'tea shop']);
+  assert.equal(removed, true);
+  assert.equal(env.context[callback], undefined);
+  assert.equal(env.timers.size, 0);
+  const cached = await vm.runInContext('fetchSearchSuggestions("café & tea")', env.context);
+  assert.deepEqual(Array.from(cached), ['café recipes', 'tea shop']);
+  assert.equal(env.context.document.head.children.length, 1);
+});
+
+test('autocomplete timeout, network error and malformed data retain local history and clean up', async () => {
+  for (const failure of ['timeout', 'network', 'malformed']) {
+    const env = environment('index.html', undefined, { getItem: key => key === 'gregle-recent-searches' ? '["weather victoria"]' : null });
+    const request = vm.runInContext('renderSuggestions("weather")', env.context);
+    const { script, callback, respond } = suggestionCallback(env);
+    let removed = false; script.remove = () => { removed = true; };
+    if (failure === 'timeout') [...env.timers.values()][0]();
+    else if (failure === 'network') script.onerror();
+    else respond({ unexpected: true });
+    await request;
+    assert.equal(removed, true);
+    assert.equal(env.context[callback], undefined);
+    assert.match(env.get('autocompleteList').innerHTML, /weather victoria/);
+    assert.equal(env.get('searchInput').attributes['aria-expanded'], 'true');
+  }
+});
+
+test('typing shows local matches immediately and cancels the previous provider request', async () => {
+  const env = environment('index.html', undefined, { getItem: key => key === 'gregle-recent-searches' ? '["new search"]' : null });
+  const pending = vm.runInContext('renderSuggestions("old")', env.context);
+  const { script, callback } = suggestionCallback(env);
+  let removed = false; script.remove = () => { removed = true; };
+  env.get('searchInput').value = 'new';
+  env.get('searchInput').listeners.input();
+  await pending;
+  assert.equal(removed, true);
+  assert.equal(env.context[callback], undefined);
+  assert.match(env.get('autocompleteList').innerHTML, /new search/);
+  assert(!env.get('autocompleteList').innerHTML.includes('old'));
+});
+
+test('keyboard suggestions wrap correctly, expose the active option and search Brave on Enter', () => {
+  const env = environment('index.html', undefined, {}, { location: { href: '' } });
+  const input = env.get('searchInput');
+  env.get('searchForm').requestSubmit = () => env.get('searchForm').listeners.submit({ preventDefault() {} });
+  vm.runInContext('renderSuggestionList(["first", "second", "third & last"])', env.context);
+  assert.equal(input.attributes['aria-expanded'], 'true');
+  const key = key => input.listeners.keydown({ key, preventDefault() {} });
+  key('ArrowUp');
+  assert.equal(input.attributes['aria-activedescendant'], 'suggestion-2');
+  key('ArrowDown');
+  assert.equal(input.attributes['aria-activedescendant'], 'suggestion-0');
+  key('ArrowUp'); key('Enter');
+  assert.equal(env.context.location.href, 'https://search.brave.com/search?q=third%20%26%20last');
+  assert.equal(input.attributes['aria-expanded'], 'false');
+  assert.equal(input.attributes['aria-activedescendant'], undefined);
+});
+
+test('click selection submits the escaped suggestion to Brave', () => {
+  const env = environment('index.html', undefined, {}, { location: { href: '' } });
+  const option = element('li');
+  env.get('autocompleteList').querySelectorAll = () => [option];
+  env.get('searchForm').requestSubmit = () => env.get('searchForm').listeners.submit({ preventDefault() {} });
+  vm.runInContext('renderSuggestionList(["<img src=x>"])', env.context);
+  assert(!env.get('autocompleteList').innerHTML.includes('<img'));
+  option.listeners.click();
+  assert.equal(env.context.location.href, 'https://search.brave.com/search?q=%3Cimg%20src%3Dx%3E');
+});
+
+test('Tab and blur dismiss suggestions, including pending responses', async () => {
+  for (const event of ['Tab', 'blur']) {
+    const env = environment('index.html');
+    const pending = deferred(); env.context.pendingSuggestions = pending.promise;
+    vm.runInContext('fetchSearchSuggestions = () => pendingSuggestions', env.context);
+    const render = vm.runInContext('renderSuggestions("query")', env.context);
+    if (event === 'Tab') env.get('searchInput').listeners.keydown({ key: 'Tab' });
+    else env.get('searchInput').listeners.blur();
+    pending.resolve(['late suggestion']); await render;
+    assert.equal(env.get('searchInput').attributes['aria-expanded'], 'false');
+    assert.equal(env.get('autocompleteList').innerHTML, '');
+  }
+});
+
+test('IME composition does not request partial text or submit the form', () => {
+  const env = environment('index.html', undefined, {}, { location: { href: '' } });
+  const input = env.get('searchInput');
+  input.listeners.compositionstart(); input.value = '日'; input.listeners.input();
+  input.listeners.keydown({ key: 'Enter', isComposing: true });
+  env.get('searchForm').listeners.submit({ preventDefault() {} });
+  assert.equal(env.context.location.href, '');
+  assert.equal(env.timers.size, 0);
+  input.listeners.compositionend();
+  assert.equal(env.timers.size, 1);
 });
