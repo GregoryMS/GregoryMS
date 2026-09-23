@@ -1,0 +1,32 @@
+[hidden] { display:none !important; }
+.skip-link { position:absolute; left:20px; top:-100px; z-index:2; padding:12px 18px; border-radius:12px; background:var(--panel); }
+.skip-link:focus { top:12px; }
+.bookmarks-page .hero { padding:38px 0 30px; }
+.bookmark-controls { max-width:780px; margin:auto; }
+.bookmark-status { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 20px; margin:28px 0 16px; color:var(--muted); font-size:14px; }
+.bookmark-status p { margin:0; }
+.folder-actions { display:flex; gap:20px; }
+.folder-actions .text-button { font-size:14px; min-height:44px; }
+.bookmark-tree,.bookmark-tree ul { list-style:none; margin:0; padding:0; }
+.bookmark-tree > .folder-item { background:var(--panel); border:1px solid var(--line); border-radius:22px; margin-bottom:14px; padding:8px 22px; }
+.bookmark-folder { margin:0; color:var(--text); font-size:16px; }
+.bookmark-folder summary { padding:14px 0; overflow-wrap:anywhere; }
+.bookmark-folder summary::marker { color:var(--muted); }
+.folder-title { font-weight:500; margin-left:6px; }
+.folder-count { font-size:14px; font-weight:400; color:var(--muted); margin-left:8px; white-space:nowrap; }
+.bookmark-folder > ul { padding:0 0 8px 18px; }
+.bookmark-folder .folder-item { border-top:1px solid var(--line); }
+.bookmark { border-top:1px solid var(--line); }
+.bookmark a { display:block; padding:12px 10px; border-radius:8px; text-decoration:none; overflow-wrap:anywhere; }
+.bookmark a:hover { background:var(--soft); }
+.bookmark a:hover .bookmark-title { text-decoration:underline; }
+.bookmark-title { display:block; font-size:16px; }
+.bookmark-domain { display:block; font-size:14px; color:var(--muted); margin-top:3px; }
+.bookmarks-page footer { font-size:14px; }
+@media(max-width:600px) {
+  .bookmarks-page .subtitle { font-size:16px; }
+  .bookmark-tree > .folder-item { padding:4px 12px; border-radius:18px; }
+  .bookmark-folder > ul { padding-left:8px; }
+  .bookmark a { padding:12px 4px; }
+  .bookmark-status { margin-top:20px; }
+}

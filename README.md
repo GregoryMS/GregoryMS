@@ -7,6 +7,7 @@ A static personal homepage and collection of browser tools, served at the domain
 - `petrol.html`: fuel-cost calculator with map-based routing.
 - `ev.html`: EV trip-cost calculator with charging losses, unit conversion and map-based routing.
 - `xkcd.html`: comic search using archive titles and context clues.
+- `bookmarks.html`: searchable saved websites, preserving the exported folder hierarchy.
 - `contact.html` and `donate.html`: contact and support pages.
 
 `environment-canada.html` redirects older bookmarks to `weather.html`. `Victoria_weather.html` remains a standalone Victoria forecast page.
@@ -52,3 +53,9 @@ The parser has separate offline checks:
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
+
+## Bookmarks
+
+`bookmarks.html` contains the 23 September 2026 export as static, escaped HTML, so links and folders also work without JavaScript. `assets/bookmarks.js` adds local search across titles, URLs and ancestor folder names; no searches or bookmarks are sent to a service. Clearing search restores the previous folder expansion state. The page uses the shared tool theme, with its layout in `assets/bookmarks.css`.
+
+The import preserves order and duplicate bookmarks: 933 web links from 937 entries in 106 folders. Three JavaScript bookmarklets and one browser-internal URL were omitted. Two private order URLs were replaced with the provider’s public homepage; the original export, browser metadata and private order identifiers are not published.
