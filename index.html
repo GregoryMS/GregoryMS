@@ -511,6 +511,7 @@
       padding: 12px 14px;
       border-radius: 14px;
       font-size: 0.98rem;
+      overflow-wrap: anywhere;
       cursor: pointer;
       display: block;
     }
@@ -642,9 +643,13 @@
           spellcheck="false"
           autocapitalize="off"
           autocorrect="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded="false"
+          aria-controls="autocompleteList"
           aria-label="Search query"
         />
-<ul class="autocomplete-list" id="autocompleteList" role="listbox" aria-label="Search suggestions"></ul>
+        <ul class="autocomplete-list" id="autocompleteList" role="listbox" aria-label="Search suggestions"></ul>
       </form>
 
       <div class="button-row">
@@ -671,6 +676,9 @@
     let suggestionItems = [];
     let autocompleteTimer = null;
     let autocompleteRequestSeq = 0;
+    let cancelAutocompleteRequest = null;
+    let composingSearch = false;
+    const suggestionCache = new Map();
 
     function getRecentSearches() {
       try {
@@ -746,90 +754,89 @@
     function closeAutocomplete() {
       autocompleteRequestSeq++;
       clearTimeout(autocompleteTimer);
+      if (cancelAutocompleteRequest) cancelAutocompleteRequest();
+      searchInput.setAttribute('aria-expanded', 'false');
+      searchInput.removeAttribute('aria-activedescendant');
       autocompleteList.classList.remove('open');
       autocompleteList.innerHTML = '';
       suggestionItems = [];
       activeSuggestionIndex = -1;
     }
 
+    function setActiveSuggestion(index) {
+      activeSuggestionIndex = index;
+      autocompleteList.querySelectorAll('.autocomplete-item').forEach((item, itemIndex) => {
+        const active = itemIndex === index;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+        if (active) item.scrollIntoView({ block: 'nearest' });
+      });
+      if (index >= 0) searchInput.setAttribute('aria-activedescendant', `suggestion-${index}`);
+      else searchInput.removeAttribute('aria-activedescendant');
+    }
+
+    function chooseSuggestion(index) {
+      if (!suggestionItems[index]) return;
+      searchInput.value = suggestionItems[index];
+      closeAutocomplete();
+      searchForm.requestSubmit();
+    }
+
     function renderSuggestionList(items) {
       suggestionItems = items.slice(0, 8);
-
       if (!suggestionItems.length) {
         closeAutocomplete();
         return;
       }
-
       autocompleteList.innerHTML = suggestionItems.map((item, index) => `
-        <li role="option" aria-selected="${index === activeSuggestionIndex}">
-          <button class="autocomplete-item ${index === activeSuggestionIndex ? 'active' : ''}" type="button" data-index="${index}">${escapeHtml(item)}</button>
-        </li>
+        <li id="suggestion-${index}" class="autocomplete-item" role="option" aria-selected="false">${escapeHtml(item)}</li>
       `).join('');
-
       autocompleteList.classList.add('open');
-
-      autocompleteList.querySelectorAll('.autocomplete-item').forEach((button, index) => {
-        button.addEventListener('mousedown', (event) => {
-          event.preventDefault();
-          searchInput.value = suggestionItems[index];
-          activeSuggestionIndex = -1;
-          closeAutocomplete();
-        });
-
-        button.addEventListener('mouseenter', () => {
-          activeSuggestionIndex = index;
-          autocompleteList.querySelectorAll('.autocomplete-item').forEach((itemEl, itemIndex) => {
-            itemEl.classList.toggle('active', itemIndex === activeSuggestionIndex);
-          });
-        });
+      searchInput.setAttribute('aria-expanded', 'true');
+      setActiveSuggestion(-1);
+      autocompleteList.querySelectorAll('.autocomplete-item').forEach((item, index) => {
+        item.addEventListener('mousedown', event => event.preventDefault());
+        item.addEventListener('click', () => chooseSuggestion(index));
       });
     }
 
-    function fetchDuckDuckGoSuggestions(query) {
+    // This static site uses Google's JSONP feed; selecting a query still searches Brave.
+    function fetchSearchSuggestions(query) {
+      if (suggestionCache.has(query)) return Promise.resolve(suggestionCache.get(query));
+      if (cancelAutocompleteRequest) cancelAutocompleteRequest();
       return new Promise((resolve, reject) => {
         const callbackName = `gregleAutocomplete_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
         const script = document.createElement('script');
         let finished = false;
+        const cancel = () => finish(new Error('Autocomplete cancelled'));
+        cancelAutocompleteRequest = cancel;
+        const timeoutId = setTimeout(() => finish(new Error('Autocomplete timeout')), 3000);
 
-        const timeoutId = setTimeout(() => {
+        function finish(error, items = []) {
           if (finished) return;
           finished = true;
-          cleanup();
-          reject(new Error('Autocomplete timeout'));
-        }, 3000);
-
-        function cleanup() {
           clearTimeout(timeoutId);
-          if (script.parentNode) script.parentNode.removeChild(script);
-          try {
-            delete window[callbackName];
-          } catch {}
+          script.remove();
+          delete window[callbackName];
+          if (cancelAutocompleteRequest === cancel) cancelAutocompleteRequest = null;
+          if (error) reject(error);
+          else resolve(items);
         }
 
-        window[callbackName] = (data) => {
-          if (finished) return;
-          finished = true;
-          cleanup();
-          if (!Array.isArray(data)) {
-            resolve([]);
+        window[callbackName] = data => {
+          if (!Array.isArray(data) || !Array.isArray(data[1])) {
+            finish(new Error('Invalid autocomplete response'));
             return;
           }
-          resolve(
-            data
-              .map(item => item && (item.phrase || item.text || item.value || ''))
-              .filter(Boolean)
-          );
+          const items = data[1].filter(item => typeof item === 'string' && item.trim()).slice(0, 8);
+          if (suggestionCache.size >= 50) suggestionCache.delete(suggestionCache.keys().next().value);
+          suggestionCache.set(query, items);
+          finish(null, items);
         };
-
-        script.onerror = () => {
-          if (finished) return;
-          finished = true;
-          cleanup();
-          reject(new Error('Autocomplete request failed'));
-        };
-
+        script.onerror = () => finish(new Error('Autocomplete request failed'));
         script.async = true;
-        script.src = `https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&callback=${callbackName}`;
+        script.referrerPolicy = 'no-referrer';
+        script.src = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(query)}&callback=${callbackName}`;
         document.head.appendChild(script);
       });
     }
@@ -844,7 +851,7 @@
       }
 
       try {
-        const remote = await fetchDuckDuckGoSuggestions(trimmed);
+        const remote = await fetchSearchSuggestions(trimmed);
         if (seq !== autocompleteRequestSeq) return;
 
         const combined = [...remote, ...getLocalSuggestions(trimmed)];
@@ -873,9 +880,11 @@
 
     function queueSuggestions() {
       closeAutocomplete();
+      const local = getLocalSuggestions(searchInput.value);
+      if (local.length) renderSuggestionList(local);
       autocompleteTimer = setTimeout(() => {
         renderSuggestions(searchInput.value);
-      }, 120);
+      }, 180);
     }
 
     function getQuery() {
@@ -903,10 +912,19 @@
 
     searchForm.addEventListener('submit', (event) => {
       event.preventDefault();
-      runSearch('https://search.brave.com/search?q=');
+      if (!composingSearch) runSearch('https://search.brave.com/search?q=');
     });
 
+    searchInput.addEventListener('compositionstart', () => {
+      composingSearch = true;
+      closeAutocomplete();
+    });
+    searchInput.addEventListener('compositionend', () => {
+      composingSearch = false;
+      if (searchInput.value.trim()) queueSuggestions();
+    });
     searchInput.addEventListener('input', () => {
+      if (composingSearch) return;
       activeSuggestionIndex = -1;
       if (searchInput.value.trim().length >= 1) {
         queueSuggestions();
@@ -921,8 +939,11 @@
       }
     });
 
+    searchInput.addEventListener('blur', () => closeAutocomplete());
+
     searchInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
+      if (event.isComposing || composingSearch) return;
+      if (event.key === 'Escape' || event.key === 'Tab') {
         closeAutocomplete();
         return;
       }
@@ -930,17 +951,13 @@
 
       if (event.key === 'ArrowDown') {
         event.preventDefault();
-        activeSuggestionIndex = (activeSuggestionIndex + 1) % suggestionItems.length;
-        renderSuggestionList(suggestionItems);
+        setActiveSuggestion((activeSuggestionIndex + 1) % suggestionItems.length);
       } else if (event.key === 'ArrowUp') {
         event.preventDefault();
-        activeSuggestionIndex = (activeSuggestionIndex - 1 + suggestionItems.length) % suggestionItems.length;
-        renderSuggestionList(suggestionItems);
+        setActiveSuggestion(activeSuggestionIndex <= 0 ? suggestionItems.length - 1 : activeSuggestionIndex - 1);
       } else if (event.key === 'Enter' && activeSuggestionIndex >= 0) {
         event.preventDefault();
-        searchInput.value = suggestionItems[activeSuggestionIndex];
-        closeAutocomplete();
-        searchForm.requestSubmit();
+        chooseSuggestion(activeSuggestionIndex);
       }
     });
 
@@ -1224,3 +1241,4 @@
   </script>
 </body>
 </html>
+
