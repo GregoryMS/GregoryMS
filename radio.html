@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Listen to BBC Radio 1, NRK P3 and internet radio from around the world. Find stations by name and country.">
+  <title>Radio · Gregle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <link rel="stylesheet" href="assets/tools.css">
+  <link rel="stylesheet" href="assets/radio.css">
+  <script src="assets/theme.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.13/dist/hls.min.js" integrity="sha384-z+tuLqMWl1/cPv7O+39RO0EURSNvorimpcCaMgeNwU+qFBx+AlUIl7jaAwg0cYil" crossorigin="anonymous" defer></script>
+  <script src="assets/radio-core.js" defer></script>
+  <script src="assets/radio.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#browse">Skip to station search</a>
+  <header class="topbar">
+    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Radio</span></div>
+    <div class="top-actions"><a class="pill" href="links.html">← Tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+  </header>
+  <main class="page radio-page">
+    <div class="hero"><p class="eyebrow">A world of sound</p><h1>Find your frequency.</h1><p class="subtitle">Your familiar favourites. Something from somewhere new.<br>Live radio, all in one place.</p></div>
+    <section aria-labelledby="featuredHeading">
+      <div class="section-heading"><h2 id="featuredHeading">Start here</h2><span>Two favourites, one click away</span></div>
+      <div class="featured-grid" id="featuredStations"></div>
+    </section>
+    <section class="radio-player" aria-labelledby="nowName">
+      <div class="now-info"><p class="eyebrow" id="playState">Ready to listen</p><h2 id="nowName">Choose a station</h2><p id="nowDetail">Press Play on any station below.</p></div>
+      <div class="player-controls"><div id="audioHost"></div><div class="player-actions"><button class="pill" id="stopPlayback" type="button" disabled>Stop</button><button class="pill" id="retryPlayback" type="button" hidden>Reconnect</button><a id="stationWebsite" target="_blank" rel="noopener noreferrer" hidden>Station website ↗</a></div></div>
+      <p class="player-status" id="playerStatus" role="status" aria-live="polite"></p>
+    </section>
+    <section id="browse" aria-labelledby="browseHeading">
+      <div class="section-heading"><h2 id="browseHeading">Explore the dial</h2><span>Search by station and country</span></div>
+      <form id="stationSearch" class="radio-search" role="search" aria-label="Find radio stations">
+        <div class="field"><label for="stationQuery">Station name</label><input type="search" id="stationQuery" placeholder="BBC, NRK, jazz…" maxlength="100" autocomplete="off"></div>
+        <div class="field"><label for="countryFilter">Country</label><select id="countryFilter"><option value="">All countries</option></select></div>
+        <button class="pill primary" type="submit">Find stations</button>
+      </form>
+      <div class="country-shortcuts" aria-label="Quick country filters"><button type="button" data-country="GB">United Kingdom</button><button type="button" data-country="NO">Norway</button><button type="button" data-country="CA">Canada</button><button type="button" id="resetStations">Reset</button></div>
+      <div class="result-header"><p id="searchStatus" role="status" aria-live="polite">A few stations to get you started.</p><button class="text-button" id="retrySearch" type="button" hidden>Retry search</button></div>
+      <div class="station-grid" id="stationResults" aria-label="Radio stations"></div>
+      <div class="more-row"><button class="pill" id="loadMore" type="button" hidden>Load more stations</button></div>
+    </section>
+    <noscript><p>Turn on JavaScript to use the player and search, or listen directly at <a href="https://www.bbc.co.uk/sounds/play/live:bbc_radio_one">BBC Radio 1</a> and <a href="https://radio.nrk.no/direkte/p3">NRK P3</a>.</p></noscript>
+    <details><summary>About stations &amp; listening</summary><p>Search uses the community-maintained <a href="https://www.radio-browser.info/" target="_blank" rel="noopener noreferrer">Radio Browser</a> directory. Featured stations use broadcaster streams. Some broadcasts may be unavailable in your country or browser; the station website is always a useful alternative. This player does not bypass regional restrictions.</p><p>Playback starts only when you choose a station. Keep this page open while listening. Search terms go to Radio Browser, and audio loads directly from the station. No account is needed.</p></details>
+    <footer><p>Live radio. Made to be useful.</p><a href="links.html">Back to Tools</a></footer>
+  </main>
+</body>
+</html>
