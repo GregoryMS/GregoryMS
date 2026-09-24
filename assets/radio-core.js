@@ -8,8 +8,8 @@
   const bbc = (channel, pool) => `https://as-hls-ww.live.cf.md.bbci.co.uk/pool_${pool}/live/ww/${channel}/${channel}.isml/${channel}-audio%3d96000.norewind.m3u8`;
   const nrk = channel => `https://lyd.nrk.no/icecast/mp3/high/s0w7hwn47m/${channel}`;
   const featured = [
-    { id: 'bbc-radio-1', name: 'BBC Radio 1', country: 'GB', tags: 'New music · Pop · Dance', url: bbc('bbc_radio_one', '01505109'), hls: true, homepage: 'https://www.bbc.co.uk/sounds/play/live:bbc_radio_one' },
-    { id: 'nrk-p3', name: 'NRK P3', country: 'NO', tags: 'Norwegian music · Pop · Entertainment', url: nrk('p3'), homepage: 'https://radio.nrk.no/direkte/p3' },
+    { id: 'bbc-radio-1', name: 'BBC Radio 1', artwork: { src: 'assets/radio-logos/bbc-radio-1.png', sizes: '600x600', type: 'image/png' }, country: 'GB', tags: 'New music · Pop · Dance', url: bbc('bbc_radio_one', '01505109'), hls: true, homepage: 'https://www.bbc.co.uk/sounds/play/live:bbc_radio_one' },
+    { id: 'nrk-p3', name: 'NRK P3', artwork: { src: 'assets/radio-logos/nrk-p3.png', sizes: '512x512', type: 'image/png' }, country: 'NO', tags: 'Norwegian music · Pop · Entertainment', url: nrk('p3'), homepage: 'https://radio.nrk.no/direkte/p3' },
     { id: 'bbc-radio-2', name: 'BBC Radio 2', country: 'GB', tags: 'Music · Entertainment', url: bbc('bbc_radio_two', '74208725'), hls: true, homepage: 'https://www.bbc.co.uk/sounds/play/live:bbc_radio_two' },
     { id: 'bbc-6-music', name: 'BBC Radio 6 Music', country: 'GB', tags: 'Alternative · Indie · Discovery', url: bbc('bbc_6music', '81827798'), hls: true, homepage: 'https://www.bbc.co.uk/sounds/play/live:bbc_6music' },
     { id: 'nrk-p2', name: 'NRK P2', country: 'NO', tags: 'Culture · Conversation · Music', url: nrk('p2'), homepage: 'https://radio.nrk.no/direkte/p2' },
@@ -54,6 +54,52 @@
     const params = new URLSearchParams({ name: query.trim(), hidebroken: 'true', is_https: 'true', order: 'clickcount', reverse: 'true', limit: '30', offset: String(offset) });
     if (/^[A-Z]{2}$/.test(country)) params.set('countrycode', country);
     return params;
+  }
+  // Publish the selected live station to iOS Lock Screen / Control Centre and media keys.
+  // Every API call is optional: older browsers must still be able to play radio.
+  class MediaControls {
+    constructor({ session = globalThis.navigator?.mediaSession, Metadata = globalThis.MediaMetadata,
+      baseURL = globalThis.location?.href, onPlay, onPause, onStop } = {}) {
+      this.session = session; this.Metadata = Metadata; this.baseURL = baseURL;
+      this.handlers = { play: onPlay, pause: onPause, stop: onStop };
+      this.stationId = null; this.state = 'none';
+    }
+    attempt(action) { try { action(); } catch (_) { /* Unsupported platform feature. */ } }
+    update({ station, state }) {
+      if (!this.session) return;
+      if (!station || state === 'stopped' || state === 'error') { this.clear(); return; }
+      const sameStation = this.stationId === station.id;
+      this.stationId = station.id;
+      this.attempt(() => {
+        if (!this.Metadata) return;
+        const artwork = station.artwork || { src: 'favicons/web-app-manifest-512x512.png', sizes: '512x512', type: 'image/png' };
+        this.session.metadata = new this.Metadata({
+          title: station.name,
+          artist: 'Live radio · Gregle',
+          album: '',
+          artwork: [{ ...artwork, src: new URL(artwork.src, this.baseURL).href }]
+        });
+      });
+      this.state = state === 'playing' ? 'playing' : state === 'paused' ? 'paused' :
+        sameStation && this.state === 'playing' ? 'playing' : 'none';
+      this.attempt(() => { this.session.playbackState = this.state; });
+      for (const [action, handler] of Object.entries(this.handlers)) {
+        this.attempt(() => this.session.setActionHandler(action, handler || null));
+      }
+      // This is live radio: do not advertise a seekable track or invent a duration.
+      for (const action of ['seekbackward', 'seekforward', 'seekto', 'previoustrack', 'nexttrack']) {
+        this.attempt(() => this.session.setActionHandler(action, null));
+      }
+      this.attempt(() => this.session.setPositionState());
+    }
+    clear() {
+      if (!this.session) return;
+      this.stationId = null; this.state = 'none';
+      this.attempt(() => { this.session.metadata = null; });
+      this.attempt(() => { this.session.playbackState = 'none'; });
+      for (const action of Object.keys(this.handlers)) this.attempt(() => this.session.setActionHandler(action, null));
+      this.attempt(() => this.session.setPositionState());
+    }
   }
   class Directory {
     constructor(fetcher = (...args) => fetch(...args)) {
@@ -111,12 +157,18 @@
     }
     release() {
       ++this.generation;
+      this.resumeAudio = null;
       this.timers.clearTimeout(this.timer); this.timer = null;
       if (this.hls) { this.hls.destroy(); this.hls = null; }
       if (this.audio) {
         this.volume = this.audio.volume;
         this.audio.pause(); this.audio.removeAttribute('src'); this.audio.load(); this.audio.remove(); this.audio = null;
       }
+    }
+    pause() { this.audio?.pause(); }
+    resume() {
+      if (this.resumeAudio) this.resumeAudio();
+      else if (this.station) this.play(this.station);
     }
     stop() { this.release(); this.onChange({ state: 'stopped', station: this.station }); }
     play(station) {
@@ -147,6 +199,7 @@
           } else fail('This stream could not play here. Retry or open the station website.');
         });
       };
+      this.resumeAudio = start;
       audio.addEventListener('playing', () => { if (active()) { this.timers.clearTimeout(this.timer); this.timer = null; update('playing'); } });
       audio.addEventListener('waiting', buffer);
       audio.addEventListener('pause', () => { if (active()) { this.timers.clearTimeout(this.timer); this.timer = null; update('paused'); } });
@@ -165,5 +218,6 @@
       } else { audio.src = station.url; start(); }
     }
   }
-  return { featured, webURL, normalizeStation, mergeStations, localMatches, searchParams, Directory, Player };
+  return { featured, webURL, normalizeStation, mergeStations, localMatches, searchParams, Directory, Player, MediaControls };
 });
+
