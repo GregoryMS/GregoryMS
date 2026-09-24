@@ -72,7 +72,7 @@
       this.stationId = station.id;
       this.attempt(() => {
         if (!this.Metadata) return;
-        const artwork = station.artwork || { src: 'favicons/web-app-manifest-512x512.png', sizes: '512x512', type: 'image/png' };
+        const artwork = station.artwork || { src: 'assets/radio-app/icon-512.png', sizes: '512x512', type: 'image/png' };
         this.session.metadata = new this.Metadata({
           title: station.name,
           artist: 'Live radio · Gregle',

@@ -69,4 +69,5 @@ button:disabled { cursor:default; opacity:.45; }
 .now-info { display:flex; align-items:center; gap:16px; }
 .now-copy { min-width:0; }
 .now-logo { display:block; flex:0 0 64px; width:64px; height:64px; border-radius:12px; object-fit:contain; }
-@media(max-width:480px) { .station-logo { width:64px; height:64px; } }
+.featured .station-logo { width:96px; height:96px; }
+@media(max-width:480px) { .featured .station-logo { width:88px; height:88px; } }

@@ -24,6 +24,14 @@
     onPause: () => player.pause(),
     onStop: () => player.stop()
   });
+  function refreshNowPlaying() {
+    // Set the document title before publishing metadata or starting audio.
+    // This also supplies the station name to browsers using their page-title fallback.
+    document.title = currentStation && currentState !== 'stopped' && currentState !== 'error' ? currentStation.name : pageTitle;
+    mediaControls.update({ station: currentStation, state: currentState });
+  }
+  document.addEventListener('visibilitychange', refreshNowPlaying);
+  window.addEventListener('pageshow', refreshNowPlaying);
   const player = new Player({
     Hls: window.Hls,
     createAudio() {
@@ -31,8 +39,7 @@
     },
     onChange({ state, station, message }) {
       currentStation = station; currentState = state;
-      mediaControls.update({ station, state });
-      document.title = station && state !== 'stopped' && state !== 'error' ? `${station.name} · Gregle Radio` : pageTitle;
+      refreshNowPlaying();
       const nowLogo = get('nowLogo');
       nowLogo.hidden = !station?.artwork;
       if (station?.artwork) nowLogo.src = station.artwork.src;
@@ -49,7 +56,7 @@
       reflectSelection();
     }
   });
-  function listen(station) { player.play(station); directory.recordClick(station); }
+  function listen(station) { document.title = station.name; player.play(station); directory.recordClick(station); }
   get('stopPlayback').addEventListener('click', () => player.stop());
   get('retryPlayback').addEventListener('click', () => { if (currentStation) listen(currentStation); });
   window.addEventListener('pagehide', () => player.stop());
@@ -72,7 +79,10 @@
     }
     article.append(country, title, tags, actions); return article;
   }
-  get('featuredStations').replaceChildren(...featured.slice(0, 2).map(station => card(station, true)));
+  get('featuredStations').querySelectorAll('[data-play-station]').forEach(button => {
+    const station = featured.find(item => item.id === button.dataset.playStation);
+    if (station) button.addEventListener('click', () => listen(station));
+  });
   let results = [], offset = 0, requestNumber = 0, searchController = null, debounce = null, retryAppend = false;
   function render() { get('stationResults').replaceChildren(...results.map(station => card(station))); reflectSelection(); }
   function cancelSearch() {
