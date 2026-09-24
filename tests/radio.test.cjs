@@ -137,7 +137,7 @@ test('native HLS is used where supported and missing HLS support fails usefully'
 test('radio is linked from Tools and its local scripts and stylesheet exist', () => {
   const root = path.join(__dirname, '..'); const html = fs.readFileSync(path.join(root, 'radio.html'), 'utf8');
   assert.match(fs.readFileSync(path.join(root, 'links.html'), 'utf8'), /href="radio.html"/);
-  for (const [, file] of html.matchAll(/(?:src|href)="(assets\/[^\"]+)"/g)) assert(fs.existsSync(path.join(root, file)), file);
+  for (const [, file] of html.matchAll(/(?:src|href)="(assets\/[^\"]+)"/g)) assert(fs.existsSync(path.join(root, file.split('?')[0])), file);
   assert.match(html, /integrity="sha384-/); assert(!html.includes(' autoplay'));
 });
 
@@ -173,7 +173,7 @@ test('Now Playing follows station switches, playback state and locally hosted ar
   controls.update({ station: featured[1], state: 'paused' });
   assert.equal(session.playbackState, 'paused');
   controls.update({ station: featured[2], state: 'playing' });
-  assert.match(session.metadata.artwork[0].src, /favicons\/web-app-manifest-512x512.png$/);
+  assert.match(session.metadata.artwork[0].src, /assets\/radio-app\/icon-512.png$/);
   assert(positions.every(args => args.length === 0)); // Live streams have no invented seek position.
 });
 
@@ -207,4 +207,20 @@ test('media-screen resume catches playback rejection without losing the selected
   h.player.resume(); await flush();
   assert.equal(h.states.at(-1).state, 'paused'); assert.equal(h.states.at(-1).station.id, station.id);
   assert.match(h.states.at(-1).message, /Press play/);
+});
+
+test('radio installs with its own name, start page and correctly sized PNG icons', () => {
+  const root = path.join(__dirname, '..');
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'radio.webmanifest'), 'utf8'));
+  assert.equal(manifest.name, 'Gregle Radio'); assert.equal(manifest.start_url, '/radio.html');
+  assert.equal(manifest.id, '/radio.html'); assert.equal(manifest.display, 'standalone');
+  for (const icon of [...manifest.icons, { src: '/assets/radio-app/apple-touch-icon.png', sizes: '180x180' }]) {
+    const png = fs.readFileSync(path.join(root, icon.src));
+    assert.equal(png.subarray(1, 4).toString(), 'PNG');
+    assert.equal(png.readUInt32BE(16) + 'x' + png.readUInt32BE(20), icon.sizes);
+  }
+  const html = fs.readFileSync(path.join(root, 'radio.html'), 'utf8');
+  assert.match(html, /name="apple-mobile-web-app-title" content="Gregle Radio"/);
+  assert.match(html, /rel="apple-touch-icon"[^>]+href="\/assets\/radio-app\/apple-touch-icon.png"/);
+  assert.match(html, /rel="manifest" href="\/radio.webmanifest"/);
 });

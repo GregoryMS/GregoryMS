@@ -4,15 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Listen to BBC Radio 1, NRK P3 and internet radio from around the world. Find stations by name and country.">
-  <title>Radio · Gregle</title>
+  <title>Gregle Radio</title>
+  <meta name="application-name" content="Gregle Radio">
+  <meta name="apple-mobile-web-app-title" content="Gregle Radio">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#232323">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/radio-app/apple-touch-icon.png">
+  <link rel="manifest" href="/radio.webmanifest">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/radio-app/icon-192.png">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/radio.css">
+  <link rel="stylesheet" href="assets/radio.css?v=20260924-2">
   <script src="assets/theme.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.13/dist/hls.min.js" integrity="sha384-z+tuLqMWl1/cPv7O+39RO0EURSNvorimpcCaMgeNwU+qFBx+AlUIl7jaAwg0cYil" crossorigin="anonymous" defer></script>
-  <script src="assets/radio-core.js" defer></script>
-  <script src="assets/radio.js" defer></script>
+  <script src="assets/radio-core.js?v=20260924-2" defer></script>
+  <script src="assets/radio.js?v=20260924-2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#browse">Skip to station search</a>
@@ -24,7 +31,18 @@
     <div class="hero"><p class="eyebrow">A world of sound</p><h1>Find your frequency.</h1><p class="subtitle">Your familiar favourites. Something from somewhere new.<br>Live radio, all in one place.</p></div>
     <section aria-labelledby="featuredHeading">
       <div class="section-heading"><h2 id="featuredHeading">Start here</h2><span>Two favourites, one click away</span></div>
-      <div class="featured-grid" id="featuredStations"></div>
+      <div class="featured-grid" id="featuredStations">
+        <article class="station-card featured" data-station="bbc-radio-1">
+          <img class="station-logo" src="assets/radio-logos/bbc-radio-1.png" alt="BBC Radio 1 logo" width="96" height="96">
+          <p class="station-country">United Kingdom</p><h3>BBC Radio 1</h3><p class="station-tags">New music · Pop · Dance</p>
+          <div class="station-actions"><button class="pill primary" type="button" data-play-station="bbc-radio-1" aria-label="Play BBC Radio 1">▶ Play</button><a href="https://www.bbc.co.uk/sounds/play/live:bbc_radio_one" target="_blank" rel="noopener noreferrer" aria-label="BBC Radio 1 website">Website ↗</a></div>
+        </article>
+        <article class="station-card featured" data-station="nrk-p3">
+          <img class="station-logo" src="assets/radio-logos/nrk-p3.png" alt="NRK P3 logo" width="96" height="96">
+          <p class="station-country">Norway</p><h3>NRK P3</h3><p class="station-tags">Norwegian music · Pop · Entertainment</p>
+          <div class="station-actions"><button class="pill primary" type="button" data-play-station="nrk-p3" aria-label="Play NRK P3">▶ Play</button><a href="https://radio.nrk.no/direkte/p3" target="_blank" rel="noopener noreferrer" aria-label="NRK P3 website">Website ↗</a></div>
+        </article>
+      </div>
     </section>
     <section class="radio-player" aria-labelledby="nowName">
       <div class="now-info"><img id="nowLogo" class="now-logo" width="64" height="64" alt="" hidden><div class="now-copy"><p class="eyebrow" id="playState">Ready to listen</p><h2 id="nowName">Choose a station</h2><p id="nowDetail">Press Play on any station below.</p></div></div>
