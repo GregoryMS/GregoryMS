@@ -77,3 +77,12 @@ Station and country search uses the public [Radio Browser API](https://docs.radi
 BBC streams use verified HTTPS worldwide HLS playlists. Browsers with native HLS use their audio player; other compatible browsers use HLS.js 1.6.13 from jsDelivr, pinned with SHA-384 integrity. NRK and the other featured stations use native MP3 playback. Only one audio instance is active; switching stations, Stop and page exit release the previous stream. Playback starts on a user click, never on page load, and errors offer reconnect and the station website. There is no proxy, recording, API key or bypass of broadcaster restrictions. Keep the page open while listening.
 
 Sources checked 23 September 2026: [BBC international live-listening guidance](https://help.bbc.com/hc/en-us/articles/42652680528659-Update-on-access-to-BBC-Sounds-outside-the-UK), [NRK official stream directory](https://lyd.nrk.no/), [NRK listening help](https://info.nrk.no/radio/), [HLS.js](https://github.com/video-dev/hls.js). Stream URLs and country availability can change; update the featured list when needed.
+
+
+### iPhone Now Playing and station artwork
+
+The radio player publishes the selected station name, “Live radio · Gregle”, and artwork through the [Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession). Metadata follows station changes and remains available when paused. Lock-screen/Control Centre play, pause and stop actions control the active stream. Stop and playback failure clear the session; live radio does not supply a fabricated track duration or seek handlers. The page title also follows the station as a fallback. Unsupported Media Session features never prevent playback.
+
+BBC Radio 1 and NRK P3 logos appear on their cards, in the page player, and as Now Playing artwork. Other stations receive Gregle artwork, so the previous station's logo is never reused. Local PNGs with absolute metadata URLs avoid cross-origin image dependencies and SVG artwork compatibility issues. See `assets/radio-logos/SOURCES.md` for the broadcaster assets and conversion details.
+
+On iPhone, reload the radio page after an update and start a station. iOS chooses the final Lock Screen/Control Centre layout; desktop browser emulation cannot verify a physical iPhone's system UI.

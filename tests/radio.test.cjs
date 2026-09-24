@@ -148,3 +148,63 @@ test('repeated buffering events cannot postpone the playback timeout indefinitel
   assert.equal(timers.size, 1); assert.equal([...timers.keys()][0], original);
   timers.get(original)(); assert.equal(states.at(-1).state, 'error');
 });
+
+
+function mediaHarness(callbacks = {}) {
+  const actions = {}, positions = [];
+  const session = { setActionHandler(action, handler) { actions[action] = handler; }, setPositionState(...args) { positions.push(args); } };
+  const controls = new (require('../assets/radio-core.js').MediaControls)({ session, Metadata: class { constructor(data) { Object.assign(this, data); } }, baseURL: 'https://gregle.uk/radio.html', ...callbacks });
+  return { controls, session, actions, positions };
+}
+
+test('Now Playing follows station switches, playback state and locally hosted artwork', () => {
+  const { controls, session, positions } = mediaHarness();
+  controls.update({ station: featured[0], state: 'loading' });
+  assert.equal(session.metadata.title, 'BBC Radio 1');
+  assert.equal(session.metadata.artwork[0].src, 'https://gregle.uk/assets/radio-logos/bbc-radio-1.png');
+  assert.equal(session.playbackState, 'none');
+  controls.update({ station: featured[0], state: 'playing' });
+  controls.update({ station: featured[0], state: 'loading' });
+  assert.equal(session.playbackState, 'playing'); // Buffering does not advertise a paused stream.
+  controls.update({ station: featured[1], state: 'loading' });
+  assert.equal(session.metadata.title, 'NRK P3');
+  assert.equal(session.metadata.artwork[0].src, 'https://gregle.uk/assets/radio-logos/nrk-p3.png');
+  assert.equal(session.playbackState, 'none');
+  controls.update({ station: featured[1], state: 'paused' });
+  assert.equal(session.playbackState, 'paused');
+  controls.update({ station: featured[2], state: 'playing' });
+  assert.match(session.metadata.artwork[0].src, /favicons\/web-app-manifest-512x512.png$/);
+  assert(positions.every(args => args.length === 0)); // Live streams have no invented seek position.
+});
+
+test('Now Playing actions control the current player and clear on stop or stream failure', () => {
+  const h = harness();
+  const { controls, session, actions } = mediaHarness({ onPlay: () => h.player.resume(), onPause: () => h.player.pause(), onStop: () => h.player.stop() });
+  h.player.onChange = update => { h.states.push(update); controls.update(update); };
+  h.player.play(featured[1]); h.audios[0].events.playing();
+  actions.pause(); assert.equal(h.audios[0].paused, true); assert.equal(session.playbackState, 'paused');
+  actions.play(); assert.equal(h.audios[0].playCount, 2);
+  h.player.play(featured[4]); h.audios[1].events.playing();
+  actions.pause(); actions.play(); assert.equal(h.audios[1].playCount, 2); assert.equal(h.audios[0].playCount, 2);
+  for (const action of ['seekbackward', 'seekforward', 'seekto', 'previoustrack', 'nexttrack']) assert.equal(actions[action], null);
+  actions.stop(); assert.equal(session.metadata, null); assert.equal(session.playbackState, 'none');
+  assert.equal(actions.play, null); assert.equal(actions.pause, null); assert.equal(actions.stop, null);
+  h.player.play(featured[1]); h.audios[2].events.error();
+  assert.equal(session.metadata, null); assert.equal(session.playbackState, 'none');
+});
+
+test('unsupported or partial Media Session APIs never interrupt the radio player', () => {
+  const { MediaControls } = require('../assets/radio-core.js');
+  const unsupported = new MediaControls({ session: null });
+  assert.doesNotThrow(() => { unsupported.update({ station, state: 'playing' }); unsupported.clear(); });
+  const partial = new MediaControls({ session: { set metadata(value) { throw new Error('Unsupported'); }, set playbackState(value) { throw new Error('Unsupported'); } }, Metadata: class {} });
+  assert.doesNotThrow(() => { partial.update({ station, state: 'playing' }); partial.clear(); });
+});
+
+test('media-screen resume catches playback rejection without losing the selected station', async () => {
+  const h = harness(); h.player.play(station); h.audios[0].events.playing(); h.player.pause();
+  h.audios[0].play = () => Promise.reject(Object.assign(new Error(), { name: 'NotAllowedError' }));
+  h.player.resume(); await flush();
+  assert.equal(h.states.at(-1).state, 'paused'); assert.equal(h.states.at(-1).station.id, station.id);
+  assert.match(h.states.at(-1).message, /Press play/);
+});
