@@ -8,6 +8,7 @@ A static personal homepage and collection of browser tools, served at the domain
 - `ev.html`: EV trip-cost calculator with charging losses, unit conversion and map-based routing.
 - `xkcd.html`: comic search using archive titles and context clues.
 - `radio.html`: live internet radio with featured BBC/NRK stations and worldwide station/country search.
+- `earthquakes.html`: recent earthquakes, a world/west-coast map and NOAA tsunami bulletins.
 - `bookmarks.html`: searchable saved websites, preserving the exported folder hierarchy.
 - `contact.html` and `donate.html`: contact and support pages.
 
@@ -42,6 +43,16 @@ GitHub Actions runs the suite on pull requests and pushes to `main`. The tests e
 ## Adding a tool
 
 Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Tools** menu item opens this directory. `links.html`, `xkcd.html`, `petrol.html` and `ev.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference. The fuel and EV calculators share their layout in `assets/fuel.css` and routing in `assets/route-planner.js`. EV calculations run locally in `assets/ev.js`; electricity prices are examples that users replace with their own tariff.
+
+## Earthquakes and tsunamis
+
+`earthquakes.html` shares the existing Gregle theme and is linked from `links.html`. Leaflet 1.9.4 (pinned with integrity checks) displays OpenStreetMap tiles, M2.5+ USGS events, and the source epicentres of active NOAA tsunami bulletins. The map opens on the west coast; period and magnitude filters apply to the worldwide list and earthquake markers. The banner always shows the latest M2.5+ earthquake in the past 24 hours, independently of the magnitude filter. USGS coverage of smaller earthquakes outside the U.S. is incomplete, and reports are preliminary.
+
+Earthquakes load directly from the [USGS real-time GeoJSON feeds](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php). Tsunami data uses the 15 current regional JavaScript products loaded by [NOAA's tsunami.gov map](https://www.tsunami.gov/), covering NTWC and PTWC bulletins, including Canada. The exact product names are in `assets/earthquake-core.js`. These are public website feeds, not a versioned API: upstream format changes fail to an unknown status. NOAA's PHP JSONP endpoint is deliberately avoided because its `text/html`/`nosniff` response is blocked by browsers. No proxy, API key or backend is required.
+
+The page checks once per minute while visible and on return to the page. Each request has a 15-second timeout. All regional products must load and validate before a no-alert status is shown. Partial failures preserve available warnings and clearly mark the overall status unconfirmed. Last successful checks older than three minutes are marked unconfirmed; a failed earthquake refresh retains the previous results and labels them delayed. NOAA products are event-driven and may have old issue dates after cancellation; those dates are not treated as fetch timestamps. Persistent alert areas and bulletin segments are both inspected, so a cancellation for one coast does not hide an alert still in effect elsewhere. A USGS `tsunami` flag never creates a warning.
+
+Warning, advisory, watch and threat cards show the issuing product, affected-area text/instructions when provided, issue time and official bulletin link. Map diamonds identify **source earthquakes**, not inundation areas or evacuation boundaries. This is a monitoring page, not an emergency notification service; official bulletins and local authorities remain the source for protective actions. Tests cover cancellation, partial failures, stale status, retained alerts, feed validation and time/magnitude filters.
 
 ## Refreshing the xkcd index
 
