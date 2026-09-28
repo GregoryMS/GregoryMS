@@ -3,7 +3,7 @@
 A static personal homepage and collection of browser tools, served at the domain in `CNAME`.
 
 - `index.html`: search, recent searches, local weather and BBC headlines.
-- `weather.html`: Environment Canada forecasts for Vancouver, Victoria and Chilliwack.
+- `weather.html`: automatic local weather, Environment Canada across Canada and Open-Meteo worldwide.
 - `petrol.html`: fuel-cost calculator with map-based routing.
 - `ev.html`: EV trip-cost calculator with charging losses, unit conversion and map-based routing.
 - `xkcd.html`: comic search using archive titles and context clues.
@@ -43,6 +43,16 @@ GitHub Actions runs the suite on pull requests and pushes to `main`. The tests e
 ## Adding a tool
 
 Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Tools** menu item opens this directory. `links.html`, `xkcd.html`, `petrol.html` and `ev.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference. The fuel and EV calculators share their layout in `assets/fuel.css` and routing in `assets/route-planner.js`. EV calculations run locally in `assets/ev.js`; electricity prices are examples that users replace with their own tariff.
+
+## Local and worldwide weather
+
+`weather.html` requests browser location access on opening (HTTPS or localhost required). While access is pending or unavailable, it shows the saved Vancouver, Victoria or Chilliwack shortcut, defaulting to Vancouver. Visitors can search for a city worldwide or retry **My location**. A manual choice cancels pending location/search work so late responses cannot change the selected city. Weather and earthquake pages have reciprocal, labelled icon shortcuts.
+
+With permission, coordinates are rounded to two decimal places and sent to BigDataCloud's browser reverse-geocoding endpoint to identify the city/country, then to the forecast provider. No detected coordinates or searched cities are saved; only the existing Canadian shortcut preference is stored. The page explains these services beside its source attribution. If city lookup fails, a global forecast still works at the approximate coordinates.
+
+Canadian locations use the nearest Environment and Climate Change Canada city forecast within 150 km, clearly naming that forecast city and its distance. The public city directory is fetched once per page visit. Existing BC shortcuts retain their direct endpoints. Open-Meteo provides seven local-calendar-day forecasts elsewhere and when the Canadian feed is unavailable or has no nearby station. Its current conditions are labelled as modelled estimates; high/low semantics and timezone are shown for each provider. Requests have bounded timeouts, cancellation, empty/error states and source links. City search uses Open-Meteo/GeoNames. No backend, API key or proxy is required.
+
+Provider documentation: [ECCC city forecasts](https://eccc-msc.github.io/open-data/msc-data/citypage-weather/readme_citypageweather_en/), [Open-Meteo forecast API](https://open-meteo.com/en/docs), [city search](https://open-meteo.com/en/docs/geocoding-api), [BigDataCloud browser geocoding](https://www.bigdatacloud.com/docs/free-api).
 
 ## Earthquakes and tsunamis
 

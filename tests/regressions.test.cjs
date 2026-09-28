@@ -858,3 +858,111 @@ test('IME composition does not request partial text or submit the form', () => {
   input.listeners.compositionend();
   assert.equal(env.timers.size, 1);
 });
+
+function worldwideWeather() {
+  return { timezone:'Pacific/Auckland', current:{time:'2026-09-29T00:15', temperature_2m:13.5,
+    relative_humidity_2m:80, weather_code:61,is_day:0,wind_speed_10m:18,wind_direction_10m:270},
+    daily:{time:['2026-09-29','2026-09-30'],weather_code:[61,0],temperature_2m_max:[17,null],temperature_2m_min:[8,null],precipitation_probability_max:[75,null]} };
+}
+const torontoStation = {features:[{geometry:{coordinates:[-79.38,43.65]},properties:{identifier:'on-143',name:{en:'Toronto'}}}]};
+
+test('opening weather requests approximate location and uses Environment Canada for Canadian visitors', async () => {
+  let locate, options; const urls=[], writes=[];
+  const env=environment('weather.html',async url=>{
+    urls.push(url);
+    if(url.includes('bigdatacloud')) return response({countryCode:'CA',city:'Toronto',countryName:'Canada'});
+    if(url.includes('limit=1000')) return response(torontoStation);
+    return response(vancouverWeather());
+  },{setItem:(key,value)=>writes.push([key,value])},{navigator:{geolocation:{getCurrentPosition(success,error,opts){locate=success; options=opts;}}}});
+  assert.equal(typeof locate,'function'); assert.equal(options.enableHighAccuracy,false);
+  await locate({coords:{latitude:43.65321,longitude:-79.38345}}); await flush();
+  assert.equal(env.get('cityName').textContent,'Toronto');
+  assert(urls.some(url=>url.includes('latitude=43.65&longitude=-79.38')));
+  assert(urls.some(url=>url.includes('/items/on-143?')));
+  assert(!urls.some(url=>url.includes('api.open-meteo.com')));
+  assert.match(env.get('status').textContent,/Environment Canada forecast for Toronto/);
+  assert.deepEqual(writes.filter(([key])=>key!=='gregle-theme'),[['gregle-weather-city','vancouver']]);
+});
+
+test('overseas auto-location loads modelled global conditions and local calendar days', async () => {
+  let locate; const urls=[];
+  const env=environment('weather.html',async url=>{
+    urls.push(url);
+    if(url.includes('bigdatacloud')) return response({countryCode:'NZ',city:'Auckland',countryName:'New Zealand'});
+    return response(url.includes('api.open-meteo.com') ? worldwideWeather() : vancouverWeather());
+  },{}, {navigator:{geolocation:{getCurrentPosition(success){locate=success;}}}});
+  await locate({coords:{latitude:-36.85,longitude:174.76}}); await flush();
+  assert.equal(env.get('cityName').textContent,'Auckland');
+  assert.equal(env.get('temperature').textContent,'14°C');
+  assert.equal(env.get('currentLabel').textContent,'Modelled conditions');
+  assert.equal(env.get('forecastGrid').children[0].children[0].textContent,'Tuesday');
+  assert.equal(env.get('officialLink').href,'https://open-meteo.com/');
+  assert.match(env.get('rangeNote').textContent,/Pacific\/Auckland/);
+  assert(!urls.some(url=>url.includes('limit=1000')));
+});
+
+test('location denial, timeout, unsupported and synchronous failure preserve usable weather', async () => {
+  for(const mode of ['denied','timeout','unsupported','throws']) {
+    const geolocation=mode==='unsupported'?undefined:{getCurrentPosition(success,error){
+      if(mode==='throws') throw Error('Blocked'); error({code:mode==='denied'?1:3});
+    }};
+    const env=environment('weather.html',async()=>response(vancouverWeather()),{}, {navigator:{geolocation}});
+    await flush();
+    assert.equal(env.get('cityName').textContent,'Vancouver');
+    assert.equal(env.get('temperature').textContent,'0°C');
+    assert.equal(env.get('locateWeather').disabled,false);
+    assert.match(env.get('locationStatus').textContent,/declined|could not|unavailable/);
+  }
+});
+
+test('manual city selection wins over late geolocation and reverse-geocoding callbacks', async () => {
+  for(const stage of ['position','reverse']) {
+    let locate; const pending=deferred();
+    const env=environment('weather.html',url=>url.includes('bigdatacloud')?pending.promise:Promise.resolve(response(vancouverWeather())),{},
+      {navigator:{geolocation:{getCurrentPosition(success){locate=success;}}}});
+    let located;
+    if(stage==='reverse') located=locate({coords:{latitude:43.65,longitude:-79.38}});
+    await vm.runInContext('selectCity("victoria")',env.context);
+    if(stage==='position') await locate({coords:{latitude:43.65,longitude:-79.38}});
+    pending.resolve(response({countryCode:'CA',city:'Toronto'})); await located; await flush();
+    assert.equal(env.get('cityName').textContent,'Victoria');
+    assert.match(env.get('status').textContent,/Victoria weather loaded/);
+  }
+});
+
+test('failed Canadian feed falls back to a clearly attributed global forecast', async () => {
+  const env=environment('weather.html',async url=>url.includes('api.open-meteo.com')?response(worldwideWeather()):{ok:false});
+  await flush();
+  assert.equal(env.get('temperature').textContent,'14°C');
+  assert.match(env.get('status').textContent,/Environment Canada is unavailable.*Showing Open-Meteo/);
+  assert.match(env.get('sourceCredit').textContent,/Open-Meteo/);
+});
+
+test('city search escapes names, selects international results, and ignores cancelled searches', async () => {
+  const pending=deferred();
+  const env=environment('weather.html',async url=>{
+    if(url.includes('name=old')) return pending.promise;
+    if(url.includes('geocoding-api')) return response({results:[{name:'<London>',country_code:'GB',country:'United Kingdom',latitude:51.51,longitude:-0.13,timezone:'Europe/London'}]});
+    return response(url.includes('api.open-meteo.com')?worldwideWeather():vancouverWeather());
+  });
+  env.get('cityQuery').value='old'; const old=env.get('citySearch').listeners.submit({preventDefault(){}});
+  env.get('cityQuery').value='London'; await env.get('citySearch').listeners.submit({preventDefault(){}});
+  const button=env.get('cityResults').children[0];
+  assert.equal(button.textContent,'<London> · United Kingdom'); assert.equal(button.innerHTML,'');
+  await button.listeners.click();
+  pending.resolve(response({results:[]})); await old;
+  assert.equal(env.get('cityName').textContent,'<London>');
+  assert.equal(env.get('cityResults').children.length,0);
+  assert.match(env.get('status').textContent,/Open-Meteo/);
+});
+
+test('weather helpers reject unsafe coordinates, incomplete directories and malformed daily forecasts', () => {
+  const core=require('../assets/weather-core.js');
+  assert.throws(()=>core.forecastURL({latitude:NaN,longitude:0}));
+  assert.throws(()=>core.nearestStation({...torontoStation,links:[{rel:'next'}]},{latitude:43.65,longitude:-79.38}));
+  assert.throws(()=>core.nearestStation(torontoStation,{latitude:0,longitude:0}));
+  const data=worldwideWeather(); data.daily.temperature_2m_max=[];
+  assert.throws(()=>core.globalWeather(data));
+  const valid=core.globalWeather(worldwideWeather());
+  assert.equal(valid.days[1].high,null); assert.equal(valid.days[1].description,'Clear.');
+});
