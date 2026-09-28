@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Track recent earthquakes on an interactive map and check the latest NOAA tsunami warnings, watches and advisories.">
+  <title>Earthquakes &amp; tsunamis · Gregle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/tools.css">
+  <link rel="stylesheet" href="assets/earthquakes.css">
+  <script src="assets/theme.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
+  <script src="assets/earthquake-core.js" defer></script>
+  <script src="assets/earthquakes.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Earthquakes &amp; tsunamis</span></div>
+    <div class="top-actions"><a class="pill" href="links.html">← All tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+  </header>
+  <main class="page seismic-page">
+    <div class="seismic-heading"><div><p class="eyebrow">A moving planet</p><h1>Earthquakes &amp; tsunamis</h1><p class="intro">Recent activity, with a view of the coast and beyond.</p></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
+    <noscript><p>Enable JavaScript for the live map, or visit <a href="https://earthquake.usgs.gov/earthquakes/map/">USGS earthquakes</a> and <a href="https://www.tsunami.gov/">NOAA tsunami warnings</a>.</p></noscript>
+    <section class="latest panel" aria-labelledby="latest-heading">
+      <div><p class="eyebrow" id="latest-heading">Most recent earthquake · worldwide M2.5+</p><div id="latest-content" role="status">Checking USGS…</div></div>
+      <a class="pill" id="latest-link" href="https://earthquake.usgs.gov/earthquakes/map/">USGS details ↗</a>
+    </section>
+    <section class="tsunami panel" id="tsunami-panel" aria-labelledby="tsunami-heading">
+      <div class="section-heading"><h2 id="tsunami-heading">Tsunami updates</h2><span class="source-label">NOAA warning centres</span></div>
+      <p id="tsunami-status" role="status">Checking warning, advisory, watch and threat bulletins…</p>
+      <div id="tsunami-alerts"></div>
+      <div class="tsunami-bottom"><p id="tsunami-checked" class="meta">Canada, U.S. and international NOAA bulletins</p><a href="https://www.tsunami.gov/">Official tsunami updates ↗</a></div>
+    </section>
+    <section class="map-section" aria-labelledby="map-heading">
+      <div class="map-toolbar"><h2 id="map-heading">Earthquake map</h2><div class="map-filters"><label>Period <select id="period"><option value="day">Past 24 hours</option><option value="week">Past 7 days</option></select></label><label>Magnitude <select id="magnitude"><option value="2.5">M2.5+</option><option value="4.5">M4.5+</option><option value="6">M6.0+</option></select></label></div></div>
+      <div class="map-layout panel">
+        <div class="map-wrap"><div id="quake-map" aria-label="Interactive earthquake map" tabindex="0"></div><div class="map-views" role="group" aria-label="Map view"><button class="pill" id="coast-view" type="button">West coast</button><button class="pill" id="world-view" type="button">World</button></div><p class="map-message" id="map-message" hidden></p></div>
+        <aside class="event-sidebar" aria-labelledby="events-heading"><div class="event-list-heading"><h3 id="events-heading">Recent earthquakes</h3><p id="event-count" class="meta">Loading…</p></div><ol id="event-list" class="event-list"></ol></aside>
+      </div>
+      <div class="map-caption"><div class="legend" aria-label="Magnitude legend"><span><i class="dot small"></i>2.5–4.4</span><span><i class="dot medium"></i>4.5–5.9</span><span><i class="dot large"></i>6.0+</span><span><i class="tsunami-key">◆</i>Tsunami bulletin epicentre</span></div><span class="meta">Select a marker or an earthquake</span></div>
+      <p id="quake-status" class="meta" role="status">Loading earthquakes…</p>
+    </section>
+    <footer class="seismic-footer"><div><p>Earthquakes: <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php">USGS</a> · Tsunamis: <a href="https://www.tsunami.gov/">NOAA</a> · Checks every minute while this page is visible.</p><p>Times are local to your device. Earthquake reports are preliminary. Smaller events may be missing outside the U.S.</p><p>This is a monitoring tool, not an emergency alert service. Follow local authorities and <a href="https://www.emergencyinfobc.gov/">EmergencyInfoBC</a>. Tsunami markers show source earthquakes, not inundation or evacuation areas.</p></div><a href="links.html">Back to tools</a></footer>
+  </main>
+</body>
+</html>
