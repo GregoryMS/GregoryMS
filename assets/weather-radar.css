@@ -1,0 +1,21 @@
+.radar-section { margin-top:36px; }
+.radar-heading,.radar-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.radar-heading { margin-bottom:16px; gap:20px; }
+.radar-meta { font-size:12px; color:var(--muted); line-height:1.7; margin:10px 0 0; }
+.radar-heading .radar-meta { margin:5px 0 0; }
+.radar-panel { border:1px solid var(--line); border-radius:22px; overflow:hidden; background:var(--panel); box-shadow:var(--shadow); }
+.radar-map { height:400px; background:var(--soft); isolation:isolate; }
+.radar-map .leaflet-control-attribution { font-size:10px; }
+.radar-map .leaflet-control-zoom a { color:var(--text); background:var(--panel); }
+.radar-controls { padding:18px 22px; display:flex; align-items:center; gap:22px; }
+.radar-controls button { min-width:92px; }
+.radar-timeline { flex:1; min-width:0; }
+.radar-timeline label,.radar-range { display:flex; justify-content:space-between; gap:12px; font-size:11px; color:var(--muted); }
+.radar-timeline output { color:var(--text); font-variant-numeric:tabular-nums; text-align:right; }
+.radar-timeline input { display:block; width:100%; margin:8px 0; min-height:24px; accent-color:var(--rain); cursor:pointer; }
+.radar-credit { max-width:900px; }
+.radar-map .leaflet-container { font-family:inherit; }
+@media(max-width:600px) { .radar-heading { align-items:flex-start; flex-direction:column; } .radar-actions { width:100%; } .radar-actions .pill { flex:1; } .radar-map { height:330px; } .radar-controls { padding:16px; gap:12px; } .radar-controls button { min-width:76px; padding:9px 12px; } .radar-timeline label { flex-direction:column; gap:2px; } .radar-timeline output { text-align:left; } }
+
+.radar-legend { display:flex; align-items:center; gap:9px; margin-top:14px; font-size:11px; color:var(--muted); }
+.radar-legend i { width:110px; height:8px; border-radius:10px; background:linear-gradient(90deg,#88ddee,#00a3e0,#005588,#ffee00,#ffaa00,#ff4400); }

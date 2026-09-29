@@ -153,3 +153,21 @@ if iOS retains the old icon. These apps require a network connection for live
 forecasts; no offline forecast cache is introduced.
 Artwork provenance and generation prompts are in `assets/weather-app/SOURCES.md`
 and `assets/tides-app/SOURCES.md`.
+
+### Weather radar
+
+`weather.html` includes a location-aware Leaflet radar map below the forecast, with
+play/pause, a keyboard-accessible history slider, refresh and recenter. RainViewer
+supplies up to two hours of observed precipitation frames in ten-minute steps;
+there is no future radar forecast. Composite generation times use the selected
+location’s timezone. A clear map does not confirm dry weather: coverage varies.
+
+`assets/weather-radar.js` loads the map when near the viewport, checks for updates
+every five minutes while visible, pauses playback when hidden, validates the feed
+and tile host, and reports failed tiles, refresh failures and delayed imagery.
+It requests frames on demand, caches viewed layers and drops them on map movement
+to avoid fetching hidden layers for new areas. The 512px tiles use the supported
+Universal Blue palette and at most provider zoom 7 (closer views overzoom).
+Map-area tile requests go directly to RainViewer and OpenStreetMap. No key or
+backend is required. Provider references: [API](https://www.rainviewer.com/api/weather-maps-api.html),
+[2026 limits](https://www.rainviewer.com/api/transition-faq.html).
