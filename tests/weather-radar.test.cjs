@@ -14,11 +14,11 @@ test('radar rejects empty feeds and untrusted image hosts',()=>{
     assert.throws(()=>radar.framesFrom({...feed([frame(600)]),host}));
   }
 });
-test('radar bounds history and generates the supported blue, 512px tile URL',()=>{
+test('radar bounds history and generates the supported blue, 512px tile URL with snow colours enabled',()=>{
   const data=radar.framesFrom(feed(Array.from({length:20},(_,i)=>frame(600+i*600))));
   assert.equal(data.frames.length,13);
   assert.equal(data.frames[0].time,4800);
-  assert.equal(radar.tileURL(data.host,data.frames[0]),'https://tilecache.rainviewer.com/v2/radar/4800/512/{z}/{x}/{y}/2/1_0.png');
+  assert.equal(radar.tileURL(data.host,data.frames[0]),'https://tilecache.rainviewer.com/v2/radar/4800/512/{z}/{x}/{y}/2/1_1.png');
 });
 test('delayed radar is distinguished from fresh imagery',()=>{
   assert.equal(radar.stale(frame(600),2400000),false);

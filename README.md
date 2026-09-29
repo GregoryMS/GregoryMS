@@ -167,7 +167,9 @@ every five minutes while visible, pauses playback when hidden, validates the fee
 and tile host, and reports failed tiles, refresh failures and delayed imagery.
 It requests frames on demand, caches viewed layers and drops them on map movement
 to avoid fetching hidden layers for new areas. The 512px tiles use the supported
-Universal Blue palette and at most provider zoom 7 (closer views overzoom).
+Universal Blue palette with separate snow colours (`1_1` tile options), and at most
+provider zoom 7 (closer views overzoom). Separate rain and snow legends use the
+provider’s colour table; precipitation type follows RainViewer’s classification.
 Map-area tile requests go directly to RainViewer and OpenStreetMap. No key or
 backend is required. Provider references: [API](https://www.rainviewer.com/api/weather-maps-api.html),
 [2026 limits](https://www.rainviewer.com/api/transition-faq.html).

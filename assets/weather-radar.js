@@ -10,7 +10,7 @@
     if(!frames.length) throw Error('No radar frames');
     return {host:host.origin,frames};
   }
-  function tileURL(host,frame) { return `${host}${frame.path}/512/{z}/{x}/{y}/2/1_0.png`; }
+  function tileURL(host,frame) { return `${host}${frame.path}/512/{z}/{x}/{y}/2/1_1.png`; }
   function stale(frame,now=Date.now()) { return !frame || now-frame.time*1000>30*60000; }
   const core={framesFrom,tileURL,stale};
   if(typeof module!=='undefined' && module.exports) { module.exports=core; return; }
@@ -30,7 +30,7 @@
       baseFailed?'The background map could not fully load. Try Refresh.':
       layer?.radarError?'Some radar tiles could not load. Try Refresh; blank areas may have missing data.':
       stale(frames.at(-1))?'Radar is delayed — the latest image is over 30 minutes old.':
-      'Drag to explore · Use + / − to zoom · Play or drag the timeline to see recent rain movement.';
+      'Drag to explore · Use + / − to zoom · Play or drag the timeline to see recent precipitation movement.';
   }
   function show(index) {
     if(!frames.length || !map)return;
@@ -79,7 +79,7 @@
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
-    $('radarLocation').textContent=`Recent rain around ${value.name}`;
+    $('radarLocation').textContent=`Recent rain and snow around ${value.name}`;
     if(map) { stop();clearLayers();marker.setLatLng([value.latitude,value.longitude]);recenter();if(frames.length)show(frames.length-1); }
   }
   function start() {
