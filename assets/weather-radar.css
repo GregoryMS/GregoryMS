@@ -17,5 +17,9 @@
 .radar-map .leaflet-container { font-family:inherit; }
 @media(max-width:600px) { .radar-heading { align-items:flex-start; flex-direction:column; } .radar-actions { width:100%; } .radar-actions .pill { flex:1; } .radar-map { height:330px; } .radar-controls { padding:16px; gap:12px; } .radar-controls button { min-width:76px; padding:9px 12px; } .radar-timeline label { flex-direction:column; gap:2px; } .radar-timeline output { text-align:left; } }
 
-.radar-legend { display:flex; align-items:center; gap:9px; margin-top:14px; font-size:11px; color:var(--muted); }
+.radar-legends { display:flex; flex-wrap:wrap; gap:10px 28px; margin-top:14px; }
+.radar-legend { display:flex; align-items:center; gap:9px; font-size:11px; color:var(--muted); }
 .radar-legend i { width:110px; height:8px; border-radius:10px; background:linear-gradient(90deg,#88ddee,#00a3e0,#005588,#ffee00,#ffaa00,#ff4400); }
+
+.radar-legend strong { min-width:34px; font-weight:600; color:var(--text); }
+.radar-legend-snow i { background:linear-gradient(90deg,#bfffff,#9fdfff,#7fbfff,#5f9fff,#3f7fff,#1f5fff,#003fff); }

@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/weather.css">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20260929-1">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20260929-2-snow">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
 </head>
 <body>
@@ -58,14 +58,17 @@
       <section aria-labelledby="forecast-heading"><div class="forecast-head"><h2 id="forecast-heading">The days ahead</h2><span class="updated" id="updated"></span></div><div class="forecast-grid" id="forecastGrid"></div></section>
     </div>
     <section class="radar-section" aria-labelledby="radarHeading">
-      <div class="radar-heading"><div><h2 id="radarHeading">Weather radar</h2><p id="radarLocation" class="radar-meta">Rain around your selected location</p></div><div class="radar-actions"><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div></div>
+      <div class="radar-heading"><div><h2 id="radarHeading">Weather radar</h2><p id="radarLocation" class="radar-meta">Rain and snow around your selected location</p></div><div class="radar-actions"><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div></div>
       <div class="radar-panel">
         <div id="radarMap" class="radar-map" role="region" aria-label="Interactive precipitation radar map" tabindex="0"></div>
         <div class="radar-controls"><button class="pill" id="radarPlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline"><label for="radarTime">Radar history <output id="radarTimestamp" for="radarTime">Loading…</output></label><input id="radarTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="radarStart">Past two hours</span><span>Latest available</span></div></div></div>
       </div>
-      <div class="radar-legend" aria-label="Precipitation intensity, light blue through dark blue, yellow and red as intensity increases"><span>Light</span><i aria-hidden="true"></i><span>Heavy precipitation</span></div>
+      <div class="radar-legends" role="group" aria-label="Rain and snow intensity legends">
+        <div class="radar-legend" aria-label="Rain: light blue through dark blue, yellow and red as intensity increases"><strong>Rain</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
+        <div class="radar-legend radar-legend-snow" aria-label="Snow: pale cyan through bright blue as intensity increases"><strong>Snow</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
+      </div>
       <p id="radarStatus" class="radar-meta" role="status">Radar will load as you scroll into view.</p>
-      <p class="radar-meta radar-credit">Radar: <a href="https://www.rainviewer.com/">RainViewer</a> · Recent observations, not a forecast. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p>
+      <p class="radar-meta radar-credit">Radar: <a href="https://www.rainviewer.com/">RainViewer</a> · Rain/snow colours follow RainViewer’s classification. Recent observations, not a forecast. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p>
     </section>
     <a class="tide-preview" id="tidePreview" href="tides.html"><div class="tide-preview-heading"><h2>Today’s tides</h2><span>View tide tracker ↗</span></div><div id="tidePreviewContent" aria-live="polite"></div></a>
     <div class="status-row"><p class="status" id="status" role="status">Loading Environment Canada weather…</p></div>
@@ -73,7 +76,7 @@
     <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night. — means not provided.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
   <script src="assets/weather-core.js"></script>
-  <script src="assets/weather-radar.js?v=20260929-1"></script>
+  <script src="assets/weather-radar.js?v=20260929-2-snow"></script>
   <script src="assets/tide-core.js"></script>
   <script src="assets/tide-data.js"></script>
   <script src="assets/tide-ui.js"></script>
