@@ -144,3 +144,12 @@ Provider references: [CHS web services](https://www.tides.gc.ca/en/web-services-
 and [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api).
 Run `node --test tests/*.test.cjs` and
 `python3 -m unittest discover -s tests -p 'test_*.py'` for regression checks.
+
+Weather and Tides can be added to an iPhone home screen as separate web apps.
+Each page has its own manifest ID, start URL, short name, standalone display,
+180 px Apple touch icon, 192/512 px manifest icons and 32 px favicon. Open the
+page in Safari and use Share → Add to Home Screen. Re-add existing shortcuts
+if iOS retains the old icon. These apps require a network connection for live
+forecasts; no offline forecast cache is introduced.
+Artwork provenance and generation prompts are in `assets/weather-app/SOURCES.md`
+and `assets/tides-app/SOURCES.md`.

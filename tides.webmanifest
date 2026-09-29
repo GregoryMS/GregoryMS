@@ -1,0 +1,25 @@
+{
+  "id": "/tides.html",
+  "name": "Gregle Tides",
+  "short_name": "Tides",
+  "description": "Coastal tide predictions and the week ahead.",
+  "start_url": "/tides.html",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#f4f6f8",
+  "background_color": "#f4f6f8",
+  "icons": [
+    {
+      "src": "/assets/tides-app/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/tides-app/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
