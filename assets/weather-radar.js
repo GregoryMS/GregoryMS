@@ -15,9 +15,12 @@
   const core={framesFrom,tileURL,stale};
   if(typeof module!=='undefined' && module.exports) { module.exports=core; return; }
   const $=id=>document.getElementById(id);
-  let location=null,map=null,marker=null,frames=[],host='',layers=new Map(),current=-1,playing=null,fetching=false,lastFetch=0,started=false;
-  let failed=false,baseFailed=false,tileTimer=null;
-  function stop() { clearTimeout(playing); playing=null; $('radarPlay').textContent='▶ Play'; $('radarPlay').setAttribute('aria-pressed','false'); }
+  let location=null,map=null,marker=null,frames=[],host='',layers=new Map(),current=-1,playing=false,fetching=false,lastFetch=0,started=false;
+  let failed=false,baseFailed=false,imageFailed=false,buffering=false,playTimer=null,request=0;
+  function stop() {
+    clearTimeout(playTimer);playTimer=null;playing=false;request++;buffering=false;
+    $('radarPlay').textContent='▶ Play';$('radarPlay').setAttribute('aria-pressed','false');
+  }
   function time(frame) {
     if(!frame)return '';
     let zone=location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -25,55 +28,80 @@
     return new Date(frame.time*1000).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
   }
   function status() {
-    const layer=layers.get(frames[current]?.path);
     $('radarStatus').textContent=failed?'Radar refresh failed. Showing the previous images; try Refresh.':
       baseFailed?'The background map could not fully load. Try Refresh.':
-      layer?.radarError?'Some radar tiles could not load. Try Refresh; blank areas may have missing data.':
+      imageFailed?'The next radar image could not load. Try Refresh.':
+      buffering?'Loading radar image…':
       stale(frames.at(-1))?'Radar is delayed — the latest image is over 30 minutes old.':
       'Drag to explore · Use + / − to zoom · Play or drag the timeline to see recent precipitation movement.';
   }
-  function show(index) {
-    if(!frames.length || !map)return;
-    clearTimeout(tileTimer);
-    current=Math.max(0,Math.min(frames.length-1,index));
-    const frame=frames[current];
+  function layerFor(frame) {
     let layer=layers.get(frame.path);
-    // Keep previously viewed frames cached, but never preload the whole timeline.
-    for(const other of layers.values()) other.setOpacity(0);
-    if(!layer) {
-      layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0.7,updateWhenIdle:true,keepBuffer:0,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
-      layer.on('tileerror',()=>{ layer.radarError=true; if(layers.get(frames[current]?.path)===layer){stop();status();} });
-      layer.on('load',()=>{ if(layers.get(frames[current]?.path)===layer){clearTimeout(tileTimer);status();} });
-      layers.set(frame.path,layer); layer.addTo(map);
-    } else layer.setOpacity(0.7);
+    if(layer)return layer;
+    layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
+    // Load invisibly, then swap complete images in one turn. Prefetch only one
+    // frame ahead during playback; cache viewed frames until the map moves.
+    layer.radarReady=new Promise(resolve=>{
+      let settled=false;
+      const finish=ok=>{
+        if(settled)return;
+        settled=true;clearTimeout(timeout);resolve(ok);
+      };
+      const timeout=setTimeout(()=>finish(false),15000);
+      layer.cancelRadar=()=>finish(false);
+      layer.on('tileerror',()=>finish(false));
+      layer.on('load',()=>finish(true));
+    });
+    layers.set(frame.path,layer);layer.addTo(map);
+    return layer;
+  }
+  async function show(index) {
+    if(!frames.length || !map)return false;
+    const selected=Math.max(0,Math.min(frames.length-1,index)),token=++request;
+    const frame=frames[selected],layer=layerFor(frame);
+    buffering=true;imageFailed=false;status();
+    if(current>=0)$('radarTime').value=String(current);
+    const ready=await layer.radarReady;
+    // Pause, scrubbing, refresh, or a map move can supersede a pending image.
+    if(token!==request)return false;
+    buffering=false;
+    if(!ready) { imageFailed=true;stop();status();return false; }
+    layer.setOpacity(0.7);
+    for(const other of layers.values())if(other!==layer)other.setOpacity(0);
+    current=selected;
     $('radarTime').value=String(current);
     $('radarTime').setAttribute('aria-valuetext',time(frame));
     $('radarTimestamp').textContent=time(frame);
     $('radarStart').textContent=time(frames[0]);
     status();
-    if(layer.isLoading()) {
-      $('radarStatus').textContent='Loading radar image…';
-      tileTimer=setTimeout(()=>{layer.radarError=true;stop();status();},15000);
-    }
+    return true;
   }
-  function clearLayers() { clearTimeout(tileTimer); for(const layer of layers.values())map.removeLayer(layer);layers.clear(); }
+  function clearLayers() {
+    request++;buffering=false;imageFailed=false;
+    for(const layer of layers.values()) { layer.cancelRadar();layer.off();map.removeLayer(layer); }
+    layers.clear();
+  }
   async function refresh(force=false) {
     if(!map || fetching || (!force && Date.now()-lastFetch<300000))return;
     stop();fetching=true;$('radarRefresh').disabled=true;
+    $('radarPlay').disabled=true;$('radarTime').disabled=true;
     $('radarStatus').textContent='Checking for radar images…';
     const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
     try {
       const response=await fetch(ENDPOINT,{signal:controller.signal,cache:'no-cache'});
       if(!response.ok)throw Error('Radar unavailable');
       const data=framesFrom(await response.json());
-      clearLayers();host=data.host;frames=data.frames;failed=false;lastFetch=Date.now();
+      clearLayers();current=-1;host=data.host;frames=data.frames;failed=false;lastFetch=Date.now();
       $('radarTime').max=String(frames.length-1);$('radarTime').disabled=false;$('radarPlay').disabled=frames.length<2;
       show(frames.length-1);
     } catch(_) {
       failed=true;
       if(frames.length)status();
       else { $('radarTimestamp').textContent='Unavailable';$('radarStatus').textContent='Radar is unavailable right now. Try Refresh, or open RainViewer below.'; }
-    } finally { clearTimeout(timeout);fetching=false;$('radarRefresh').disabled=false; }
+    } finally {
+      clearTimeout(timeout);fetching=false;$('radarRefresh').disabled=false;
+      $('radarPlay').disabled=frames.length<2;$('radarTime').disabled=!frames.length;
+    }
   }
   function recenter() { if(map && location)map.setView([location.latitude,location.longitude],7); }
   function setLocation(value) {
@@ -86,7 +114,7 @@
     if(started || !location)return;
     started=true;
     if(!root.L) { $('radarStatus').textContent='The radar map could not load. Refresh this page to retry, or open RainViewer below.';return; }
-    map=root.L.map('radarMap',{scrollWheelZoom:false,minZoom:2,maxZoom:10});
+    map=root.L.map('radarMap',{scrollWheelZoom:false,minZoom:2,maxZoom:10,fadeAnimation:false});
     const base=root.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
     base.on('tileerror',()=>{baseFailed=true;status();});
     marker=root.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
@@ -102,15 +130,19 @@
     $('radarRecenter').addEventListener('click',recenter);
     $('radarTime').addEventListener('input',()=>{stop();show(Number($('radarTime').value));});
     $('radarPlay').addEventListener('click',()=>{
-      if(playing){stop();return;}
+      if(playing){stop();status();return;}
+      if(fetching || frames.length<2)return;
+      playing=true;
       $('radarPlay').textContent='Ⅱ Pause';$('radarPlay').setAttribute('aria-pressed','true');
-      function tick(){
-        const active=layers.get(frames[current]?.path);
-        if(active?.radarError){stop();return;}
-        if(!active?.isLoading())show((current+1)%frames.length);
-        playing=setTimeout(tick,1200);
+      async function tick() {
+        if(!playing)return;
+        if(!await show((current+1)%frames.length) || !playing)return;
+        layerFor(frames[(current+1)%frames.length]);
+        // Give each complete frame a consistent dwell and pause at the latest
+        // observation so the jump back to the start reads as a loop.
+        playTimer=setTimeout(tick,current===frames.length-1?1600:600);
       }
-      playing=setTimeout(tick,0);
+      tick();
     });
     if('IntersectionObserver' in root) {
       const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){start();observer.disconnect();}},{rootMargin:'200px'});
