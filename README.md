@@ -165,7 +165,9 @@ location’s timezone. A clear map does not confirm dry weather: coverage varies
 `assets/weather-radar.js` loads the map when near the viewport, checks for updates
 every five minutes while visible, pauses playback when hidden, validates the feed
 and tile host, and reports failed tiles, refresh failures and delayed imagery.
-It requests frames on demand, caches viewed layers and drops them on map movement
+It keeps the current image and timestamp visible until the next frame is fully
+loaded, preloads one frame ahead during playback, and pauses briefly at the latest
+observation before looping. Viewed layers are cached and dropped on map movement
 to avoid fetching hidden layers for new areas. The 512px tiles use the supported
 Universal Blue palette with separate snow colours (`1_1` tile options), and at most
 provider zoom 7 (closer views overzoom). Separate rain and snow legends use the
