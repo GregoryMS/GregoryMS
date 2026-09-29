@@ -113,3 +113,34 @@ On iPhone, reload the radio page after an update and start a station. iOS choose
 `radio.html` has its own `radio.webmanifest`, a 180px Apple touch icon, and 192px/512px app icons. Its stable installation name is **Gregle Radio**, independent of the playing station title, and its launch URL is `/radio.html`. The icon is an original G/broadcast mark made with the built-in image-generation tool. The two featured broadcaster logos are also included directly in the HTML so they render before JavaScript starts.
 
 For a new iPhone installation, open the radio page in Safari and use Share → Add to Home Screen. Remove an older radio shortcut and add it again if it retains the old icon. This configures the Home Screen experience, not offline radio playback. Apple documents page-specific icons and app names at https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html.
+
+
+### Tide tracker
+
+`tides.html` shares the weather page’s styles and offers coastal location search,
+location shortcuts, a seven-day tide curve, predicted level and high/low times.
+The Weather icon and the weather page’s tide icon/Today’s tides card preserve the
+selected coordinates, name, country and timezone through URL parameters. Explicit
+location links take precedence over automatic weather geolocation. The Tools
+page includes a Tide tracker card.
+
+- Canada: the nearest CHS station within 30 km offering both `wlp` and `wlp-hilo`
+  from `https://api-sine.dfo-mpo.gc.ca/api/v1`, with 15-minute curves and official
+  turning-point times. Heights are metres above chart datum; the station name
+  and distance are shown because it may differ from the selected city.
+- Elsewhere, or if CHS is unavailable: Open-Meteo Marine’s hourly
+  `sea_level_height_msl`, restricted to a sea grid cell within 25 km. These are
+  explicitly labelled model estimates, include weather effects, and use mean
+  sea level rather than chart datum. High/low times are approximate hourly
+  turning points. Missing samples are never treated as zero or bridged.
+- Inland/uncovered locations and service failures show distinct empty/error
+  states. No API key or backend is needed. Times use the destination’s timezone;
+  searches provide its IANA timezone. Device geolocation uses the browser’s zone.
+- Both pages refresh tide data while visible every 15 minutes. Forecast dates
+  are padded to classify turning points around midnight. The chosen location
+  is included in links, but is not persisted to local storage by the tide page.
+
+Provider references: [CHS web services](https://www.tides.gc.ca/en/web-services-offered-canadian-hydrographic-service)
+and [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api).
+Run `node --test tests/*.test.cjs` and
+`python3 -m unittest discover -s tests -p 'test_*.py'` for regression checks.

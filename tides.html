@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find high and low tides, explore the tide curve and check the week ahead for your coastal location.">
+  <title>Tides · Gregle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <link rel="stylesheet" href="assets/weather.css">
+  <link rel="stylesheet" href="assets/tides.css">
+  <script src="assets/theme.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-wrap"><a class="brand" href="/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Tides</span></div>
+    <div class="top-actions"><a class="pill quick-link" id="weatherLink" href="weather.html" aria-label="Weather for this location" title="Weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16a4 4 0 1 1 .6-7.95A5.5 5.5 0 0 1 18 10a3 3 0 0 1 0 6H7Z"/><path d="m8 19-1 2m6-2-1 2m6-2-1 2"/></svg></a><a class="pill" href="links.html">All tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+  </header>
+  <main class="page tide-page">
+    <div class="page-heading">
+      <div><p class="eyebrow">By the water</p><h1 id="tideCity">Vancouver</h1><p class="location-meta" id="tideRegion">Your tide tracker</p></div>
+      <div class="location-switch" role="group" aria-label="Tide location"><button class="city-button" data-tide-city="victoria" type="button" aria-pressed="false">Victoria</button><button class="city-button" data-tide-city="vancouver" type="button" aria-pressed="true">Vancouver</button><button class="city-button" data-tide-city="tofino" type="button" aria-pressed="false">Tofino</button></div>
+    </div>
+    <section class="location-controls" aria-label="Find tides for a location">
+      <form class="city-search" id="tideSearch"><label for="tideQuery">Find a coastal city</label><div class="city-search-row"><input id="tideQuery" type="search" placeholder="City or postal code" autocomplete="off" minlength="2" maxlength="100" required><button class="pill" id="tideSearchButton" type="submit">Search</button><button class="pill" id="locateTides" type="button">◎ My location</button></div></form>
+      <p class="location-note" id="tideLocationStatus" role="status">Search for a location or choose a shortcut.</p><div id="tideResults" class="city-results" aria-label="Location search results"></div>
+    </section>
+    <noscript><p>Enable JavaScript to see tides, or visit <a href="https://www.tides.gc.ca/">Canadian Hydrographic Service tide tables</a>.</p></noscript>
+    <div class="tide-status-row"><p class="status" id="tideStatus" role="status">Loading tides…</p><button class="pill" id="refreshTides" type="button">↻ Refresh</button></div>
+    <div id="tideContent" aria-busy="true">
+      <section class="tide-panel" aria-labelledby="tideOverviewHeading">
+        <div class="tide-panel-head"><div><p class="eyebrow" id="tideProvider">Tide forecast</p><h2 id="tideOverviewHeading">The water today</h2></div><span class="tide-badge" id="tideModelLabel">Predictions</span></div>
+        <p class="location-note" id="tideStation">Finding nearby tide data…</p>
+        <div class="tide-overview"><div><p class="range-label">Predicted level now</p><div class="tide-level" id="tideLevel">—</div><p class="location-note" id="tideTrend">Waiting for the tide forecast</p></div><div class="tide-next"><p class="range-label">Next tide</p><h3 id="tideNext">—</h3><p class="location-note" id="tideNextHeight"></p></div></div>
+        <p class="details" id="tideDatum"></p>
+      </section>
+      <section class="tide-panel tide-chart-panel" aria-labelledby="curveHeading"><div class="tide-panel-head"><h2 id="curveHeading">Tide curve</h2><span class="updated" id="tideZone"></span></div><div class="tide-days" id="tideDays" role="group" aria-label="Choose a forecast day"></div><div id="tideChart" class="tide-chart"></div><h3 class="tide-day-title" id="tideDayTitle">Today’s tides</h3><div id="tideDayEvents"></div></section>
+    </div>
+    <p class="location-note" id="tideNote"></p>
+    <footer><div><p>Tides from the <a href="https://www.tides.gc.ca/">Canadian Hydrographic Service</a>. Worldwide estimates from <a href="https://open-meteo.com/en/docs/marine-weather-api">Open-Meteo / Meteo-France (CC BY 4.0)</a>.</p><p class="location-privacy">Search: Open-Meteo / GeoNames. Coordinates are sent to tide providers and included in weather/tide links. My location uses approximate coordinates and BigDataCloud to find your city.</p></div><a class="source-link" id="tideSource" href="https://www.tides.gc.ca/">Tide source ↗</a></footer>
+  </main>
+  <script src="assets/weather-core.js"></script><script src="assets/tide-core.js"></script><script src="assets/tide-data.js"></script><script src="assets/tide-ui.js"></script><script src="assets/tides.js"></script>
+</body>
+</html>
