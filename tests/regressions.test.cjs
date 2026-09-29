@@ -5,9 +5,11 @@ const vm = require('node:vm');
 const { test } = require('node:test');
 
 const root = path.join(__dirname, '..');
-const scripts = file => [...fs.readFileSync(path.join(root, file), 'utf8')
+const scripts = (file, isolateTides = false) => [...fs.readFileSync(path.join(root, file), 'utf8')
   .matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => {
     const src = match[0].match(/src="(assets\/[^"]+\.js)"/);
+    // Weather regressions isolate the independent tide service; tides.test.cjs covers the real integration.
+    if (isolateTides && src?.[1] === 'assets/tide-data.js') return 'globalThis.GregleTideData={load:()=>new Promise(()=>{})};';
     return src ? fs.readFileSync(path.join(root, src[1]), 'utf8') : match[1];
   }).join('\n');
 const flush = () => new Promise(resolve => setImmediate(resolve));
@@ -67,7 +69,7 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}, ov
     consumptionValue: '18', distance: '100', distanceUnit: 'km', journeyType: '1', chargingEfficiency: '90' })
     .forEach(([id, value]) => { get(id).value = value; });
   Object.assign(context, overrides);
-  vm.runInContext(scripts(file), context, { filename: file });
+  vm.runInContext(scripts(file, true), context, { filename: file });
   return { context, get, ready, map, markers, timers };
 }
 
