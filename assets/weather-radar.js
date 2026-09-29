@@ -20,7 +20,7 @@
   function stop() { clearTimeout(playing); playing=null; $('radarPlay').textContent='▶ Play'; $('radarPlay').setAttribute('aria-pressed','false'); }
   function time(frame) {
     if(!frame)return '';
-    let zone=location?.timezone || 'UTC';
+    let zone=location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     try { new Intl.DateTimeFormat('en',{timeZone:zone}); } catch(_) { zone='UTC'; }
     return new Date(frame.time*1000).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
   }
