@@ -5,7 +5,8 @@
   const presets = {
     vancouver: {name:'Vancouver', region:'British Columbia, Canada', latitude:49.28, longitude:-123.12, timezone:'America/Vancouver', country:'CA'},
     victoria: {name:'Victoria', region:'British Columbia, Canada', latitude:48.43, longitude:-123.37, timezone:'America/Vancouver', country:'CA'},
-    chilliwack: {name:'Chilliwack', region:'British Columbia, Canada', latitude:49.16, longitude:-121.95, timezone:'America/Vancouver', country:'CA'}
+    chilliwack: {name:'Chilliwack', region:'British Columbia, Canada', latitude:49.16, longitude:-121.95, timezone:'America/Vancouver', country:'CA'},
+    tofino: {name:'Tofino', region:'British Columbia, Canada', latitude:49.153, longitude:-125.907, timezone:'America/Vancouver', country:'CA'}
   };
   let place = presets.vancouver, forecast = null, forecastController, searchController, selectedSite = null, sitesBrowser;
   let selection = 0, searchVersion = 0, chartVersion = 0, geoVersion = 0, checkedAt = 0;
