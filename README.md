@@ -9,6 +9,7 @@ A static personal homepage and collection of browser tools, served at the domain
 - `xkcd.html`: comic search using archive titles and context clues.
 - `radio.html`: live internet radio with featured BBC/NRK stations and worldwide station/country search.
 - `earthquakes.html`: recent earthquakes, a world/west-coast map and NOAA tsunami bulletins.
+- `astro.html`: observing conditions, a 48-hour forecast, Environment Canada astronomy charts and a location-aware dark sky map.
 - `bookmarks.html`: searchable saved websites, preserving the exported folder hierarchy.
 - `contact.html` and `donate.html`: contact and support pages.
 
@@ -43,6 +44,20 @@ GitHub Actions runs the suite on pull requests and pushes to `main`. The tests e
 ## Adding a tool
 
 Add your HTML page, then copy a `.tool-card` in `links.html` and update its URL, title, description and icon. The homepage **Tools** menu item opens this directory. `links.html`, `xkcd.html`, `petrol.html` and `ev.html` share `assets/tools.css` and `assets/theme.js`, including the existing `gregle-theme` preference. The fuel and EV calculators share their layout in `assets/fuel.css` and routing in `assets/route-planner.js`. EV calculations run locally in `assets/ev.js`; electricity prices are examples that users replace with their own tariff.
+
+## Astronomy observations
+
+`astro.html` uses the shared tool theme and is linked from Tools. It opens on Vancouver, with Victoria and Chilliwack shortcuts, worldwide city search, and an explicit My location button. Searches use GeoNames via Open-Meteo. Browser coordinates are rounded to two decimals and never persisted. Selecting a location cancels previous forecast/search work and invalidates pending geolocation, so late responses cannot replace a new selection.
+
+Open-Meteo supplies modelled current cloud cover, temperature, wind and humidity, plus 48 hours of cloud, rain probability, temperature, dew point, wind, humidity and visibility. Epoch timestamps are formatted in the forecast destination's IANA timezone. Missing samples remain unknown; stale current estimates are omitted. Refreshes occur every 15 minutes while visible and on return after that interval. The outlook is an explicitly documented cloud/rain/wind heuristic during astronomical darkness; it does not claim to predict atmospheric seeing or transparency or account for moonlight.
+
+Sun and Moon calculations use locally vendored [SunCalc 1.9.0](https://github.com/mourner/suncalc) under its retained BSD license. Darkness windows sample solar altitude at 15-minute intervals over the next 48 hours, including polar day/night. Moon illumination and above-horizon status help assess moonlight. No ephemeris API or key is required.
+
+The [ECCC astronomy charts](https://weather.gc.ca/astro/index_e.html) are original regional-model PNGs served directly by weather.gc.ca, preserving their legends and valid times. Cloud charts select a North American quadrant; seeing and transparency use the continental chart. Forecast controls cover the next hour through 48 hours. Image URLs follow the provider's public website convention, checked 29 September 2026, rather than a versioned API. The loader starts with a six-hour cycle at least three hours old, tries up to four cycles with eight-second image timeouts, and keeps the same forecast validity time when falling back. The actual cycle is always displayed; this does not guarantee the latest issued run. Outside the supported North American bounds, the page explicitly shows unavailable chart coverage. Failed images offer the official page as a fallback. An upstream URL change will require updating `assets/astro-core.js`.
+
+The dark sky map embeds [lightpollutionmap.info](https://www.lightpollutionmap.info/) with verified latitude/longitude hash parameters, including its own attribution, Layers and Legend controls. It recentres on search selection and has a full-map link if embedding fails. The embedded map is independently navigable; moving it does not change the weather location. It is a light pollution planning map, not a live sky-quality measurement. No third-party proxy, backend or API key is introduced. Live services require network access. Forecast and map data are credited separately from ECCC charts.
+
+Run `node --test tests/*.test.cjs`. Astronomy checks cover missing/stale data, UTC rollover, fixed forecast validity during chart fallback, coverage, coordinate validation and polar astronomy. Browser checks should additionally verify real API access, image loading, map embedding, location races and narrow-screen layout.
 
 ## Local and worldwide weather
 
