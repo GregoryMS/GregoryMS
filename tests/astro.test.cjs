@@ -2,6 +2,7 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const A = require('../assets/astro-core.js');
 const W = require('../assets/weather-core.js');
+const T = require('../assets/tide-core.js');
 const S = require('../assets/vendor/suncalc.js');
 const fs = require('node:fs');
 const vm = require('node:vm');
@@ -79,7 +80,7 @@ test('astronomical darkness handles polar day and polar night without missing ri
   assert.ok(summer > 0); assert.ok(winter < -18);
 });
 
-function harness(deferImages = false) {
+function harness(deferImages = false, href = 'https://gregle.uk/astro.html') {
   class El {
     constructor() { this.children=[]; this.listeners={}; this.dataset={}; this.value=''; this.checked=true; this.textContent=''; }
     setAttribute(name, value) { this[name]=value; }
@@ -91,11 +92,11 @@ function harness(deferImages = false) {
   const nodes=new Map(), get=id=>{if(!nodes.has(id))nodes.set(id,new El());return nodes.get(id);};
   const buttons=['vancouver','victoria','chilliwack'].map(name=>{const b=new El();b.dataset.place=name;return b;});
   const pending=[], images=[]; let geoSuccess;
-  const document={getElementById:get,createElement:()=>new El(),querySelectorAll:()=>buttons,addEventListener(){},hidden:false};
+  const document={getElementById:get,createElement:()=>new El(),createElementNS:()=>new El(),querySelectorAll:()=>buttons,addEventListener(){},hidden:false};
   class FixedDate extends Date { static now(){return now;} }
   const siteDirectory=A.parseSites(require('../data/astro-sites.json'));
   const browser={create({onChart}){return {setLocation(place){onChart(A.nearbySites(siteDirectory,place)[0] || null);}};}};
-  const context={window:{GregleAstro:A,GregleWeather:W,SunCalc:S,GregleAstroSites:browser},document,Date:FixedDate,Intl,URLSearchParams,AbortController,
+  const context={window:{location:{href},GregleTides:T,GregleAstro:A,GregleWeather:W,SunCalc:S,GregleAstroSites:browser},document,Date:FixedDate,Intl,URLSearchParams,AbortController,
     setTimeout,clearTimeout,setInterval(){},navigator:{geolocation:{getCurrentPosition(success){geoSuccess=success;}}},
     Image:class {set src(value){if(value){images.push(this);if(!deferImages)queueMicrotask(()=>this.onload?.());}}},
     fetch:url=>url.startsWith('https://aa.usno.navy.mil/') ? Promise.resolve({ok:false}) : new Promise((resolve,reject)=>pending.push({url,resolve:body=>resolve({ok:true,json:async()=>body}),reject}))};
@@ -189,4 +190,14 @@ test('USNO phase dates retain precise instants and reject incomplete or invalid 
   for (const change of [{day:32},{time:'24:00'},{phase:'Unknown'}]) {
     assert.throws(()=>A.parseMoonPhases({phasedata:[{...usnoPhases.phasedata[0],...change},...usnoPhases.phasedata.slice(1)]},now));
   }
+});
+
+test('weather-to-astronomy links select the linked location and reject invalid coordinates', async () => {
+  const h=harness(false,'https://gregle.uk/astro.html?lat=48.43&lon=-123.36&name=Victoria&tz=America%2FVancouver');
+  assert.equal(h.get('place-name').textContent,'Victoria');
+  assert.equal(new URL(h.pending[0].url).searchParams.get('latitude'),'48.43');
+  h.pending[0].resolve(response()); await h.flush();
+  const invalid=harness(false,'https://gregle.uk/astro.html?lat=999&lon=0&name=Invalid');
+  assert.equal(invalid.get('place-name').textContent,'Vancouver');
+  invalid.pending[0].resolve(response()); await invalid.flush();
 });

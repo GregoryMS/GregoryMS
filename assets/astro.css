@@ -76,8 +76,10 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
 .weather-icon-link { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; padding:10px; }
 .moon-layout { display:grid; grid-template-columns:1fr 2fr; margin-top:16px; padding:24px; gap:28px; }
 .moon-current { display:flex; align-items:center; gap:18px; }
-.moon-symbol { font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif; font-size:36px; line-height:1.2; }
-.moon-current>.moon-symbol { font-size:68px; }
+.moon-symbol { display:block; width:42px; height:42px; flex-shrink:0; }
+.moon-disc { fill:#303030; stroke:#8b8b8b; stroke-width:1; }
+.moon-lit { fill:#e6e6e6; }
+.moon-current>.moon-symbol,.moon-current>.moon-symbol svg { width:80px; height:80px; }
 .moon-current h3 { font-size:20px; font-weight:500; margin:6px 0; }
 .moon-current p { margin:0; }
 .moon-upcoming>h3 { color:var(--muted); font-size:12px; font-weight:500; margin:0 0 16px; }

@@ -65,12 +65,12 @@
     return 'https://test.cleardarksky.com/c/' + site.key + (image ? '/chart.gif' : '.html');
   }
   const moonPhases = [
-    ['New moon', '🌑'], ['Waxing crescent', '🌒'], ['First quarter', '🌓'], ['Waxing gibbous', '🌔'],
-    ['Full moon', '🌕'], ['Waning gibbous', '🌖'], ['Last quarter', '🌗'], ['Waning crescent', '🌘']
+    'New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous',
+    'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'
   ];
   function moonPhase(phase) {
     const index = Math.round(((phase % 1 + 1) % 1) * 8) % 8;
-    return {name:moonPhases[index][0], icon:moonPhases[index][1]};
+    return {name:moonPhases[index], phase:index / 8};
   }
   function upcomingMoonPhases(now, illumination) {
     // Follow SunCalc's phase through the new-moon wrap, then refine each quarter crossing.
