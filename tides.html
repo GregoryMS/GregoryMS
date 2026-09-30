@@ -20,7 +20,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/tides-app/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/tides-app/icon-192.png">
   <link rel="stylesheet" href="assets/weather.css">
-  <link rel="stylesheet" href="assets/tides.css">
+  <link rel="stylesheet" href="assets/tides.css?v=20260930-surf">
   <script src="assets/theme.js" defer></script>
 </head>
 <body>
@@ -48,9 +48,17 @@
       </section>
       <section class="tide-panel tide-chart-panel" aria-labelledby="curveHeading"><div class="tide-panel-head"><h2 id="curveHeading">Tide curve</h2><span class="updated" id="tideZone"></span></div><div class="tide-days" id="tideDays" role="group" aria-label="Choose a forecast day"></div><div id="tideChart" class="tide-chart"></div><h3 class="tide-day-title" id="tideDayTitle">Today’s tides</h3><div id="tideDayEvents"></div></section>
     </div>
+    <section class="tide-panel surf-panel" id="surfPanel" aria-labelledby="surfHeading" aria-busy="true">
+      <div class="tide-panel-head"><div><p class="eyebrow">Before you paddle out</p><h2 id="surfHeading">Surf conditions</h2></div><span class="tide-badge">Hourly forecast</span></div>
+      <div class="surf-toolbar"><p class="location-note" id="surfDate"></p><div class="surf-time-control"><label for="surfHour">Forecast time</label><select id="surfHour" class="pill" disabled></select></div></div>
+      <p class="location-note" id="surfStatus" role="status">Loading surf conditions…</p>
+      <dl class="surf-cards" id="surfCards"></dl>
+      <p class="surf-note">Wave height is the significant offshore height, not breaking surf height. Local beach shape and exposure change the surf. Directions show where wind and waves come from.</p>
+      <p class="surf-note">Forecasts: <a href="https://open-meteo.com/en/docs/marine-weather-api">Open-Meteo marine</a> &amp; <a href="https://open-meteo.com/en/docs">weather</a> · CC BY 4.0. Choose a day above, then an hour here.</p>
+    </section>
     <p class="location-note" id="tideNote"></p>
-    <footer><div><p>Tides from the <a href="https://www.tides.gc.ca/">Canadian Hydrographic Service</a>. Worldwide estimates from <a href="https://open-meteo.com/en/docs/marine-weather-api">Open-Meteo / Meteo-France (CC BY 4.0)</a>.</p><p class="location-privacy">Search: Open-Meteo / GeoNames. Coordinates are sent to tide providers and included in weather/tide links. My location uses approximate coordinates and BigDataCloud to find your city.</p></div><a class="source-link" id="tideSource" href="https://www.tides.gc.ca/">Tide source ↗</a></footer>
+    <footer><div><p>Tides from the <a href="https://www.tides.gc.ca/">Canadian Hydrographic Service</a>. Worldwide estimates from <a href="https://open-meteo.com/en/docs/marine-weather-api">Open-Meteo / Meteo-France (CC BY 4.0)</a>.</p><p class="location-privacy">Search: Open-Meteo / GeoNames. Coordinates are sent to tide, marine and weather providers and included in weather/tide links. My location uses approximate coordinates and BigDataCloud to find your city.</p></div><a class="source-link" id="tideSource" href="https://www.tides.gc.ca/">Tide source ↗</a></footer>
   </main>
-  <script src="assets/weather-core.js"></script><script src="assets/tide-core.js"></script><script src="assets/tide-data.js"></script><script src="assets/tide-ui.js"></script><script src="assets/tides.js"></script>
+  <script src="assets/weather-core.js"></script><script src="assets/tide-core.js"></script><script src="assets/tide-data.js"></script><script src="assets/tide-ui.js"></script><script src="assets/surf-core.js?v=20260930-surf"></script><script src="assets/surf.js?v=20260930-surf"></script><script src="assets/tides.js?v=20260930-surf"></script>
 </body>
 </html>
