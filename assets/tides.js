@@ -31,6 +31,7 @@
     $('tideDayTitle').textContent=dayLabel(day)+' · '+(data.model?'estimated tides':'highs & lows');
     $('tideDayEvents').replaceChildren(ui.eventsList(data.events.filter(e=>core.dayKey(e.time,data.timezone)===day),data));
     renderChart(day);
+    globalThis.GregleSurfUI?.setDay(day,data.timezone);
   }
   function render() {
     const now=Date.now(),reading=core.current(data.points,now),next=data.events.find(e=>e.time>now);
@@ -49,6 +50,7 @@
   }
   async function refresh() {
     controller?.abort();controller=new AbortController();const currentController=controller,id=++version;
+    void globalThis.GregleSurfUI?.load(location,currentController.signal,selectedDay);
     data=null;$('tideContent').hidden=true;$('tideContent').setAttribute('aria-busy','true');$('refreshTides').disabled=true;$('tideNote').textContent='';
     $('tideSource').href='https://www.tides.gc.ca/';$('tideStatus').textContent='Loading tides for '+location.name+'…';
     try {
