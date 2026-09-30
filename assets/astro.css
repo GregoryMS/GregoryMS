@@ -27,6 +27,8 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
 .night-strip { margin-top:12px; display:grid; grid-template-columns:1fr 1fr 1fr 2fr; gap:22px; padding:20px; }
 .night-strip span,.night-strip strong { display:block; }
 .night-strip strong { font-size:14px; font-weight:500; margin-top:4px; }
+.rise-set-strip { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.rise-set-strip strong { font-size:20px; font-variant-numeric:tabular-nums; }
 .astro-page section+section { margin-top:34px; }
 .hourly-wrap { overflow:auto; max-height:480px; }
 .hourly-wrap table { width:100%; border-collapse:separate; border-spacing:0; white-space:nowrap; font-size:12px; font-variant-numeric:tabular-nums; }
