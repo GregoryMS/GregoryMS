@@ -21,20 +21,20 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20260929-csc">
+  <link rel="stylesheet" href="assets/astro.css?v=20260930-moon">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
   <script src="assets/theme.js" defer></script>
   <script src="assets/vendor/suncalc.js" defer></script>
   <script src="assets/weather-core.js" defer></script>
-  <script src="assets/astro-core.js?v=20260929-csc" defer></script>
+  <script src="assets/astro-core.js?v=20260930-moon" defer></script>
   <script src="assets/astro-sites.js?v=20260929-csc" defer></script>
-  <script src="assets/astro.js?v=20260929-locations" defer></script>
+  <script src="assets/astro.js?v=20260930-moon" defer></script>
 </head>
 <body>
   <header class="topbar">
     <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Astronomy</span></div>
-    <div class="top-actions"><a class="pill" href="links.html">← All tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+    <div class="top-actions"><a id="weather-icon-link" class="pill weather-icon-link" href="weather.html" aria-label="Weather for selected location" title="Weather for selected location"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v2M2 8h2M3.8 3.8l1.4 1.4M12.2 3.8l-1.4 1.4"/><path d="M7 12a4 4 0 1 1 5-5"/><path d="M7 20a4 4 0 1 1 1-7.9A5 5 0 0 1 18 12a4 4 0 1 1 0 8Z"/></svg></a><a class="pill" href="links.html">← All tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
   </header>
   <main class="page astro-page">
     <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner</h1><p class="muted">Find clear skies, check the forecast, and explore somewhere darker.</p></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
@@ -68,13 +68,21 @@
       <div id="conditions" class="conditions" aria-label="Current modelled conditions"></div>
       <div class="night-strip panel"><div><span class="meta">Sky now</span><strong id="sky-now">—</strong></div><div><span class="meta">Moon illumination</span><strong id="moon">—</strong></div><div><span class="meta">Moon above horizon</span><strong id="moon-up">—</strong></div><div><span class="meta">Next 48 hours · astronomical darkness</span><strong id="dark-window">Calculating…</strong></div></div>
     </section>
+    <section class="moon-section" aria-labelledby="moon-heading">
+      <div class="section-heading"><div><p class="eyebrow">Plan around the Moon</p><h2 id="moon-heading">Moon phases</h2></div></div>
+      <div class="moon-layout panel">
+        <div class="moon-current"><span id="moon-phase-icon" class="moon-symbol" aria-hidden="true">🌑</span><div><span class="meta">Current phase</span><h3 id="moon-phase-name">Calculating…</h3><p id="moon-phase-detail" class="meta"></p></div></div>
+        <div class="moon-upcoming"><h3>Upcoming phases</h3><ol id="moon-phase-dates" class="moon-phase-dates"></ol></div>
+      </div>
+      <p id="moon-phase-zone" class="meta">Phase dates for the selected location.</p>
+    </section>
     <section class="forecast-section" aria-labelledby="hourly-heading">
       <div class="section-heading"><h2 id="hourly-heading">The next 48 hours</h2><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label></div>
       <p class="meta">Times are local to the selected location. Scroll across for the full forecast.</p>
       <div id="hourly" class="hourly-wrap panel" tabindex="0" role="region" aria-label="Scrollable hourly observing forecast"><p class="empty">Loading hourly forecast…</p></div>
       <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and the Clear Sky Chart above. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>
     </section>
-    <footer><div><p>Sky charts: <a href="https://test.cleardarksky.com/">Clear Sky Chart</a> · <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada regional charts</a> · Conditions &amp; hourly forecast: <a href="https://open-meteo.com/">Open-Meteo</a> · Search: <a href="https://open-meteo.com/en/docs/geocoding-api">GeoNames via Open-Meteo</a> · Sun &amp; Moon: <a href="https://github.com/mourner/suncalc">SunCalc</a>.</p><p>Current conditions are modelled estimates. Forecasts refresh every 15 minutes while visible. Location searches go to Open-Meteo; selected coordinates go to the forecast and map providers. My location asks permission and rounds coordinates to two decimals. Locations are not saved.</p></div><a href="links.html">Back to tools</a></footer>
+    <footer><div><p>Sky charts: <a href="https://test.cleardarksky.com/">Clear Sky Chart</a> · <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada regional charts</a> · Conditions &amp; hourly forecast: <a href="https://open-meteo.com/">Open-Meteo</a> · Search: <a href="https://open-meteo.com/en/docs/geocoding-api">GeoNames via Open-Meteo</a> · Phase dates: <a href="https://aa.usno.navy.mil/data/MoonPhases">US Naval Observatory</a> · Sun &amp; Moon: <a href="https://github.com/mourner/suncalc">SunCalc</a>.</p><p>Current conditions are modelled estimates. Forecasts refresh every 15 minutes while visible. Location searches go to Open-Meteo; selected coordinates go to the forecast and map providers. My location asks permission and rounds coordinates to two decimals. Locations are not saved.</p></div><a href="links.html">Back to tools</a></footer>
   </main>
 </body>
 </html>

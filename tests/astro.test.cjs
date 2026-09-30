@@ -82,6 +82,7 @@ test('astronomical darkness handles polar day and polar night without missing ri
 function harness(deferImages = false) {
   class El {
     constructor() { this.children=[]; this.listeners={}; this.dataset={}; this.value=''; this.checked=true; this.textContent=''; }
+    setAttribute(name, value) { this[name]=value; }
     append(...children) { this.children.push(...children); }
     replaceChildren(...children) { this.children=children; this.textContent=''; }
     addEventListener(name, fn) { this.listeners[name]=fn; }
@@ -97,7 +98,7 @@ function harness(deferImages = false) {
   const context={window:{GregleAstro:A,GregleWeather:W,SunCalc:S,GregleAstroSites:browser},document,Date:FixedDate,Intl,URLSearchParams,AbortController,
     setTimeout,clearTimeout,setInterval(){},navigator:{geolocation:{getCurrentPosition(success){geoSuccess=success;}}},
     Image:class {set src(value){if(value){images.push(this);if(!deferImages)queueMicrotask(()=>this.onload?.());}}},
-    fetch:url=>new Promise((resolve,reject)=>pending.push({url,resolve:body=>resolve({ok:true,json:async()=>body}),reject}))};
+    fetch:url=>url.startsWith('https://aa.usno.navy.mil/') ? Promise.resolve({ok:false}) : new Promise((resolve,reject)=>pending.push({url,resolve:body=>resolve({ok:true,json:async()=>body}),reject}))};
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/astro.js'),'utf8'),context);
   return {get,pending,buttons,images,geo:()=>geoSuccess,async flush(){await new Promise(resolve=>setImmediate(resolve));}};
 }
@@ -141,4 +142,51 @@ test('late chart images cannot replace a newer site and failed images leave a us
   assert.equal(h.get('chart-image').children.length,0);
   assert.match(h.get('chart-status').textContent,/Chart image unavailable/);
   assert.match(h.get('chart-source').href,/test.cleardarksky.com/);
+});
+
+test('moon phases cross new moon without skipping or duplicating a quarter', () => {
+  const start = Date.parse('2026-12-31T12:00:00Z'), month = 29.53059 * 24 * A.HOUR;
+  const illumination = date => ({phase:(0.9 + (date.getTime() - start) / month) % 1});
+  const events = A.upcomingMoonPhases(start, illumination);
+  assert.deepEqual(events.map(e=>e.name), ['New moon','First quarter','Full moon','Last quarter']);
+  events.forEach((event,i) => assert.ok(Math.abs(event.time - (start + (0.1 + i * 0.25) * month)) < 60000));
+  for (let monthIndex=0; monthIndex<12; monthIndex++) {
+    const date=Date.UTC(2026,monthIndex,1), phases=A.upcomingMoonPhases(date,S.getMoonIllumination);
+    assert.equal(phases.length,4);
+    assert.equal(new Set(phases.map(p=>p.name)).size,4);
+    phases.forEach((event,i)=>assert.ok(event.time > (i ? phases[i-1].time : date) && event.time < date + 35*24*A.HOUR));
+  }
+});
+test('weather icon preserves selected coordinates and lunar dates follow forecast timezone', async () => {
+  const h=harness(); h.pending[0].resolve(response()); await h.flush();
+  h.buttons[1].fire('click');
+  assert.equal(h.get('weather-icon-link').href,h.get('weather-link').href);
+  assert.equal(new URL(h.get('weather-icon-link').href,'https://example.test').searchParams.get('name'),'Victoria');
+  h.pending[1].resolve({...response(),timezone:'Pacific/Auckland'}); await h.flush();
+  assert.equal(new URL(h.get('weather-icon-link').href,'https://example.test').searchParams.get('tz'),'Pacific/Auckland');
+  assert.match(h.get('moon-phase-zone').textContent,/Pacific\/Auckland/);
+  const dates=h.get('moon-phase-dates').children;
+  assert.equal(dates.length,4);
+  dates.forEach(card=>{
+    const date=card.children[2];
+    assert.equal(date.textContent,new Intl.DateTimeFormat('en-CA',{timeZone:'Pacific/Auckland',month:'short',day:'numeric',year:'numeric'}).format(new Date(date.dateTime)));
+  });
+});
+
+// Reference: https://aa.usno.navy.mil/api/moon/phases/date?date=2026-09-30&nump=4
+const usnoPhases = {phasedata:[
+  {year:2026,month:10,day:3,time:'13:25',phase:'Last Quarter'},
+  {year:2026,month:10,day:10,time:'15:50',phase:'New Moon'},
+  {year:2026,month:10,day:18,time:'16:12',phase:'First Quarter'},
+  {year:2026,month:10,day:26,time:'04:12',phase:'Full Moon'}
+]};
+test('USNO phase dates retain precise instants and reject incomplete or invalid data', () => {
+  const phases=A.parseMoonPhases(usnoPhases,now);
+  assert.equal(phases[3].time,Date.parse('2026-10-26T04:12:00Z'));
+  assert.equal(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Vancouver',month:'short',day:'numeric'}).format(new Date(phases[3].time)),'Oct 25');
+  assert.throws(()=>A.parseMoonPhases({phasedata:[]},now));
+  assert.throws(()=>A.parseMoonPhases({error:'Unavailable'},now));
+  for (const change of [{day:32},{time:'24:00'},{phase:'Unknown'}]) {
+    assert.throws(()=>A.parseMoonPhases({phasedata:[{...usnoPhases.phasedata[0],...change},...usnoPhases.phasedata.slice(1)]},now));
+  }
 });
