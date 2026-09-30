@@ -41,18 +41,34 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
 .hourly-wrap td[data-outlook="Twilight"],.hourly-wrap td[data-outlook="Daylight"] { background:var(--soft); }
 .check-label { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:12px; }
 .check-label input { accent-color:#52796a; width:17px; height:17px; }
-.chart-controls { display:flex; gap:18px; flex-wrap:wrap; margin-top:18px; }
-.chart-controls label { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
-.chart-controls select { padding:10px 12px; border-radius:10px; border:1px solid var(--line); color:var(--text); background:var(--panel); font:inherit; }
 .chart-image { overflow:auto; text-align:center; }
-.chart-image img { display:block; width:100%; height:auto; }
+.chart-image img { display:block; width:auto; min-width:100%; max-width:none; height:auto; image-rendering:auto; }
+.chart-image { background:#000; border-radius:12px; }
+.site-map-layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; overflow:hidden; margin-top:16px; }
+#sites-map { height:430px; width:100%; background:#d4dce1; color:#222; z-index:0; }
+.map-actions { display:flex; gap:8px; padding:10px; }
+.site-sidebar { padding:16px; border-left:1px solid var(--line); }
+.site-sidebar label { font-size:13px; font-weight:500; }
+.site-sidebar input { width:100%; border:1px solid var(--line); border-radius:10px; padding:10px; color:var(--text); background:var(--bg); margin-top:8px; }
+.site-sidebar h3 { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+#site-results { height:310px; overflow:auto; }
+.site-result { width:100%; display:flex; gap:10px; align-items:center; padding:12px 8px; border:0; border-bottom:1px solid var(--line); background:transparent; color:var(--text); text-align:left; }
+.site-result:hover,.site-result[aria-pressed="true"] { background:var(--soft); }
+.site-result strong,.site-result small { display:block; }
+.site-result strong { font-weight:500; font-size:13px; }
+.site-result small { color:var(--muted); font-size:11px; }
+.site-swatch,.sky-legend i { display:inline-block; width:13px; height:13px; border:1px solid #888; border-radius:50%; flex-shrink:0; }
+.chart-pin { display:block; width:20px; height:20px; border:2px solid #fff; border-radius:50%; box-shadow:0 1px 4px #0009; }
+.sky-legend { display:flex; align-items:center; gap:15px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+.sky-legend span { display:flex; align-items:center; gap:6px; }
+.leaflet-control-layers { font-family:inherit; font-size:11px; }
+.leaflet-control-attribution a { color:#23527c; }
 .chart-image:empty { display:none; }
-.map-container { overflow:hidden; height:560px; }
-.map-container iframe { display:block; width:100%; height:100%; border:0; }
 .astro-page details { margin-top:12px; }
 .astro-page footer { margin-top:32px; }
 .astro-page footer div { max-width:880px; }
 .astro-page footer p+p { margin-top:8px; }
 [hidden] { display:none !important; }
-@media(max-width:700px) { .conditions { grid-template-columns:repeat(2,minmax(0,1fr)); } .night-strip { grid-template-columns:1fr 1fr; } .section-heading { flex-wrap:wrap; gap:10px; } .astro-heading { align-items:flex-start; } .astro-heading>.pill { padding:9px 12px; } .map-container { height:510px; } }
-@media(max-width:420px) { .astro-heading { flex-wrap:wrap; } .condition { padding:16px; } .condition strong { font-size:26px; } .location-form input { flex-basis:100%; } .night-strip { gap:16px; } .chart-controls label { flex-wrap:wrap; } }
+@media(max-width:700px) { .conditions { grid-template-columns:repeat(2,minmax(0,1fr)); } .night-strip { grid-template-columns:1fr 1fr; } .section-heading { flex-wrap:wrap; gap:10px; } .astro-heading { align-items:flex-start; } .astro-heading>.pill { padding:9px 12px; } }
+@media(max-width:420px) { .astro-heading { flex-wrap:wrap; } .condition { padding:16px; } .condition strong { font-size:26px; } .location-form input { flex-basis:100%; } .night-strip { gap:16px; } }
+@media(max-width:760px) { .site-map-layout { grid-template-columns:1fr; } #sites-map { height:340px; } .site-sidebar { border-left:0; border-top:1px solid var(--line); } #site-results { height:190px; } .chart-image img { min-width:0; } }

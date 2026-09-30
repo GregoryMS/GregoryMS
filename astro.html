@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Plan a night under the stars with observation conditions, hourly forecasts, Environment Canada astronomy charts and a searchable dark sky map.">
+  <meta name="description" content="Plan a night under the stars with observation conditions, hourly forecasts, Clear Sky Charts, observing-site search and a light-pollution map.">
   <title>Astronomy observations · Gregle</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <meta name="application-name" content="Gregle Astronomy">
@@ -18,12 +18,18 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/astro-app/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/astro-app/icon-192.png">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/astro.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="assets/astro.css?v=20260929-csc">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
   <script src="assets/theme.js" defer></script>
   <script src="assets/vendor/suncalc.js" defer></script>
   <script src="assets/weather-core.js" defer></script>
-  <script src="assets/astro-core.js" defer></script>
-  <script src="assets/astro.js" defer></script>
+  <script src="assets/astro-core.js?v=20260929-csc" defer></script>
+  <script src="assets/astro-sites.js?v=20260929-csc" defer></script>
+  <script src="assets/astro.js?v=20260929-csc" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -37,7 +43,25 @@
       <p id="search-status" class="meta" role="status"></p><ul id="location-results" class="location-results" aria-label="Location search results" hidden></ul>
       <div class="shortcuts" aria-label="Quick locations"><button class="pill" data-place="vancouver" type="button">Vancouver</button><button class="pill" data-place="victoria" type="button">Victoria</button><button class="pill" data-place="chilliwack" type="button">Chilliwack</button></div>
     </section>
-    <noscript><p>Enable JavaScript for location search and forecasts. Visit <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada astronomy</a> or the <a href="https://www.lightpollutionmap.info/">light pollution map</a> directly.</p></noscript>
+    <noscript><p>Enable JavaScript for location search and forecasts. Visit <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada astronomy</a> or the <a href="https://test.cleardarksky.com/browse/map.html">Clear Sky Chart map</a> directly.</p></noscript>
+    <section class="site-browser" aria-labelledby="map-heading">
+      <div class="section-heading"><div><p class="eyebrow">Choose your observing spot</p><h2 id="map-heading">Clear sky sites</h2></div><a href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Original chart map ↗</a></div>
+      <p id="directory-status" class="meta" role="status">Loading observing sites…</p>
+      <div class="site-map-layout panel">
+        <div><div id="sites-map" aria-label="Observing sites and light pollution map" tabindex="0"></div><div class="map-actions"><button id="recenter-map" class="pill" type="button">Selected location</button><button id="all-sites" class="pill" type="button">North America</button></div></div>
+        <aside class="site-sidebar" aria-label="Chart site search and nearby sites"><label for="site-query">Find a chart site</label><input type="search" id="site-query" placeholder="Observatory or site name…" autocomplete="off" maxlength="120"><h3 id="site-list-label">Nearby chart sites</h3><div id="site-results"></div><button id="reload-sites" class="text-button" type="button">Reload sites</button></aside>
+      </div>
+      <p id="map-status" class="meta" role="status"></p>
+      <div class="sky-legend" aria-label="Light pollution colour guide"><span><i style="background:#111"></i>Darker</span><span><i style="background:#013edc"></i>Blue</span><span><i style="background:#316a1b"></i>Green</span><span><i style="background:#908c2e"></i>Yellow</span><span><i style="background:#ed3833"></i>Red</span><span><i style="background:#bfbfbf"></i>Brighter</span><a href="https://djlorenz.github.io/astronomy/lp/colors.html" target="_blank" rel="noopener">Scale explained ↗</a></div>
+      <p class="meta">Overlay: David Lorenz 2024 modelled artificial sky brightness, matching the reference map. Marker ratings are the Clear Sky Chart directory’s estimates, not live Bortle measurements. A marker is a forecast location, not a promise of public access; check the site’s information before visiting.</p>
+    </section>
+    <section class="chart-section" aria-labelledby="chart-heading">
+      <div class="section-heading"><div><p class="eyebrow">The observing forecast</p><h2 id="chart-heading">Clear Sky Chart</h2><p id="chart-site" class="meta">Choose an observing site on the map.</p></div><a id="chart-source" href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Chart details &amp; legend ↗</a></div>
+      <p id="chart-status" class="meta" role="status">Loading chart sites…</p>
+      <div id="chart-image" class="chart-image panel" tabindex="0" role="region" aria-label="Scrollable Clear Sky Chart"></div>
+      <p class="meta">Each coloured block is a forecast interval. The original chart shows clouds, transparency, seeing, darkness, smoke, wind, humidity and temperature where available. Times, time-zone offset and issue date are printed on the chart. Scroll sideways on small screens; select the image for the provider’s full explanation and legend.</p>
+      <p class="meta">Chart © <a href="https://test.cleardarksky.com/" target="_blank" rel="noopener">Clear Sky Chart / Dark Dragons Astronomy</a>, based on A. Danko’s original charts. Forecast models include the Canadian Meteorological Centre and other providers identified on each chart. Check the printed issue date; a successfully loaded image is not a guarantee of a fresh forecast.</p>
+    </section>
     <section aria-labelledby="place-name">
       <div class="section-heading"><div><h2 id="place-name">Vancouver</h2><p id="place-detail" class="meta">British Columbia, Canada</p></div><a id="weather-link" class="pill" href="weather.html">Full weather ↗</a></div>
       <p id="forecast-status" class="meta" role="status">Loading observation conditions…</p>
@@ -48,22 +72,9 @@
       <div class="section-heading"><h2 id="hourly-heading">The next 48 hours</h2><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label></div>
       <p class="meta">Times are local to the selected location. Scroll across for the full forecast.</p>
       <div id="hourly" class="hourly-wrap panel" tabindex="0" role="region" aria-label="Scrollable hourly observing forecast"><p class="empty">Loading hourly forecast…</p></div>
-      <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and Environment Canada charts below. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>
+      <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and the Clear Sky Chart above. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>
     </section>
-    <section class="chart-section" aria-labelledby="chart-heading">
-      <div class="section-heading"><div><p class="eyebrow">Environment and Climate Change Canada</p><h2 id="chart-heading">Astronomy sky chart</h2></div><a id="chart-source" href="https://weather.gc.ca/astro/clds_vis_e.html" target="_blank" rel="noopener">Open official chart ↗</a></div>
-      <div class="chart-controls"><label>Forecast layer <select id="chart-kind"><option value="cloud">Cloud cover</option><option value="seeing">Seeing</option><option value="transparency">Transparency</option></select></label><label>Forecast time <select id="chart-offset"><option value="0">Next hour</option><option value="3">In 3 hours</option><option value="6">In 6 hours</option><option value="12">In 12 hours</option><option value="24">In 24 hours</option><option value="36">In 36 hours</option><option value="48">In 48 hours</option></select></label></div>
-      <p id="chart-status" class="meta" role="status">Loading the official regional forecast chart…</p>
-      <div id="chart-image" class="chart-image panel"></div>
-      <p class="meta">Official ECCC regional model images, including the original legend and validity time. Cloud charts follow your region; seeing and transparency show North America. Coverage is limited to North America. These are regional charts, not measurements at the selected point.</p>
-    </section>
-    <section aria-labelledby="map-heading">
-      <div class="section-heading"><div><p class="eyebrow">Find a darker horizon</p><h2 id="map-heading">Dark sky map</h2></div><a id="map-link" href="https://www.lightpollutionmap.info/" target="_blank" rel="noopener">Open full map ↗</a></div>
-      <p class="meta">Explore light pollution around <span id="map-place">Vancouver</span>. Use the map’s Layers and Legend controls to inspect sky brightness. Searching above recentres the map; browsing within the map does not change your forecast.</p>
-      <div id="map-container" class="map-container panel"></div>
-      <p class="meta">Interactive map by <a href="https://www.lightpollutionmap.info/" target="_blank" rel="noopener">Jurij Stare / lightpollutionmap.info</a>. Light pollution layers describe modelled sky brightness or satellite radiance, not tonight’s weather or a live on-site Bortle measurement. If the embedded map is unavailable, use “Open full map”.</p>
-    </section>
-    <footer><div><p>Sky charts: <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada</a> · Conditions &amp; hourly forecast: <a href="https://open-meteo.com/">Open-Meteo</a> · Search: <a href="https://open-meteo.com/en/docs/geocoding-api">GeoNames via Open-Meteo</a> · Sun &amp; Moon: <a href="https://github.com/mourner/suncalc">SunCalc</a>.</p><p>Current conditions are modelled estimates. Forecasts refresh every 15 minutes while visible. Location searches go to Open-Meteo; selected coordinates go to the forecast and map providers. My location asks permission and rounds coordinates to two decimals. Locations are not saved.</p></div><a href="links.html">Back to tools</a></footer>
+    <footer><div><p>Sky charts: <a href="https://test.cleardarksky.com/">Clear Sky Chart</a> · <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada regional charts</a> · Conditions &amp; hourly forecast: <a href="https://open-meteo.com/">Open-Meteo</a> · Search: <a href="https://open-meteo.com/en/docs/geocoding-api">GeoNames via Open-Meteo</a> · Sun &amp; Moon: <a href="https://github.com/mourner/suncalc">SunCalc</a>.</p><p>Current conditions are modelled estimates. Forecasts refresh every 15 minutes while visible. Location searches go to Open-Meteo; selected coordinates go to the forecast and map providers. My location asks permission and rounds coordinates to two decimals. Locations are not saved.</p></div><a href="links.html">Back to tools</a></footer>
   </main>
 </body>
 </html>

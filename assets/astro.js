@@ -7,7 +7,7 @@
     victoria: {name:'Victoria', region:'British Columbia, Canada', latitude:48.43, longitude:-123.37, timezone:'America/Vancouver', country:'CA'},
     chilliwack: {name:'Chilliwack', region:'British Columbia, Canada', latitude:49.16, longitude:-121.95, timezone:'America/Vancouver', country:'CA'}
   };
-  let place = presets.vancouver, forecast = null, forecastController, searchController;
+  let place = presets.vancouver, forecast = null, forecastController, searchController, selectedSite = null, sitesBrowser;
   let selection = 0, searchVersion = 0, chartVersion = 0, geoVersion = 0, checkedAt = 0;
   const number = (value, suffix = '', decimals = 0) => Number.isFinite(value) ? value.toFixed(decimals) + suffix : '—';
   function element(tag, text, className) {
@@ -117,32 +117,23 @@
     });
   }
   async function loadChart() {
-    const version = ++chartVersion, kind = $('chart-kind').value;
-    const sources = {cloud:'clds_vis_e.html', seeing:'seeing_e.html', transparency:'transparence_e.html'};
-    $('chart-source').href = 'https://weather.gc.ca/astro/' + sources[kind];
+    const version = ++chartVersion, site = selectedSite;
     $('chart-image').replaceChildren();
-    const candidates = A.chartCandidates(place, kind, Number($('chart-offset').value));
-    if (!candidates.length) { $('chart-status').textContent = 'This location is outside the supported North American chart area. Worldwide conditions and the dark sky map are still available.'; return; }
-    $('chart-status').textContent = 'Loading the official Environment Canada chart…';
-    for (const candidate of candidates) {
-      try {
-        const img = await loadImage(candidate.url);
-        if (version !== chartVersion) return;
-        const region = kind === 'cloud' ? ({northwest:'Northwestern', northeast:'Northeastern', southwest:'Southwestern', southeast:'Southeastern'}[A.chartRegion(place)]) + ' North America' : 'North America';
-        img.alt = `Environment Canada ${kind} forecast for ${region}, valid ${localTime(candidate.valid)}. Open the official chart for its explanation.`;
-        const link = element('a'); link.href = candidate.url; link.target = '_blank'; link.rel = 'noopener'; link.append(img);
-        $('chart-image').replaceChildren(link);
-        $('chart-status').textContent = `${region} · Valid ${localTime(candidate.valid)} · Model run ${new Date(candidate.run).toISOString().slice(0, 16).replace('T', ' ')} UTC. Select the image to enlarge.`;
-        return;
-      } catch (_) { if (version !== chartVersion) return; }
+    $('chart-heading').textContent = site ? site.name + ' Clear Sky Chart' : 'Clear Sky Chart';
+    $('chart-site').textContent = site ? [site.bortle || 'Sky rating unavailable', site.distance > 0.1 ? site.distance.toFixed(1) + ' km from ' + place.name : 'Selected observing site'].join(' · ') : 'Choose a chart site from the map or site search.';
+    $('chart-source').href = site ? A.chartURL(site) : 'https://test.cleardarksky.com/browse/map.html';
+    if (!site) { $('chart-status').textContent = 'No nearby chart selected. Choose a chart site to load its forecast. Weather for your location remains available below.'; return; }
+    $('chart-status').textContent = 'Loading ' + site.name + ' Clear Sky Chart…';
+    try {
+      const img = await loadImage(A.chartURL(site, true) + '?v=' + Math.floor(Date.now() / (15 * 60 * 1000)));
+      if (version !== chartVersion) return;
+      img.alt = site.name + ' Clear Sky Chart: cloud, transparency, seeing, darkness and observing weather. Open chart details for forecast explanations.';
+      const link = element('a'); link.href = A.chartURL(site); link.target = '_blank'; link.rel = 'noopener'; link.append(img);
+      $('chart-image').replaceChildren(link);
+      $('chart-status').textContent = 'Chart image retrieved ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC. Forecast dates and time zone are printed in the image.';
+    } catch (_) {
+      if (version === chartVersion) $('chart-status').textContent = 'Chart image unavailable. Try Refresh or open Chart details & legend. The map and local weather work independently.';
     }
-    $('chart-status').textContent = 'Chart image unavailable for this time. Try another time or open the official chart above.';
-  }
-  function updateMap() {
-    const url = A.mapURL(place); $('map-link').href = url; $('map-place').textContent = place.name;
-    const iframe = element('iframe'); iframe.title = 'Interactive light pollution map around ' + place.name;
-    iframe.loading = 'lazy'; iframe.referrerPolicy = 'no-referrer'; iframe.src = url;
-    $('map-container').replaceChildren(iframe);
   }
   function cancelSearch() { ++searchVersion; searchController?.abort(); $('location-results').replaceChildren(); $('location-results').hidden = true; }
   function selectPlace(next) {
@@ -151,7 +142,7 @@
     $('place-name').textContent = place.name;
     $('place-detail').textContent = [place.region, `${place.latitude.toFixed(2)}°, ${place.longitude.toFixed(2)}°`].filter(Boolean).join(' · ');
     updateWeatherLink();
-    skySummary(); updateMap(); loadForecast(); loadChart();
+    skySummary(); sitesBrowser.setLocation(place); loadForecast();
   }
   $('location-form').addEventListener('submit', async event => {
     event.preventDefault(); ++geoVersion; cancelSearch();
@@ -185,10 +176,14 @@
   });
   document.querySelectorAll('[data-place]').forEach(button => button.addEventListener('click', () => selectPlace(presets[button.dataset.place])));
   $('night-only').addEventListener('change', renderHourly);
-  $('chart-kind').addEventListener('change', loadChart); $('chart-offset').addEventListener('change', loadChart);
+
   function refresh() { skySummary(); loadForecast(); loadChart(); }
   $('refresh').addEventListener('click', refresh);
   setInterval(() => { if (!document.hidden) refresh(); }, 15 * 60 * 1000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - checkedAt > 15 * 60 * 1000) refresh(); });
+  sitesBrowser = window.GregleAstroSites.create({
+    onSelect: site => selectPlace({name:site.name, region:'Clear Sky Chart observing site', latitude:site.latitude, longitude:site.longitude, timezone:'UTC', site}),
+    onChart: site => { selectedSite = site; loadChart(); }
+  });
   selectPlace(place);
 })();

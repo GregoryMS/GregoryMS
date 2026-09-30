@@ -35,27 +35,35 @@
     if (row.cloud_cover > 25 || row.precipitation_probability >= 20 || row.wind_speed_10m > 15) return 'Mixed';
     return 'Promising';
   }
-  function chartRegion(place) {
-    if (!coordinates(place.latitude, place.longitude) || place.latitude < 15 || place.latitude > 75 || place.longitude < -165 || place.longitude > -50) return null;
-    return (place.latitude >= 49 ? 'north' : 'south') + (place.longitude < -100 ? 'west' : 'east');
+  function parseSites(data) {
+    if (data?.version !== 1 || !/^\d{4}-\d{2}-\d{2}$/.test(data.updated) || !Array.isArray(data.sites) || !data.sites.length) throw Error('Invalid chart directory');
+    const seen = new Set();
+    return data.sites.map(row => {
+      if (!Array.isArray(row) || row.length !== 6) throw Error('Invalid chart site');
+      const [key, name, latitude, longitude, bortle, color] = row;
+      if (typeof key !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(key) || seen.has(key) || typeof name !== 'string' || !name.trim() || !coordinates(latitude, longitude) || typeof bortle !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color)) throw Error('Invalid chart site');
+      seen.add(key); return {key, name, latitude, longitude, bortle, color};
+    });
   }
-  function chartCandidates(place, kind, offset = 0, now = Date.now()) {
-    const region = chartRegion(place);
-    if (!region || !['cloud', 'seeing', 'transparency'].includes(kind) || !Number.isFinite(offset) || offset < 0 || offset > 48) return [];
-    const valid = Math.ceil(now / HOUR) * HOUR + offset * HOUR;
-    const latest = Math.floor((now - 3 * HOUR) / (6 * HOUR)) * 6 * HOUR;
-    return Array.from({length: 4}, (_, i) => {
-      const run = latest - i * 6 * HOUR, lead = Math.round((valid - run) / HOUR);
-      const stamp = new Date(run).toISOString().slice(0, 13).replace(/[-T]/g, '');
-      const area = kind === 'cloud' ? region : 'astro';
-      const variable = {cloud: 'nt', seeing: 'seeing', transparency: 'transp'}[kind];
-      return {run, valid, lead, url: `https://weather.gc.ca/data/prog/regional/${stamp}/${stamp}_054_R1_north@america@${area}_I_ASTRO_${variable}_${String(lead).padStart(3, '0')}.png`};
-    }).filter(x => x.lead > 0 && x.lead <= 84);
+  function distance(a, b) {
+    const rad = Math.PI / 180, dLat = (b.latitude - a.latitude) * rad, dLon = (b.longitude - a.longitude) * rad;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.latitude * rad) * Math.cos(b.latitude * rad) * Math.sin(dLon / 2) ** 2;
+    return 6371 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
   }
-  function mapURL(place) {
-    if (!coordinates(place.latitude, place.longitude)) throw Error('Invalid coordinates');
-    return `https://www.lightpollutionmap.info/#zoom=8&lat=${place.latitude.toFixed(4)}&lon=${place.longitude.toFixed(4)}`;
+  function nearbySites(sites, place, limit = 12) {
+    if (!coordinates(place.latitude, place.longitude)) return [];
+    return sites.map(site => ({...site, distance: distance(place, site)})).filter(site => site.distance <= 200).sort((a, b) => a.distance - b.distance).slice(0, limit);
   }
-  const api = {HOUR, fields, coordinates, forecastURL, parseForecast, dewRisk, outlook, chartRegion, chartCandidates, mapURL};
+  function searchSites(sites, query) {
+    const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (!tokens.length) return [];
+    return sites.filter(site => tokens.every(token => (site.name + ' ' + site.key).toLowerCase().includes(token)))
+      .sort((a, b) => a.name.toLowerCase().indexOf(tokens[0]) - b.name.toLowerCase().indexOf(tokens[0]) || a.name.localeCompare(b.name)).slice(0, 20);
+  }
+  function chartURL(site, image = false) {
+    if (!site || !/^[A-Za-z0-9_-]{1,80}$/.test(site.key)) throw Error('Invalid chart key');
+    return 'https://test.cleardarksky.com/c/' + site.key + (image ? '/chart.gif' : '.html');
+  }
+  const api = {HOUR, fields, coordinates, forecastURL, parseForecast, dewRisk, outlook, parseSites, distance, nearbySites, searchSites, chartURL};
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.GregleAstro = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
