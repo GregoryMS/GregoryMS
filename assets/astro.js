@@ -8,7 +8,7 @@
     chilliwack: {name:'Chilliwack', region:'British Columbia, Canada', latitude:49.16, longitude:-121.95, timezone:'America/Vancouver', country:'CA'},
     tofino: {name:'Tofino', region:'British Columbia, Canada', latitude:49.153, longitude:-125.907, timezone:'America/Vancouver', country:'CA'}
   };
-  let place = presets.vancouver, forecast = null, forecastController, searchController, selectedSite = null, sitesBrowser;
+  let place = window.GregleTides.locationFromURL(window.location?.href) || presets.vancouver, forecast = null, forecastController, searchController, selectedSite = null, sitesBrowser;
   let selection = 0, searchVersion = 0, chartVersion = 0, geoVersion = 0, checkedAt = 0;
   let moonEvents = null, moonController, moonDatesLoading = true;
   const number = (value, suffix = '', decimals = 0) => Number.isFinite(value) ? value.toFixed(decimals) + suffix : '—';
@@ -17,6 +17,27 @@
     if (text !== undefined) el.textContent = text;
     if (className) el.className = className;
     return el;
+  }
+  function moonSymbol(phase) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 64 64'); svg.setAttribute('class', 'moon-symbol');
+    svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+    const disc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    disc.setAttribute('cx', '32'); disc.setAttribute('cy', '32'); disc.setAttribute('r', '28'); disc.setAttribute('class', 'moon-disc');
+    const light = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    // Trace the lit limb and elliptical terminator; waxing is lit on the right.
+    const side = phase < 0.5 ? 1 : -1, curve = Math.cos(2 * Math.PI * phase), points = [];
+    for (let i = 0; i <= 64; i++) {
+      const angle = i * Math.PI / 64;
+      points.push([32 + side * 28 * Math.sin(angle), 32 - 28 * Math.cos(angle)]);
+    }
+    for (let i = 64; i >= 0; i--) {
+      const angle = i * Math.PI / 64;
+      points.push([32 + side * curve * 28 * Math.sin(angle), 32 - 28 * Math.cos(angle)]);
+    }
+    light.setAttribute('d', 'M' + points.map(p => p.map(n => n.toFixed(3)).join(',')).join('L') + 'Z');
+    light.setAttribute('class', 'moon-lit');
+    svg.append(disc, light); return svg;
   }
   function localTime(time, options = {}) {
     return new Intl.DateTimeFormat('en-CA', {timeZone: forecast?.timezone || place.timezone || 'UTC', month:'short', day:'numeric', hour:'numeric', minute:'2-digit', ...options}).format(new Date(time));
@@ -40,14 +61,14 @@
     $('moon').textContent = number(moon.fraction * 100, '%') + (moon.phase < 0.5 ? ' · waxing' : ' · waning');
     $('moon-up').textContent = S.getMoonPosition(new Date(now), place.latitude, place.longitude).altitude > 0 ? 'Yes' : 'No';
     const phase = A.moonPhase(moon.phase);
-    $('moon-phase-icon').textContent = phase.icon;
+    $('moon-phase-icon').replaceChildren(moonSymbol(moon.phase));
     $('moon-phase-name').textContent = phase.name;
     $('moon-phase-detail').textContent = number(moon.fraction * 100, '% illuminated') + ' · ' + (moon.phase < 0.5 ? 'Waxing' : 'Waning');
     const verifiedDates = moonEvents?.filter(event => event.time > now);
     const hasVerifiedDates = verifiedDates?.length === 4;
     $('moon-phase-dates').replaceChildren(...(hasVerifiedDates ? verifiedDates : A.upcomingMoonPhases(now, S.getMoonIllumination)).map(event => {
       const card = element('li', undefined, 'moon-event');
-      const icon = element('span', event.icon, 'moon-symbol'); icon.setAttribute('aria-hidden', 'true');
+      const icon = moonSymbol(event.phase);
       const date = element('time', localTime(event.time, {hour:undefined, minute:undefined, year:'numeric'}));
       date.dateTime = new Date(event.time).toISOString();
       card.append(icon, element('strong', event.name), date); return card;

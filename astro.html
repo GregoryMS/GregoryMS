@@ -21,15 +21,16 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20260930-moon">
+  <link rel="stylesheet" href="assets/astro.css?v=20260930-phase-art">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
   <script src="assets/theme.js" defer></script>
   <script src="assets/vendor/suncalc.js" defer></script>
   <script src="assets/weather-core.js" defer></script>
-  <script src="assets/astro-core.js?v=20260930-moon" defer></script>
+  <script src="assets/tide-core.js" defer></script>
+  <script src="assets/astro-core.js?v=20260930-phase-art" defer></script>
   <script src="assets/astro-sites.js?v=20260929-csc" defer></script>
-  <script src="assets/astro.js?v=20260930-moon" defer></script>
+  <script src="assets/astro.js?v=20260930-phase-art" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -71,7 +72,7 @@
     <section class="moon-section" aria-labelledby="moon-heading">
       <div class="section-heading"><div><p class="eyebrow">Plan around the Moon</p><h2 id="moon-heading">Moon phases</h2></div></div>
       <div class="moon-layout panel">
-        <div class="moon-current"><span id="moon-phase-icon" class="moon-symbol" aria-hidden="true">🌑</span><div><span class="meta">Current phase</span><h3 id="moon-phase-name">Calculating…</h3><p id="moon-phase-detail" class="meta"></p></div></div>
+        <div class="moon-current"><span id="moon-phase-icon" class="moon-symbol" aria-hidden="true"></span><div><span class="meta">Current phase</span><h3 id="moon-phase-name">Calculating…</h3><p id="moon-phase-detail" class="meta"></p></div></div>
         <div class="moon-upcoming"><h3>Upcoming phases</h3><ol id="moon-phase-dates" class="moon-phase-dates"></ol></div>
       </div>
       <p id="moon-phase-zone" class="meta">Phase dates for the selected location.</p>

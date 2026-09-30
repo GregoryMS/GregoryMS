@@ -81,3 +81,6 @@
     button:disabled { opacity:.6; cursor:wait; }
     @media(max-width:600px) { .topbar { padding:18px 14px; gap:8px; } .top-actions { gap:6px; } .top-actions > a:not(.quick-link) { padding:9px 12px; } .current-reading { gap:14px; } .current-icon { width:72px; height:72px; } .current-icon svg { width:60px; height:60px; } .temperature { font-size:54px; } .condition { overflow-wrap:anywhere; } .city-search input { flex-basis:100%; } .source-link { white-space:normal; } }
     @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+
+
+@media(max-width:480px) { .topbar { flex-wrap:wrap; } .top-actions { margin-left:auto; } }
