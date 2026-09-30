@@ -10,6 +10,7 @@
   };
   let place = presets.vancouver, forecast = null, forecastController, searchController, selectedSite = null, sitesBrowser;
   let selection = 0, searchVersion = 0, chartVersion = 0, geoVersion = 0, checkedAt = 0;
+  let moonEvents = null, moonController, moonDatesLoading = true;
   const number = (value, suffix = '', decimals = 0) => Number.isFinite(value) ? value.toFixed(decimals) + suffix : '—';
   function element(tag, text, className) {
     const el = document.createElement(tag);
@@ -23,6 +24,7 @@
   function altitude(time) { return S.getPosition(new Date(time), place.latitude, place.longitude).altitude * 180 / Math.PI; }
   function updateWeatherLink() {
     $('weather-link').href = 'weather.html?' + new URLSearchParams({lat:place.latitude, lon:place.longitude, name:place.name, country:place.country || '', tz:forecast?.timezone || place.timezone || 'UTC'});
+    $('weather-icon-link').href = $('weather-link').href;
   }
   async function json(url, controller) {
     const timeout = setTimeout(() => controller.abort(), 15000);
@@ -37,6 +39,20 @@
     $('sky-now').textContent = sun < -18 ? 'Astronomical darkness' : sun < -0.833 ? 'Twilight' : 'Daylight';
     $('moon').textContent = number(moon.fraction * 100, '%') + (moon.phase < 0.5 ? ' · waxing' : ' · waning');
     $('moon-up').textContent = S.getMoonPosition(new Date(now), place.latitude, place.longitude).altitude > 0 ? 'Yes' : 'No';
+    const phase = A.moonPhase(moon.phase);
+    $('moon-phase-icon').textContent = phase.icon;
+    $('moon-phase-name').textContent = phase.name;
+    $('moon-phase-detail').textContent = number(moon.fraction * 100, '% illuminated') + ' · ' + (moon.phase < 0.5 ? 'Waxing' : 'Waning');
+    const verifiedDates = moonEvents?.filter(event => event.time > now);
+    const hasVerifiedDates = verifiedDates?.length === 4;
+    $('moon-phase-dates').replaceChildren(...(hasVerifiedDates ? verifiedDates : A.upcomingMoonPhases(now, S.getMoonIllumination)).map(event => {
+      const card = element('li', undefined, 'moon-event');
+      const icon = element('span', event.icon, 'moon-symbol'); icon.setAttribute('aria-hidden', 'true');
+      const date = element('time', localTime(event.time, {hour:undefined, minute:undefined, year:'numeric'}));
+      date.dateTime = new Date(event.time).toISOString();
+      card.append(icon, element('strong', event.name), date); return card;
+    }));
+    $('moon-phase-zone').textContent = (hasVerifiedDates ? 'Phase dates: US Naval Observatory' : (moonDatesLoading ? 'Loading precise phase dates · showing SunCalc estimates' : 'Estimated phase dates: SunCalc · precise dates unavailable; estimates may differ by a day')) + ' · ' + (forecast?.timezone || place.timezone || 'UTC') + '. Symbols are a phase guide; the Moon’s apparent orientation varies.';
     // Sample actual solar altitude across 48 hours: works through local midnight and polar day/night.
     const step = A.HOUR / 4, end = now + 48 * A.HOUR;
     let start = null, finish = null;
@@ -46,6 +62,15 @@
     }
     $('dark-window').textContent = start === null ? 'No astronomical darkness in the next 48h' :
       (start === now ? 'Now' : localTime(start)) + ' – ' + (finish === null ? 'beyond 48h' : localTime(finish)) + ' (approx.)';
+  }
+  async function loadMoonDates() {
+    moonController?.abort();
+    const controller = new AbortController(); moonController = controller; moonDatesLoading = true;
+    try {
+      const data = await json('https://aa.usno.navy.mil/api/moon/phases/date?' + new URLSearchParams({date:new Date().toISOString().slice(0,10), nump:'5'}), controller);
+      if (moonController !== controller) return;
+      moonEvents = A.parseMoonPhases(data); moonDatesLoading = false; skySummary();
+    } catch (_) { if (moonController === controller) { moonDatesLoading = false; skySummary(); } }
   }
   function renderConditions() {
     const c = forecast?.current;
@@ -178,7 +203,7 @@
   document.querySelectorAll('[data-place]').forEach(button => button.addEventListener('click', () => selectPlace(presets[button.dataset.place])));
   $('night-only').addEventListener('change', renderHourly);
 
-  function refresh() { skySummary(); loadForecast(); loadChart(); }
+  function refresh() { skySummary(); loadForecast(); loadChart(); loadMoonDates(); }
   $('refresh').addEventListener('click', refresh);
   setInterval(() => { if (!document.hidden) refresh(); }, 15 * 60 * 1000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - checkedAt > 15 * 60 * 1000) refresh(); });
@@ -187,4 +212,5 @@
     onChart: site => { selectedSite = site; loadChart(); }
   });
   selectPlace(place);
+  loadMoonDates();
 })();

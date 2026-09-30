@@ -64,6 +64,51 @@
     if (!site || !/^[A-Za-z0-9_-]{1,80}$/.test(site.key)) throw Error('Invalid chart key');
     return 'https://test.cleardarksky.com/c/' + site.key + (image ? '/chart.gif' : '.html');
   }
-  const api = {HOUR, fields, coordinates, forecastURL, parseForecast, dewRisk, outlook, parseSites, distance, nearbySites, searchSites, chartURL};
+  const moonPhases = [
+    ['New moon', '🌑'], ['Waxing crescent', '🌒'], ['First quarter', '🌓'], ['Waxing gibbous', '🌔'],
+    ['Full moon', '🌕'], ['Waning gibbous', '🌖'], ['Last quarter', '🌗'], ['Waning crescent', '🌘']
+  ];
+  function moonPhase(phase) {
+    const index = Math.round(((phase % 1 + 1) % 1) * 8) % 8;
+    return {name:moonPhases[index][0], icon:moonPhases[index][1]};
+  }
+  function upcomingMoonPhases(now, illumination) {
+    // Follow SunCalc's phase through the new-moon wrap, then refine each quarter crossing.
+    // These are planning estimates; the bundled low-precision model is not an ephemeris.
+    const phaseAt = time => illumination(new Date(time)).phase;
+    const events = [], step = 6 * HOUR;
+    let previous = phaseAt(now), cycle = 0, target = (Math.floor(previous * 4) + 1) / 4;
+    for (let time = now + step; time <= now + 35 * 24 * HOUR && events.length < 4; time += step) {
+      const phase = phaseAt(time);
+      if (phase < previous - 0.5) cycle++;
+      if (phase + cycle >= target) {
+        let low = time - step, high = time;
+        const lowPhase = previous, lowCycle = cycle - (phase < previous - 0.5 ? 1 : 0);
+        while (high - low > 60000) {
+          const mid = (low + high) / 2, value = phaseAt(mid);
+          const unwrapped = value + lowCycle + (value < lowPhase - 0.5 ? 1 : 0);
+          if (unwrapped >= target) high = mid; else low = mid;
+        }
+        events.push({...moonPhase(target), time:(low + high) / 2}); target += 0.25;
+      }
+      previous = phase;
+    }
+    return events;
+  }
+  function parseMoonPhases(data, now = Date.now()) {
+    const names = {'New Moon':0, 'First Quarter':0.25, 'Full Moon':0.5, 'Last Quarter':0.75};
+    if (data?.error || !Array.isArray(data?.phasedata)) throw Error('Moon dates unavailable');
+    const events = data.phasedata.map(event => {
+      if (!(event.phase in names) || !/^\d{2}:\d{2}$/.test(event.time) || !Number.isInteger(event.year) || !Number.isInteger(event.month) || !Number.isInteger(event.day)) throw Error('Invalid moon phase');
+      const [hour, minute] = event.time.split(':').map(Number);
+      const time = Date.UTC(event.year, event.month - 1, event.day, hour, minute);
+      const date = new Date(time);
+      if (hour > 23 || minute > 59 || date.getUTCFullYear() !== event.year || date.getUTCMonth() !== event.month - 1 || date.getUTCDate() !== event.day) throw Error('Invalid moon date');
+      return {...moonPhase(names[event.phase]), time};
+    }).filter(event => event.time > now).sort((a,b) => a.time-b.time).slice(0,4);
+    if (events.length !== 4 || new Set(events.map(e=>e.name)).size !== 4 || events.some((e,i)=>e.time > now + 35*24*HOUR || (i && e.time <= events[i-1].time))) throw Error('Incomplete moon dates');
+    return events;
+  }
+  const api = {HOUR, fields, coordinates, forecastURL, parseForecast, dewRisk, outlook, parseSites, distance, nearbySites, searchSites, chartURL, moonPhase, upcomingMoonPhases, parseMoonPhases};
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.GregleAstro = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

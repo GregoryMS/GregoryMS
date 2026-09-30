@@ -72,3 +72,18 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
 @media(max-width:700px) { .conditions { grid-template-columns:repeat(2,minmax(0,1fr)); } .night-strip { grid-template-columns:1fr 1fr; } .section-heading { flex-wrap:wrap; gap:10px; } .astro-heading { align-items:flex-start; } .astro-heading>.pill { padding:9px 12px; } }
 @media(max-width:420px) { .astro-heading { flex-wrap:wrap; } .condition { padding:16px; } .condition strong { font-size:26px; } .location-form input { flex-basis:100%; } .night-strip { gap:16px; } }
 @media(max-width:760px) { .site-map-layout { grid-template-columns:1fr; } #sites-map { height:340px; } .site-sidebar { border-left:0; border-top:1px solid var(--line); } #site-results { height:190px; } .chart-image img { min-width:0; } }
+
+.weather-icon-link { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; padding:10px; }
+.moon-layout { display:grid; grid-template-columns:1fr 2fr; margin-top:16px; padding:24px; gap:28px; }
+.moon-current { display:flex; align-items:center; gap:18px; }
+.moon-symbol { font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif; font-size:36px; line-height:1.2; }
+.moon-current>.moon-symbol { font-size:68px; }
+.moon-current h3 { font-size:20px; font-weight:500; margin:6px 0; }
+.moon-current p { margin:0; }
+.moon-upcoming>h3 { color:var(--muted); font-size:12px; font-weight:500; margin:0 0 16px; }
+.moon-phase-dates { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+.moon-event { display:flex; flex-direction:column; gap:8px; }
+.moon-event strong { font-size:12px; font-weight:500; }
+.moon-event time { color:var(--muted); font-size:12px; }
+@media(max-width:850px) { .moon-layout { grid-template-columns:1fr; } }
+@media(max-width:420px) { .moon-phase-dates { grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; } }
