@@ -64,6 +64,24 @@
     if (!site || !/^[A-Za-z0-9_-]{1,80}$/.test(site.key)) throw Error('Invalid chart key');
     return 'https://test.cleardarksky.com/c/' + site.key + (image ? '/chart.gif' : '.html');
   }
+  function riseSetTimes(now, place, timezone, sunCalc) {
+    const day = new Intl.DateTimeFormat('en-CA', {timeZone:timezone, year:'numeric', month:'2-digit', day:'2-digit'});
+    const today = day.format(new Date(now));
+    const events = {sunrise:null, sunset:null, moonrise:null, moonset:null};
+    // Scan neighbouring UTC days, then keep events on the selected location's date.
+    // This avoids using the browser's midnight and handles 23/25-hour local days.
+    const utcDay = Math.floor(now / (24 * HOUR)) * 24 * HOUR;
+    for (let offset = -2; offset <= 2; offset++) {
+      const date = new Date(utcDay + offset * 24 * HOUR);
+      const sun = sunCalc.getTimes(date, place.latitude, place.longitude);
+      const moon = sunCalc.getMoonTimes(date, place.latitude, place.longitude, true);
+      for (const [key, value] of Object.entries({sunrise:sun.sunrise, sunset:sun.sunset, moonrise:moon.rise, moonset:moon.set})) {
+        const time = value?.getTime();
+        if (Number.isFinite(time) && day.format(value) === today && (events[key] === null || time < events[key])) events[key] = time;
+      }
+    }
+    return events;
+  }
   const moonPhases = [
     'New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous',
     'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'
@@ -109,6 +127,6 @@
     if (events.length !== 4 || new Set(events.map(e=>e.name)).size !== 4 || events.some((e,i)=>e.time > now + 35*24*HOUR || (i && e.time <= events[i-1].time))) throw Error('Incomplete moon dates');
     return events;
   }
-  const api = {HOUR, fields, coordinates, forecastURL, parseForecast, dewRisk, outlook, parseSites, distance, nearbySites, searchSites, chartURL, moonPhase, upcomingMoonPhases, parseMoonPhases};
+  const api = {HOUR, fields, coordinates, forecastURL, parseForecast, dewRisk, outlook, parseSites, distance, nearbySites, searchSites, chartURL, riseSetTimes, moonPhase, upcomingMoonPhases, parseMoonPhases};
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.GregleAstro = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -57,6 +57,12 @@
   }
   function skySummary() {
     const now = Date.now(), sun = altitude(now), moon = S.getMoonIllumination(new Date(now));
+    const timezone = forecast?.timezone || place.timezone || 'UTC';
+    const events = A.riseSetTimes(now, place, timezone, S);
+    for (const [id, time] of Object.entries(events)) {
+      $(id).textContent = time === null ? (id.endsWith('rise') ? 'No rise today' : 'No set today') : localTime(time, {month:undefined, day:undefined});
+    }
+    $('rise-set-date').textContent = 'Today · ' + localTime(now, {hour:undefined, minute:undefined, year:'numeric'}) + ' · ' + timezone + ' · Approximate local times';
     $('sky-now').textContent = sun < -18 ? 'Astronomical darkness' : sun < -0.833 ? 'Twilight' : 'Daylight';
     $('moon').textContent = number(moon.fraction * 100, '%') + (moon.phase < 0.5 ? ' · waxing' : ' · waning');
     $('moon-up').textContent = S.getMoonPosition(new Date(now), place.latitude, place.longitude).altitude > 0 ? 'Yes' : 'No';

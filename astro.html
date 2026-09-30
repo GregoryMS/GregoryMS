@@ -21,16 +21,16 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20260930-phase-art">
+  <link rel="stylesheet" href="assets/astro.css?v=20260930-rise-set">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
   <script src="assets/theme.js" defer></script>
   <script src="assets/vendor/suncalc.js" defer></script>
   <script src="assets/weather-core.js" defer></script>
   <script src="assets/tide-core.js" defer></script>
-  <script src="assets/astro-core.js?v=20260930-phase-art" defer></script>
+  <script src="assets/astro-core.js?v=20260930-rise-set" defer></script>
   <script src="assets/astro-sites.js?v=20260929-csc" defer></script>
-  <script src="assets/astro.js?v=20260930-phase-art" defer></script>
+  <script src="assets/astro.js?v=20260930-rise-set" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -54,20 +54,25 @@
       </div>
       <p id="map-status" class="meta" role="status"></p>
       <div class="sky-legend" aria-label="Light pollution colour guide"><span><i style="background:#111"></i>Darker</span><span><i style="background:#013edc"></i>Blue</span><span><i style="background:#316a1b"></i>Green</span><span><i style="background:#908c2e"></i>Yellow</span><span><i style="background:#ed3833"></i>Red</span><span><i style="background:#bfbfbf"></i>Brighter</span><a href="https://djlorenz.github.io/astronomy/lp/colors.html" target="_blank" rel="noopener">Scale explained ↗</a></div>
-      <p class="meta">Overlay: David Lorenz 2024 modelled artificial sky brightness, matching the reference map. Marker ratings are the Clear Sky Chart directory’s estimates, not live Bortle measurements. A marker is a forecast location, not a promise of public access; check the site’s information before visiting.</p>
     </section>
     <section class="chart-section" aria-labelledby="chart-heading">
       <div class="section-heading"><div><p class="eyebrow">The observing forecast</p><h2 id="chart-heading">Clear Sky Chart</h2><p id="chart-site" class="meta">Choose an observing site on the map.</p></div><a id="chart-source" href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Chart details &amp; legend ↗</a></div>
       <p id="chart-status" class="meta" role="status">Loading chart sites…</p>
       <div id="chart-image" class="chart-image panel" tabindex="0" role="region" aria-label="Scrollable Clear Sky Chart"></div>
       <p class="meta">Each coloured block is a forecast interval. The original chart shows clouds, transparency, seeing, darkness, smoke, wind, humidity and temperature where available. Times, time-zone offset and issue date are printed on the chart. Scroll sideways on small screens; select the image for the provider’s full explanation and legend.</p>
-      <p class="meta">Chart © <a href="https://test.cleardarksky.com/" target="_blank" rel="noopener">Clear Sky Chart / Dark Dragons Astronomy</a>, based on A. Danko’s original charts. Forecast models include the Canadian Meteorological Centre and other providers identified on each chart. Check the printed issue date; a successfully loaded image is not a guarantee of a fresh forecast.</p>
     </section>
     <section aria-labelledby="place-name">
       <div class="section-heading"><div><h2 id="place-name">Vancouver</h2><p id="place-detail" class="meta">British Columbia, Canada</p></div><a id="weather-link" class="pill" href="weather.html">Full weather ↗</a></div>
       <p id="forecast-status" class="meta" role="status">Loading observation conditions…</p>
       <div id="conditions" class="conditions" aria-label="Current modelled conditions"></div>
       <div class="night-strip panel"><div><span class="meta">Sky now</span><strong id="sky-now">—</strong></div><div><span class="meta">Moon illumination</span><strong id="moon">—</strong></div><div><span class="meta">Moon above horizon</span><strong id="moon-up">—</strong></div><div><span class="meta">Next 48 hours · astronomical darkness</span><strong id="dark-window">Calculating…</strong></div></div>
+      <div class="night-strip rise-set-strip panel" role="group" aria-label="Sun and Moon rise and set times" aria-describedby="rise-set-date">
+        <div><span class="meta">Sunrise</span><strong id="sunrise">Calculating…</strong></div>
+        <div><span class="meta">Sunset</span><strong id="sunset">Calculating…</strong></div>
+        <div><span class="meta">Moonrise</span><strong id="moonrise">Calculating…</strong></div>
+        <div><span class="meta">Moonset</span><strong id="moonset">Calculating…</strong></div>
+      </div>
+      <p id="rise-set-date" class="meta">Today’s times for the selected location.</p>
     </section>
     <section class="moon-section" aria-labelledby="moon-heading">
       <div class="section-heading"><div><p class="eyebrow">Plan around the Moon</p><h2 id="moon-heading">Moon phases</h2></div></div>

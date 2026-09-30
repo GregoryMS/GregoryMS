@@ -96,7 +96,7 @@ function harness(deferImages = false, href = 'https://gregle.uk/astro.html') {
   class FixedDate extends Date { static now(){return now;} }
   const siteDirectory=A.parseSites(require('../data/astro-sites.json'));
   const browser={create({onChart}){return {setLocation(place){onChart(A.nearbySites(siteDirectory,place)[0] || null);}};}};
-  const context={window:{location:{href},GregleTides:T,GregleAstro:A,GregleWeather:W,SunCalc:S,GregleAstroSites:browser},document,Date:FixedDate,Intl,URLSearchParams,AbortController,
+  const context={window:{location:{href},GregleTides:T,GregleAstro:{...A,parseForecast:data=>A.parseForecast(data,now)},GregleWeather:W,SunCalc:S,GregleAstroSites:browser},document,Date:FixedDate,Intl,URLSearchParams,AbortController,
     setTimeout,clearTimeout,setInterval(){},navigator:{geolocation:{getCurrentPosition(success){geoSuccess=success;}}},
     Image:class {set src(value){if(value){images.push(this);if(!deferImages)queueMicrotask(()=>this.onload?.());}}},
     fetch:url=>url.startsWith('https://aa.usno.navy.mil/') ? Promise.resolve({ok:false}) : new Promise((resolve,reject)=>pending.push({url,resolve:body=>resolve({ok:true,json:async()=>body}),reject}))};
@@ -200,4 +200,40 @@ test('weather-to-astronomy links select the linked location and reject invalid c
   const invalid=harness(false,'https://gregle.uk/astro.html?lat=999&lon=0&name=Invalid');
   assert.equal(invalid.get('place-name').textContent,'Vancouver');
   invalid.pending[0].resolve(response()); await invalid.flush();
+});
+
+test('rise/set events use the selected date across UTC midnight and distant timezones', () => {
+  const victoria={latitude:48.43,longitude:-123.37};
+  const morning=A.riseSetTimes(Date.parse('2026-09-30T15:00:00Z'),victoria,'America/Vancouver',S);
+  const evening=A.riseSetTimes(Date.parse('2026-10-01T06:00:00Z'),victoria,'America/Vancouver',S);
+  assert.deepEqual(evening,morning);
+  const cases=[
+    [victoria,'America/Vancouver','2026-09-30T04:20:00Z'],
+    [{latitude:-36.85,longitude:174.76},'Pacific/Auckland','2026-09-26T16:00:00Z'],
+    [{latitude:51.5,longitude:-0.12},'Europe/London','2026-10-25T12:00:00Z'],
+    [{latitude:1.87,longitude:-157.43},'Pacific/Kiritimati','2026-09-30T15:00:00Z']
+  ];
+  for(const [location,timezone,iso] of cases){
+    const instant=Date.parse(iso), events=A.riseSetTimes(instant,location,timezone,S);
+    const day=new Intl.DateTimeFormat('en-CA',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'});
+    assert.ok(events.sunrise && events.sunset);
+    for(const time of Object.values(events)) if(time!==null) assert.equal(day.format(time),day.format(instant));
+  }
+});
+test('absent lunar events and polar solar events remain absent', () => {
+  const victoria={latitude:48.43,longitude:-123.37};
+  assert.equal(A.riseSetTimes(Date.parse('2026-10-04T12:00:00Z'),victoria,'America/Vancouver',S).moonrise,null);
+  assert.equal(A.riseSetTimes(Date.parse('2026-10-18T12:00:00Z'),victoria,'America/Vancouver',S).moonset,null);
+  for(const date of ['2026-06-21T12:00:00Z','2026-12-21T12:00:00Z']){
+    const events=A.riseSetTimes(Date.parse(date),{latitude:80,longitude:0},'UTC',S);
+    assert.equal(events.sunrise,null); assert.equal(events.sunset,null);
+  }
+});
+test('rise/set display updates with location and remains available when weather fails', async () => {
+  const h=harness(); h.pending[0].resolve(response()); await h.flush();
+  h.buttons[1].fire('click'); h.pending[1].reject(Error('Offline')); await h.flush();
+  const expected=A.riseSetTimes(now,{latitude:48.43,longitude:-123.37},'America/Vancouver',S);
+  const format=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Vancouver',hour:'numeric',minute:'2-digit'});
+  for(const [id,time] of Object.entries(expected)) assert.equal(h.get(id).textContent,format.format(time));
+  assert.match(h.get('rise-set-date').textContent,/Sep 29, 2026.*America\/Vancouver/);
 });
