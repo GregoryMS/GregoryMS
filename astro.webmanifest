@@ -1,0 +1,25 @@
+{
+  "id": "/astro.html",
+  "name": "Gregle Astronomy",
+  "short_name": "Astronomy",
+  "description": "Observing conditions, astronomy forecasts and a dark sky map.",
+  "start_url": "/astro.html",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#f4f6f8",
+  "background_color": "#f4f6f8",
+  "icons": [
+    {
+      "src": "/assets/astro-app/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/astro-app/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
