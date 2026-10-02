@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261002-chart-key">
+  <link rel="stylesheet" href="assets/astro.css?v=20261002-events">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
   <script src="assets/theme.js" defer></script>
@@ -30,7 +30,9 @@
   <script src="assets/tide-core.js" defer></script>
   <script src="assets/astro-core.js?v=20260930-rise-set" defer></script>
   <script src="assets/astro-sites.js?v=20260929-csc" defer></script>
-  <script src="assets/astro.js?v=20260930-rise-set" defer></script>
+  <script src="assets/astro-calendar-core.js?v=20261002" defer></script>
+  <script src="assets/astro-calendar.js?v=20261002" defer></script>
+  <script src="assets/astro.js?v=20261002-events" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -102,6 +104,26 @@
       </div>
       <p id="moon-phase-zone" class="meta">Phase dates for the selected location.</p>
     </section>
+    <section id="astro-calendar" class="astro-calendar" aria-labelledby="calendar-heading">
+      <div class="section-heading"><div><p class="eyebrow">Plan your next night out</p><h2 id="calendar-heading">Astronomical events</h2></div><a id="calendar-export" class="pill" hidden>Download month (.ics)</a></div>
+      <p id="calendar-zone" class="calendar-meta"></p>
+      <div class="calendar-layout panel">
+        <div class="calendar-month-view">
+          <div class="calendar-toolbar"><h3 id="calendar-month" aria-live="polite"></h3><div><button id="calendar-prev" class="pill" type="button" aria-label="Previous month">‹</button><button id="calendar-today" class="pill" type="button">Today</button><button id="calendar-next" class="pill" type="button" aria-label="Next month">›</button></div></div>
+          <div id="calendar-grid" class="calendar-grid" role="group" aria-labelledby="calendar-month"></div>
+        </div>
+        <div class="calendar-agenda"><div class="calendar-agenda-heading"><h3 id="calendar-list-heading">This month</h3><button id="calendar-show-all" class="text-button" type="button" hidden>Show whole month</button></div><ul id="calendar-events" aria-labelledby="calendar-list-heading" aria-live="polite"></ul></div>
+      </div>
+      <p id="calendar-status" class="calendar-meta" role="status">Loading astronomical events…</p><button id="calendar-retry" class="pill" type="button" hidden>Retry event dates</button>
+      <p class="calendar-meta">Calendar downloads are a snapshot, not a subscription. Open the .ics file in Apple Calendar, Outlook or another calendar app to import it.</p>
+      <noscript><p>Enable JavaScript for the calendar, or browse <a href="https://aa.usno.navy.mil/data/MoonPhases">Moon phase dates</a> and <a href="https://science.nasa.gov/solar-system/meteors-meteorites/meteor-showers/">meteor showers</a>.</p></noscript>
+    </section>
+    <dialog id="event-dialog" class="event-dialog" aria-labelledby="event-title" aria-describedby="event-time event-description event-timing">
+      <div class="event-dialog-top"><span id="event-kind" class="eyebrow"></span><button id="event-close" class="pill" type="button" autofocus>Close</button></div>
+      <h2 id="event-title"></h2><p id="event-time" class="calendar-meta"></p><p id="event-description"></p><p id="event-timing" class="calendar-meta"></p>
+      <p class="calendar-meta">Learn more: <a id="event-source" target="_blank" rel="noopener"></a></p>
+      <div class="event-actions"><a id="event-ical" class="pill primary">Add to calendar (.ics)</a><a id="event-google" class="pill" target="_blank" rel="noopener">Google Calendar</a></div>
+    </dialog>
     <footer><div><p>Sky charts: <a href="https://test.cleardarksky.com/">Clear Sky Chart</a> · <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada regional charts</a> · Conditions &amp; hourly forecast: <a href="https://open-meteo.com/">Open-Meteo</a> · Search: <a href="https://open-meteo.com/en/docs/geocoding-api">GeoNames via Open-Meteo</a> · Phase dates: <a href="https://aa.usno.navy.mil/data/MoonPhases">US Naval Observatory</a> · Sun &amp; Moon: <a href="https://github.com/mourner/suncalc">SunCalc</a>.</p><p>Current conditions are modelled estimates. Forecasts refresh every 15 minutes while visible. Location searches go to Open-Meteo; selected coordinates go to the forecast and map providers. My location asks permission and rounds coordinates to two decimals. Locations are not saved.</p></div><a href="links.html">Back to tools</a></footer>
   </main>
 </body>
