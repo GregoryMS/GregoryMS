@@ -105,13 +105,15 @@
     let calculated = [], skyMissing = false;
     try { calculated = years.flatMap(calculatedEvents); } catch (_) { skyMissing = true; }
     selectedDay=null; events=[...C.meteorEvents(year),...calculated].sort((a,b)=>a.start.localeCompare(b.start)); render();
-    $('calendar-status').textContent='Loading Moon phases and seasons… Meteor peak nights are approximate annual dates.';
+    $('calendar-status').hidden=false;
+    $('calendar-status').textContent='Loading astronomical events…';
     $('calendar-retry').hidden=true;
     const results=await Promise.all(years.map(yearEvents));
     if(current!==version) return;
     events=[...C.meteorEvents(year),...calculated,...results.flatMap(r=>r.events)].sort((a,b)=>a.start.localeCompare(b.start));
-    const missing=results.some(r=>r.missing), saved=results.some(r=>r.saved);
-    $('calendar-status').textContent=(missing?'Some Moon or seasonal dates are unavailable. Showing available events.':saved?'Moon phases and seasons: saved USNO dates (checked 2 Oct 2026).':'Moon phases and seasons: US Naval Observatory.')+(skyMissing?' Planet and eclipse calculations are unavailable.':' Planet and eclipse times: calculated with Astronomy Engine.')+' Meteor peak nights are approximate. Events are worldwide; visibility depends on location and conditions.';
+    const missing=results.some(r=>r.missing);
+    $('calendar-status').textContent=[missing?'Some Moon or seasonal dates are unavailable. Showing available events.':'',skyMissing?'Planet and eclipse calculations are unavailable.':''].filter(Boolean).join(' ');
+    $('calendar-status').hidden=!missing && !skyMissing;
     $('calendar-retry').hidden=!missing && !skyMissing; render();
   }
   function changeMonth(offset) {
