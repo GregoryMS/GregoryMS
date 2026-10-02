@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20260930-rise-set">
+  <link rel="stylesheet" href="assets/astro.css?v=20261002-chart-key">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
   <script src="assets/theme.js" defer></script>
@@ -65,7 +65,21 @@
       <div class="section-heading"><div><p class="eyebrow">The observing forecast</p><h2 id="chart-heading">Clear Sky Chart</h2><p id="chart-site" class="meta">Choose an observing site on the map.</p></div><a id="chart-source" href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Chart details &amp; legend ↗</a></div>
       <p id="chart-status" class="meta" role="status">Loading chart sites…</p>
       <div id="chart-image" class="chart-image panel" tabindex="0" role="region" aria-label="Scrollable Clear Sky Chart"></div>
-      <p class="meta">Each coloured block is a forecast interval. The original chart shows clouds, transparency, seeing, darkness, smoke, wind, humidity and temperature where available. Times, time-zone offset and issue date are printed on the chart. Scroll sideways on small screens; select the image for the provider’s full explanation and legend.</p>
+      <details class="chart-key panel">
+        <summary>Chart key <span class="meta">· colours &amp; rows</span></summary>
+        <div class="chart-key-content">
+          <p class="meta">Read down a column for the same forecast time. Times, time-zone offset and issue date are printed on the chart. Scroll the chart sideways on mobile.</p>
+          <dl class="chart-key-grid">
+            <div><dt>Cloud cover</dt><dd><span class="chart-key-scale"><span><i style="background:#003f7f" aria-hidden="true"></i>Clear</span><span aria-hidden="true">→</span><span><i style="background:#f9f9f9" aria-hidden="true"></i>Overcast</span></span>Deeper blue means fewer clouds. Separate cloud rows compare forecast models.</dd></div>
+            <div><dt>Transparency &amp; seeing</dt><dd><span class="chart-key-scale"><span><i style="background:#c7c7c7" aria-hidden="true"></i>Poor</span><span aria-hidden="true">→</span><span><i style="background:#003f7f" aria-hidden="true"></i>Better</span></span>Transparency: clarity for faint objects. Seeing: steady air for sharp detail. White means too cloudy to forecast.</dd></div>
+            <div><dt>Darkness</dt><dd><span class="chart-key-scale"><span><i style="background:#00004b" aria-hidden="true"></i>Dark sky</span><span aria-hidden="true">→</span><span><i style="background:#fff" aria-hidden="true"></i>Daylight</span></span>Includes sunlight and moonlight, but not local light pollution.</dd></div>
+            <div><dt>Smoke</dt><dd><span class="chart-key-scale"><span><i style="background:#003f7f" aria-hidden="true"></i>Little / none</span><span aria-hidden="true">→</span><span><i style="background:#654321" aria-hidden="true"></i>More smoke</span></span>Colours move through pale shades and red to brown as smoke increases.</dd></div>
+            <div><dt>Wind &amp; humidity</dt><dd>Wind: dark blue is calmer; pale shades are windier. Humidity: blue is drier; orange/red is more humid, with greater dew risk.</dd></div>
+            <div><dt>Temperature</dt><dd>Blue/cyan is colder; yellow, orange and red are warmer. Check the provider’s full legend for exact ranges and units.</dd></div>
+          </dl>
+          <p class="meta">Rows vary by site. Select the chart image or “Chart details &amp; legend” above for the full provider scales.</p>
+        </div>
+      </details>
     </section>
     <section aria-labelledby="place-name">
       <div class="section-heading"><div><h2 id="place-name">Vancouver</h2><p id="place-detail" class="meta">British Columbia, Canada</p></div><a id="weather-link" class="pill" href="weather.html">Full weather ↗</a></div>
