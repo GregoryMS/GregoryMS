@@ -41,6 +41,7 @@
       ['Eta Aquariids',5,5,'Favours southern and tropical latitudes; fewer meteors are visible far north.'],
       ['Southern Delta Aquariids',7,30,'Favours the Southern Hemisphere and southern northern latitudes.'],
       ['Perseids',8,12,'A well-known Northern Hemisphere summer shower.'],
+      ['Draconids',10,8,'A northern shower best watched in the evening, with a variable peak around October 8–9.'],
       ['Orionids',10,21,'A shower produced by debris from Halley’s Comet.'],
       ['Southern Taurids',11,4,'A slow shower known for occasional bright fireballs.'],
       ['Northern Taurids',11,11,'A modest shower that can produce bright meteors.'],
@@ -53,7 +54,7 @@
       if (year === 2026 && name === 'Leonids') day = 16;
       if (year === 2027 && name === 'Lyrids') day = 21;
       const start = new Date(Date.UTC(year, month-1, day)).toISOString().slice(0,10);
-      return {id:'meteor-' + year + '-' + name.toLowerCase().replaceAll(' ','-'), title:name + ' peak (approx.)', kind:'Meteors', start, end:new Date(Date.UTC(year,month-1,day+2)).toISOString().slice(0,10), allDay:true, description:note + ' Find a dark, open sky, allow your eyes to adapt, and watch with the naked eye. Moonlight, clouds and the height of the radiant affect what you can see.', timing:'Typical peak night around ' + month + '/' + day + '–' + (day+1) + '. The exact peak shifts each year; check the source for that year’s forecast. Saved as a two-day, all-day reminder, not an exact observing appointment.', source:'https://www.amsmeteors.org/calendar/', sourceName:'American Meteor Society calendar'};
+      return {id:'meteor-' + year + '-' + name.toLowerCase().replaceAll(' ','-'), title:name + ' peak (approx.)', kind:'Meteors', start, end:new Date(Date.UTC(year,month-1,day+2)).toISOString().slice(0,10), allDay:true, description:note + ' Find a dark, open sky, allow your eyes to adapt, and watch with the naked eye. Moonlight, clouds and the height of the radiant affect what you can see.', timing:'Typical peak night around ' + month + '/' + day + '–' + (day+1) + '. The exact peak shifts each year; check the source for that year’s forecast. Saved as a two-day, all-day reminder, not an exact observing appointment.', source:name === 'Draconids' ? 'https://www.imo.net/resources/calendar/' : 'https://www.amsmeteors.org/calendar/', sourceName:name === 'Draconids' ? 'International Meteor Organization calendar' : 'American Meteor Society calendar'};
     });
   }
   function dateKey(value, zone) {
