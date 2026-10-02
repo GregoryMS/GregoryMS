@@ -30,8 +30,10 @@
   <script src="assets/tide-core.js" defer></script>
   <script src="assets/astro-core.js?v=20260930-rise-set" defer></script>
   <script src="assets/astro-sites.js?v=20260929-csc" defer></script>
-  <script src="assets/astro-calendar-core.js?v=20261002" defer></script>
-  <script src="assets/astro-calendar.js?v=20261002" defer></script>
+  <script src="assets/vendor/astronomy-engine.min.js?v=2.1.19" defer></script>
+  <script src="assets/astro-calendar-sky.js?v=20261002-more" defer></script>
+  <script src="assets/astro-calendar-core.js?v=20261002-more" defer></script>
+  <script src="assets/astro-calendar.js?v=20261002-more" defer></script>
   <script src="assets/astro.js?v=20261002-events" defer></script>
 </head>
 <body>
@@ -106,6 +108,7 @@
     </section>
     <section id="astro-calendar" class="astro-calendar" aria-labelledby="calendar-heading">
       <div class="section-heading"><div><p class="eyebrow">Plan your next night out</p><h2 id="calendar-heading">Astronomical events</h2></div><a id="calendar-export" class="pill" hidden>Download month (.ics)</a></div>
+      <p class="calendar-meta">Moon phases, meteor showers, planetary oppositions, Mercury and Venus viewing windows, eclipses, equinoxes and solstices.</p>
       <p id="calendar-zone" class="calendar-meta"></p>
       <div class="calendar-layout panel">
         <div class="calendar-month-view">
@@ -115,6 +118,7 @@
         <div class="calendar-agenda"><div class="calendar-agenda-heading"><h3 id="calendar-list-heading">This month</h3><button id="calendar-show-all" class="text-button" type="button" hidden>Show whole month</button></div><ul id="calendar-events" aria-labelledby="calendar-list-heading" aria-live="polite"></ul></div>
       </div>
       <p id="calendar-status" class="calendar-meta" role="status">Loading astronomical events…</p><button id="calendar-retry" class="pill" type="button" hidden>Retry event dates</button>
+      <p class="calendar-meta">More skywatching guides: <a href="https://www.seasky.org/astronomy/astronomy-calendar-current.html" target="_blank" rel="noopener">Sea and Sky</a> · <a href="https://www.jpl.nasa.gov/edu/resources/teachable-moment/whats-a-supermoon-and-just-how-super-is-it/" target="_blank" rel="noopener">About supermoons</a> · <a href="https://science.nasa.gov/eclipses/safety/" target="_blank" rel="noopener">Solar eclipse safety</a>.</p>
       <p class="calendar-meta">Calendar downloads are a snapshot, not a subscription. Open the .ics file in Apple Calendar, Outlook or another calendar app to import it.</p>
       <noscript><p>Enable JavaScript for the calendar, or browse <a href="https://aa.usno.navy.mil/data/MoonPhases">Moon phase dates</a> and <a href="https://science.nasa.gov/solar-system/meteors-meteorites/meteor-showers/">meteor showers</a>.</p></noscript>
     </section>

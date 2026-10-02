@@ -4,7 +4,13 @@
   if (!$('astro-calendar') || !C) return;
   let zone = 'America/Vancouver', month = C.dateKey(Date.now(), zone).slice(0,7), selectedDay = null;
   let events = [], version = 0, downloadURL, dialogURL;
-  const cache = new Map();
+  const cache = new Map(), skyCache = new Map();
+  const sky = window.GregleAstroSky, engine = window.Astronomy;
+  function calculatedEvents(year) {
+    if (!sky || !engine) throw Error('Sky calculations unavailable');
+    if (!skyCache.has(year)) skyCache.set(year, sky.skyEvents(year,engine));
+    return skyCache.get(year);
+  }
   const fallback = fetch('data/astro-events.json').then(r => { if (!r.ok) throw Error(); return r.json(); }).catch(() => null);
   function el(tag, text, className) {
     const node = document.createElement(tag); if (text !== undefined) node.textContent = text;
@@ -33,7 +39,10 @@
     })());
     return cache.get(year);
   }
-  function monthlyEvents() { return events.filter(e => C.eventDate(e,zone).startsWith(month)); }
+  function monthlyEvents() {
+    const decorated = sky ? sky.decorateMoons(events,zone,engine,C.dateKey) : events;
+    return decorated.filter(e => C.eventDate(e,zone).startsWith(month));
+  }
   function makeDownload(link, items, filename, previous) {
     if (previous) URL.revokeObjectURL(previous);
     const url = URL.createObjectURL(new Blob([C.ical(items)], {type:'text/calendar;charset=utf-8'}));
@@ -93,15 +102,17 @@
     const current = ++version, year=Number(month.slice(0,4)), m=Number(month.slice(5)), years=[year];
     if (m===1 && year>1700) years.push(year-1);
     if (m===12 && year<2100) years.push(year+1);
-    selectedDay=null; events=C.meteorEvents(year); render();
+    let calculated = [], skyMissing = false;
+    try { calculated = years.flatMap(calculatedEvents); } catch (_) { skyMissing = true; }
+    selectedDay=null; events=[...C.meteorEvents(year),...calculated].sort((a,b)=>a.start.localeCompare(b.start)); render();
     $('calendar-status').textContent='Loading Moon phases and seasons… Meteor peak nights are approximate annual dates.';
     $('calendar-retry').hidden=true;
     const results=await Promise.all(years.map(yearEvents));
     if(current!==version) return;
-    events=[...C.meteorEvents(year),...results.flatMap(r=>r.events)].sort((a,b)=>a.start.localeCompare(b.start));
+    events=[...C.meteorEvents(year),...calculated,...results.flatMap(r=>r.events)].sort((a,b)=>a.start.localeCompare(b.start));
     const missing=results.some(r=>r.missing), saved=results.some(r=>r.saved);
-    $('calendar-status').textContent=(missing?'Some Moon or seasonal dates are unavailable. Showing available events.':saved?'Moon phases and seasons: saved USNO dates (checked 2 Oct 2026).':'Moon phases and seasons: US Naval Observatory.')+' Meteor peak nights are approximate annual dates; check the source for year-specific predictions. Visibility depends on location and conditions.';
-    $('calendar-retry').hidden=!missing; render();
+    $('calendar-status').textContent=(missing?'Some Moon or seasonal dates are unavailable. Showing available events.':saved?'Moon phases and seasons: saved USNO dates (checked 2 Oct 2026).':'Moon phases and seasons: US Naval Observatory.')+(skyMissing?' Planet and eclipse calculations are unavailable.':' Planet and eclipse times: calculated with Astronomy Engine.')+' Meteor peak nights are approximate. Events are worldwide; visibility depends on location and conditions.';
+    $('calendar-retry').hidden=!missing && !skyMissing; render();
   }
   function changeMonth(offset) {
     const [y,m]=month.split('-').map(Number); month=new Date(Date.UTC(y,m-1+offset,1)).toISOString().slice(0,7); loadMonth();
