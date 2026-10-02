@@ -196,3 +196,11 @@ provider’s colour table; precipitation type follows RainViewer’s classificat
 Map-area tile requests go directly to RainViewer and OpenStreetMap. No key or
 backend is required. Provider references: [API](https://www.rainviewer.com/api/weather-maps-api.html),
 [2026 limits](https://www.rainviewer.com/api/transition-faq.html).
+
+### Astronomical events calendar
+
+The bottom of `astro.html` includes a month grid, accessible event list and native event-detail dialog. Moon phases and the four equinoxes/solstices come from the US Naval Observatory annual APIs. Dates are converted to the selected observing location's time zone. January and December also load the adjacent year for events crossing local midnight. Requests time out after eight seconds; `data/astro-events.json` provides verified 2026–2027 fallback dates, retrieved 2026-10-02. Missing dates outside that fallback range are explicitly reported, with Retry available.
+
+Meteor shower entries are approximate annual peak-night reminders, with year-specific corrections for the 2026 Leonids and 2027 Lyrids from the [AMS 2026/2027 calendar](https://www.amsmeteors.org/calendar/), checked 2026-10-02. They link to the current AMS calendar for updates; they are not predictions of local visibility or exact peak times. The [NASA shower guide](https://science.nasa.gov/solar-system/meteors-meteorites/meteor-showers/) provides additional context.
+
+Each event offers an iCalendar `.ics` download and a Google Calendar template link; a whole month can also be downloaded. Exports are snapshots, not subscriptions. Timed astronomical instants use UTC and a one-minute calendar marker; meteor peak nights use two-day all-day reminders with exclusive end dates. Stable UIDs, escaped text, CRLF separators and 75-byte UTF-8 line folding follow iCalendar conventions. No calendar account access is requested. Core date conversion and export tests are in `tests/astro-calendar.test.cjs`.
