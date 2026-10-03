@@ -16,7 +16,6 @@
   if(typeof module!=='undefined' && module.exports) { module.exports=core; return; }
   const $=id=>document.getElementById(id);
   let location=null,map=null,marker=null,frames=[],host='',layers=new Map(),current=-1,playing=false,fetching=false,lastFetch=0,started=false;
-  let weatherLayers=null;
   let failed=false,baseFailed=false,imageFailed=false,buffering=false,playTimer=null,request=0;
   function stop() {
     clearTimeout(playTimer);playTimer=null;playing=false;request++;buffering=false;
@@ -83,7 +82,7 @@
     layers.clear();
   }
   async function refresh(force=false) {
-    if(!map || fetching || (!force && Date.now()-lastFetch<300000))return;
+    if(root.GregleWeatherLayers?.active() || !map || fetching || (!force && Date.now()-lastFetch<300000))return;
     stop();fetching=true;$('radarRefresh').disabled=true;
     $('radarPlay').disabled=true;$('radarTime').disabled=true;
     $('radarStatus').textContent='Checking for radar images…';
@@ -108,7 +107,7 @@
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
-    weatherLayers?.status();
+    root.GregleWeatherLayers?.setLocation(value);
     $('radarLocation').textContent=`Weather layers around ${value.name}`;
     if(map) { stop();clearLayers();marker.setLatLng([value.latitude,value.longitude]);recenter();if(frames.length)show(frames.length-1); }
   }
@@ -120,15 +119,16 @@
     const base=root.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
     base.on('tileerror',()=>{baseFailed=true;status();});
     marker=root.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
-    weatherLayers=root.GregleWeatherLayers?.attach(map,()=>location);
     recenter();
     // Dropping cached frames on a pan prevents hidden layers requesting many tiles.
     map.on('movestart',()=>{stop();clearLayers();});
     map.on('moveend',()=>{if(frames.length)show(current);});
-    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);weatherLayers?.refresh();});
+    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);});
     refresh(true);
   }
-  root.GregleRadar={setLocation};
+  root.GregleRadar={setLocation,pause:stop,resumeView(){
+    if(map){map.invalidateSize();if(frames.length)show(current);refresh();}
+  }};
   document.addEventListener('DOMContentLoaded',()=>{
     $('radarRecenter').addEventListener('click',recenter);
     $('radarTime').addEventListener('input',()=>{stop();show(Number($('radarTime').value));});

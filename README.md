@@ -210,16 +210,22 @@ The calendar also calculates year-specific planetary oppositions (Mars through N
 Full moons are annotated in place, retaining their UIDs: monthly blue moons use the selected timezone, while the explicitly disclosed supermoon convention is a geocentric distance of at most 365,000 km at full moon. This is an informal threshold, not an official definition. The Draconids are included as an approximate October 8–9 peak-night reminder with an IMO source. Sea and Sky is linked as an additional guide; its prose is not copied. New event generation, NASA eclipse fixtures, timezone-dependent labels and export stability are covered by the calendar tests.
 
 
-Wind and Clouds toggles add independent global Environment Canada GDPS forecast
-overlays via MSC GeoMet WMS. Wind uses `GDPS_15km_Winds_10m` / `WINDARROWKMH`
-and clouds use `GDPS_15km_TotalCloudCover` / `CLOUD`. Collapsible keys use the
-provider's matching legend images. Cloud shading sits below precipitation; wind
-arrows sit above it. Both default off and make no requests until enabled.
-`assets/weather-map-layers.js` reads each layer's filtered GetCapabilities, pins
-its forecast time and model run, and shows that forecast time in the selected
-location's timezone. These near-now model forecasts stay fixed during radar
-history playback; they are not satellite observations. Active layers refresh
-every five minutes or with Refresh. Requests time out, toggling off cancels
-pending loads, and failed tiles remove the affected overlay with a retry message.
-Metadata more than six hours from now or a model run over 48 hours old is rejected.
-[GeoMet WMS documentation](https://eccc-msc.github.io/open-data/msc-geomet/wms_en/).
+### Wind and cloud forecast maps
+
+The weather map offers a keyboard-accessible Radar / Wind / Clouds selector.
+Radar retains RainViewer's observed precipitation playback. Wind and Clouds use
+[Windy's official map embed](https://embed.windy.com/config/map), centred on the
+selected weather location with ECMWF, surface wind in km/h and cloud cover.
+Windy's own renderer supplies smooth shading, animated wind particles, map labels,
+colour scale and forecast timeline. Forecasts are explicitly distinguished from
+radar observations. Switching to forecasts pauses radar playback and its automatic
+feed refresh; returning restores the existing radar view and checks for updates.
+
+`assets/weather-map-layers.js` creates only the active forecast iframe. Radar is
+the default and sends no request to Windy. Selecting a different city, Refresh or
+Recenter recreates the forecast frame. Returning to Radar removes the frame;
+back-forward restoration recreates the selected forecast. The forecast view has
+its own pan/zoom state. A loading timeout and always-available full-map link cover
+slow or blocked embeds. An iframe load event confirms its document only, not the
+availability of cross-origin weather tiles; Windy manages its own data errors.
+The selected coordinates are sent to Windy only while a forecast layer is selected.

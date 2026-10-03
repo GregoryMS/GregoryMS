@@ -1,93 +1,68 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const vm=require('node:vm');
 const fs=require('node:fs');
+const vm=require('node:vm');
+const {embedURL}=require('../assets/weather-map-layers.js');
+const vancouver={name:'Vancouver',latitude:49.24,longitude:-123.12};
+
+test('forecast embeds use the selected coordinates, requested layer and metric units',()=>{
+  for(const layer of ['wind','clouds']) {
+    const url=new URL(embedURL(layer,vancouver));
+    assert.equal(url.origin,'https://embed.windy.com');
+    assert.equal(url.searchParams.get('overlay'),layer);
+    assert.equal(url.searchParams.get('lat'),'49.24');assert.equal(url.searchParams.get('lon'),'-123.12');
+    assert.equal(url.searchParams.get('metricWind'),'km/h');assert.equal(url.searchParams.get('product'),'ecmwf');
+  }
+  for(const location of [{latitude:NaN,longitude:0},{latitude:91,longitude:0},{latitude:0,longitude:-181}])assert.throws(()=>embedURL('wind',location));
+  assert.throws(()=>embedURL('unknown',vancouver));
+});
 
 function setup() {
-  const elements=new Map(),requests=[],layers=[],timers=new Map();let timer=0;
+  const elements=new Map(),frames=[],events={},timers=new Map();let nextTimer=0,paused=0,resumed=0;
   const element=id=>{
-    if(!elements.has(id))elements.set(id,{checked:false,disabled:true,hidden:true,events:{},img:{src:''},
-      addEventListener(name,fn){this.events[name]=fn;},querySelector(){return this.img;}});
+    if(!elements.has(id))elements.set(id,{checked:false,hidden:false,events:{},addEventListener(k,fn){this.events[k]=fn;},replaceChildren(frame){this.child=frame;}});
     return elements.get(id);
   };
-  class DOMParser {
-    parseFromString(text) {
-      const data=JSON.parse(text);
-      const children=[{localName:'Name',textContent:data.name},...['time','reference_time'].map(name=>({localName:'Dimension',getAttribute:key=>key==='name'?name:data[name]}))];
-      return {querySelector:()=>null,querySelectorAll:()=>[{children}]};
-    }
-  }
-  const map={removeLayer(l){l.removed=true;}},events={};
-  const context={URLSearchParams,AbortController,Date,DOMParser,console,
-    document:{hidden:false,getElementById:element},
-    setTimeout(fn){const id=++timer;timers.set(id,fn);return id;},clearTimeout(id){timers.delete(id);},
-    setInterval(){return 1;},clearInterval(){},addEventListener(k,fn){events[k]=fn;},
-    fetch(url,options){return new Promise((resolve,reject)=>requests.push({url,options,resolve,reject}));},
-    L:{tileLayer:{wms(url,options){const l={options,events:{},removed:false,on(k,fn){this.events[k]=fn;},off(){this.events={};},addTo(){layers.push(this);return this;}};return l;}}}
+  const context={URLSearchParams,console,
+    document:{getElementById:element,addEventListener(k,fn){events[k]=fn;},createElement(){const frame={events:{},addEventListener(k,fn){this.events[k]=fn;},remove(){this.removed=true;}};frames.push(frame);return frame;}},
+    setTimeout(fn){const id=++nextTimer;timers.set(id,fn);return id;},clearTimeout(id){timers.delete(id);},
+    addEventListener(k,fn){events[k]=fn;},GregleRadar:{pause(){paused++;},resumeView(){resumed++;}}
   };
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/weather-map-layers.js'),'utf8'),context);
-  const api=context.GregleWeatherLayers.attach(map,()=>({timezone:'America/Vancouver'}));
-  const flush=async()=>{for(let i=0;i<8;i++)await Promise.resolve();};
-  async function toggle(key,checked){const el=element(`radarLayer-${key}`);el.checked=checked;el.events.change();await flush();}
-  async function resolve(index,overrides={}) {
-    const req=requests[index],name=new URL(req.url).searchParams.get('LAYERS');
-    req.resolve({ok:true,text:async()=>JSON.stringify({name,time:new Date().toISOString(),reference_time:new Date().toISOString(),...overrides})});await flush();
-  }
-  return {api,element,requests,layers,timers,events,toggle,resolve,flush};
+  const api=context.GregleWeatherLayers;api.setLocation(vancouver);events.DOMContentLoaded();
+  function select(layer){const input=element(`radarLayer-${layer}`);input.checked=true;input.events.change();}
+  return {api,element,frames,events,timers,select,paused:()=>paused,resumed:()=>resumed};
 }
 
-test('layers are opt-in, use explicit forecast times, and stack clouds below wind',async()=>{
-  const h=setup();assert.equal(h.requests.length,0);
-  await h.toggle('wind',true);await h.toggle('clouds',true);
-  await h.resolve(0);await h.resolve(1);
-  const [wind,clouds]=h.layers;
-  assert.equal(wind.options.styles,'WINDARROWKMH');assert.equal(clouds.options.styles,'CLOUD');
-  assert.ok(clouds.options.zIndex<300 && wind.options.zIndex>300);
-  assert.ok(wind.options.time && wind.options.dim_reference_time);
-  wind.events.load();clouds.events.load();
-  assert.match(h.element('radarLayerStatus').textContent,/Wind forecast:.*Clouds forecast:/);
+test('radar is the default without a Windy request; switching pauses radar and releases old frames',()=>{
+  const h=setup();assert.equal(h.frames.length,0);assert.equal(h.api.active(),false);
+  h.select('wind');assert.equal(h.frames.length,1);assert.equal(h.paused(),1);
+  assert.equal(h.element('radarObserved').hidden,true);assert.equal(h.element('radarForecast').hidden,false);
+  h.select('clouds');assert.equal(h.frames[0].removed,true);
+  assert.equal(new URL(h.frames[1].src).searchParams.get('overlay'),'clouds');
+  h.select('radar');assert.equal(h.frames[1].removed,true);assert.equal(h.element('radarForecast').hidden,true);
+  assert.equal(h.resumed(),2);assert.equal(h.api.active(),false);
 });
 
-test('turning off cancels metadata and ignores late completions',async()=>{
-  const h=setup();await h.toggle('wind',true);await h.toggle('wind',false);
-  assert.ok(h.requests[0].options.signal.aborted);await h.resolve(0);
-  assert.equal(h.layers.length,0);assert.equal(h.element('radarLayerStatus').hidden,true);
-  await h.toggle('wind',true);await h.resolve(1);await h.toggle('wind',false);
-  assert.equal(h.layers[0].removed,true);assert.equal(h.element('radarLegend-wind').hidden,true);
+test('city changes and recenter replace the frame, preserving the selected layer',()=>{
+  const h=setup();h.select('clouds');h.api.setLocation({name:'Victoria',latitude:48.43,longitude:-123.36});
+  assert.equal(h.frames[0].removed,true);assert.match(h.frames[1].title,/Victoria/);
+  assert.equal(new URL(h.frames[1].src).searchParams.get('lat'),'48.43');
+  h.element('radarForecastRecenter').events.click();assert.equal(h.frames[1].removed,true);
+  assert.equal(h.frames[2].src,h.frames[1].src);
+  h.api.setLocation({name:'Victoria',latitude:48.43,longitude:-123.36});assert.equal(h.frames.length,3);
 });
 
-test('tile errors remove only the failed overlay and Refresh retries enabled layers',async()=>{
-  const h=setup();await h.toggle('wind',true);await h.toggle('clouds',true);await h.resolve(0);await h.resolve(1);
-  h.layers[0].events.tileerror();h.layers[1].events.load();
-  assert.equal(h.layers[0].removed,true);assert.equal(h.layers[1].removed,false);
-  assert.match(h.element('radarLayerStatus').textContent,/Wind unavailable.*Clouds forecast:/);
-  await h.toggle('clouds',false);h.api.refresh();
-  assert.equal(h.requests.length,3);await h.resolve(2);h.layers[2].events.load();
-  assert.match(h.element('radarLayerStatus').textContent,/^Wind forecast:/);
+test('late frame callbacks cannot hide loading for a newer selection; timeout has a recovery path',()=>{
+  const h=setup();h.select('wind');const late=h.frames[0].events.load;
+  h.select('clouds');late();assert.equal(h.element('radarLayerStatus').hidden,false);
+  for(const callback of h.timers.values())callback();assert.match(h.element('radarLayerStatus').textContent,/Try Refresh/);
+  h.frames[1].events.load();assert.equal(h.element('radarLayerStatus').hidden,true);
+  assert.equal(h.element('radarWindyLink').href,h.frames[1].src);
 });
 
-test('old forecasts fail visibly rather than being labelled current',async()=>{
-  const h=setup();await h.toggle('clouds',true);await h.resolve(0,{time:'2000-01-01T00:00:00Z'});
-  assert.equal(h.layers.length,0);assert.match(h.element('radarLayerStatus').textContent,/Clouds unavailable/);
-});
-
-test('a refresh supersedes pending metadata and tile callbacks',async()=>{
-  const h=setup();await h.toggle('wind',true);h.api.refresh();await h.resolve(0);
-  assert.equal(h.layers.length,0);await h.resolve(1);
-  const late=h.layers[0].events.load;h.api.refresh();late();
-  assert.match(h.element('radarLayerStatus').textContent,/Loading wind/);
-  await h.resolve(2);h.layers[1].events.load();assert.equal(h.layers[0].removed,true);
-});
-
-test('tiles that never finish time out and remain retryable',async()=>{
-  const h=setup();await h.toggle('clouds',true);await h.resolve(0);
-  for(const fn of [...h.timers.values()])fn();
-  assert.equal(h.layers[0].removed,true);assert.match(h.element('radarLayerStatus').textContent,/Clouds unavailable/);
-});
-
-test('returning from the back-forward cache restores enabled overlays',async()=>{
-  const h=setup();await h.toggle('wind',true);await h.resolve(0);h.events.pagehide();
-  assert.equal(h.layers[0].removed,true);h.events.pageshow({persisted:true});await h.resolve(1);
-  assert.equal(h.layers.length,2);h.layers[1].events.load();
-  assert.match(h.element('radarLayerStatus').textContent,/Wind forecast:/);
+test('back-forward restoration recreates the active forecast; radar remains iframe-free',()=>{
+  const h=setup();h.select('wind');h.events.pagehide();assert.equal(h.frames[0].removed,true);
+  h.events.pageshow({persisted:true});assert.equal(h.frames.length,2);
+  h.select('radar');h.events.pagehide();h.events.pageshow({persisted:true});assert.equal(h.frames.length,2);
 });
