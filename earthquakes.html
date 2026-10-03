@@ -2,11 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Track recent earthquakes on an interactive map and check the latest NOAA tsunami warnings, watches and advisories.">
   <title>Earthquakes &amp; tsunamis · Gregle</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <meta name="application-name" content="Gregle Earthquakes">
+  <meta name="apple-mobile-web-app-title" content="Quakes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#242424" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/earthquakes-app/apple-touch-icon.png?v=20261002-radio">
+  <link rel="manifest" href="/earthquakes.webmanifest?v=20261002-radio">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/earthquakes-app/favicon-32.png?v=20261002-radio">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/earthquakes-app/icon-192.png?v=20261002-radio">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
   <link rel="stylesheet" href="assets/earthquakes.css">
@@ -14,6 +24,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="assets/earthquake-core.js" defer></script>
   <script src="assets/earthquakes.js" defer></script>
+  <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 </head>
 <body>
   <header class="topbar">
