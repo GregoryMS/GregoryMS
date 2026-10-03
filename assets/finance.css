@@ -68,5 +68,6 @@ html { scroll-behavior:smooth; }
 .cad-ticker-heading span { font-size:11px; color:var(--muted); }
 .cad-ticker-widget { min-height:78px; }
 .cad-ticker-widget .tradingview-widget-container__widget { height:auto; }
+.cad-ticker-widget iframe { border-radius:12px; overflow:hidden; clip-path:inset(0 round 12px); }
 .cad-ticker-widget .widget-error { min-height:110px; gap:8px; padding:12px; }
 @media(max-width:600px) { .cad-ticker { padding:12px 8px 2px; } .cad-ticker-heading { align-items:flex-start; flex-direction:column; gap:3px; } }
