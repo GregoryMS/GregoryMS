@@ -16,6 +16,7 @@
   if(typeof module!=='undefined' && module.exports) { module.exports=core; return; }
   const $=id=>document.getElementById(id);
   let location=null,map=null,marker=null,frames=[],host='',layers=new Map(),current=-1,playing=false,fetching=false,lastFetch=0,started=false;
+  let weatherLayers=null;
   let failed=false,baseFailed=false,imageFailed=false,buffering=false,playTimer=null,request=0;
   function stop() {
     clearTimeout(playTimer);playTimer=null;playing=false;request++;buffering=false;
@@ -38,7 +39,7 @@
   function layerFor(frame) {
     let layer=layers.get(frame.path);
     if(layer)return layer;
-    layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
+    layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,zIndex:300,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
     // Load invisibly, then swap complete images in one turn. Prefetch only one
     // frame ahead during playback; cache viewed frames until the map moves.
     layer.radarReady=new Promise(resolve=>{
@@ -107,7 +108,8 @@
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
-    $('radarLocation').textContent=`Recent rain and snow around ${value.name}`;
+    weatherLayers?.status();
+    $('radarLocation').textContent=`Weather layers around ${value.name}`;
     if(map) { stop();clearLayers();marker.setLatLng([value.latitude,value.longitude]);recenter();if(frames.length)show(frames.length-1); }
   }
   function start() {
@@ -118,11 +120,12 @@
     const base=root.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
     base.on('tileerror',()=>{baseFailed=true;status();});
     marker=root.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
+    weatherLayers=root.GregleWeatherLayers?.attach(map,()=>location);
     recenter();
     // Dropping cached frames on a pan prevents hidden layers requesting many tiles.
     map.on('movestart',()=>{stop();clearLayers();});
     map.on('moveend',()=>{if(frames.length)show(current);});
-    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);});
+    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);weatherLayers?.refresh();});
     refresh(true);
   }
   root.GregleRadar={setLocation};

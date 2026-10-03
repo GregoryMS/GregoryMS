@@ -23,3 +23,13 @@
 
 .radar-legend strong { min-width:34px; font-weight:600; color:var(--text); }
 .radar-legend-snow i { background:linear-gradient(90deg,#bfffff,#9fdfff,#7fbfff,#5f9fff,#3f7fff,#1f5fff,#003fff); }
+
+.radar-layer-switches { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:14px; font-size:12px; color:var(--muted); }
+.radar-layer-switches label { display:flex; align-items:center; gap:8px; min-height:44px; padding:0 16px; border:1px solid var(--line); border-radius:24px; color:var(--text); background:var(--panel); cursor:pointer; }
+.radar-layer-switches input { width:16px; height:16px; accent-color:var(--rain); }
+.radar-layer-switches label:has(input:checked) { border-color:var(--rain); background:var(--soft); }
+.radar-overlay-legends { display:flex; flex-wrap:wrap; align-items:flex-start; gap:12px 24px; margin-top:12px; font-size:12px; color:var(--muted); }
+.radar-overlay-legends details { max-width:100%; }
+.radar-overlay-legends summary { cursor:pointer; padding:8px 0; color:var(--text); }
+.radar-overlay-legends img { display:block; max-width:100%; height:auto; background:#fff; border-radius:8px; }
+.radar-overlay-legends p { max-width:300px; line-height:1.6; }
