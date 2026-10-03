@@ -38,7 +38,7 @@
   function layerFor(frame) {
     let layer=layers.get(frame.path);
     if(layer)return layer;
-    layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
+    layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,zIndex:300,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
     // Load invisibly, then swap complete images in one turn. Prefetch only one
     // frame ahead during playback; cache viewed frames until the map moves.
     layer.radarReady=new Promise(resolve=>{
@@ -82,7 +82,7 @@
     layers.clear();
   }
   async function refresh(force=false) {
-    if(!map || fetching || (!force && Date.now()-lastFetch<300000))return;
+    if(root.GregleWeatherLayers?.active() || !map || fetching || (!force && Date.now()-lastFetch<300000))return;
     stop();fetching=true;$('radarRefresh').disabled=true;
     $('radarPlay').disabled=true;$('radarTime').disabled=true;
     $('radarStatus').textContent='Checking for radar images…';
@@ -107,7 +107,8 @@
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
-    $('radarLocation').textContent=`Recent rain and snow around ${value.name}`;
+    root.GregleWeatherLayers?.setLocation(value);
+    $('radarLocation').textContent=`Weather layers around ${value.name}`;
     if(map) { stop();clearLayers();marker.setLatLng([value.latitude,value.longitude]);recenter();if(frames.length)show(frames.length-1); }
   }
   function start() {
@@ -125,7 +126,9 @@
     $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);});
     refresh(true);
   }
-  root.GregleRadar={setLocation};
+  root.GregleRadar={setLocation,pause:stop,resumeView(){
+    if(map){map.invalidateSize();if(frames.length)show(current);refresh();}
+  }};
   document.addEventListener('DOMContentLoaded',()=>{
     $('radarRecenter').addEventListener('click',recenter);
     $('radarTime').addEventListener('input',()=>{stop();show(Number($('radarTime').value));});
