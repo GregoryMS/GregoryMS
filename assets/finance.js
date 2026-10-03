@@ -34,7 +34,15 @@
     let disposed=false;
     const observer=new MutationObserver(()=>{
       const frame=container.querySelector('iframe');
-      if(frame) { frame.title=label; clearTimeout(timer); observer.disconnect(); }
+      if(frame) {
+        frame.title=label; clearTimeout(timer); observer.disconnect();
+        if(id==='cadTickerWidget') {
+          const shell=document.createElement('div');
+          shell.className='cad-ticker-frame';
+          frame.replaceWith(shell);
+          shell.append(frame);
+        }
+      }
     });
     const cleanup=()=>{ disposed=true; clearTimeout(timer); observer.disconnect(); script.onerror=null; };
     const fail=()=>{
