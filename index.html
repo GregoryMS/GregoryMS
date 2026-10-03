@@ -211,6 +211,14 @@
       text-decoration: none;
     }
 
+    .weather-chip { gap:7px; }
+    .weather-chip-icon { display:inline-flex; width:28px; height:28px; color:var(--text); flex-shrink:0; --panel:var(--panel-strong); }
+    .weather-chip-icon svg { width:100%; height:100%; }
+    .weather-chip .sun-stroke { stroke:#be831b; }
+    .weather-chip .rain-stroke { stroke:#537a9d; }
+    body.dark-mode .weather-chip .sun-stroke { stroke:#efc267; }
+    body.dark-mode .weather-chip .rain-stroke { stroke:#a6c8e3; }
+
     .weather-chip strong,
     .utc-chip strong {
       color: var(--text);
@@ -578,7 +586,7 @@
 <body>
   <header class="topbar">
     <div class="left-tools">
-      <a class="weather-chip" id="weatherChip" href="#" target="_blank" rel="noreferrer" aria-label="Open full weather forecast for current location"><strong>☁</strong>&nbsp; --°C</a>
+      <a class="weather-chip" id="weatherChip" href="/weather.html?lat=48.4284&amp;lon=-123.3656&amp;name=Victoria&amp;country=CA&amp;tz=America%2FVancouver" aria-label="Open weather forecast for Victoria"><span class="weather-chip-icon" aria-hidden="true"></span><span>--°C</span></a>
       <div class="utc-chip" id="utcClock"><strong>UTC</strong>&nbsp; --:--</div>
     </div>
 
@@ -659,6 +667,7 @@
     </div>
   </main>
 
+  <script src="assets/weather-core.js?v=20261002-icons"></script>
   <script>
     const searchInput = document.getElementById('searchInput');
     const gregleSearchButton = document.getElementById('gregleSearch');
@@ -1003,7 +1012,9 @@
     });
 
     const DEFAULT_WEATHER_LOCATION = {
-      name: '',
+      name: 'Victoria',
+      country: 'CA',
+      timezone: 'America/Vancouver',
       latitude: 48.4284,
       longitude: -123.3656
     };
@@ -1013,7 +1024,7 @@
     async function fetchWeather(lat, lon, retries = 1) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&temperature_unit=celsius&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&temperature_unit=celsius&timezone=auto`;
 
       try {
         const response = await fetch(url, {
@@ -1032,31 +1043,33 @@
       }
     }
 
-    function weatherIcon(code) {
-      if (code === 0) return '☀';
-      if ([1, 2].includes(code)) return '⛅';
-      if ([3, 45, 48].includes(code)) return '☁';
-      if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧';
-      if ([71, 73, 75].includes(code)) return '❄';
-      if (code === 95) return '⛈';
-      return '☁';
-    }
-
-    function setWeatherChip(temp, code, lat, lon, label = '') {
-      const prefix = '';
-      weatherChip.innerHTML = `<strong>${weatherIcon(code)}</strong>&nbsp; ${prefix}${Math.round(temp)}°C`;
-      weatherChip.href = `https://www.windy.com/${lat}/${lon}`;
+    function setWeatherChip(temp, code, lat, lon, label = '', isDay = null, timezone = '', country = '') {
+      const isDefault = lat === DEFAULT_WEATHER_LOCATION.latitude && lon === DEFAULT_WEATHER_LOCATION.longitude;
+      const name = label || (isDefault ? 'Victoria' : 'Current location');
+      const condition = globalThis.GregleWeather.condition(code);
+      const icon = globalThis.GregleWeather.weatherIcon(Number.isFinite(temp) ? condition : '', isDay === 0);
+      const temperature = Number.isFinite(temp) ? `${Math.round(temp)}°C` : '--°C';
+      weatherChip.innerHTML = `<span class="weather-chip-icon" aria-hidden="true">${icon}</span><span>${temperature}</span>`;
+      const link = new URL('/weather.html', 'https://gregle.uk');
+      link.searchParams.set('lat', String(lat));
+      link.searchParams.set('lon', String(lon));
+      link.searchParams.set('name', name);
+      if (timezone || isDefault) link.searchParams.set('tz', timezone || DEFAULT_WEATHER_LOCATION.timezone);
+      if (country || isDefault) link.searchParams.set('country', country || DEFAULT_WEATHER_LOCATION.country);
+      weatherChip.href = link.pathname + link.search;
+      weatherChip.setAttribute('aria-label', `Open weather forecast for ${name}${Number.isFinite(temp) ? `: ${condition}, ${temperature}` : ''}`);
+      weatherChip.title = `Weather for ${name}`;
     }
 
     function setWeatherFallback() {
-      weatherChip.innerHTML = '<strong>☁</strong>&nbsp; --°C';
-      weatherChip.href = `https://www.windy.com/${DEFAULT_WEATHER_LOCATION.latitude}/${DEFAULT_WEATHER_LOCATION.longitude}`;
+      setWeatherChip(null, null, DEFAULT_WEATHER_LOCATION.latitude, DEFAULT_WEATHER_LOCATION.longitude);
     }
 
     function readCachedWeather() {
       try {
         const cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY) || 'null');
-        if (!cached || !cached.savedAt) return null;
+        if (!cached || !Number.isFinite(cached.savedAt) || cached.savedAt > Date.now()) return null;
+        if (!Number.isFinite(cached.temperature) || !Number.isInteger(cached.weatherCode) || !globalThis.GregleWeather.coordinates(cached.latitude, cached.longitude)) return null;
         if (Date.now() - cached.savedAt > WEATHER_CACHE_MAX_AGE) return null;
         return cached;
       } catch {
@@ -1086,20 +1099,25 @@
     async function loadWeatherForLocation(location, label = '') {
       const data = await fetchWeather(location.latitude, location.longitude);
       const current = data.current;
-      setWeatherChip(current.temperature_2m, current.weather_code, location.latitude, location.longitude, label);
+      if (!Number.isFinite(current?.temperature_2m) || !Number.isInteger(current?.weather_code)) throw Error('Weather data unavailable');
+      const name = label || location.name || '';
+      setWeatherChip(current.temperature_2m, current.weather_code, location.latitude, location.longitude, name, current.is_day, data.timezone, location.country);
       writeCachedWeather({
         temperature: current.temperature_2m,
         weatherCode: current.weather_code,
         latitude: location.latitude,
         longitude: location.longitude,
-        label
+        isDay: current.is_day,
+        timezone: data.timezone,
+        country: location.country || '',
+        label: name
       });
     }
 
     async function loadWeather() {
       const cached = readCachedWeather();
       if (cached) {
-        setWeatherChip(cached.temperature, cached.weatherCode, cached.latitude, cached.longitude, cached.label || '');
+        setWeatherChip(cached.temperature, cached.weatherCode, cached.latitude, cached.longitude, cached.label || '', cached.isDay, cached.timezone, cached.country);
       } else {
         setWeatherFallback();
       }

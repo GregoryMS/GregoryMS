@@ -7,7 +7,9 @@ const { test } = require('node:test');
 const root = path.join(__dirname, '..');
 const scripts = (file, isolateTides = false) => [...fs.readFileSync(path.join(root, file), 'utf8')
   .matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => {
-    const src = match[0].match(/src="(assets\/[^"]+\.js)"/);
+    const src = match[0].match(/src="(assets\/[^"?]+\.js)(?:\?[^"]*)?"/);
+    // Map controllers are exercised in their dedicated suites.
+    if (isolateTides && /assets\/weather-(?:radar|map-layers)\.js$/.test(src?.[1] || "")) return "";
     // Weather regressions isolate the independent tide service; tides.test.cjs covers the real integration.
     if (isolateTides && src?.[1] === 'assets/tide-data.js') return 'globalThis.GregleTideData={load:()=>new Promise(()=>{})};';
     return src ? fs.readFileSync(path.join(root, src[1]), 'utf8') : match[1];
@@ -967,4 +969,43 @@ test('weather helpers reject unsafe coordinates, incomplete directories and malf
   assert.throws(()=>core.globalWeather(data));
   const valid=core.globalWeather(worldwideWeather());
   assert.equal(valid.days[1].high,null); assert.equal(valid.days[1].description,'Clear.');
+});
+
+test('homepage weather uses the shared SVG artwork including night and wintry conditions', () => {
+  const env = environment('index.html');
+  const core = require('../assets/weather-core.js');
+  for (const [code,isDay] of [[0,1],[0,0],[2,0],[65,1],[66,1],[85,1],[99,1]]) {
+    env.context.sample={code,isDay};
+    vm.runInContext('setWeatherChip(12,sample.code,51.5,-0.12,"London",sample.isDay,"Europe/London","GB")',env.context);
+    assert(env.get('weatherChip').innerHTML.includes(core.weatherIcon(core.condition(code),isDay===0)));
+    assert.match(env.get('weatherChip').innerHTML, /12°C/);
+  }
+});
+
+test('homepage weather links preserve the displayed location and forecast timezone', () => {
+  const env=environment('index.html');
+  vm.runInContext('setWeatherChip(18,2,51.5,-0.12,"London & area",1,"Europe/London","GB")',env.context);
+  const href=new URL(env.get('weatherChip').href,'https://gregle.uk');
+  assert.equal(href.pathname,'/weather.html');assert.equal(href.searchParams.get('lat'),'51.5');
+  assert.equal(href.searchParams.get('lon'),'-0.12');assert.equal(href.searchParams.get('name'),'London & area');
+  assert.equal(href.searchParams.get('tz'),'Europe/London');assert.equal(href.searchParams.get('country'),'GB');
+  const parsed=require('../assets/tide-core.js').locationFromURL(href.href);
+  assert.equal(parsed.latitude,51.5);assert.equal(parsed.longitude,-0.12);assert.equal(parsed.timezone,'Europe/London');
+  vm.runInContext('setWeatherFallback()',env.context);
+  const fallback=new URL(env.get('weatherChip').href,'https://gregle.uk');
+  assert.equal(fallback.searchParams.get('name'),'Victoria');assert.equal(fallback.searchParams.get('country'),'CA');
+  assert.equal(fallback.searchParams.get('tz'),'America/Vancouver');assert.match(env.get('weatherChip').innerHTML,/--°C/);
+  const markup=fs.readFileSync(path.join(root,'index.html'),'utf8').match(/<a class="weather-chip"[^>]+>/)[0];
+  assert(!markup.includes('target="_blank"'));assert(markup.includes('/weather.html?lat='));
+});
+
+test('cached homepage weather keeps its own location and rejects invalid cached coordinates', () => {
+  const cached={temperature:8,weatherCode:0,isDay:0,latitude:35.68,longitude:139.69,label:'Tokyo',timezone:'Asia/Tokyo',country:'JP',savedAt:Date.now()};
+  const env=environment('index.html',()=>new Promise(()=>{}),{getItem:key=>key==='gregle-weather-cache'?JSON.stringify(cached):null});
+  const link=new URL(env.get('weatherChip').href,'https://gregle.uk');
+  assert.equal(link.searchParams.get('lat'),'35.68');assert.equal(link.searchParams.get('name'),'Tokyo');
+  assert.equal(link.searchParams.get('tz'),'Asia/Tokyo');
+  assert(env.get('weatherChip').innerHTML.includes(require('../assets/weather-core.js').weatherIcon('Clear',true)));
+  cached.latitude=999;
+  assert.equal(vm.runInContext('readCachedWeather()',env.context),null);
 });
