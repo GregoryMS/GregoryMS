@@ -61,3 +61,12 @@ html { scroll-behavior:smooth; }
 @media(max-width:1000px) { .finance-hero { align-items:flex-start; flex-direction:column; gap:20px; } .dashboard { grid-template-columns:minmax(0,1fr); } .market-widget { height:430px; } .currency-layout { grid-template-columns:220px minmax(0,1fr); gap:20px; } }
 @media(max-width:600px) { .finance-page { padding:0 16px 28px; } .finance-hero { padding:26px 4px; } .finance-hero .subtitle { font-size:14px; } .home-link { display:none; } .topbar { padding:20px; } .section-nav { gap:22px; } .lookup-panel .search-row { padding-left:14px; gap:8px; } .lookup-panel .search-row input { font-size:16px; } .lookup-panel .primary { padding:9px 12px; font-size:12px; flex-shrink:0; } .favourites-row { align-items:flex-start; flex-direction:column; gap:8px; } .panel { border-radius:18px; padding:18px 12px; } .panel-heading,.panel-note { padding:0 4px; } .panel h2 { font-size:21px; } .panel-heading .text-button { font-size:11px; } .chart-widget { height:460px; } .currency-layout { grid-template-columns:minmax(0,1fr); gap:20px; } .currency-intro { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; padding:20px; } .currency-intro h3,.currency-intro p,.currency-intro .primary { grid-column:1/-1; } .currency-intro h3 br { display:none; } .currency-intro label[for="baseCurrency"] { grid-column:1; grid-row:3; } .currency-intro label[for="quoteCurrency"] { grid-column:2; grid-row:3; } .currency-intro select { grid-row:4; } .currency-widget { height:440px; } }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+
+.cad-ticker { margin:6px 0 0; padding:14px 16px 4px; border:1px solid var(--line); border-radius:18px; background:var(--panel); min-width:0; }
+.cad-ticker-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:0 4px 12px; }
+.cad-ticker-heading h2 { margin:0; font-size:12px; font-weight:500; }
+.cad-ticker-heading span { font-size:11px; color:var(--muted); }
+.cad-ticker-widget { min-height:78px; }
+.cad-ticker-widget .tradingview-widget-container__widget { height:auto; }
+.cad-ticker-widget .widget-error { min-height:110px; gap:8px; padding:12px; }
+@media(max-width:600px) { .cad-ticker { padding:12px 8px 2px; } .cad-ticker-heading { align-items:flex-start; flex-direction:column; gap:3px; } }

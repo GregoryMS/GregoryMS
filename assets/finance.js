@@ -62,6 +62,13 @@
     },'Interactive stock and currency chart',chartURL());
   }
   function renderDashboards() {
+    embed('cadTickerWidget','ticker-tape',{
+      symbols:['GBP','EUR','SEK','NOK','AUD','NZD','USD','CHF','JPY'].map(currency=>({
+        proName:`FX_IDC:${currency}CAD`,title:`${currency} / CAD`
+      })),
+      colorTheme:theme(),locale:'en',isTransparent:false,showSymbolLogo:true,
+      displayMode:'regular',largeChartUrl:localChartURL
+    },'CAD currency ticker','https://www.tradingview.com/markets/currencies/rates-cross/');
     embed('marketWidget','market-overview',{
       colorTheme:theme(),dateRange:'12M',locale:'en',width:'100%',height:'100%',
       isTransparent:false,showChart:true,showSymbolLogo:true,showFloatingTooltip:true,largeChartUrl:localChartURL,
