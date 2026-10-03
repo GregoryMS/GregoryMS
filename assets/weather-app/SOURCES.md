@@ -1,9 +1,18 @@
 # Weather app icon
 
-Original artwork generated with the built-in OpenAI image generation tool on 2026-09-29 for Gregle. The Tides artwork uses the Weather icon as its style reference. No third-party stock assets.
+Original artwork generated with the built-in OpenAI image generation tool on 2026-10-02 for Gregle. Gregle Radio's existing icon was the style reference. No stock assets.
 
-Opaque square PNGs exported with macOS sips at 180 px (iPhone home screen), 192/512 px (web manifest), and 32 px (favicon). The operating system supplies the icon corner mask.
+White cloud and rays with a violet sun. Charcoal background, warm-white geometry and a vivid violet accent match Radio. The opaque square background extends to every corner; the operating system supplies its mask.
 
-## Generation prompt
+## Exports
 
-Use case: logo-brand. Create ONE finished square iPhone home screen app icon for Gregle Weather. Native icon artwork, not a mockup or presentation. Full-bleed opaque pale cool grey background (#f4f6f8) reaching all four square corners. Center a beautifully balanced, bold, minimal sun peeking from behind a single soft white cloud. Sun in muted warm ochre (#be831b); cloud outlined with substantial slate blue (#537a9d) strokes. Refined geometric shapes and subtle soft depth, premium calm Scandinavian simplicity matching a minimalist weather website. Large central symbol with generous safe margins (all meaningful artwork inside the central 70 percent). Excellent legibility at 60px. No text, letters, numbers, borders, outer rounded-square shape, transparency, phone, grids, extra symbols, or watermark. Render 1024x1024.
+- `apple-touch-icon.png`: 180 × 180, iPhone / iPad Home Screen.
+- `icon-192.png`: 192 × 192, general web app icon.
+- `icon-512.png`: 512 × 512, general and maskable web app icon. All foreground artwork is within the central circle of radius 40% of the icon width.
+- `favicon-32.png`: 32 × 32, browser tab.
+
+Exports use Lanczos downsampling and an opaque 128-colour octree optimized PNG palette for small downloads. Manifest and HTML icon URLs carry a shared version to refresh browser caches. Keep the stable app ID and start URL when updating artwork. Existing iOS Home Screen shortcuts may need to be removed and added again to adopt new artwork.
+
+## Generation brief
+
+Create one finished square home screen icon matching Gregle Radio. Full-bleed charcoal #232323 background, bold warm-white #faf9f6 geometric motif, smooth rounded curves and a single violet #9850ff accent. White cloud and rays with a violet sun. Keep meaningful artwork inside the central 64% of the canvas, readable at 32px. No text, border, rounded square container, mockup or transparency.
