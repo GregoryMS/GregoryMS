@@ -3,6 +3,7 @@
 A static personal homepage and collection of browser tools, served at the domain in `CNAME`.
 
 - `index.html`: search, recent searches, local weather and BBC headlines.
+- `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
 - `weather.html`: automatic local weather, Environment Canada across Canada and Open-Meteo worldwide.
 - `petrol.html`: fuel-cost calculator with map-based routing.
 - `ev.html`: EV trip-cost calculator with charging losses, unit conversion and map-based routing.
@@ -229,3 +230,11 @@ its own pan/zoom state. A loading timeout and always-available full-map link cov
 slow or blocked embeds. An iframe load event confirms its document only, not the
 availability of cross-origin weather tiles; Windy manages its own data errors.
 The selected coordinates are sent to Windy only while a forecast layer is selected.
+
+## Finance tracker
+
+`finance.html` is linked from Tools and the homepage Finance menu. It uses official TradingView Advanced Chart, Market Overview and Market Data embeds. The chart includes full symbol search; Gregle’s quick lookup offers a deliberately small company directory, ten currencies and their pairs, and explicit exchange:ticker lookup. Index CFDs and ETFs are labelled as such. Quotes, exchange status and delays remain provider-rendered; the site does not manufacture prices or treat widget load time as a quote timestamp.
+
+Widget symbols can be opened using `?symbol=NASDAQ:AAPL` or TradingView’s `?tvwidgetsymbol=FX_IDC:USDCAD`. Input is validated before configuration. Favourites (up to 12) are stored in `gregle-finance-favourites` in localStorage, with corrupt/blocked-storage fallback. They are shortcuts, not holdings or portfolio valuations. The shared theme is applied to all three widgets; changing it recreates embeds, resetting any changes made inside the chart itself.
+
+A failed script or missing iframe after 20 seconds shows a retry action; direct provider links remain available. An iframe appearing does not prove its underlying quote feed is available: errors/delays inside it remain TradingView’s responsibility and presentation. Attribution is retained. No API keys, private APIs or proxy service are required. Sources: [Advanced Chart](https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/), [Market Overview](https://www.tradingview.com/widget-docs/widgets/watchlists/market-overview/), [currency data](https://www.tradingview.com/widget-docs/widgets/watchlists/market-quotes/demos/forex/), [widget navigation](https://www.tradingview.com/widget-docs/tutorials/build-page/navigation/).
