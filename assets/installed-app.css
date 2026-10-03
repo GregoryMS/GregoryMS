@@ -1,4 +1,4 @@
-/* Shared only by the Astro, Tides, Weather and Finance app pages.
+/* Shared only by the Gregle standalone app pages.
    With viewport-fit=cover, keep controls clear of notches and the home indicator. */
 body {
   min-height: 100svh;
