@@ -77,6 +77,7 @@
       belowLineFillColorGrowingBottom:'rgba(50,108,99,0)',belowLineFillColorFallingBottom:'rgba(50,108,99,0)',
       tabs:[
         {title:'Markets',symbols:[
+          {s:'TSX:TSX',d:'S&P/TSX Composite'},
           {s:'FOREXCOM:SPXUSD',d:'S&P 500 · CFD'},{s:'FOREXCOM:NSXUSD',d:'Nasdaq 100 · CFD'},
           {s:'FOREXCOM:DJI',d:'Dow 30 · CFD'},{s:'FOREXCOM:UKXGBP',d:'FTSE 100 · CFD'},
           {s:'TSX:XIU',d:'S&P/TSX 60 · ETF'}]},
