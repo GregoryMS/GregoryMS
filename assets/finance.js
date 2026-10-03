@@ -64,7 +64,7 @@
   function renderDashboards() {
     embed('marketWidget','market-overview',{
       colorTheme:theme(),dateRange:'12M',locale:'en',width:'100%',height:'100%',
-      isTransparent:true,showChart:true,showSymbolLogo:true,showFloatingTooltip:true,largeChartUrl:localChartURL,
+      isTransparent:false,showChart:true,showSymbolLogo:true,showFloatingTooltip:true,largeChartUrl:localChartURL,
       plotLineColorGrowing:'#326c63',plotLineColorFalling:'#326c63',
       belowLineFillColorGrowing:'rgba(50,108,99,0.12)',belowLineFillColorFalling:'rgba(50,108,99,0.12)',
       belowLineFillColorGrowingBottom:'rgba(50,108,99,0)',belowLineFillColorFallingBottom:'rgba(50,108,99,0)',
@@ -79,18 +79,18 @@
           {s:'TSX:SHOP',d:'Shopify'},{s:'TSX:ENB',d:'Enbridge'},{s:'TSX:CNR',d:'CN Railway'}]}
       ]
     },'Market overview','https://www.tradingview.com/markets/');
-    embed('currencyWidget','market-quotes',{
-      width:'100%',height:'100%',locale:'en',colorTheme:theme(),isTransparent:true,showSymbolLogo:true,largeChartUrl:localChartURL,
-      symbolsGroups:[
-        {name:'Major pairs',symbols:[{name:'FX_IDC:USDCAD',displayName:'USD / CAD'},{name:'FX_IDC:EURUSD',displayName:'EUR / USD'},
-          {name:'FX_IDC:GBPUSD',displayName:'GBP / USD'},{name:'FX_IDC:USDJPY',displayName:'USD / JPY'},
-          {name:'FX_IDC:AUDUSD',displayName:'AUD / USD'},{name:'FX_IDC:USDCHF',displayName:'USD / CHF'}]},
-        {name:'Canadian dollar',symbols:[{name:'FX_IDC:USDCAD',displayName:'USD / CAD'},{name:'FX_IDC:GBPCAD',displayName:'GBP / CAD'},
-          {name:'FX_IDC:EURCAD',displayName:'EUR / CAD'},{name:'FX_IDC:AUDCAD',displayName:'AUD / CAD'},
-          {name:'FX_IDC:NZDCAD',displayName:'NZD / CAD'},{name:'FX_IDC:CADJPY',displayName:'CAD / JPY'}]},
-        {name:'Europe',symbols:[{name:'FX_IDC:EURGBP',displayName:'EUR / GBP'},{name:'FX_IDC:EURCHF',displayName:'EUR / CHF'},
-          {name:'FX_IDC:EURNOK',displayName:'EUR / NOK'},{name:'FX_IDC:EURSEK',displayName:'EUR / SEK'},
-          {name:'FX_IDC:GBPNOK',displayName:'GBP / NOK'},{name:'FX_IDC:GBPSEK',displayName:'GBP / SEK'}]}
+    embed('currencyWidget','market-overview',{
+      width:'100%',height:'100%',locale:'en',colorTheme:theme(),isTransparent:false,showChart:false,showSymbolLogo:true,largeChartUrl:localChartURL,
+      tabs:[
+        {title:'Major pairs',symbols:[{s:'FX_IDC:USDCAD',d:'USD / CAD'},{s:'FX_IDC:EURUSD',d:'EUR / USD'},
+          {s:'FX_IDC:GBPUSD',d:'GBP / USD'},{s:'FX_IDC:USDJPY',d:'USD / JPY'},
+          {s:'FX_IDC:AUDUSD',d:'AUD / USD'},{s:'FX_IDC:USDCHF',d:'USD / CHF'}]},
+        {title:'Canadian dollar',symbols:[{s:'FX_IDC:USDCAD',d:'USD / CAD'},{s:'FX_IDC:GBPCAD',d:'GBP / CAD'},
+          {s:'FX_IDC:EURCAD',d:'EUR / CAD'},{s:'FX_IDC:AUDCAD',d:'AUD / CAD'},
+          {s:'FX_IDC:NZDCAD',d:'NZD / CAD'},{s:'FX_IDC:CADJPY',d:'CAD / JPY'}]},
+        {title:'Europe',symbols:[{s:'FX_IDC:EURGBP',d:'EUR / GBP'},{s:'FX_IDC:EURCHF',d:'EUR / CHF'},
+          {s:'FX_IDC:EURNOK',d:'EUR / NOK'},{s:'FX_IDC:EURSEK',d:'EUR / SEK'},
+          {s:'FX_IDC:GBPNOK',d:'GBP / NOK'},{s:'FX_IDC:GBPSEK',d:'GBP / SEK'}]}
       ]
     },'Currency quotes','https://www.tradingview.com/markets/currencies/rates-major/');
   }
