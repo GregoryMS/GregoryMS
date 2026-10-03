@@ -44,6 +44,33 @@
     if(!coordinates(location.latitude,location.longitude)) throw Error('Invalid coordinates');
     return 'https://api.open-meteo.com/v1/forecast?latitude='+location.latitude.toFixed(2)+'&longitude='+location.longitude.toFixed(2)+'&current=temperature_2m,relative_humidity_2m,weather_code,is_day,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7';
   }
-  const api={coordinates,distance,nearestStation,searchLocations,condition,globalWeather,forecastURL};
+  function iconKind(condition, night = false) {
+    const text = String(condition || '').toLowerCase();
+    if (/thunder|storm/.test(text)) return 'storm';
+    if (/freezing|sleet|ice pellet|rain.*snow|snow.*rain/.test(text)) return 'sleet';
+    if (/snow|flurr|blizzard/.test(text)) return 'snow';
+    if (/rain|shower|drizzle/.test(text)) return 'rain';
+    if (/fog|mist|haze|smoke/.test(text)) return 'fog';
+    if (/partly|few cloud|mix of|mainly/.test(text)) return night ? 'partly-night' : 'partly';
+    if (/cloud|overcast/.test(text)) return 'cloud';
+    if (/clear|sun/.test(text)) return night ? 'moon' : 'sun';
+    return 'unknown';
+  }
+  function weatherIcon(condition, night = false) {
+    const kind = iconKind(condition, night);
+    const sun = '<g class="sun-stroke"><circle cx="25" cy="24" r="10"/><path d="M25 7v-3m0 40v-3M8 24H5m40 0h-3M13 12l-2-2m28 28-2-2M13 36l-2 2m28-28-2 2"/></g>';
+    const moon = '<path class="sun-stroke" d="M36 9a17 17 0 1 0 17 23A18 18 0 0 1 36 9Z"/>';
+    const cloud = '<path d="M19 45a10 10 0 0 1-1-20 14 14 0 0 1 26-2 11 11 0 1 1 3 22Z"/>';
+    const smallCloud = '<path d="M26 47a8 8 0 0 1-1-16 11 11 0 0 1 21-2 9 9 0 1 1 3 18Z" fill="var(--panel)"/>';
+    let art;
+    if (kind === 'sun') art = '<g transform="translate(7 7)">' + sun + '</g>';
+    else if (kind === 'moon') art = moon;
+    else if (kind === 'partly' || kind === 'partly-night') art = (night ? moon : sun) + smallCloud;
+    else if (kind === 'fog') art = '<path d="M20 31a9 9 0 0 1 0-18 13 13 0 0 1 24 4 8 8 0 0 1 2 14"/><path class="rain-stroke" d="M10 39h44M16 47h32M21 55h22"/>';
+    else if (kind === 'unknown') art = '<circle cx="32" cy="32" r="20" stroke-dasharray="3 6"/><path d="M27 26a5 5 0 1 1 8 4c-3 2-3 3-3 5m0 7h.01"/>';
+    else { art = cloud; if (kind === 'rain') art += '<path class="rain-stroke" d="m22 51-3 6m15-6-3 6m15-6-3 6"/>'; if (kind === 'snow') art += '<path class="rain-stroke" d="M22 51v8m-4-4h8m-7-3 6 6m0-6-6 6m23-7v8m-4-4h8m-7-3 6 6m0-6-6 6"/>'; if (kind === 'sleet') art += '<path class="rain-stroke" d="m22 51-3 6m16-6v8m-4-4h8m7-4-3 6"/>'; if (kind === 'storm') art += '<path class="sun-stroke" d="m34 43-9 11h8l-3 8"/>'; }
+    return `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${art}</svg>`;
+  }
+  const api={iconKind,weatherIcon,coordinates,distance,nearestStation,searchLocations,condition,globalWeather,forecastURL};
   if(typeof module!=='undefined' && module.exports) module.exports=api; else root.GregleWeather=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
