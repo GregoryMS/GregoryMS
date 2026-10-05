@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261002-events">
+  <link rel="stylesheet" href="assets/astro.css?v=20261005-satellite">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
   <script src="assets/theme.js" defer></script>
@@ -34,7 +34,8 @@
   <script src="assets/astro-calendar-sky.js?v=20261002-more" defer></script>
   <script src="assets/astro-calendar-core.js?v=20261002-more" defer></script>
   <script src="assets/astro-calendar.js?v=20261002-clean" defer></script>
-  <script src="assets/astro.js?v=20261002-events" defer></script>
+  <script src="assets/astro-satellite.js?v=20261005" defer></script>
+  <script src="assets/astro.js?v=20261005-satellite" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 </head>
 <body>
@@ -122,6 +123,19 @@
       <p class="calendar-meta">More skywatching guides: <a href="https://www.seasky.org/astronomy/astronomy-calendar-current.html" target="_blank" rel="noopener">Sea and Sky</a> · <a href="https://www.jpl.nasa.gov/edu/resources/teachable-moment/whats-a-supermoon-and-just-how-super-is-it/" target="_blank" rel="noopener">About supermoons</a> · <a href="https://science.nasa.gov/eclipses/safety/" target="_blank" rel="noopener">Solar eclipse safety</a>.</p>
       <p class="calendar-meta">Calendar downloads are a snapshot, not a subscription. Open the .ics file in Apple Calendar, Outlook or another calendar app to import it.</p>
       <noscript><p>Enable JavaScript for the calendar, or browse <a href="https://aa.usno.navy.mil/data/MoonPhases">Moon phase dates</a> and <a href="https://science.nasa.gov/solar-system/meteors-meteorites/meteor-showers/">meteor showers</a>.</p></noscript>
+    </section>
+    <section id="satellite-tracker" class="satellite-section" aria-labelledby="satellite-heading">
+      <div class="section-heading"><div><p class="eyebrow">In orbit right now</p><h2 id="satellite-heading">Satellite tracker</h2><p class="meta">International Space Station · ISS (ZARYA)</p></div><button id="satellite-refresh" class="pill" type="button">↻ Update position</button></div>
+      <div class="satellite-panel panel">
+        <div id="satellite-map" tabindex="0" role="region" aria-label="Live International Space Station position map"><p class="empty">Loading satellite map…</p></div>
+        <div class="satellite-map-actions"><label class="check-label"><input id="satellite-follow" type="checkbox" checked> Follow ISS</label><span class="meta">● ISS · ◎ Your observing location · Line: recent track</span></div>
+        <dl class="satellite-stats" aria-label="Latest ISS position"><div><dt>Latitude / longitude</dt><dd id="satellite-position">—</dd></div><div><dt>Altitude</dt><dd id="satellite-altitude">—</dd></div><div><dt>Speed</dt><dd id="satellite-speed">—</dd></div><div><dt>Sunlight on ISS</dt><dd id="satellite-sunlight">—</dd></div></dl>
+      </div>
+      <p id="satellite-status" class="meta" role="status">Waiting to load the live position…</p>
+      <div class="satellite-links"><a id="satellite-passes" class="pill" href="https://www.heavens-above.com/" target="_blank" rel="noopener">Upcoming ISS passes ↗</a><a href="https://www.n2yo.com/?s=25544" target="_blank" rel="noopener">Explore more satellites ↗</a></div>
+      <p class="meta">Position updates every 10 seconds while this tracker is visible. The line builds as you watch; it shows recent positions, not a predicted orbit. Sunlight on the ISS does not mean it is visible from your location. Check pass times, local darkness and clouds before heading outside.</p>
+      <p class="meta">Position: <a href="https://wheretheiss.at/" target="_blank" rel="noopener">Where the ISS at?</a> · Pass predictions: <a href="https://www.heavens-above.com/" target="_blank" rel="noopener">Heavens-Above</a>. Pass links default to UTC; check the time zone shown on the pass page. Opening pass predictions shares the selected observing coordinates with Heavens-Above.</p>
+      <noscript><p>Enable JavaScript for live tracking, or <a href="https://wheretheiss.at/">view the ISS tracker directly</a>.</p></noscript>
     </section>
     <dialog id="event-dialog" class="event-dialog" aria-labelledby="event-title" aria-describedby="event-time event-description event-timing">
       <div class="event-dialog-top"><span id="event-kind" class="eyebrow"></span><button id="event-close" class="pill" type="button" autofocus>Close</button></div>
