@@ -104,7 +104,7 @@
     const weatherCore = globalThis.GregleWeather;
     const LOCATIONS = {
       vancouver: { name:'Vancouver', id:'bc-74', coords:'49.24,-123.12' },
-      victoria: { name:'Victoria', id:'bc-85', coords:'48.43,-123.36' },
+      victoria: { name:'Victoria', id:'bc-75', coords:'48.421,-123.393' },
       chilliwack: { name:'Chilliwack', id:'bc-24', coords:'49.17,-121.94' }
     };
     const $ = id => document.getElementById(id);
@@ -260,6 +260,8 @@
               if(!stationDirectory) stationDirectory=await fetchJSON('https://api.weather.gc.ca/collections/citypageweather-realtime/items?f=json&limit=1000&properties=identifier,name.en,name.fr',controller.signal);
               station=weatherCore.nearestStation(stationDirectory,location);
             }
+            // Victoria's city feed uses airport observations; prefer the harbour for local lookups too.
+            if(station.id==='bc-85') station=LOCATIONS.victoria;
             const data=await fetchJSON(`https://api.weather.gc.ca/collections/citypageweather-realtime/items/${station.id}?f=json`,controller.signal);
             const weather=data.properties, forecasts=weather?.forecastGroup?.forecasts;
             if(!Array.isArray(forecasts) || !forecasts.length) throw new Error('No Canadian forecast');
