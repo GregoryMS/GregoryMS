@@ -10,15 +10,15 @@
   </style>
 </head>
 <body>
-  <h1>Victoria, BC Forecast</h1>
+  <h1>Victoria Harbour, BC Forecast</h1>
   <p>Source: Environment and Climate Change Canada.</p>
-  <p><a href="https://weather.gc.ca/en/location/index.html?coords=48.433%2C-123.372">Open the official Victoria forecast and weather alerts</a></p>
+  <p><a href="https://weather.gc.ca/en/location/index.html?coords=48.421%2C-123.393">Open the official Victoria Harbour forecast and weather alerts</a></p>
   <p id="status" role="status">Loading forecast…</p>
   <div id="forecast"></div>
   <noscript><p>Enable JavaScript to load the forecast here, or use the official forecast link above.</p></noscript>
 
   <script>
-    const FORECAST_URL = "https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-85?f=json";
+    const FORECAST_URL = "https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-75?f=json";
 
     async function loadForecast() {
       const status = document.getElementById("status");

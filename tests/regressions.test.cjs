@@ -233,7 +233,7 @@ test('Victoria loads official forecast data and renders it as text', async () =>
       forecasts: [{ period: { textForecastName: { en: 'Tonight' } }, textSummary: { en: '<img src=x> Clear. Low 12.' } }] } } });
   });
   await flush();
-  assert.equal(requested, 'https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-85?f=json');
+  assert.equal(requested, 'https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-75?f=json');
   const [card] = env.get('forecast').children;
   assert.equal(card.children[0].textContent, 'Tonight');
   assert.equal(card.children[1].textContent, '<img src=x> Clear. Low 12.');
@@ -365,7 +365,7 @@ test('all three city choices use the right endpoint and official forecast link',
   const urls = [];
   const env = environment('weather.html',async url => { urls.push(url); return response(vancouverWeather()); });
   await flush();
-  for (const [city,id,coords] of [['victoria','bc-85','48.43,-123.36'],['chilliwack','bc-24','49.17,-121.94'],['vancouver','bc-74','49.24,-123.12']]) {
+  for (const [city,id,coords] of [['victoria','bc-75','48.421,-123.393'],['chilliwack','bc-24','49.17,-121.94'],['vancouver','bc-74','49.24,-123.12']]) {
     env.context.city = city;
     await vm.runInContext('selectCity(city)',env.context);
     assert(urls.at(-1).includes(`/items/${id}?`));
