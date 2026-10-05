@@ -239,6 +239,24 @@ Widget symbols can be opened using `?symbol=NASDAQ:AAPL` or TradingView’s `?tv
 
 A failed script or missing iframe after 20 seconds shows a retry action; direct provider links remain available. An iframe appearing does not prove its underlying quote feed is available: errors/delays inside it remain TradingView’s responsibility and presentation. Attribution is retained. No API keys, private APIs or proxy service are required. Sources: [Advanced Chart](https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/), [Market Overview](https://www.tradingview.com/widget-docs/widgets/watchlists/market-overview/), [currency overview](https://www.tradingview.com/widget-docs/widgets/watchlists/market-overview/), [widget navigation](https://www.tradingview.com/widget-docs/tutorials/build-page/navigation/).
 
+### Satellite tracker
+
+The last section of `astro.html` tracks the International Space Station on a
+Leaflet/OpenStreetMap map, with coordinates, altitude, speed and sunlight state.
+`assets/astro-satellite.js` reads the public HTTPS
+[Where the ISS at? API](https://wheretheiss.at/w/developer) every ten seconds
+only while the section and page are visible. Requests time out after eight seconds.
+Invalid or more-than-one-minute-old responses are rejected; failures preserve
+the last position with its timestamp and an explicit unavailable message.
+The recent track contains at most thirty minutes of received positions and breaks
+at the date line or a polling gap; it is not an orbit prediction.
+
+Follow ISS can be toggled off to pan the map. The observing-location marker and
+Heavens-Above ISS-pass link follow the page's location selection. Pass predictions
+open externally in UTC by default and send that location's coordinates to Heavens-Above; the tracker
+does not send them to the ISS API. Sunlight describes the spacecraft, not local
+visibility. Direct provider links remain available if the feed or map fails.
+
 ## Home Screen icon family
 
 Astro, Tides, Weather, Finance and Earthquakes share Gregle Radio’s charcoal, white and violet icon style. Each page includes versioned 180px Apple touch and 32px browser icons, plus 192/512px manifest icons. The 512px artwork is safe for both ordinary and maskable installation; opaque square backgrounds let the OS choose the corner shape. PNG palettes keep the files small. Stable manifest IDs and launch pages preserve each app’s identity. The launch background is charcoal; the pages retain their light/dark theme preference. Safe-area padding protects controls around notches and the home indicator.
