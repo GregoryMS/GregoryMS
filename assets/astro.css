@@ -1,8 +1,9 @@
 .astro-page { width:min(100%,1160px); }
 .astro-display-controls { display:flex; justify-content:space-between; align-items:center; gap:16px; padding-top:8px; }
-.utc-clock { display:flex; align-items:baseline; gap:10px; font-variant-numeric:tabular-nums; }
-.utc-clock span { color:var(--muted); font-size:11px; font-weight:600; letter-spacing:.12em; }
-.utc-clock time { font-size:20px; letter-spacing:.04em; }
+.astro-clocks { display:flex; flex-wrap:wrap; align-items:center; gap:8px 28px; min-width:0; }
+.astro-clock { display:flex; align-items:baseline; gap:10px; font-size:20px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.astro-clock span { color:var(--muted); font-size:inherit; }
+.astro-clock time { font-size:inherit; letter-spacing:.04em; }
 .night-vision-toggle { width:44px; height:44px; padding:0; flex-shrink:0; }
 .night-vision-filter { position:absolute; pointer-events:none; }
 .night-vision-toggle[aria-pressed="true"] { background:var(--text); color:var(--bg); border-color:var(--text); }

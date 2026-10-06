@@ -3,6 +3,7 @@
   const root = document.documentElement;
   const toggle = document.getElementById('night-vision-toggle');
   const clock = document.getElementById('utc-clock');
+  const localClock = document.getElementById('local-clock');
   const storageKey = 'gregle-astro-night-vision';
 
   function applyNightVision(enabled) {
@@ -27,6 +28,11 @@
     clock.textContent = iso.slice(11, 19);
     clock.dateTime = iso;
     clock.title = `${iso.slice(0, 10)} UTC`;
+    // Local Date getters follow the viewer's device time zone, including DST.
+    localClock.textContent = [now.getHours(), now.getMinutes(), now.getSeconds()]
+      .map(value => String(value).padStart(2, '0')).join(':');
+    localClock.dateTime = iso;
+    localClock.title = `${now.toLocaleDateString()} · ${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
   }
   // Read the current time on every tick, so background throttling cannot cause drift.
   updateClock();
