@@ -50,6 +50,7 @@
   }
   async function refresh() {
     controller?.abort();controller=new AbortController();const currentController=controller,id=++version;
+    globalThis.GregleSurfWaves?.setLocation(location);
     void globalThis.GregleSurfUI?.load(location,currentController.signal,selectedDay);
     data=null;$('tideContent').hidden=true;$('tideContent').setAttribute('aria-busy','true');$('refreshTides').disabled=true;$('tideNote').textContent='';
     $('tideSource').href='https://www.tides.gc.ca/';$('tideStatus').textContent='Loading tides for '+location.name+'…';

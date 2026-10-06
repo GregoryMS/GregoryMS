@@ -1,7 +1,7 @@
 (function(root) {
   'use strict';
   function embedURL(layer,location) {
-    if(!['wind','clouds'].includes(layer))throw Error('Unknown weather layer');
+    if(!['wind','clouds','fog'].includes(layer))throw Error('Unknown weather layer');
     if(!Number.isFinite(location?.latitude) || Math.abs(location.latitude)>90 || !Number.isFinite(location?.longitude) || Math.abs(location.longitude)>180)throw Error('Invalid location');
     return 'https://embed.windy.com/embed.html?'+new URLSearchParams({
       type:'map',location:'coordinates',metricRain:'mm',metricTemp:'°C',metricWind:'km/h',
@@ -37,10 +37,10 @@
   function select(layer) {
     selected=layer;
     const radar=layer==='radar';
-    for(const name of ['radar','wind','clouds'])$(`radarLayer-${name}`).checked=name===layer;
+    for(const name of ['radar','wind','clouds','fog'])$(`radarLayer-${name}`).checked=name===layer;
     $('radarObserved').hidden=!radar;
     $('radarForecast').hidden=radar;
-    $('radarMode').textContent=radar?'Observed precipitation':layer==='wind'?'Wind forecast · km/h':'Clouds & rain forecast';
+    $('radarMode').textContent=radar?'Observed precipitation':layer==='wind'?'Wind forecast · km/h':layer==='fog'?'Fog forecast':'Clouds & rain forecast';
     if(!radar)root.GregleRadar?.pause();
     else root.GregleRadar?.resumeView();
     load();
@@ -55,7 +55,7 @@
   };
   document.addEventListener('DOMContentLoaded',()=>{
     ready=true;
-    for(const name of ['radar','wind','clouds']) {
+    for(const name of ['radar','wind','clouds','fog']) {
       const input=$(`radarLayer-${name}`);input.disabled=false;
       input.addEventListener('change',()=>{if(input.checked)select(name);});
     }
