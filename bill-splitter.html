@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Split a bill equally or by each person’s costs, including shared items, tax and tip. Get a breakdown that adds up to the penny.">
+  <title>Bill splitter · Gregle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
+  <link rel="stylesheet" href="assets/tools.css">
+  <link rel="stylesheet" href="assets/bill-splitter.css?v=20261005">
+  <script src="assets/theme.js" defer></script>
+  <script src="assets/bill-splitter-core.js?v=20261005" defer></script>
+  <script src="assets/bill-splitter.js?v=20261005" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Bill splitter</span></div>
+    <div class="top-actions"><a class="pill" href="links.html">← Tools</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+  </header>
+  <main class="page split-page">
+    <div class="split-heading"><div><p class="eyebrow">A fair share, down to the penny</p><h1>Bill splitter</h1><p class="muted">Dinner, drinks or a shared expense. Work out what everyone owes.</p></div><button id="split-reset" class="pill" type="button">Start over</button></div>
+    <noscript><p class="split-panel">Enable JavaScript to calculate and split your bill.</p></noscript>
+    <form id="split-form" novalidate>
+      <div class="split-layout">
+        <section class="split-panel" aria-labelledby="bill-heading">
+          <div class="split-section-heading"><h2 id="bill-heading">The bill</h2><label class="currency-label" for="split-currency">Currency <select id="split-currency"><option value="CAD">CAD</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="EUR">EUR</option><option value="AUD">AUD</option><option value="NZD">NZD</option></select></label></div>
+          <fieldset class="split-mode"><legend class="sr-only">How to split</legend><label><input type="radio" name="split-mode" value="equal" checked> Split equally</label><label><input type="radio" name="split-mode" value="individual">By person</label></fieldset>
+          <label class="field" for="split-subtotal"><span id="subtotal-label">Bill subtotal</span><input id="split-subtotal" type="text" inputmode="decimal" placeholder="0.00" maxlength="12" aria-describedby="subtotal-help"></label>
+          <p id="subtotal-help" class="split-note">Before tax and tip. This amount is split equally.</p>
+          <div class="split-extras">
+            <div><label for="split-tax">Tax</label><div class="amount-and-unit"><input id="split-tax" type="text" inputmode="decimal" value="0" maxlength="12" aria-label="Tax value"><select id="tax-mode" aria-label="Tax format"><option value="percent">%</option><option value="amount">Amount</option></select></div></div>
+            <div><label for="split-tip">Tip</label><div class="amount-and-unit"><input id="split-tip" type="text" inputmode="decimal" value="15" maxlength="12" aria-label="Tip value"><select id="tip-mode" aria-label="Tip format"><option value="percent">%</option><option value="amount">Amount</option></select></div></div>
+          </div>
+          <div class="tip-shortcuts" aria-label="Tip percentage shortcuts"><button type="button" data-tip="0">No tip</button><button type="button" data-tip="10">10%</button><button type="button" data-tip="15" aria-pressed="true">15%</button><button type="button" data-tip="18">18%</button><button type="button" data-tip="20">20%</button></div>
+          <label class="tip-base"><input id="tip-after-tax" type="checkbox"> Calculate percentage tip after tax</label>
+          <p id="currency-note" class="split-note">All amounts are in CAD. Changing currency changes the label, without converting amounts.</p>
+        </section>
+        <section class="split-panel split-summary" aria-labelledby="summary-heading">
+          <p class="eyebrow" id="summary-heading">The total</p><output id="split-total" class="split-total" aria-label="Total bill">CA$0.00</output>
+          <dl class="bill-breakdown"><div><dt>Subtotal</dt><dd id="result-subtotal">CA$0.00</dd></div><div><dt>Tax</dt><dd id="result-tax">CA$0.00</dd></div><div><dt>Tip</dt><dd id="result-tip">CA$0.00</dd></div><div><dt>People</dt><dd id="result-count">2</dd></div></dl>
+          <p id="split-error" class="split-error" role="alert" hidden></p>
+          <p id="split-announcement" class="sr-only" role="status" aria-live="polite"></p>
+          <p class="split-note">Shares always add up to the total. Rounding is balanced to keep equal shares within one penny.</p>
+        </section>
+      </div>
+      <section class="split-panel people-panel" aria-labelledby="people-heading">
+        <div class="split-section-heading"><div><h2 id="people-heading">Who’s sharing?</h2><p id="people-help" class="split-note">Add names if you like. Everyone pays an equal share.</p></div><button id="add-person" type="button" class="pill">+ Add person</button></div>
+        <div id="split-people" class="split-people"></div>
+        <p class="split-note">Up to 20 people. Individual costs exclude tax and tip; in “By person”, shared items are split equally, then tax and tip are shared in proportion to each person’s subtotal.</p>
+      </section>
+    </form>
+    <section class="split-panel shares-panel" aria-labelledby="shares-heading">
+      <div class="split-section-heading"><h2 id="shares-heading">What everyone owes</h2><button id="copy-split" class="pill primary" type="button" disabled>Copy breakdown</button></div>
+      <div id="split-shares" class="split-shares"></div>
+      <p id="copy-status" class="split-note" role="status"></p>
+    </section>
+    <footer><p>Calculated in your browser. Your bill and names are not stored or sent anywhere.</p><a href="links.html">Back to tools</a></footer>
+  </main>
+</body>
+</html>
