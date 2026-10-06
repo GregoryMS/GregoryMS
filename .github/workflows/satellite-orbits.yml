@@ -1,0 +1,44 @@
+name: Refresh satellite orbits
+
+on:
+  schedule:
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update_satellite_orbits.py
+      - .github/workflows/satellite-orbits.yml
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: satellite-orbits
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python3 scripts/update_satellite_orbits.py
+      - run: node --test tests/astro-satellite.test.cjs
+      - name: Save new orbit data and request a Pages rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/satellite-orbits.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/satellite-orbits.json
+          git commit -m "Refresh satellite orbit data"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
