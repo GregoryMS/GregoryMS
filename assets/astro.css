@@ -5,12 +5,16 @@
 .astro-clock span { color:var(--muted); font-size:inherit; }
 .astro-clock time { font-size:inherit; letter-spacing:.04em; }
 .night-vision-toggle { width:44px; height:44px; padding:0; flex-shrink:0; }
-.night-vision-filter { position:absolute; pointer-events:none; }
 .night-vision-toggle[aria-pressed="true"] { background:var(--text); color:var(--bg); border-color:var(--text); }
-/* Filter rendered content as well as text, including charts and map tiles. */
+/* Native CSS filters also cover Safari's composited chart/map layers; SVG
+   url() filters can leave those layers in full colour (WebKit bug 222757).
+   Dim before sepia/saturation to preserve detail instead of clipping highlights. */
 :root.night-vision { color-scheme:dark; background:#080000; --bg:#101010; --panel:#181818; --text:#eee; --muted:#bcbcbc; --line:#555; --soft:#292929; --shadow:none; }
 :root.night-vision body,
-:root.night-vision dialog { filter:url(#astro-red-filter); }
+:root.night-vision dialog {
+  -webkit-filter:grayscale(1) brightness(.14) sepia(1) hue-rotate(-50deg) saturate(20);
+  filter:grayscale(1) brightness(.14) sepia(1) hue-rotate(-50deg) saturate(20);
+}
 /* Modal dialogs render in the top layer, outside the body's filter. */
 :root.night-vision dialog::backdrop { background:rgba(8,0,0,.85); }
 .satellite-panel { overflow:hidden; }
