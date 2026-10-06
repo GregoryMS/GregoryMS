@@ -241,21 +241,34 @@ A failed script or missing iframe after 20 seconds shows a retry action; direct 
 
 ### Satellite tracker
 
-The last section of `astro.html` tracks the International Space Station on a
-Leaflet/OpenStreetMap map, with coordinates, altitude, speed and sunlight state.
-`assets/astro-satellite.js` reads the public HTTPS
-[Where the ISS at? API](https://wheretheiss.at/w/developer) every ten seconds
-only while the section and page are visible. Requests time out after eight seconds.
-Invalid or more-than-one-minute-old responses are rejected; failures preserve
-the last position with its timestamp and an explicit unavailable message.
-The recent track contains at most thirty minutes of received positions and breaks
-at the date line or a polling gap; it is not an orbit prediction.
+The last section of `astro.html` tracks ISS, Tiangong, Hubble, Terra and Aqua
+on a Leaflet/OpenStreetMap map. The selector changes the marker, details and
+location-specific Heavens-Above pass link. The map shows a violet recent track
+and an optional dashed orange projection for the next 90 minutes, sampled once
+per minute. Both paths break at the date line; the recent track also breaks
+after polling gaps and retains at most thirty minutes of displayed positions.
 
-Follow ISS can be toggled off to pan the map. The observing-location marker and
-Heavens-Above ISS-pass link follow the page's location selection. Pass predictions
-open externally in UTC by default and send that location's coordinates to Heavens-Above; the tracker
-does not send them to the ISS API. Sunlight describes the spacecraft, not local
-visibility. Direct provider links remain available if the feed or map fails.
+`assets/astro-satellite-core.js` propagates CelesTrak OMM orbit records with
+vendored MIT-licensed Satellite.js 6.0.1. Coordinates, altitude, speed and elevation
+above the selected observing location update every ten seconds while visible.
+These are orbital estimates, not live telemetry. Elevation assumes sea level
+and does not establish visual visibility. The orbit epoch and age are shown;
+data over two days old has a caution and data over seven days old is rejected.
+Switching satellites clears the previous marker, paths and readings.
+
+`data/satellite-orbits.json` is served from this site. The
+`satellite-orbits.yml` GitHub workflow refreshes it every six hours using
+`scripts/update_satellite_orbits.py`, requesting only the five tracked objects
+from the documented [CelesTrak GP API](https://celestrak.org/NORAD/documentation/gp-data-formats.php).
+It stops on any provider error and replaces the file only after validating all
+five records. Changed records are committed and a Pages rebuild is requested
+explicitly because bot commits do not trigger ordinary push workflows.
+The browser rechecks the same-site file hourly or on Reload orbit data; request
+failures preserve usable orbit records with an explicit message.
+
+Follow satellite can be turned off to pan the map. Pass links default to UTC
+and share the observing coordinates with Heavens-Above when opened. Provider
+links remain available when orbit data or map tiles are unavailable.
 
 ## Home Screen icon family
 

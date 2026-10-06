@@ -1,10 +1,17 @@
 .astro-page { width:min(100%,1160px); }
 .satellite-panel { overflow:hidden; }
+.satellite-controls { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:0 0 18px; }
+.satellite-controls label { font-size:14px; }
+.satellite-controls select { max-width:100%; min-height:44px; border:1px solid var(--line); border-radius:12px; padding:10px 14px; background:var(--panel); color:var(--text); font:inherit; font-size:14px; }
+.satellite-legend { display:flex; flex-wrap:wrap; gap:8px 18px; padding:12px 22px 0; }
+.satellite-legend span { display:inline-flex; align-items:center; gap:6px; }
+.satellite-line { width:24px; border-top:3px solid #7452c8; }
+.satellite-line.projected { border-top:3px dashed #c76e15; }
 #satellite-map { height:380px; background:var(--soft); }
 .satellite-map-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:16px 22px; border-bottom:1px solid var(--line); }
 .satellite-stats { display:grid; grid-template-columns:2fr 1fr 1fr 1.3fr; gap:20px; margin:0; padding:22px; }
 .satellite-stats dt { color:var(--muted); font-size:12px; margin-bottom:8px; }
-.satellite-stats dd { margin:0; font-size:17px; font-weight:500; font-variant-numeric:tabular-nums; }
+.satellite-stats dd { margin:0; font-size:17px; font-weight:500; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .satellite-links { display:flex; flex-wrap:wrap; align-items:center; gap:14px; }
 .satellite-section button:focus-visible,.satellite-section a:focus-visible,.satellite-section input:focus-visible { outline:2px solid var(--text); outline-offset:3px; }
 @media(max-width:600px) { #satellite-map { height:300px; } .satellite-stats { grid-template-columns:1fr 1fr; gap:22px 12px; padding:18px; } .satellite-section>.section-heading { align-items:flex-start; flex-wrap:wrap; } }
