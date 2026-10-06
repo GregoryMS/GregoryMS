@@ -1,4 +1,17 @@
 .astro-page { width:min(100%,1160px); }
+.astro-display-controls { display:flex; justify-content:space-between; align-items:center; gap:16px; padding-top:8px; }
+.utc-clock { display:flex; align-items:baseline; gap:10px; font-variant-numeric:tabular-nums; }
+.utc-clock span { color:var(--muted); font-size:11px; font-weight:600; letter-spacing:.12em; }
+.utc-clock time { font-size:20px; letter-spacing:.04em; }
+.night-vision-toggle { width:44px; height:44px; padding:0; flex-shrink:0; }
+.night-vision-filter { position:absolute; pointer-events:none; }
+.night-vision-toggle[aria-pressed="true"] { background:var(--text); color:var(--bg); border-color:var(--text); }
+/* Filter rendered content as well as text, including charts and map tiles. */
+:root.night-vision { color-scheme:dark; background:#080000; --bg:#101010; --panel:#181818; --text:#eee; --muted:#bcbcbc; --line:#555; --soft:#292929; --shadow:none; }
+:root.night-vision body,
+:root.night-vision dialog { filter:url(#astro-red-filter); }
+/* Modal dialogs render in the top layer, outside the body's filter. */
+:root.night-vision dialog::backdrop { background:rgba(8,0,0,.85); }
 .satellite-panel { overflow:hidden; }
 .satellite-controls { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:0 0 18px; }
 .satellite-controls label { font-size:14px; }
