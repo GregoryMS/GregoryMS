@@ -279,3 +279,7 @@ On iPhone or iPad, open the specific page in Safari and choose Share → Add to 
 Finance now has its own `finance.webmanifest`, stable `/finance.html` app ID and launch URL, and **Finance** Home Screen label. Its white bar chart and violet rising arrow follow the same icon family. Install from the Finance page; existing generic shortcuts may need to be re-added. Market widgets still need a network connection. See `assets/finance-app/SOURCES.md` for artwork and export details.
 
 Earthquakes has its own `earthquakes.webmanifest`, stable `/earthquakes.html` app ID and launch URL, and **Quakes** Home Screen label. Its white-and-violet seismic trace follows the same icon family. Install from the Earthquakes page; existing generic shortcuts may need to be re-added. Live earthquake and tsunami data still requires a network connection. See `assets/earthquakes-app/SOURCES.md` for artwork and export details.
+
+## Fog and waves maps
+
+The weather map includes Fog alongside Radar, Wind and Clouds, using the same Windy ECMWF forecast controls. The tides page includes a matching Windy ECMWF WAM waves map in Surf conditions. It loads near the viewport, follows the selected tide location even if the tide or surf data service fails, and has its own independent forecast timeline. Recenter and Refresh recreate the embedded map; frame failures and slow loads offer a full-map link. Wave heights use metres. Both embeds receive the selected coordinates.

@@ -6,7 +6,7 @@ const {embedURL}=require('../assets/weather-map-layers.js');
 const vancouver={name:'Vancouver',latitude:49.24,longitude:-123.12};
 
 test('forecast embeds use the selected coordinates, requested layer and metric units',()=>{
-  for(const layer of ['wind','clouds']) {
+  for(const layer of ['wind','clouds','fog']) {
     const url=new URL(embedURL(layer,vancouver));
     assert.equal(url.origin,'https://embed.windy.com');
     assert.equal(url.searchParams.get('overlay'),layer);
@@ -65,4 +65,15 @@ test('back-forward restoration recreates the active forecast; radar remains ifra
   const h=setup();h.select('wind');h.events.pagehide();assert.equal(h.frames[0].removed,true);
   h.events.pageshow({persisted:true});assert.equal(h.frames.length,2);
   h.select('radar');h.events.pagehide();h.events.pageshow({persisted:true});assert.equal(h.frames.length,2);
+});
+
+ test('fog behaves like the other forecasts and remains selected across location changes',()=>{
+  const h=setup();h.select('fog');
+  assert.equal(h.element('radarMode').textContent,'Fog forecast');
+  assert.equal(h.element('radarObserved').hidden,true);
+  h.api.setLocation({name:'Tofino',latitude:49.15,longitude:-125.91});
+  const url=new URL(h.frames.at(-1).src);
+  assert.equal(url.searchParams.get('overlay'),'fog');
+  assert.equal(url.searchParams.get('lon'),'-125.91');
+  h.select('radar');assert.equal(h.frames.at(-1).removed,true);
 });
