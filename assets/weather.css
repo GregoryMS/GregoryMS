@@ -84,3 +84,25 @@
 
 
 @media(max-width:480px) { .topbar { flex-wrap:wrap; } .top-actions { margin-left:auto; } }
+
+.weather-alerts[hidden], .weather-alert-status[hidden] { display:none; }
+.weather-alerts { margin-bottom:32px; }
+.weather-alerts-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:16px; }
+.weather-alerts-heading .eyebrow { margin-bottom:6px; }
+.weather-alerts-heading .updated { margin:0; }
+.weather-alert-list { display:grid; gap:12px; }
+.weather-alert { --alert-colour:#7b8796; --alert-tint:var(--panel); border:1px solid var(--line); border-left:6px solid var(--alert-colour); border-radius:16px; padding:20px 24px; background:var(--alert-tint); overflow-wrap:anywhere; }
+.weather-alert--yellow { --alert-colour:#efc32e; --alert-tint:#fff9e3; }
+.weather-alert--orange { --alert-colour:#ee8328; --alert-tint:#fff0e2; }
+.weather-alert--red { --alert-colour:#df434c; --alert-tint:#fff0f0; }
+.weather-alert-badge { display:inline-block; margin:0 0 10px; padding:3px 10px; border-radius:6px; background:var(--alert-colour); color:#131820; font-size:12px; font-weight:700; text-transform:capitalize; }
+.weather-alert--red .weather-alert-badge, .weather-alert--neutral .weather-alert-badge { color:#fff; }
+.weather-alert--neutral { --alert-colour:#596574; }
+.weather-alert h3 { margin:0 0 8px; font-size:18px; font-weight:650; line-height:1.4; }
+.weather-alert-dates { color:var(--muted); font-size:12px; margin:0 0 14px; }
+.weather-alert-link { display:inline-block; min-height:32px; padding:4px 0; font-size:14px; font-weight:500; text-underline-offset:4px; }
+.weather-alert-status { margin-top:8px; }
+.dark-mode .weather-alert--yellow { --alert-tint:#353123; }
+.dark-mode .weather-alert--orange { --alert-tint:#392f25; }
+.dark-mode .weather-alert--red { --alert-tint:#39282b; }
+@media(max-width:600px) { .weather-alerts-heading { align-items:flex-start; flex-direction:column; gap:8px; } .weather-alert { padding:18px; } }

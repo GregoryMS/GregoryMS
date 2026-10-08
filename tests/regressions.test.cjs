@@ -8,8 +8,8 @@ const root = path.join(__dirname, '..');
 const scripts = (file, isolateTides = false) => [...fs.readFileSync(path.join(root, file), 'utf8')
   .matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => {
     const src = match[0].match(/src="(assets\/[^"?]+\.js)(?:\?[^"]*)?"/);
-    // Map controllers are exercised in their dedicated suites.
-    if (isolateTides && /assets\/weather-(?:radar|map-layers)\.js$/.test(src?.[1] || "")) return "";
+    // Independent map and alert controllers are exercised in their dedicated suites.
+    if (isolateTides && /assets\/weather-(?:radar|map-layers|alerts)\.js$/.test(src?.[1] || "")) return "";
     // Weather regressions isolate the independent tide service; tides.test.cjs covers the real integration.
     if (isolateTides && src?.[1] === 'assets/tide-data.js') return 'globalThis.GregleTideData={load:()=>new Promise(()=>{})};';
     return src ? fs.readFileSync(path.join(root, src[1]), 'utf8') : match[1];

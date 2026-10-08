@@ -19,7 +19,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20260930-astro-link">
+  <link rel="stylesheet" href="assets/weather.css?v=20261008-alerts">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261006-fog-waves">
@@ -32,6 +32,10 @@
     <div class="top-actions"><a class="pill quick-link" id="astroLink" href="astro.html" aria-label="Astronomy observations for this location" title="Astronomy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z"/><path d="m18 2 .8 2.2L21 5l-2.2.8L18 8l-.8-2.2L15 5l2.2-.8Z"/></svg></a><a class="pill quick-link" id="tideLink" href="tides.html" aria-label="Tide tracker for this location" title="Tides"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7c3-4 7 4 10 0s7 4 10 0M2 12c3-4 7 4 10 0s7 4 10 0M2 17c3-4 7 4 10 0s7 4 10 0"/></svg></a><a class="pill quick-link" href="earthquakes.html" aria-label="Earthquakes and tsunami updates" title="Earthquakes and tsunamis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h5l2-7 4 14 2-7h7"/></svg></a><a class="pill" href="/">← Home</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
   </header>
   <main class="page">
+    <section id="weatherAlerts" class="weather-alerts" aria-labelledby="weatherAlertsTitle" aria-live="polite" hidden>
+      <div class="weather-alerts-heading"><div><p id="weatherAlertLocation" class="eyebrow">Environment Canada</p><h2 id="weatherAlertsTitle">Weather alerts</h2></div><p id="weatherAlertChecked" class="updated"></p></div>
+      <div id="weatherAlertList" class="weather-alert-list"></div>
+    </section>
     <div class="page-heading">
       <div><p class="eyebrow">A look outside</p><h1 id="cityName">Vancouver</h1><p class="location-meta" id="locationMeta">British Columbia <span aria-hidden="true">·</span> Temperatures in °C</p></div>
       <div class="location-switch" role="group" aria-label="Weather location">
@@ -92,10 +96,12 @@
     </section>
     <a class="tide-preview" id="tidePreview" href="tides.html"><div class="tide-preview-heading"><h2>Today’s tides</h2><span>View tide tracker ↗</span></div><div id="tidePreviewContent" aria-live="polite"></div></a>
     <div class="status-row"><p class="status" id="status" role="status">Loading Environment Canada weather…</p></div>
+    <p id="weatherAlertStatus" class="status weather-alert-status" role="status" hidden></p>
     <div class="weather-fallback" id="weatherFallback"><p>We couldn’t load the weather. Try again, or check the weather source.</p><button class="pill" id="retryWeather" type="button">Try again</button><a class="pill" id="fallbackLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast ↗</a></div>
     <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night. — means not provided.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
   <script src="assets/weather-core.js?v=20261002-icons"></script>
+  <script src="assets/weather-alerts.js?v=20261008-alerts"></script>
   <script src="assets/weather-map-layers.js?v=20261006-fog-waves"></script>
   <script src="assets/weather-radar.js?v=20261006-fog-waves"></script>
   <script src="assets/tide-core.js"></script>
@@ -310,6 +316,7 @@
       $('astroLink').href=globalThis.GregleTides.locationURL('astro.html',location);
       globalThis.GregleTideUI.weatherPreview(location);
       globalThis.GregleRadar?.setLocation(location);
+      globalThis.GregleWeatherAlerts?.setLocation(location);
       return loadWeather();
     }
     function selectCity(key) {
@@ -382,6 +389,3 @@
   </script>
 </body>
 </html>
-
-
-
