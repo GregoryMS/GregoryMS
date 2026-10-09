@@ -32,6 +32,23 @@
     throw new Error('Unrecognised tsunami status');
   }
   const tsunamiProducts = ['PAAQWEAK51','PAAQWEAK53','PAAQWEXX32','PHEBWEPA40','PHEBWEPA42','PHEBWEHW40','PHEBWEHW42','PHEBWEZS40','PHEBWEZS42','PHEBWEGM40','PHEBWEGM42','PHEBWECA40','PHEBWECA41','PHEBWECA42','PHEBWECA43'];
+  function bulletinText(value) {
+    if (typeof value !== 'string') return '';
+    const entities = { amp:'&', lt:'<', gt:'>', quot:'"', apos:"'", nbsp:' ' };
+    // NOAA sometimes includes escaped XML CDATA in its JSON text fields.
+    // Decode as plain text only; the renderer continues to use textContent.
+    let text = value;
+    for (let depth = 0; depth < 3; depth++) {
+      const decoded = text.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos|nbsp);/gi, (entity, code) => {
+        if (code[0] !== '#') return entities[code.toLowerCase()];
+        const point = /^#x/i.test(code) ? parseInt(code.slice(2),16) : Number(code.slice(1));
+        return point > 0 && point <= 0x10ffff && !(point >= 0xd800 && point <= 0xdfff) ? String.fromCodePoint(point) : entity;
+      });
+      if (decoded === text) break;
+      text = decoded;
+    }
+    return text.replace(/^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/, '$1').replace(/\s+/g,' ').trim();
+  }
   function tsunamiBulletin(item, product) {
     // The same current regional products used by tsunami.gov. Alerts persist
     // until replaced/cancelled; old bulletin issue dates are not fetch dates.
@@ -48,9 +65,9 @@
     if (!url || !String(item.eventDir).startsWith('/events/')) throw new Error('Invalid bulletin link');
     const coordinate = (value, limit) => value !== null && value !== '' && Number.isFinite(Number(value)) && Math.abs(Number(value)) <= limit ? Number(value) : null;
     return { id:product, kind:active[0]?.kind || null, issued:Date.parse(item.bulletinIssueTime),
-      place:String(item.quakeLocation || 'See official bulletin'), latitude:coordinate(item.eventLat,90), longitude:coordinate(item.eventLon,180),
-      areas:[...new Set(active.map(({entry}) => entry.headline || [entry.bkp_start_location,entry.bkp_end_location].filter(Boolean).join(' to ') || entry.zone || 'See official bulletin for affected areas'))].map(String),
-      instructions:[...new Set(active.map(({entry}) => entry.recommendedActions).filter(Boolean))].map(String),
+      place:bulletinText(item.quakeLocation) || 'See official bulletin', latitude:coordinate(item.eventLat,90), longitude:coordinate(item.eventLon,180),
+      areas:[...new Set(active.map(({entry}) => bulletinText(entry.headline) || [entry.bkp_start_location,entry.bkp_end_location].map(bulletinText).filter(Boolean).join(' to ') || bulletinText(entry.zone) || bulletinText(entry.headLine) || 'See official bulletin for affected areas'))],
+      instructions:[...new Set(active.map(({entry}) => bulletinText(entry.recommendedActions)).filter(Boolean))],
       links:[{ label:item.WMOID, url }] };
   }
   function fresh(checked, now = Date.now()) { return Number.isFinite(checked) && now >= checked - 60000 && now - checked <= 180000; }

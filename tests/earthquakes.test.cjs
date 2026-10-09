@@ -42,6 +42,29 @@ test('persistent alert areas remain visible when another area is cancelled', () 
   const result=core.tsunamiBulletin(input,'PAAQWEAK51');
   assert.equal(result.kind,'Warning'); assert.deepEqual(result.areas,['Northern coast to Southern coast']);
 });
+test('NOAA encoded CDATA headlines render as text without hiding affected countries', () => {
+  const input=bulletin('Potential Threat','PHEBWEPA40');
+  input.quakeLocation='PANAMA';
+  input.alerts.areaList=[[{category:'Potential Threat',zone:'Ecuador',headLine:' &lt;![CDATA[ ...PTWC TSUNAMI THREAT MESSAGE... ]]&gt; ',recommendedActions:' '},
+    {category:'Potential Threat',zone:'Colombia',recommendedActions:' '}]];
+  input.segments[0].headline=' &lt;![CDATA[ ...PTWC TSUNAMI THREAT MESSAGE... ]]&gt; ';
+  input.segments[0].recommendedActions=' ';
+  const result=core.tsunamiBulletin(input,'PHEBWEPA40');
+  assert.equal(result.kind,'Threat');
+  assert.deepEqual(result.areas,['Ecuador','Colombia','...PTWC TSUNAMI THREAT MESSAGE...']);
+  assert.deepEqual(result.instructions,[]);
+  assert.match(result.links[0].url,/WEPA40\.txt$/);
+});
+test('bulletin text decodes raw, numeric and nested wrappers, preserving instructions and comparisons', () => {
+  for(const headline of ['<![CDATA[Coast &amp; islands]]>','&lt;![CDATA[Coast &amp; islands]]&gt;','&amp;lt;![CDATA[Coast &amp;amp; islands]]&amp;gt;','&#60;![CDATA[Coast &#x26; islands]]&#62;']) {
+    const input=bulletin('Warning');input.segments[0].headline=headline;
+    input.segments[0].recommendedActions=' &lt;![CDATA[ Follow local authorities. Waves &lt; 0.3 m. ]]&gt; ';
+    input.segments.push({category:'Warning',headline:'Coast & islands',recommendedActions:'Follow local authorities. Waves < 0.3 m.'});
+    const result=core.tsunamiBulletin(input,'PAAQWEAK51');
+    assert.deepEqual(result.areas,['Coast & islands']);
+    assert.deepEqual(result.instructions,['Follow local authorities. Waves < 0.3 m.']);
+  }
+});
 test('unknown categories, incomplete products and invalid times fail closed', () => {
   assert.throws(()=>core.tsunamiBulletin(bulletin('Unexpected'),'PAAQWEAK51'));
   assert.throws(()=>core.tsunamiBulletin(bulletin(),'PHEBWEPA40'));
@@ -54,14 +77,14 @@ test('freshness becomes unknown after three minutes, including future timestamps
 });
 
 // Exercise the page's asynchronous feeds and failure states with no map library.
-async function page({failProduct,category='Information',failEarthquakes=false} = {}) {
+async function page({failProduct,category='Information',failEarthquakes=false,transformBulletin=value=>value} = {}) {
   class Element {
     constructor(tag='div') { this.tag=tag; this.children=[]; this.dataset={}; this.listeners={}; this.attributes={}; this._text=''; this.value=''; }
     set textContent(value) { this._text=String(value); this.children=[]; }
     get textContent() { return this._text+this.children.map(x=>x.textContent).join(' '); }
     append(...nodes) { this.children.push(...nodes); if(this.tag==='head') for(const node of nodes) if(node.tag==='script') {
       const product = /\/([^/]+)\.js/.exec(node.src)[1];
-      queueMicrotask(()=>{ if(product===options.failProduct) node.onerror(); else { context[product]=bulletin(product==='PAAQWEAK51'?options.category:'Information',product); node.onload(); } });
+      queueMicrotask(()=>{ if(product===options.failProduct) node.onerror(); else { context[product]=options.transformBulletin(bulletin(product==='PAAQWEAK51'?options.category:'Information',product)); node.onload(); } });
     } }
     replaceChildren(...nodes) { this._text=''; this.children=nodes; }
     setAttribute(key,value) { this.attributes[key]=value; }
@@ -69,7 +92,7 @@ async function page({failProduct,category='Information',failEarthquakes=false} =
     querySelectorAll() { return []; }
     remove() {}
   }
-  const options={failProduct,category,failEarthquakes};
+  const options={failProduct,category,failEarthquakes,transformBulletin};
   const nodes=new Map(), get=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};
   get('period').value='day'; get('magnitude').value='2.5';
   const context={ GregleEarthquakes:core, document:{getElementById:get,createElement:tag=>new Element(tag),head:new Element('head'),hidden:false,addEventListener(){}},
@@ -85,6 +108,24 @@ test('live warning rendering includes affected coasts, instructions and source l
   assert.equal(app.get('tsunami-panel').dataset.state,'active');
   assert.match(app.get('tsunami-alerts').textContent,/Tsunami warning.*Bulletin headline.*Follow local authorities/s);
   assert.match(app.get('latest-content').textContent,/M4.0/);
+});
+test('rendered bulletin cards contain no CDATA debris or empty instruction paragraphs',async()=>{
+  const app=await page({category:'Threat',transformBulletin:value=>{
+    value.segments[0].headline=' &lt;![CDATA[ ...PTWC TSUNAMI THREAT MESSAGE... ]]&gt; ';
+    value.segments[0].recommendedActions=' ';return value;
+  }});
+  const card=app.get('tsunami-alerts').children[0];
+  assert.match(card.textContent,/PTWC TSUNAMI THREAT MESSAGE/);
+  assert.doesNotMatch(card.textContent,/CDATA|&lt;|&gt;/);
+  assert.equal(card.children.filter(node=>node.tag==='p' && !node.textContent.trim()).length,0);
+});
+test('decoded markup stays literal text instead of becoming executable HTML',async()=>{
+  const app=await page({category:'Warning',transformBulletin:value=>{
+    value.segments[0].headline='&lt;![CDATA[&lt;img src=x onerror=alert(1)&gt;]]&gt;';return value;
+  }});
+  const card=app.get('tsunami-alerts').children[0];
+  const headline=card.children.find(node=>node.textContent==='<img src=x onerror=alert(1)>');
+  assert.ok(headline);assert.equal(headline.tag,'p');assert.equal(headline.innerHTML,undefined);
 });
 test('a single missing regional feed prevents a false all-clear while preserving known warnings',async()=>{
   const app=await page({category:'Warning',failProduct:'PHEBWEPA40'});
