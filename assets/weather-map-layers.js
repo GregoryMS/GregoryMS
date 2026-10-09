@@ -18,7 +18,7 @@
   }
   function load() {
     unload();
-    if(selected==='radar' || !location)return;
+    if(selected==='radar' || selected==='smoke' || !location)return;
     const token=version,layer=selected;
     const status=$('radarLayerStatus');
     status.hidden=false;status.textContent=`Loading ${layer} forecast…`;
@@ -37,10 +37,12 @@
   function select(layer) {
     selected=layer;
     const radar=layer==='radar';
-    for(const name of ['radar','wind','clouds','fog'])$(`radarLayer-${name}`).checked=name===layer;
+    for(const name of ['radar','wind','clouds','smoke','fog'])$(`radarLayer-${name}`).checked=name===layer;
     $('radarObserved').hidden=!radar;
-    $('radarForecast').hidden=radar;
-    $('radarMode').textContent=radar?'Observed precipitation':layer==='wind'?'Wind forecast · km/h':layer==='fog'?'Fog forecast':'Clouds & rain forecast';
+    $('radarForecast').hidden=radar || layer==='smoke';
+    $('radarSmoke').hidden=layer!=='smoke';
+    root.GregleSmoke?.setActive(layer==='smoke');
+    $('radarMode').textContent=radar?'Observed precipitation':layer==='smoke'?'Wildfire smoke forecast · PM₂.₅':layer==='wind'?'Wind forecast · km/h':layer==='fog'?'Fog forecast':'Clouds & rain forecast';
     if(!radar)root.GregleRadar?.pause();
     else root.GregleRadar?.resumeView();
     load();
@@ -50,12 +52,12 @@
     refresh:()=>{if(ready)load();},
     setLocation(value){
       const changed=location?.latitude!==value.latitude || location?.longitude!==value.longitude || location?.name!==value.name;
-      location=value;if(ready && changed)load();
+      location=value;root.GregleSmoke?.setLocation(value);if(ready && changed)load();
     }
   };
   document.addEventListener('DOMContentLoaded',()=>{
     ready=true;
-    for(const name of ['radar','wind','clouds','fog']) {
+    for(const name of ['radar','wind','clouds','smoke','fog']) {
       const input=$(`radarLayer-${name}`);input.disabled=false;
       input.addEventListener('change',()=>{if(input.checked)select(name);});
     }
@@ -67,3 +69,4 @@
   root.addEventListener('pagehide',unload);
   root.addEventListener('pageshow',event=>{if(event.persisted && ready)load();});
 })(globalThis);
+

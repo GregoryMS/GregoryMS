@@ -77,3 +77,13 @@ test('back-forward restoration recreates the active forecast; radar remains ifra
   assert.equal(url.searchParams.get('lon'),'-125.91');
   h.select('radar');assert.equal(h.frames.at(-1).removed,true);
 });
+
+
+test('smoke uses its native panel without a Windy iframe and restores other layers',()=>{
+  const h=setup();h.select('smoke');
+  assert.equal(h.frames.length,0);assert.equal(h.element('radarSmoke').hidden,false);
+  assert.equal(h.element('radarForecast').hidden,true);assert.equal(h.element('radarObserved').hidden,true);
+  assert.equal(h.element('radarMode').textContent,'Wildfire smoke forecast · PM₂.₅');
+  h.select('wind');assert.equal(h.element('radarSmoke').hidden,true);assert.equal(h.frames.length,1);
+  h.select('radar');assert.equal(h.element('radarSmoke').hidden,true);assert.equal(h.api.active(),false);
+});

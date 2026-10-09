@@ -49,3 +49,21 @@
   .radar-forecast-map { height:520px; }
   .radar-panel { border-radius:16px; }
 }
+
+
+.smoke-map { height:460px; }
+.smoke-legend { margin-top:16px; color:var(--muted); font-size:11px; }
+.smoke-legend strong { display:block; margin-bottom:8px; font-weight:500; }
+.smoke-scale { display:flex; width:min(100%,420px); }
+.smoke-scale span { flex:1; border-top:8px solid; padding-top:5px; }
+.smoke-scale span:nth-child(1) { border-color:#fade8f; }
+.smoke-scale span:nth-child(2) { border-color:#f6b94f; }
+.smoke-scale span:nth-child(3) { border-color:#e68230; }
+.smoke-scale span:nth-child(4) { border-color:#c84e2b; }
+.smoke-scale span:nth-child(5) { border-color:#973044; }
+.smoke-scale span:nth-child(6) { border-color:#5c2459; }
+@media(max-width:600px) {
+  .radar-layer-switches { flex-wrap:wrap; }
+  .radar-layer-switches span { padding:0 8px; }
+  .smoke-map { height:360px; }
+}
