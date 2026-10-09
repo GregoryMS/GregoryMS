@@ -9,7 +9,7 @@ const scripts = (file, isolateTides = false) => [...fs.readFileSync(path.join(ro
   .matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => {
     const src = match[0].match(/src="(assets\/[^"?]+\.js)(?:\?[^"]*)?"/);
     // Independent map and alert controllers are exercised in their dedicated suites.
-    if (isolateTides && /assets\/weather-(?:radar|map-layers|alerts)\.js$/.test(src?.[1] || "")) return "";
+    if (isolateTides && /assets\/weather-(?:radar|map-layers|alerts|context)\.js$/.test(src?.[1] || "")) return "";
     // Weather regressions isolate the independent tide service; tides.test.cjs covers the real integration.
     if (isolateTides && src?.[1] === 'assets/tide-data.js') return 'globalThis.GregleTideData={load:()=>new Promise(()=>{})};';
     return src ? fs.readFileSync(path.join(root, src[1]), 'utf8') : match[1];
@@ -385,7 +385,7 @@ test('switching cities aborts the old request and ignores its late response', as
   requests[1].resolve(response(victoria)); await next;
   requests[0].resolve(response(vancouverWeather())); await flush();
   assert.equal(env.get('temperature').textContent,'22°C');
-  assert.match(env.get('status').textContent,/^Victoria weather loaded/);
+  assert.equal(env.get('status').textContent,'');
   assert.equal(env.get('weatherContent').attributes['aria-busy'],'false');
 });
 
@@ -930,7 +930,7 @@ test('manual city selection wins over late geolocation and reverse-geocoding cal
     if(stage==='position') await locate({coords:{latitude:43.65,longitude:-79.38}});
     pending.resolve(response({countryCode:'CA',city:'Toronto'})); await located; await flush();
     assert.equal(env.get('cityName').textContent,'Victoria');
-    assert.match(env.get('status').textContent,/Victoria weather loaded/);
+    assert.equal(env.get('status').textContent,'');
   }
 });
 
@@ -957,7 +957,7 @@ test('city search escapes names, selects international results, and ignores canc
   pending.resolve(response({results:[]})); await old;
   assert.equal(env.get('cityName').textContent,'<London>');
   assert.equal(env.get('cityResults').children.length,0);
-  assert.match(env.get('status').textContent,/Open-Meteo/);
+  assert.equal(env.get('status').textContent,'');
 });
 
 test('weather helpers reject unsafe coordinates, incomplete directories and malformed daily forecasts', () => {
@@ -1009,3 +1009,4 @@ test('cached homepage weather keeps its own location and rejects invalid cached 
   cached.latitude=999;
   assert.equal(vm.runInContext('readCachedWeather()',env.context),null);
 });
+

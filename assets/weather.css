@@ -106,3 +106,24 @@
 .dark-mode .weather-alert--orange { --alert-tint:#392f25; }
 .dark-mode .weather-alert--red { --alert-tint:#39282b; }
 @media(max-width:600px) { .weather-alerts-heading { align-items:flex-start; flex-direction:column; gap:8px; } .weather-alert { padding:18px; } }
+
+
+/* Optional weather context follows the same light and dark palette. */
+.metrics { flex-wrap:wrap; gap:12px 22px; }
+#airQualityMetric[hidden] { display:none; }
+#airQualityLink { text-decoration:none; text-underline-offset:3px; }
+#airQualityLink:hover { text-decoration:underline; }
+#airQualityMetric b { color:#916000; }
+#airQualityMetric[data-risk="high"] b { color:#b9342b; }
+#airQualityMetric[data-risk="very-high"] b { color:#8e315e; }
+.dark-mode #airQualityMetric b { color:#efc267; }
+.dark-mode #airQualityMetric[data-risk="high"] b { color:#ff9a90; }
+.dark-mode #airQualityMetric[data-risk="very-high"] b { color:#f7a4ce; }
+.status-row:has(.status:empty) { display:none; }
+.history-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.history-card { background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:24px; }
+.history-card .range { flex-wrap:wrap; gap:16px 28px; }
+.history-note,.history-source { font-size:12px; color:var(--muted); line-height:1.7; }
+.history-note { margin:16px 0 0; }
+.history-source { margin:14px 0 0; }
+@media(max-width:600px) { .history-grid { grid-template-columns:1fr; } .history-card { padding:22px; } }

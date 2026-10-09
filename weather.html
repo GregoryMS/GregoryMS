@@ -19,7 +19,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261008-alerts">
+  <link rel="stylesheet" href="assets/weather.css?v=20261009-history">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261006-fog-waves">
@@ -56,7 +56,7 @@
           <p class="eyebrow" id="currentLabel">Right now</p>
           <div class="current-reading"><div class="current-icon" id="currentIcon" aria-hidden="true"></div><div><div class="temperature" id="temperature">--°C</div><p class="condition" id="condition">Loading…</p></div></div>
           <p class="details" id="currentDetails"></p>
-          <div class="metrics"><div><span>Humidity</span><b id="humidity">—</b></div><div><span>Wind</span><b id="wind">—</b></div></div>
+          <div class="metrics"><div><span>Humidity</span><b id="humidity">—</b></div><div id="airQualityMetric" hidden><a id="airQualityLink" href="https://weather.gc.ca/airquality/pages/index_e.html"><span>Air quality</span><b id="airQuality"></b></a></div><div><span>Wind</span><b id="wind">—</b></div></div>
         </div>
         <div class="current-next"><p class="eyebrow" id="nextPeriod">Next forecast</p><p class="next-summary" id="nextSummary">Your forecast is on its way.</p><div class="range"><div><span class="range-label">High</span><span class="range-value" id="currentHigh">—</span></div><div><span class="range-label">Low</span><span class="range-value low" id="currentLow">—</span></div></div></div>
       </section>
@@ -98,9 +98,18 @@
     <div class="status-row"><p class="status" id="status" role="status">Loading Environment Canada weather…</p></div>
     <p id="weatherAlertStatus" class="status weather-alert-status" role="status" hidden></p>
     <div class="weather-fallback" id="weatherFallback"><p>We couldn’t load the weather. Try again, or check the weather source.</p><button class="pill" id="retryWeather" type="button">Try again</button><a class="pill" id="fallbackLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast ↗</a></div>
-    <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night. — means not provided.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
+    <section class="history-section" aria-labelledby="historyHeading">
+      <div class="forecast-head"><h2 id="historyHeading">Historical weather</h2><span class="updated" id="historyLocation"></span></div>
+      <div class="history-grid">
+        <article class="history-card"><p class="eyebrow">Normal for this time of year</p><div class="range"><div><span class="range-label">High</span><span class="range-value" id="normalHigh">—</span></div><div><span class="range-label">Low</span><span class="range-value low" id="normalLow">—</span></div></div><p class="history-note" id="normalNote">Loading regional normals…</p></article>
+        <article class="history-card"><p class="eyebrow" id="yesterdayLabel">Yesterday</p><div class="range"><div><span class="range-label">High</span><span class="range-value" id="yesterdayHigh">—</span></div><div><span class="range-label">Low</span><span class="range-value low" id="yesterdayLow">—</span></div><div><span class="range-label">Precipitation</span><span class="range-value" id="yesterdayRain">—</span></div></div><p class="history-note" id="yesterdayNote">Loading previous-day weather…</p></article>
+      </div>
+      <p class="history-source">Normals: <a href="https://climate.weather.gc.ca/climate_normals/index_e.html">Environment Canada</a>. Yesterday: <a href="https://open-meteo.com/">Open-Meteo</a> archived weather-model estimates (CC BY 4.0), not station observations.</p>
+    </section>
+    <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night. — means not provided.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
   <script src="assets/weather-core.js?v=20261002-icons"></script>
+  <script src="assets/weather-context.js?v=20261009-history"></script>
   <script src="assets/weather-alerts.js?v=20261008-alerts"></script>
   <script src="assets/weather-map-layers.js?v=20261006-fog-waves"></script>
   <script src="assets/weather-radar.js?v=20261006-fog-waves"></script>
@@ -252,6 +261,7 @@
       activeController?.abort();
       const id = ++requestId, location = selectedLocation;
       const controller = new AbortController(); activeController = controller;
+      globalThis.GregleWeatherContext?.setLocation(location);
       resetWeather(); retryButton.disabled = true; $('weatherContent').setAttribute('aria-busy','true');
       $('currentLabel').textContent='Right now'; $('sourceCredit').textContent='Checking forecast source…';
       statusEl.textContent = `Loading ${location.name} weather…`; $('weatherFallback').style.display = 'none';
@@ -274,12 +284,13 @@
             if(!Array.isArray(forecasts) || !forecasts.length) throw new Error('No Canadian forecast');
             if(id!==requestId) return;
             renderCurrent(weather.currentConditions); renderForecast(forecasts,weather.forecastGroup.timestamp?.en);
+            globalThis.GregleWeatherContext?.renderNormals(weather,station.name);
             const issued=formatDate(weather.forecastGroup.timestamp?.en);
             $('updated').textContent=issued?'Forecast issued '+issued:'';
             $('sourceCredit').textContent='Weather by Environment and Climate Change Canada.';
             $('rangeNote').textContent=`Highs are daytime; lows are the following night. Times: ${forecastTimezone.replaceAll('_',' ')}. — means not provided.`;
             sourceLinks(true,station.coords?station:{...station,coords:`${station.latitude},${station.longitude}`});
-            statusEl.textContent=station.distance!==undefined ? `Environment Canada forecast for ${station.name}, ${Math.round(station.distance)} km from ${location.name}.` : `${location.name} weather loaded from Environment Canada.`;
+            statusEl.textContent=station.distance!==undefined ? `Environment Canada forecast for ${station.name}, ${Math.round(station.distance)} km from ${location.name}.` : '';
             return;
           } catch(error) {
             if(controller.signal.aborted || id!==requestId) throw error;
@@ -289,9 +300,11 @@
         const data=await fetchJSON(weatherCore.forecastURL(location),controller.signal);
         if(id!==requestId) return;
         renderGlobal(data); sourceLinks(false,location);
-        statusEl.textContent=canadianFailure ? `${location.name} · Environment Canada is unavailable or has no nearby forecast. Showing Open-Meteo.` : `${location.name} weather loaded from Open-Meteo.`;
+        globalThis.GregleWeatherContext?.renderNormals(null);
+        statusEl.textContent=canadianFailure ? `${location.name} · Environment Canada is unavailable or has no nearby forecast. Showing Open-Meteo.` : '';
       } catch (_) {
         if(id!==requestId) return;
+        globalThis.GregleWeatherContext?.renderNormals(null);
         resetWeather(); $('condition').textContent='Unavailable'; $('nextSummary').textContent='The forecast is temporarily unavailable.';
         $('sourceCredit').textContent='Weather data unavailable.';
         statusEl.textContent=`${location.name} weather is temporarily unavailable. Try again or open the weather source.`;
@@ -389,3 +402,4 @@
   </script>
 </body>
 </html>
+
