@@ -4,7 +4,7 @@
 .radar-meta { font-size:12px; color:var(--muted); line-height:1.7; margin:10px 0 0; }
 .radar-heading .radar-meta { margin:5px 0 0; }
 .radar-panel { border:1px solid var(--line); border-radius:22px; overflow:hidden; background:var(--panel); box-shadow:var(--shadow); }
-.radar-map { height:400px; background:var(--soft); isolation:isolate; }
+.radar-map { height:460px; background:var(--soft); isolation:isolate; }
 .radar-map .leaflet-control-attribution { font-size:10px; }
 .radar-map .leaflet-control-zoom a { color:var(--text); background:var(--panel); }
 .radar-controls { padding:18px 22px; display:flex; align-items:center; gap:22px; }
@@ -15,7 +15,7 @@
 .radar-timeline input { display:block; width:100%; margin:8px 0; min-height:24px; accent-color:var(--rain); cursor:pointer; }
 .radar-credit { max-width:900px; }
 .radar-map .leaflet-container { font-family:inherit; }
-@media(max-width:600px) { .radar-heading { align-items:flex-start; flex-direction:column; } .radar-actions { width:100%; } .radar-actions .pill { flex:1; } .radar-map { height:330px; } .radar-controls { padding:16px; gap:12px; } .radar-controls button { min-width:76px; padding:9px 12px; } .radar-timeline label { flex-direction:column; gap:2px; } .radar-timeline output { text-align:left; } }
+@media(max-width:600px) { .radar-heading { align-items:flex-start; flex-direction:column; } .radar-actions { width:100%; } .radar-actions .pill { flex:1; } .radar-map { height:360px; } .radar-controls { padding:16px; gap:12px; } .radar-controls button { min-width:76px; padding:9px 12px; } .radar-timeline label { flex-direction:column; gap:2px; } .radar-timeline output { text-align:left; } }
 
 .radar-legends { display:flex; flex-wrap:wrap; gap:10px 28px; margin-top:14px; }
 .radar-legend { display:flex; align-items:center; gap:9px; font-size:11px; color:var(--muted); }
@@ -51,7 +51,6 @@
 }
 
 
-.smoke-map { height:460px; }
 .smoke-legend { margin-top:16px; color:var(--muted); font-size:11px; }
 .smoke-legend strong { display:block; margin-bottom:8px; font-weight:500; }
 .smoke-scale { display:flex; width:min(100%,420px); }
@@ -65,7 +64,6 @@
 @media(max-width:600px) {
   .radar-layer-switches { flex-wrap:wrap; }
   .radar-layer-switches span { padding:0 8px; }
-  .smoke-map { height:360px; }
 }
 
 .lightning-toggle { position:relative; display:inline-flex; margin-right:auto; cursor:pointer; -webkit-tap-highlight-color:transparent; }
