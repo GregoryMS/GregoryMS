@@ -160,3 +160,13 @@
   .forecast-view-title { justify-content:space-between; gap:12px; }
   .forecast-switch span { min-width:58px; padding:8px 10px; }
 }
+
+/* Current phase only, above the next weather forecast. */
+.weather-moon { display:flex; align-items:center; gap:10px; margin:0 0 20px; padding-bottom:16px; border-bottom:1px solid var(--line); color:var(--text); }
+.weather-moon[hidden] { display:none; }
+.weather-moon svg { flex-shrink:0; }
+.weather-moon-label { display:block; color:var(--muted); font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:2px; }
+#currentMoonName { display:block; font-size:16px; font-weight:600; line-height:1.35; }
+.weather-moon-disc { fill:#273345; }
+.weather-moon-lit { fill:#f0e4bd; }
+.weather-moon-rim { fill:none; stroke:var(--muted); stroke-width:.7; }
