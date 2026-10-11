@@ -429,7 +429,7 @@
       border-radius: 999px;
       border: 1px solid var(--border);
       background: color-mix(in srgb, var(--panel-strong) 98%, transparent);
-      padding: 0 84px 0 24px;
+      padding: 0 96px 0 24px;
       font-size: 1.05rem;
       color: var(--text);
       box-shadow: var(--shadow);
@@ -447,6 +447,10 @@
     }
 
     .chatgpt-search {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       position: absolute;
       top: 10px;
       right: 10px;
@@ -493,7 +497,7 @@
     }
 
     @media (max-width: 400px) {
-      .search-input { padding-left: 18px; padding-right: 80px; font-size: 1rem; }
+      .search-input { padding-left: 18px; padding-right: 88px; font-size: 1rem; }
       .chatgpt-search { padding: 0 12px; }
     }
 
@@ -524,7 +528,31 @@
     }
 
     .search-button.secondary {
-      background: var(--button-secondary);
+      background: var(--panel-strong);
+      border-color: color-mix(in srgb, var(--text) 22%, var(--panel-strong));
+      box-shadow: 0 2px 6px #0000000d;
+    }
+
+    .search-button.secondary:hover {
+      background: color-mix(in srgb, var(--text) 5%, var(--panel-strong));
+      border-color: color-mix(in srgb, var(--text) 36%, var(--panel-strong));
+      box-shadow: 0 4px 12px #00000014;
+    }
+
+    body.dark-mode .search-button.secondary {
+      background: #363636;
+      border-color: #595959;
+      box-shadow: 0 2px 6px #00000026;
+    }
+
+    body.dark-mode .search-button.secondary:hover {
+      background: #404040;
+      border-color: #757575;
+    }
+
+    .search-button.secondary:focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 3px;
     }
 
     .quick-link {
@@ -709,7 +737,7 @@
           aria-controls="autocompleteList"
           aria-label="Search query"
         />
-        <button class="chatgpt-search" id="chatgptSearch" type="button" aria-label="Search with AI" title="Search with AI">AI ↗</button>
+        <button class="chatgpt-search" id="chatgptSearch" type="button" aria-label="Search with AI" title="Search with AI"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>AI</span></button>
         <ul class="autocomplete-list" id="autocompleteList" role="listbox" aria-label="Search suggestions"></ul>
       </form>
 
