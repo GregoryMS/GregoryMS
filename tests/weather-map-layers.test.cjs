@@ -87,3 +87,12 @@ test('smoke uses its native panel without a Windy iframe and restores other laye
   h.select('wind');assert.equal(h.element('radarSmoke').hidden,true);assert.equal(h.frames.length,1);
   h.select('radar');assert.equal(h.element('radarSmoke').hidden,true);assert.equal(h.api.active(),false);
 });
+
+test('precipitation type uses its own panel and keeps forecast embeds separate',()=>{
+  const h=setup();h.select('ptype');
+  assert.equal(h.frames.length,0);assert.equal(h.element('radarPrecipType').hidden,false);
+  assert.equal(h.element('radarForecast').hidden,true);assert.equal(h.element('radarObserved').hidden,true);
+  assert.match(h.element('radarMode').textContent,/Surface precipitation type/);
+  h.select('smoke');assert.equal(h.element('radarPrecipType').hidden,true);
+  h.select('radar');assert.equal(h.element('radarPrecipType').hidden,true);assert.equal(h.api.active(),false);
+});

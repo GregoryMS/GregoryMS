@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/weather.css?v=20261009-history">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-map-size">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-ptype">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 </head>
@@ -67,6 +67,7 @@
       <div class="radar-map-toolbar">
         <div class="radar-layer-switches" role="radiogroup" aria-label="Weather map layer">
           <label><input id="radarLayer-radar" type="radio" name="weatherMapLayer" checked disabled><span>Radar</span></label>
+          <label><input id="radarLayer-ptype" type="radio" name="weatherMapLayer" disabled><span>Precip type</span></label>
           <label><input id="radarLayer-wind" type="radio" name="weatherMapLayer" disabled><span>Wind</span></label>
           <label><input id="radarLayer-clouds" type="radio" name="weatherMapLayer" disabled><span>Clouds</span></label>
           <label><input id="radarLayer-smoke" type="radio" name="weatherMapLayer" disabled><span>Smoke</span></label>
@@ -93,6 +94,24 @@
         </figure><p class="radar-meta">Observed lightning activity from Environment Canada, averaged over 2.5 km cells during the preceding 10 minutes. Colours show flash density, not individual strike locations. Coverage includes most of Canada and nearby border areas; a clear area can also mean no coverage. Lightning follows the radar timeline, using the nearest earlier observation (up to 20 minutes behind), with its own observation time shown above.</p><p class="radar-meta"><a href="https://eccc-msc.github.io/open-data/msc-data/lightning/readme_lightning_en/">About the Canadian Lightning Detection Network data ↗</a></p></details>
       <p id="radarStatus" class="radar-meta" role="status">Radar will load as you scroll into view.</p>
       <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta radar-credit">Recent rain and snow observations from <a href="https://www.rainviewer.com/">RainViewer</a>, not a forecast. Colours follow RainViewer’s classification. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p></details>
+      </div>
+      <div id="radarPrecipType" hidden>
+        <div class="radar-actions"><button class="pill" id="ptypeRecenter" type="button">◎ Recenter</button><button class="pill" id="ptypeRefresh" type="button">↻ Refresh</button></div>
+        <div class="radar-panel">
+          <div id="ptypeMap" class="radar-map" role="region" aria-label="Environment Canada precipitation type map" tabindex="0"></div>
+          <div class="radar-controls"><button class="pill" id="ptypePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline"><label for="ptypeTime">Precipitation history <output id="ptypeTimestamp" for="ptypeTime">Loading…</output></label><input id="ptypeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="ptypeStart">Past three hours</span><span>Latest available</span></div></div></div>
+        </div>
+        <div class="ptype-legend" role="group" aria-label="Precipitation types; colour shades progress from light to heavy">
+          <span><i class="ptype-snow" aria-hidden="true"></i>Snow</span>
+          <span><i class="ptype-mixed" aria-hidden="true"></i>Rain/snow mix</span>
+          <span><i class="ptype-rain" aria-hidden="true"></i>Rain</span>
+          <span><i class="ptype-hail" aria-hidden="true"></i>Hail/rain</span>
+          <span><i class="ptype-freezing" aria-hidden="true"></i>Freezing rain</span>
+        </div>
+        <p class="radar-meta">Each colour scale runs from light to heavy precipitation.</p>
+        <p id="ptypeStatus" class="radar-meta" role="status">Precipitation types load when you open this tab.</p>
+        <div class="radar-forecast-caption"><span>Data: Environment and Climate Change Canada</span><a href="https://weather.gc.ca/" target="_blank" rel="noopener noreferrer">Open Environment Canada ↗</a></div>
+        <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta">Environment Canada’s surface precipitation-type composite combines radar observations and modelled surface temperatures to estimate what is reaching the ground. It updates every six minutes at 1 km resolution, with up to three hours of history. This is a recent estimate, not a forecast. Coverage varies across North America; blank areas may mean no precipitation or missing radar coverage. Times use the selected location’s time zone. Map areas are requested from OpenStreetMap and Environment Canada. <a href="https://eccc-msc.github.io/open-data/msc-data/obs_radar/readme_radar_geomet_en/">About the data ↗</a></p></details>
       </div>
       <div id="radarSmoke" hidden>
         <div class="radar-actions"><button class="pill" id="smokeRecenter" type="button">◎ Recenter</button><button class="pill" id="smokeRefresh" type="button">↻ Refresh</button></div>
@@ -131,7 +150,8 @@
   <script src="assets/weather-context.js?v=20261009-history"></script>
   <script src="assets/weather-alerts.js?v=20261008-alerts"></script>
   <script src="assets/weather-smoke.js?v=20261009-smoke"></script>
-  <script src="assets/weather-map-layers.js?v=20261010-lightning"></script>
+  <script src="assets/weather-precip-type.js?v=20261010-ptype"></script>
+  <script src="assets/weather-map-layers.js?v=20261010-ptype"></script>
   <script src="assets/weather-lightning.js?v=20261010-lightning"></script>
   <script src="assets/weather-radar.js?v=20261010-lightning"></script>
   <script src="assets/tide-core.js"></script>

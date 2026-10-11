@@ -91,3 +91,14 @@
 .lightning-legend-ticks span:first-child { justify-content:flex-start; }
 .lightning-legend-ticks span:last-child { justify-content:flex-end; }
 @media(max-width:600px) { #radarObserved > .radar-actions { flex-wrap:wrap; } .lightning-toggle { flex-basis:100%; } }
+
+.radar-layer-switches { flex-wrap:wrap; }
+.radar-layer-switches span { white-space:nowrap; }
+.ptype-legend { display:flex; flex-wrap:wrap; gap:12px 20px; margin-top:16px; color:var(--text); font-size:11px; }
+.ptype-legend > span { display:flex; align-items:center; gap:7px; }
+.ptype-legend i { display:block; width:48px; height:10px; border-radius:5px; box-shadow:inset 0 0 0 1px #00000015; }
+.ptype-snow { background:linear-gradient(90deg,#7fdfeb,#47a4f0,#0000e0); }
+.ptype-mixed { background:linear-gradient(90deg,#e0bde6,#c36dd2,#9b27af); }
+.ptype-rain { background:linear-gradient(90deg,#9afd9a,#00cb00,#008000); }
+.ptype-hail { background:#fec007; }
+.ptype-freezing { background:linear-gradient(90deg,#fecbc8,#fe1e0d); }
