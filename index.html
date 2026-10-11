@@ -510,7 +510,8 @@
       transition: transform 0.2s ease;
     }
 
-    .chatgpt-search::before {
+    .chatgpt-search::before,
+    .chatgpt-search::after {
       content: "";
       position: absolute;
       inset: -1px;
@@ -523,15 +524,26 @@
         linear-gradient(120deg, #4285f4, #26b7cd 38%, #34c98b 68%, #63d69c) border-box;
       opacity: 0;
       transition: opacity 0.75s ease;
+    }
+
+    .chatgpt-search::before {
       animation: ai-glow-pulse 1.6s ease-in-out infinite;
       animation-play-state: paused;
     }
 
-    .chatgpt-search.is-intro-glowing::before,
     .chatgpt-search:hover::before,
     .chatgpt-search:focus-visible::before {
       opacity: 1;
       animation-play-state: running;
+    }
+
+    .chatgpt-search.is-intro-glowing::after {
+      animation: ai-glow-pulse 1.6s ease-in-out infinite, ai-glow-intro 3.95s linear both;
+    }
+
+    @keyframes ai-glow-intro {
+      0%, 81% { opacity: 1; }
+      100% { opacity: 0; }
     }
 
     @keyframes ai-glow-pulse {
@@ -555,10 +567,14 @@
 
     @media (prefers-reduced-motion: reduce) {
       .chatgpt-search { transition: none; }
-      .chatgpt-search::before {
+      .chatgpt-search::before,
+      .chatgpt-search::after {
         animation: none;
         transition: none;
         box-shadow: -3px 0 12px #4285f450, 3px 0 12px #34c98b50;
+      }
+      .chatgpt-search.is-intro-glowing::after {
+        animation: ai-glow-intro 3.2s step-end both;
       }
       .chatgpt-search:hover,
       .chatgpt-search:focus-visible { transform: none; }
@@ -826,7 +842,9 @@
     const wolframSearchButton = document.getElementById('wolframSearch');
     const chatgptSearchButton = document.getElementById('chatgptSearch');
     // Two gentle pulses on each page load, then fade to the regular button.
-    setTimeout(() => chatgptSearchButton.classList.remove('is-intro-glowing'), 3200);
+    chatgptSearchButton.addEventListener('animationend', event => {
+      if (event.animationName === 'ai-glow-intro') chatgptSearchButton.classList.remove('is-intro-glowing');
+    });
     const braveSearchButton = document.getElementById('braveSearch');
     const searchForm = document.getElementById('searchForm');
     const autocompleteList = document.getElementById('autocompleteList');
