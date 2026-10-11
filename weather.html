@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/weather.css?v=20261009-history">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-lightning">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-lightning-key">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 </head>
@@ -85,7 +85,12 @@
         <div class="radar-legend radar-legend-snow" aria-label="Snow: pale cyan through bright blue as intensity increases"><strong>Snow</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
       </div>
       <p id="lightningStatus" class="radar-meta" role="status">Lightning loads with the radar.</p>
-      <details id="lightningKey" class="radar-source-note"><summary>Lightning key & coverage</summary><p class="radar-meta">Observed lightning activity from Environment Canada, averaged over 2.5 km cells during the preceding 10 minutes. Colours show flash density, not individual strike locations. Coverage includes most of Canada and nearby border areas; a clear area can also mean no coverage. Lightning follows the radar timeline, using the nearest earlier observation (up to 20 minutes behind), with its own observation time shown above.</p><img class="lightning-legend" src="https://geo.weather.gc.ca/geomet?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=Lightning_2.5km_Density&amp;format=image/png&amp;STYLE=Lightning" alt="Environment Canada lightning density colour key, in flashes per square kilometre per minute" width="184" height="192" loading="lazy"><p class="radar-meta"><a href="https://eccc-msc.github.io/open-data/msc-data/lightning/readme_lightning_en/">About the Canadian Lightning Detection Network data ↗</a></p></details>
+      <details id="lightningKey" class="radar-source-note"><summary>Lightning key & coverage</summary>
+        <figure class="lightning-legend" aria-label="Lightning flash density colour scale from 0 to 2 or more flashes per square kilometre per minute">
+          <figcaption><strong>Lightning activity</strong><span>Flashes / km² / min</span></figcaption>
+          <div class="lightning-legend-bar" aria-hidden="true"></div>
+          <div class="lightning-legend-ticks" aria-hidden="true"><span>0</span><span>0.5</span><span>1</span><span>1.5</span><span>2+</span></div>
+        </figure><p class="radar-meta">Observed lightning activity from Environment Canada, averaged over 2.5 km cells during the preceding 10 minutes. Colours show flash density, not individual strike locations. Coverage includes most of Canada and nearby border areas; a clear area can also mean no coverage. Lightning follows the radar timeline, using the nearest earlier observation (up to 20 minutes behind), with its own observation time shown above.</p><p class="radar-meta"><a href="https://eccc-msc.github.io/open-data/msc-data/lightning/readme_lightning_en/">About the Canadian Lightning Detection Network data ↗</a></p></details>
       <p id="radarStatus" class="radar-meta" role="status">Radar will load as you scroll into view.</p>
       <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta radar-credit">Recent rain and snow observations from <a href="https://www.rainviewer.com/">RainViewer</a>, not a forecast. Colours follow RainViewer’s classification. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p></details>
       </div>

@@ -71,5 +71,13 @@
 .lightning-toggle { display:flex; align-items:center; gap:7px; margin-right:auto; font-size:13px; cursor:pointer; color:var(--text); min-height:44px; }
 .lightning-toggle input { width:18px; height:18px; accent-color:var(--rain); }
 .lightning-toggle span { color:var(--muted); font-size:11px; }
-.lightning-legend { display:block; margin-top:12px; background:white; border-radius:8px; }
+.lightning-legend { box-sizing:border-box; width:100%; max-width:420px; margin:12px 0 16px; padding:16px 18px; border:1px solid var(--line); border-radius:14px; background:var(--panel); }
+.lightning-legend figcaption { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:4px 16px; margin-bottom:14px; }
+.lightning-legend strong { color:var(--text); font-size:12px; font-weight:500; }
+.lightning-legend figcaption span { color:var(--muted); font-size:10px; }
+.lightning-legend-bar { height:12px; border-radius:6px; background:linear-gradient(90deg,#000078,#0002cc,#003bfd,#03b3fa,#30fccd,#94fc69,#e4e919,#fd9b00,#fd3700,#d10400,#820000); box-shadow:inset 0 0 0 1px #00000012; }
+.lightning-legend-ticks { display:flex; justify-content:space-between; margin-top:7px; color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
+.lightning-legend-ticks span { width:0; display:flex; justify-content:center; }
+.lightning-legend-ticks span:first-child { justify-content:flex-start; }
+.lightning-legend-ticks span:last-child { justify-content:flex-end; }
 @media(max-width:600px) { #radarObserved > .radar-actions { flex-wrap:wrap; } .lightning-toggle { flex-basis:100%; } }
