@@ -452,24 +452,44 @@
       right: 10px;
       height: 44px;
       padding: 0 16px;
-      border: 1px solid var(--border);
+      border: 1px solid transparent;
       border-radius: 999px;
-      background: var(--button-secondary);
+      background:
+        linear-gradient(var(--panel-strong), var(--panel-strong)) padding-box,
+        linear-gradient(120deg, #4285f4, #a374ef 38%, #e879b5 68%, #f4b86a) border-box;
       color: var(--text);
+      box-shadow: -3px 0 12px #4285f435, 3px 0 12px #e879b535, 0 0 5px #a374ef25;
       font: inherit;
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
 
-    .chatgpt-search:hover {
-      background: var(--text);
-      color: var(--bg);
+    .chatgpt-search:hover,
+    .chatgpt-search:focus-visible {
+      box-shadow: -4px 0 18px #4285f465, 4px 0 18px #e879b565, 0 0 8px #a374ef45;
+      transform: translateY(-1px);
     }
 
     .chatgpt-search:focus-visible {
       outline: 2px solid var(--text);
-      outline-offset: 3px;
+      outline-offset: 4px;
+    }
+
+    body.dark-mode .chatgpt-search {
+      box-shadow: -3px 0 14px #4285f450, 3px 0 14px #e879b550, 0 0 6px #a374ef35;
+    }
+
+    body.dark-mode .chatgpt-search:hover,
+    body.dark-mode .chatgpt-search:focus-visible {
+      box-shadow: -4px 0 20px #4285f480, 4px 0 20px #e879b580, 0 0 10px #a374ef60;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .chatgpt-search { transition: none; }
+      .chatgpt-search:hover,
+      .chatgpt-search:focus-visible { transform: none; }
     }
 
     @media (max-width: 400px) {
