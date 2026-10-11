@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/weather.css?v=20261009-history">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-lightning-key">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-lightning-switch">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 </head>
@@ -75,7 +75,7 @@
         <span id="radarMode" class="radar-mode">Observed precipitation</span>
       </div>
       <div id="radarObserved">
-      <div class="radar-actions"><label class="lightning-toggle"><input id="lightningToggle" type="checkbox" checked> ⚡ Lightning <span>Canada</span></label><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div>
+      <div class="radar-actions"><label class="lightning-toggle"><input id="lightningToggle" type="checkbox" role="switch" aria-label="Lightning overlay for Canada" checked><span class="lightning-toggle-body"><svg class="lightning-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z"/></svg><span class="lightning-toggle-label">Lightning <span class="lightning-toggle-region">Canada</span></span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div>
       <div class="radar-panel">
         <div id="radarMap" class="radar-map" role="region" aria-label="Interactive precipitation radar and Canadian lightning map" tabindex="0"></div>
         <div class="radar-controls"><button class="pill" id="radarPlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline"><label for="radarTime">Radar history <output id="radarTimestamp" for="radarTime">Loading…</output></label><input id="radarTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="radarStart">Past two hours</span><span>Latest available</span></div></div></div>
