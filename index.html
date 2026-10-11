@@ -490,29 +490,61 @@
     }
 
     .chatgpt-search {
+      position: relative;
+      isolation: isolate;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
       height: 44px;
       padding: 0 16px;
-      border: 1px solid transparent;
+      border: 1px solid var(--border);
       border-radius: 999px;
-      background:
-        linear-gradient(var(--panel-strong), var(--panel-strong)) padding-box,
-        linear-gradient(120deg, #4285f4, #26b7cd 38%, #34c98b 68%, #63d69c) border-box;
+      background: var(--panel-strong);
       color: var(--text);
-      box-shadow: -3px 0 12px #4285f435, 3px 0 12px #34c98b35, 0 0 5px #26b7cd25;
+      box-shadow: none;
       font: inherit;
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      transition: transform 0.2s ease;
+    }
+
+    .chatgpt-search::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      pointer-events: none;
+      border: 1px solid transparent;
+      border-radius: inherit;
+      background:
+        linear-gradient(var(--panel-strong), var(--panel-strong)) padding-box,
+        linear-gradient(120deg, #4285f4, #26b7cd 38%, #34c98b 68%, #63d69c) border-box;
+      opacity: 0;
+      transition: opacity 0.75s ease;
+      animation: ai-glow-pulse 1.6s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+
+    .chatgpt-search.is-intro-glowing::before,
+    .chatgpt-search:hover::before,
+    .chatgpt-search:focus-visible::before {
+      opacity: 1;
+      animation-play-state: running;
+    }
+
+    @keyframes ai-glow-pulse {
+      0%, 100% {
+        box-shadow: -3px 0 10px #4285f440, 3px 0 10px #34c98b40, 0 0 5px #26b7cd30;
+      }
+      50% {
+        box-shadow: -4px 0 20px #4285f480, 4px 0 20px #34c98b80, 0 0 10px #26b7cd60;
+      }
     }
 
     .chatgpt-search:hover,
     .chatgpt-search:focus-visible {
-      box-shadow: -4px 0 18px #4285f465, 4px 0 18px #34c98b65, 0 0 8px #26b7cd45;
       transform: translateY(-1px);
     }
 
@@ -521,17 +553,13 @@
       outline-offset: 4px;
     }
 
-    body.dark-mode .chatgpt-search {
-      box-shadow: -3px 0 14px #4285f450, 3px 0 14px #34c98b50, 0 0 6px #26b7cd35;
-    }
-
-    body.dark-mode .chatgpt-search:hover,
-    body.dark-mode .chatgpt-search:focus-visible {
-      box-shadow: -4px 0 20px #4285f480, 4px 0 20px #34c98b80, 0 0 10px #26b7cd60;
-    }
-
     @media (prefers-reduced-motion: reduce) {
       .chatgpt-search { transition: none; }
+      .chatgpt-search::before {
+        animation: none;
+        transition: none;
+        box-shadow: -3px 0 12px #4285f450, 3px 0 12px #34c98b50;
+      }
       .chatgpt-search:hover,
       .chatgpt-search:focus-visible { transform: none; }
     }
@@ -779,7 +807,7 @@
         />
         <div class="search-actions">
           <button class="wolfram-search" id="wolframSearch" type="button" aria-label="Search WolframAlpha" title="Search WolframAlpha"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6V4H6l7 8-7 8h12v-2"/></svg></button>
-          <button class="chatgpt-search" id="chatgptSearch" type="button" aria-label="Search with AI" title="Open AI search, then press Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>AI</span></button>
+          <button class="chatgpt-search is-intro-glowing" id="chatgptSearch" type="button" aria-label="Search with AI" title="Open AI search, then press Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>AI</span></button>
         </div>
         <ul class="autocomplete-list" id="autocompleteList" role="listbox" aria-label="Search suggestions"></ul>
       </form>
@@ -797,6 +825,8 @@
     const gregleSearchButton = document.getElementById('gregleSearch');
     const wolframSearchButton = document.getElementById('wolframSearch');
     const chatgptSearchButton = document.getElementById('chatgptSearch');
+    // Two gentle pulses on each page load, then fade to the regular button.
+    setTimeout(() => chatgptSearchButton.classList.remove('is-intro-glowing'), 3200);
     const braveSearchButton = document.getElementById('braveSearch');
     const searchForm = document.getElementById('searchForm');
     const autocompleteList = document.getElementById('autocompleteList');
