@@ -43,9 +43,35 @@
 .radar-source-note { color:var(--muted); font-size:11px; margin-top:14px; }
 .radar-source-note summary { cursor:pointer; padding:8px 0; }
 @media(max-width:600px) {
-  .radar-layer-switches { width:100%; }
-  .radar-layer-switches label { flex:1; }
-  .radar-layer-switches span { min-width:0; padding:0 12px; }
+  .radar-layer-switches {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    width:100%;
+    gap:6px;
+    padding:6px;
+    border-radius:18px;
+  }
+  .radar-layer-switches label { min-width:0; }
+  .radar-layer-switches span {
+    min-width:0;
+    min-height:44px;
+    padding:0 6px;
+    border:1px solid transparent;
+    border-radius:12px;
+    font-size:12px;
+    transition:background .18s,color .18s,border-color .18s;
+  }
+  .radar-layer-switches label:hover input:not(:disabled):not(:checked) + span {
+    background:color-mix(in srgb,var(--panel) 65%,transparent);
+    color:var(--text);
+  }
+  .radar-layer-switches input:checked + span {
+    border-color:color-mix(in srgb,var(--rain) 40%,var(--line));
+    color:var(--rain);
+    font-weight:600;
+    box-shadow:0 2px 5px #0000000a;
+  }
+  .radar-layer-switches input:focus-visible + span { outline-offset:0; }
   .radar-forecast-map { height:520px; }
   .radar-panel { border-radius:16px; }
 }
@@ -61,10 +87,6 @@
 .smoke-scale span:nth-child(4) { border-color:#c84e2b; }
 .smoke-scale span:nth-child(5) { border-color:#973044; }
 .smoke-scale span:nth-child(6) { border-color:#5c2459; }
-@media(max-width:600px) {
-  .radar-layer-switches { flex-wrap:wrap; }
-  .radar-layer-switches span { padding:0 8px; }
-}
 
 .lightning-toggle { position:relative; display:inline-flex; margin-right:auto; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 .lightning-toggle input { position:absolute; width:1px; height:1px; padding:0; margin:0; opacity:0; }
@@ -102,3 +124,5 @@
 .ptype-rain { background:linear-gradient(90deg,#9afd9a,#00cb00,#008000); }
 .ptype-hail { background:#fec007; }
 .ptype-freezing { background:linear-gradient(90deg,#fecbc8,#fe1e0d); }
+
+@media(prefers-reduced-motion:reduce) { .radar-layer-switches span { transition:none; } }
