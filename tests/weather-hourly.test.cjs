@@ -1,14 +1,14 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const core=require('../assets/weather-hourly.js');
-const now=Date.parse('2026-11-01T08:30:00Z');
+const now=Date.parse('2025-11-02T08:30:00Z');
 function fixture(){return {timezone:'America/Vancouver',hourly:{time:Array.from({length:26},(_,i)=>now/1000-1800+i*3600),temperature_2m:Array(26).fill(0),weather_code:Array(26).fill(0),is_day:Array(26).fill(0),precipitation_probability:Array(26).fill(0),wind_speed_10m:Array(26).fill(0)}};}
 test('hourly timestamps use destination timezone across midnight and DST, with zero values preserved',()=>{
   const f=core.parseHours(fixture(),now);assert.equal(f.hours.length,24);
   assert.equal(f.hours[0].time,f.hours[1].time);assert.notEqual(f.hours[0].label,f.hours[1].label);
   assert.equal(f.hours[0].temperature,0);assert.equal(f.hours[0].chance,0);assert.equal(f.hours[0].wind,0);assert(f.hours[0].night);
-  assert.match(f.hours.at(-1).day,/Nov 1/);
-  const tokyo={...fixture(),timezone:'Asia/Tokyo'};assert.match(core.parseHours(tokyo,now).hours.at(-1).day,/Nov 2/);
+  assert.match(f.hours.at(-1).day,/Nov 2/);
+  const tokyo={...fixture(),timezone:'Asia/Tokyo'};assert.match(core.parseHours(tokyo,now).hours.at(-1).day,/Nov 3/);
   assert.equal(core.parseHours(fixture(),now+3600000).hours[0].timestamp,now-1800000+3600000);
 });
 test('malformed, stale and empty forecasts are rejected; missing measurements stay missing',()=>{
