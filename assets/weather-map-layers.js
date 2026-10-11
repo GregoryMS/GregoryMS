@@ -42,6 +42,7 @@
     $('radarForecast').hidden=radar || layer==='smoke';
     $('radarSmoke').hidden=layer!=='smoke';
     root.GregleSmoke?.setActive(layer==='smoke');
+    root.GregleLightning?.setActive(radar);
     $('radarMode').textContent=radar?'Observed precipitation':layer==='smoke'?'Wildfire smoke forecast · PM₂.₅':layer==='wind'?'Wind forecast · km/h':layer==='fog'?'Fog forecast':'Clouds & rain forecast';
     if(!radar)root.GregleRadar?.pause();
     else root.GregleRadar?.resumeView();

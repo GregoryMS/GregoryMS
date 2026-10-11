@@ -72,6 +72,7 @@
     $('radarTime').value=String(current);
     $('radarTime').setAttribute('aria-valuetext',time(frame));
     $('radarTimestamp').textContent=time(frame);
+    root.GregleLightning?.setFrame(frame);
     $('radarStart').textContent=time(frames[0]);
     status();
     return true;
@@ -107,6 +108,7 @@
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
+    root.GregleLightning?.setLocation(value);
     root.GregleWeatherLayers?.setLocation(value);
     $('radarLocation').textContent=`Weather layers around ${value.name}`;
     if(map) { stop();clearLayers();marker.setLatLng([value.latitude,value.longitude]);recenter();if(frames.length)show(frames.length-1); }
@@ -116,6 +118,7 @@
     started=true;
     if(!root.L) { $('radarStatus').textContent='The radar map could not load. Refresh this page to retry, or open RainViewer below.';return; }
     map=root.L.map('radarMap',{scrollWheelZoom:false,minZoom:2,maxZoom:10,fadeAnimation:false});
+    root.GregleLightning?.attach(map);
     const base=root.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
     base.on('tileerror',()=>{baseFailed=true;status();});
     marker=root.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
@@ -123,7 +126,7 @@
     // Dropping cached frames on a pan prevents hidden layers requesting many tiles.
     map.on('movestart',()=>{stop();clearLayers();});
     map.on('moveend',()=>{if(frames.length)show(current);});
-    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);});
+    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);root.GregleLightning?.refresh();});
     refresh(true);
   }
   root.GregleRadar={setLocation,pause:stop,resumeView(){

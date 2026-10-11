@@ -67,3 +67,9 @@
   .radar-layer-switches span { padding:0 8px; }
   .smoke-map { height:360px; }
 }
+
+.lightning-toggle { display:flex; align-items:center; gap:7px; margin-right:auto; font-size:13px; cursor:pointer; color:var(--text); min-height:44px; }
+.lightning-toggle input { width:18px; height:18px; accent-color:var(--rain); }
+.lightning-toggle span { color:var(--muted); font-size:11px; }
+.lightning-legend { display:block; margin-top:12px; background:white; border-radius:8px; }
+@media(max-width:600px) { #radarObserved > .radar-actions { flex-wrap:wrap; } .lightning-toggle { flex-basis:100%; } }
