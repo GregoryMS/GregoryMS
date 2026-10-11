@@ -429,7 +429,7 @@
       border-radius: 999px;
       border: 1px solid var(--border);
       background: color-mix(in srgb, var(--panel-strong) 98%, transparent);
-      padding: 0 24px;
+      padding: 0 136px 0 24px;
       font-size: 1.05rem;
       color: var(--text);
       box-shadow: var(--shadow);
@@ -444,6 +444,37 @@
       border-color: rgba(0,0,0,0.08);
       box-shadow: 0 18px 60px rgba(0,0,0,0.08);
       transform: translateY(-1px);
+    }
+
+    .chatgpt-search {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      height: 44px;
+      padding: 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--button-secondary);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chatgpt-search:hover {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .chatgpt-search:focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 400px) {
+      .search-input { padding-left: 18px; padding-right: 120px; font-size: 1rem; }
+      .chatgpt-search { padding: 0 12px; }
     }
 
     .button-row {
@@ -658,6 +689,7 @@
           aria-controls="autocompleteList"
           aria-label="Search query"
         />
+        <button class="chatgpt-search" id="chatgptSearch" type="button" aria-label="Search with ChatGPT" title="Search with ChatGPT">ChatGPT ↗</button>
         <ul class="autocomplete-list" id="autocompleteList" role="listbox" aria-label="Search suggestions"></ul>
       </form>
 
@@ -672,6 +704,7 @@
   <script>
     const searchInput = document.getElementById('searchInput');
     const gregleSearchButton = document.getElementById('gregleSearch');
+    const chatgptSearchButton = document.getElementById('chatgptSearch');
     const braveSearchButton = document.getElementById('braveSearch');
     const searchForm = document.getElementById('searchForm');
     const autocompleteList = document.getElementById('autocompleteList');
@@ -918,6 +951,10 @@
 
     braveSearchButton.addEventListener('click', () => {
       runSearch('https://search.brave.com/search?q=');
+    });
+
+    chatgptSearchButton.addEventListener('click', () => {
+      runSearch('https://chatgpt.com/?hints=search&q=');
     });
 
     searchForm.addEventListener('submit', (event) => {
