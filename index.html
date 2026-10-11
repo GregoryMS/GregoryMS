@@ -456,6 +456,7 @@
     }
 
     .wolfram-search {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -468,7 +469,19 @@
       color: var(--muted);
       box-shadow: none;
       cursor: pointer;
-      transition: color 0.2s ease, box-shadow 0.2s ease;
+      transition: color 0.2s ease;
+    }
+
+    .wolfram-search::before {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
     }
 
     .wolfram-search:hover,
@@ -476,7 +489,16 @@
     .wolfram-search:active {
       background: transparent;
       color: #dd1100;
-      box-shadow: inset 0 0 0 1px currentColor;
+      box-shadow: none;
+    }
+
+    .wolfram-search:hover::before,
+    .wolfram-search:active::before {
+      opacity: 0.45;
+    }
+
+    .wolfram-search:focus-visible::before {
+      opacity: 1;
     }
 
     .wolfram-search:focus-visible {
@@ -486,7 +508,8 @@
     .wolfram-search svg { display: block; pointer-events: none; }
 
     @media (prefers-reduced-motion: reduce) {
-      .wolfram-search { transition: none; }
+      .wolfram-search,
+      .wolfram-search::before { transition: none; }
     }
 
     .chatgpt-search {
