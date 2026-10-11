@@ -19,7 +19,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261009-history">
+  <link rel="stylesheet" href="assets/weather.css?v=20261010-hourly">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-ptype">
@@ -60,7 +60,18 @@
         </div>
         <div class="current-next"><p class="eyebrow" id="nextPeriod">Next forecast</p><p class="next-summary" id="nextSummary">Your forecast is on its way.</p><div class="range"><div><span class="range-label">High</span><span class="range-value" id="currentHigh">—</span></div><div><span class="range-label">Low</span><span class="range-value low" id="currentLow">—</span></div></div></div>
       </section>
-      <section aria-labelledby="forecast-heading"><div class="forecast-head"><h2 id="forecast-heading">The days ahead</h2><span class="updated" id="updated"></span></div><div class="forecast-grid" id="forecastGrid"></div></section>
+      <section aria-labelledby="forecast-heading">
+        <div class="forecast-head forecast-view-head">
+          <div class="forecast-view-title"><h2 id="forecast-heading">The days ahead</h2><div class="forecast-switch" role="radiogroup" aria-label="Forecast interval"><label><input type="radio" name="forecastView" id="forecastDaily" checked><span>Daily</span></label><label><input type="radio" name="forecastView" id="forecastHourly"><span>Hourly</span></label></div></div>
+          <span class="updated" id="updated"></span>
+        </div>
+        <div class="forecast-grid" id="forecastGrid"></div>
+        <div id="hourlyPanel" hidden>
+          <div class="hourly-toolbar"><p class="updated" id="hourlyStatus" role="status"></p><div class="hourly-navigation"><button class="pill" id="hourlyRetry" type="button" hidden>Try again</button><button class="hourly-arrow" id="hourlyPrevious" type="button" aria-label="Earlier hours" aria-controls="hourlyGrid" disabled>←</button><button class="hourly-arrow" id="hourlyNext" type="button" aria-label="Later hours" aria-controls="hourlyGrid" disabled>→</button></div></div>
+          <div class="hourly-grid" id="hourlyGrid" tabindex="0" role="region" aria-label="Hourly forecast; scroll for more hours"></div>
+          <p class="hourly-credit">Hourly forecast: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0). Precipitation chance covers rain or snow. — means not provided.</p>
+        </div>
+      </section>
     </div>
     <section class="radar-section" aria-labelledby="radarHeading">
       <div class="radar-heading"><div><h2 id="radarHeading">Weather map</h2><p id="radarLocation" class="radar-meta">Weather layers around your selected location</p></div></div>
@@ -147,6 +158,7 @@
     <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night. — means not provided.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
   <script src="assets/weather-core.js?v=20261002-icons"></script>
+  <script src="assets/weather-hourly.js?v=20261010-hourly"></script>
   <script src="assets/weather-context.js?v=20261009-history"></script>
   <script src="assets/weather-alerts.js?v=20261008-alerts"></script>
   <script src="assets/weather-smoke.js?v=20261009-smoke"></script>
@@ -303,6 +315,7 @@
       const id = ++requestId, location = selectedLocation;
       const controller = new AbortController(); activeController = controller;
       globalThis.GregleWeatherContext?.setLocation(location);
+      globalThis.GregleWeatherHourly?.setLocation(location);
       resetWeather(); retryButton.disabled = true; $('weatherContent').setAttribute('aria-busy','true');
       $('currentLabel').textContent='Right now'; $('sourceCredit').textContent='Checking forecast source…';
       statusEl.textContent = `Loading ${location.name} weather…`; $('weatherFallback').style.display = 'none';

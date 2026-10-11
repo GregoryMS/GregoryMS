@@ -127,3 +127,36 @@
 .history-note { margin:16px 0 0; }
 .history-source { margin:14px 0 0; }
 @media(max-width:600px) { .history-grid { grid-template-columns:1fr; } .history-card { padding:22px; } }
+
+/* Forecast interval switch and compact hourly cards. */
+.forecast-view-head { flex-wrap:wrap; align-items:center; }
+.forecast-view-title { display:flex; align-items:center; flex-wrap:wrap; gap:14px 20px; }
+.forecast-switch { display:inline-flex; padding:4px; gap:3px; border:1px solid var(--line); border-radius:999px; background:var(--soft); }
+.forecast-switch label { position:relative; cursor:pointer; }
+.forecast-switch input { position:absolute; opacity:0; width:1px; height:1px; }
+.forecast-switch span { display:block; min-width:70px; padding:8px 14px; border-radius:999px; color:var(--muted); font-size:13px; font-weight:600; text-align:center; transition:background .15s,color .15s,box-shadow .15s; }
+.forecast-switch input:checked + span { color:var(--text); background:var(--panel); box-shadow:0 2px 6px rgba(0,0,0,.09); }
+.forecast-switch input:focus-visible + span { outline:3px solid var(--rain); outline-offset:3px; }
+#forecastGrid[hidden], #updated[hidden], #hourlyPanel[hidden], #hourlyRetry[hidden] { display:none; }
+.hourly-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.hourly-toolbar p { margin:0; line-height:1.6; }
+.hourly-navigation { display:flex; gap:7px; align-items:center; flex-shrink:0; }
+.hourly-arrow { width:36px; height:36px; border:1px solid var(--line); border-radius:50%; background:var(--panel); color:var(--text); font-size:18px; }
+.hourly-arrow:disabled { opacity:.35; cursor:default; }
+.hourly-grid { display:grid; grid-auto-flow:column; grid-auto-columns:154px; gap:12px; overflow-x:auto; padding:2px 2px 14px; scroll-snap-type:x proximity; scrollbar-width:thin; scrollbar-color:var(--rain) var(--soft); }
+.hourly-card { scroll-snap-align:start; }
+.hourly-card .period { margin-bottom:5px; }
+.hourly-date { color:var(--muted); font-size:11px; margin:0 0 14px; }
+.hourly-temperature { font-size:26px; font-weight:500; letter-spacing:-1px; margin:0 0 10px; }
+.hourly-card .forecast-condition { margin-bottom:14px; }
+.hourly-details { margin:0; padding-top:12px; border-top:1px solid var(--line); font-size:11px; }
+.hourly-details div { display:flex; align-items:baseline; justify-content:space-between; gap:6px; margin-top:7px; }
+.hourly-details dt { color:var(--muted); }
+.hourly-details dd { margin:0; white-space:nowrap; }
+.hourly-credit { color:var(--muted); font-size:11px; line-height:1.7; margin:10px 0 0; }
+.hourly-credit a { color:inherit; }
+@media (max-width:600px) {
+  .forecast-view-head { align-items:stretch; gap:12px; }
+  .forecast-view-title { justify-content:space-between; gap:12px; }
+  .forecast-switch span { min-width:58px; padding:8px 10px; }
+}
