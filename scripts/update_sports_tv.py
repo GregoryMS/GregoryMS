@@ -14,8 +14,8 @@ from pathlib import Path
 
 UTC = dt.timezone.utc
 COUNTRIES = ('GB', 'CA', 'NO', 'SE', 'DE')
-FOLLOWED = {'brighton', 'bayernmunchen', 'vancouverwhitecaps', 'arsenal', 'manchestercity', 'chelsea', 'canada', 'norway', 'scotland', 'sweden', 'england'}
-ALIASES = {'brightonhovealbion': 'brighton', 'brightonandhovealbion': 'brighton', 'bayernmunich': 'bayernmunchen', 'fcbayernmunchen': 'bayernmunchen', 'mancity': 'manchestercity', 'vancouverwhitecapsfc': 'vancouverwhitecaps'}
+FOLLOWED = {'brighton', 'bayernmunchen', 'vancouverwhitecaps', 'arsenal', 'manchestercity', 'chelsea', 'hullcity', 'newcastleunited', 'canada', 'norway', 'scotland', 'sweden', 'england'}
+ALIASES = {'brightonhovealbion': 'brighton', 'brightonandhovealbion': 'brighton', 'bayernmunich': 'bayernmunchen', 'fcbayernmunchen': 'bayernmunchen', 'mancity': 'manchestercity', 'vancouverwhitecapsfc': 'vancouverwhitecaps', 'hull': 'hullcity', 'newcastle': 'newcastleunited'}
 
 
 def team_key(name):

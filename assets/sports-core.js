@@ -12,6 +12,8 @@
     ['9727', 'Vancouver Whitecaps', 'men-clubs', 'usa.1', 'VAN'],
     ['359', 'Arsenal', 'men-clubs', 'eng.1', 'ARS'],
     ['382', 'Manchester City', 'men-clubs', 'eng.1', 'MCI'],
+    ['306', 'Hull City', 'men-clubs', 'eng.1', 'HUL'],
+    ['361', 'Newcastle United', 'men-clubs', 'eng.1', 'NEW'],
     ['19970', 'Chelsea', 'women-clubs', 'eng.w.1', 'CHE'],
     ['19257', 'Manchester City', 'women-clubs', 'eng.w.1', 'MCI'],
     ['19973', 'Arsenal', 'women-clubs', 'eng.w.1', 'ARS'],

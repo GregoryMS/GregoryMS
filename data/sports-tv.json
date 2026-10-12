@@ -3,12 +3,12 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-12T14:06:04.903448+00:00",
+      "checkedAt": "2026-10-12T20:13:22.913581+00:00",
       "listings": [
         {
-          "home": "Liverpool",
-          "away": "Manchester City",
-          "start": "2026-10-11T15:30:00+00:00",
+          "home": "Coventry City",
+          "away": "Newcastle United",
+          "start": "2026-10-12T19:00:00+00:00",
           "channels": [
             "NOW",
             "Sky Sports Main Event",
@@ -115,6 +115,19 @@
           ]
         },
         {
+          "home": "Newcastle United",
+          "away": "Aston Villa",
+          "start": "2026-10-17T16:30:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports Premier League",
+            "Sky Sports UHD 1",
+            "Sky Sports+ app"
+          ]
+        },
+        {
           "home": "Austin FC",
           "away": "Vancouver Whitecaps",
           "start": "2026-10-18T00:30:00+00:00",
@@ -187,18 +200,27 @@
             "TNT Sports 1",
             "TNT Sports Ultimate"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Arsenal",
+          "start": "2026-10-21T19:00:00+00:00",
+          "channels": [
+            "HBO Max (UK)"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-12T14:06:04.903448+00:00",
+      "checkedAt": "2026-10-12T20:13:22.913581+00:00",
       "listings": [
         {
-          "home": "Liverpool",
-          "away": "Manchester City",
-          "start": "2026-10-11T15:30:00+00:00",
+          "home": "Coventry City",
+          "away": "Newcastle United",
+          "start": "2026-10-12T19:00:00+00:00",
           "channels": [
+            "DAZN Canada",
             "Fubo Sports CA"
           ]
         },
@@ -207,6 +229,7 @@
           "away": "Denmark (W)",
           "start": "2026-10-12T19:30:00+00:00",
           "channels": [
+            "OneSoccer",
             "TSN+",
             "TSN4",
             "TSN5"
@@ -271,6 +294,15 @@
           ]
         },
         {
+          "home": "Fulham",
+          "away": "Hull City",
+          "start": "2026-10-17T14:00:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
+        },
+        {
           "home": "Manchester City",
           "away": "Ipswich Town",
           "start": "2026-10-17T14:00:00+00:00",
@@ -285,6 +317,15 @@
           "start": "2026-10-17T16:30:00+00:00",
           "channels": [
             "DAZN Canada"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Aston Villa",
+          "start": "2026-10-17T16:30:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
           ]
         },
         {
@@ -334,14 +375,15 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-12T14:06:04.903448+00:00",
+      "checkedAt": "2026-10-12T20:13:22.913581+00:00",
       "listings": [
         {
-          "home": "Liverpool",
-          "away": "Manchester City",
-          "start": "2026-10-11T15:30:00+00:00",
+          "home": "Coventry City",
+          "away": "Newcastle United",
+          "start": "2026-10-12T19:00:00+00:00",
           "channels": [
-            "Viaplay"
+            "V sport Premier League NO",
+            "Viaplay NO"
           ]
         },
         {
@@ -420,6 +462,15 @@
           ]
         },
         {
+          "home": "Fulham",
+          "away": "Hull City",
+          "start": "2026-10-17T14:00:00+00:00",
+          "channels": [
+            "V sport Premier League 2 NO",
+            "Viaplay NO"
+          ]
+        },
+        {
           "home": "Manchester City",
           "away": "Ipswich Town",
           "start": "2026-10-17T14:00:00+00:00",
@@ -435,6 +486,15 @@
           "channels": [
             "TV 2 Play (NO)",
             "V sport 1 NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Aston Villa",
+          "start": "2026-10-17T16:30:00+00:00",
+          "channels": [
+            "V sport Premier League NO",
             "Viaplay NO"
           ]
         },
@@ -492,8 +552,17 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-12T14:06:04.903448+00:00",
+      "checkedAt": "2026-10-12T20:13:22.913581+00:00",
       "listings": [
+        {
+          "home": "Coventry City",
+          "away": "Newcastle United",
+          "start": "2026-10-12T19:00:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "Viaplay SE"
+          ]
+        },
         {
           "home": "Sweden (W)",
           "away": "Lithuania (W)",
@@ -566,6 +635,15 @@
           ]
         },
         {
+          "home": "Fulham",
+          "away": "Hull City",
+          "start": "2026-10-17T14:00:00+00:00",
+          "channels": [
+            "V Sport Extra",
+            "Viaplay SE"
+          ]
+        },
+        {
           "home": "Manchester City",
           "away": "Ipswich Town",
           "start": "2026-10-17T14:00:00+00:00",
@@ -581,6 +659,16 @@
           "channels": [
             "Viaplay SE",
             "Viaplay Sport"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Aston Villa",
+          "start": "2026-10-17T16:30:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "V Ultra HD",
+            "Viaplay SE"
           ]
         },
         {
@@ -621,8 +709,18 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-12T14:06:04.903448+00:00",
+      "checkedAt": "2026-10-12T20:13:22.913581+00:00",
       "listings": [
+        {
+          "home": "Coventry City",
+          "away": "Newcastle United",
+          "start": "2026-10-12T19:00:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
+            "Sky Ultra HD",
+            "WOW"
+          ]
+        },
         {
           "home": "Arsenal",
           "away": "Lille",
@@ -674,6 +772,14 @@
           ]
         },
         {
+          "home": "Fulham",
+          "away": "Hull City",
+          "start": "2026-10-17T14:00:00+00:00",
+          "channels": [
+            "WOW"
+          ]
+        },
+        {
           "home": "Manchester City",
           "away": "Ipswich Town",
           "start": "2026-10-17T14:00:00+00:00",
@@ -691,6 +797,15 @@
             "Sky Bundesliga 1",
             "Sky Bundesliga UHD",
             "Sky Top Event",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Aston Villa",
+          "start": "2026-10-17T16:30:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
             "WOW"
           ]
         },

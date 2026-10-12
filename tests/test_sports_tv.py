@@ -17,9 +17,10 @@ def row(home='Arsenal', away='Manchester City', channel='Sky Sports', live=True)
 class TVTests(unittest.TestCase):
     def test_filters_replays_unfollowed_teams_and_deduplicates_channels(self):
         data = {'1': [row(), row(), row(channel='NOW'), row(live=False, channel='Replay')],
-                '2': [row(home='Everton', away='Liverpool')], '3': [row(home='Arsenal (W)', away='Manchester City (W)')]}
+                '2': [row(home='Everton', away='Liverpool')], '3': [row(home='Arsenal (W)', away='Manchester City (W)')],
+                '4': [row(home='Hull', away='Everton')], '5': [row(home='Liverpool', away='Newcastle')]}
         results = tv.normalise(data, NOW)
-        self.assertEqual(len(results), 2)
+        self.assertEqual(len(results), 4)
         men = next(r for r in results if r['home'] == 'Arsenal')
         self.assertEqual(men['channels'], ['NOW', 'Sky Sports'])
 
