@@ -56,7 +56,7 @@ function app(options = {}) {
     fetch: async url => { requests.push(url); if (options.defer && !url.startsWith('data/')) return options.defer; if (failure) throw Error('Offline'); return { ok: true, json: async () => url.startsWith('data/') ? options.tv || tv() : response }; } };
   context.window = context; vm.createContext(context);
   for (const script of ['sports-core.js', 'sports-live-core.js', 'sports-live.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/', script), 'utf8'), context);
-  return { get, document, context, requests, intervals, setTime: value => { time = value; }, fail: () => { failure = true; }, setResponse: value => { response = value; } };
+  return { get, document, context, requests, intervals, listeners, setTime: value => { time = value; }, fail: () => { failure = true; }, setResponse: value => { response = value; } };
 }
 const flush = () => new Promise(resolve => setImmediate(resolve));
 test('live panel remains hidden until a followed team is live, then shows score, stats and five TV countries', async () => {
@@ -69,8 +69,29 @@ test('live panel remains hidden until a followed team is live, then shows score,
   assert.match(markup, /Score: 0 to 1/); assert.match(markup, /Possession/); assert.match(markup, /37\.7%/);
   assert.match(markup, /src="https:\/\/a\.espncdn\.com\/i\/teamlogos\/soccer\/500\/359\.png"/);
   assert.match(markup, /src="https:\/\/a\.espncdn\.com\/i\/teamlogos\/soccer\/500\/382\.png"/);
+  assert.match(markup, /live-side--home">.*?live-team-name">Arsenal<\/span><span class="live-team-score">0<\/span><\/div>/);
+  assert.match(markup, /live-side--away">.*?live-team-name">Manchester City<\/span><span class="live-team-score">1<\/span><\/div>/);
   for (const country of L.countries) assert(markup.includes(country.name + ' Channel'));
   h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, 2);
+});
+test('live logos keep initials hidden until an image fails, including national flags', async () => {
+  const payload = summary('in', ['206', '448']);
+  const sides = payload.header.competitions[0].competitors;
+  sides[0].team.displayName = 'Canada'; sides[0].team.abbreviation = 'CAN';
+  sides[1].team.displayName = 'England'; sides[1].team.abbreviation = 'ENG';
+  const h = app({ summary: payload });
+  h.context.GregleSportsLive.update([S.event(payload.header)]); await flush();
+  const markup = h.get('live-matches').innerHTML;
+  assert.match(markup, /countries\/500\/can\.png/);
+  assert.match(markup, /countries\/500\/eng\.png/);
+  assert.match(markup, /class="live-crest-fallback" hidden>CAN<\/span>/);
+  assert.match(markup, /class="live-crest-fallback" hidden>ENG<\/span>/);
+  const fallback = { hidden: true };
+  const image = { hidden: false, nextElementSibling: fallback, classList: { contains: name => name === 'live-team-logo' } };
+  h.listeners.error({ target: image });
+  assert.equal(image.hidden, true); assert.equal(fallback.hidden, false);
+  const unrelated = { hidden: false, classList: { contains: () => false } };
+  h.listeners.error({ target: unrelated }); assert.equal(unrelated.hidden, false);
 });
 test('a full-time summary hides the live section even while team schedules still report live', async () => {
   const h = app({ summary: summary('post') }); const e = S.event(raw());
