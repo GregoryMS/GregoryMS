@@ -119,7 +119,7 @@
     let failures = 0;
     for (const feeds of state.schedules.values()) for (const key of ['fixtures', 'results']) if (feeds[key]?.error) failures++;
     for (const table of state.tables.values()) if (table.error) failures++;
-    $('feed-status').textContent = state.loading ? 'Refreshing… ' + state.done + '/40 feeds checked' : failures ? 'Updated available feeds · ' + failures + ' unavailable. See affected teams and tables.' : 'Fixtures, results & tables checked ' + stampFormat.format(Date.now());
+    $('feed-status').textContent = state.loading ? 'Refreshing… ' + state.done + '/' + (S.teams.length * 2 + S.leagues.length) + ' feeds checked' : failures ? 'Updated available feeds · ' + failures + ' unavailable. See affected teams and tables.' : 'Fixtures, results & tables checked ' + stampFormat.format(Date.now());
     $('refresh').disabled = state.loading;
   }
   function render() {

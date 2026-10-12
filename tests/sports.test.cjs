@@ -13,8 +13,9 @@ function table() {
   return { name: 'League', children: [{ name: 'Conference', children: [{ name: 'Western Conference', standings: { seasonDisplayName: '2026 MLS', entries: [row('359', 2, 0), row('382', 1, 3)] } }] }] };
 }
 test('requested clubs and national sides have distinct gender-specific IDs', () => {
-  assert.equal(S.teams.length, 18);
-  assert.equal(new Set(S.teams.map(t => t.id)).size, 18);
+  assert.equal(S.teams.length, 20);
+  assert.equal(new Set(S.teams.map(t => t.id)).size, 20);
+  assert.deepEqual(S.teams.filter(t => ['306', '361'].includes(t.id)).map(t => [t.name, t.group]), [['Hull City', 'men-clubs'], ['Newcastle United', 'men-clubs']]);
   assert.deepEqual(S.teams.filter(t => t.group === 'women-clubs').map(t => t.name), ['Chelsea', 'Manchester City', 'Arsenal']);
   for (const group of ['men-nations', 'women-nations']) assert.deepEqual(S.teams.filter(t => t.group === group).map(t => t.name), ['Canada', 'Norway', 'Scotland', 'Sweden', 'England']);
 });
@@ -89,7 +90,9 @@ async function settled(h) {
 }
 test('controller loads all feeds with bounded concurrency and renders distinct fixtures and table', async () => {
   const h = harness(); await settled(h);
-  assert.equal(h.requests.length, 40); assert(h.maxActive() <= 6);
+  assert.equal(h.requests.length, 44); assert(h.maxActive() <= 6);
+  for (const id of ['306', '361']) assert.equal(h.requests.filter(url => url.includes('/teams/' + id + '/')).length, 2);
+  for (const name of ['Hull City', 'Newcastle United']) assert(h.get('team-filter').innerHTML.includes(name));
   assert.match(h.get('next-match').innerHTML, /Arsenal/);
   assert.match(h.get('latest-match').innerHTML, /class="score">0/);
   assert(!h.get('next-match').innerHTML.includes('class="score"'));
@@ -113,11 +116,11 @@ test('refresh failure retains older data with warnings and retries successfully'
 });
 test('failed empty feeds and blocked browser storage are handled explicitly', async () => {
   const h = harness({ fail: () => true, storageThrows: true }); await settled(h);
-  assert.match(h.get('feed-status').textContent, /40 unavailable/);
+  assert.match(h.get('feed-status').textContent, /44 unavailable/);
   assert.match(h.get('match-list').innerHTML, /Match feeds are unavailable/);
   assert.match(h.get('team-cards').innerHTML, /Fixture feed unavailable/);
   assert.match(h.get('league-tables').innerHTML, /Open the ESPN table/);
-  h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, 40);
+  h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, 44);
 });
 test('sports page is linked from Tools and uses the shared theme and local scripts', () => {
   const root = path.join(__dirname, '..');
