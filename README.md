@@ -3,6 +3,7 @@
 A static personal homepage and collection of browser tools, served at the domain in `CNAME`.
 
 - `index.html`: search, recent searches, local weather and BBC headlines.
+- `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference and Women’s Super League tables.
 - `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
 - `weather.html`: automatic local weather, Environment Canada across Canada and Open-Meteo worldwide.
 - `petrol.html`: fuel-cost calculator with map-based routing.
@@ -289,3 +290,12 @@ Earthquakes has its own `earthquakes.webmanifest`, stable `/earthquakes.html` ap
 ## Fog and waves maps
 
 The weather map includes Fog alongside Radar, Wind and Clouds, using the same Windy ECMWF forecast controls. The tides page includes a matching Windy ECMWF WAM waves map in Surf conditions. It loads near the viewport, follows the selected tide location even if the tide or surf data service fails, and has its own independent forecast timeline. Recenter and Refresh recreate the embedded map; frame failures and slow loads offer a full-map link. Wave heights use metres. Both embeds receive the selected coordinates.
+
+
+## Sports tracker
+
+`sports.html` is linked from Tools and shares the Gregle theme. ESPN’s public JSON feeds supply all-competition team schedules (separate fixtures and results) and current league standings. No API key, proxy or build is required. The page requests data when opened and once per minute while visible, with six concurrent requests and 15-second request timeouts. Refresh retries failed feeds. Provider data and crest images are requested directly from ESPN; these public, undocumented feeds may change or omit fixtures. Empty schedules are distinguished from failed requests. Partial failures are identified beside matches, teams and tables; previously loaded data is retained with an older-data notice. Nothing is shown as a fabricated score or standing.
+
+Men’s and women’s team IDs remain separate. Fixtures include domestic cups, European competitions and internationals when the provider publishes them. Overlapping team schedules are deduplicated by event ID. All dates use the device time zone, and unconfirmed kick-off times are marked TBC. Filters are saved under `gregle-sports-filters`; scores and tables are not persisted. MLS conferences are separate, tables use provider ranks and point totals, and followed clubs are highlighted. National teams have match tracking; the four league tables cover the selected clubs.
+
+`assets/sports-core.js` handles event/status/score and table normalisation; `assets/sports.js` handles retrieval, freshness, filters and rendering. Run `node --test tests/sports.test.cjs` for focused checks, or the full regression commands above. ESPN match and table links remain available when feeds fail.
