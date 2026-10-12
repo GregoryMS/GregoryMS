@@ -122,7 +122,10 @@
     $('feed-status').textContent = state.loading ? 'Refreshing… ' + state.done + '/40 feeds checked' : failures ? 'Updated available feeds · ' + failures + ' unavailable. See affected teams and tables.' : 'Fixtures, results & tables checked ' + stampFormat.format(Date.now());
     $('refresh').disabled = state.loading;
   }
-  function render() { rebuildEvents(); renderStatus(); renderMatches(); renderTable(); renderTeams(); }
+  function render() {
+    rebuildEvents(); renderStatus(); renderMatches(); renderTable(); renderTeams();
+    window.GregleSportsLive?.update(state.events, { staleIDs: S.teams.filter(t => ['fixtures', 'results'].every(key => state.schedules.get(t.id)?.[key]?.error)).map(t => t.id) });
+  }
   let queued = false;
   function queueRender() { if (!queued) { queued = true; setTimeout(() => { queued = false; render(); }, 80); } }
   async function request(url) {
@@ -152,6 +155,7 @@
   }
   async function refresh() {
     if (state.loading) return;
+    window.GregleSportsLive?.refresh();
     state.loading = true; state.done = 0; renderStatus();
     const jobs = [...S.leagues.map(l => () => loadTable(l)), ...S.teams.flatMap(t => ['fixtures', 'results'].map(key => () => loadTeam(t, key)))];
     let index = 0;

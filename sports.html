@@ -8,10 +8,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/sports.css?v=20261012">
+  <link rel="stylesheet" href="assets/sports.css?v=20261012-live">
   <script src="assets/theme.js" defer></script>
-  <script src="assets/sports-core.js?v=20261012" defer></script>
-  <script src="assets/sports.js?v=20261012" defer></script>
+  <script src="assets/sports-core.js?v=20261012-live" defer></script>
+  <script src="assets/sports-live-core.js?v=20261012-live" defer></script>
+  <script src="assets/sports-live.js?v=20261012-live" defer></script>
+  <script src="assets/sports.js?v=20261012-live" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -22,6 +24,11 @@
     <div class="sports-heading"><div><p class="eyebrow">Football · Your touchline</p><h1>Sports tracker</h1><p class="intro">Your clubs. Your countries. Every next kick-off.</p></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
     <noscript><p>Enable JavaScript to load fixtures and tables, or visit <a href="https://www.espn.com/soccer/scoreboard">ESPN football</a>.</p></noscript>
     <div class="feed-status"><p id="feed-status" role="status">Loading fixtures, results and league tables…</p><span id="timezone"></span></div>
+    <section class="live-section" id="live-section" aria-labelledby="live-heading" hidden>
+      <div class="section-heading"><div><p class="eyebrow">On the pitch</p><h2 id="live-heading">Live now</h2><p class="meta" id="live-section-count"></p></div><button class="pill" id="live-refresh" type="button">↻ Update live</button></div>
+      <div id="live-matches"></div>
+      <p class="meta">Scores and available stats update every 30 seconds while visible. TV listings are checked periodically; coverage can change.</p>
+    </section>
     <section aria-label="Team filters" class="filter-panel">
       <div class="chips" id="group-filters" role="group" aria-label="Team category">
         <button type="button" class="chip" data-group="all" aria-pressed="true">All teams</button>
@@ -51,7 +58,7 @@
       <p class="table-help">P: played · W/D/L: won/drawn/lost · GF/GA: goals for/against · GD: goal difference · Pts: points. MLS shows each conference separately.</p>
     </section>
     <section aria-labelledby="teams-heading" class="teams-section"><div class="section-heading"><h2 id="teams-heading">Your teams</h2><span id="team-count" class="meta">18 followed teams</span></div><p class="meta">Select a team to focus its matches. National teams include men and women; their fixtures span international competitions and friendlies.</p><div id="team-cards" class="team-grid"></div></section>
-    <footer><div><p>Data &amp; crests: <a href="https://www.espn.com/soccer/">ESPN</a>. Times use your device’s time zone.</p><p>Refreshes every minute while visible. Fixtures, kick-off times and coverage may change. Feed failures are shown beside affected teams or tables.</p></div><a href="links.html">Back to tools</a></footer>
+    <footer><div><p>Scores, stats &amp; crests: <a href="https://www.espn.com/soccer/">ESPN</a> · TV listings: <a href="https://www.fotmob.com/tv-guide/gb">FotMob</a>. Times use your device’s time zone.</p><p>Fixtures and tables refresh every minute while visible. Live stats refresh every 30 seconds. Fixtures, kick-off times and coverage may change. Feed failures are shown beside affected teams or tables.</p></div><a href="links.html">Back to tools</a></footer>
   </main>
 </body>
 </html>
