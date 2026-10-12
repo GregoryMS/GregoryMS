@@ -67,6 +67,8 @@ test('live panel remains hidden until a followed team is live, then shows score,
   assert.equal(h.requests.length, 2);
   const markup = h.get('live-matches').innerHTML;
   assert.match(markup, /Score: 0 to 1/); assert.match(markup, /Possession/); assert.match(markup, /37\.7%/);
+  assert.match(markup, /src="https:\/\/a\.espncdn\.com\/i\/teamlogos\/soccer\/500\/359\.png"/);
+  assert.match(markup, /src="https:\/\/a\.espncdn\.com\/i\/teamlogos\/soccer\/500\/382\.png"/);
   for (const country of L.countries) assert(markup.includes(country.name + ' Channel'));
   h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, 2);
 });
@@ -101,5 +103,6 @@ test('provider names and stats are escaped before live rendering', async () => {
   payload.boxscore.teams[0].statistics[0].displayValue = '<svg onload=boom>';
   const h = app({ summary: payload }); h.context.GregleSportsLive.update([S.event(raw())]); await flush();
   const markup = h.get('live-matches').innerHTML;
-  assert(!markup.includes('<img')); assert(!markup.includes('<svg')); assert(markup.includes('&lt;img'));
+  assert(!markup.includes('<img src=x')); assert(!markup.includes('<svg')); assert(markup.includes('&lt;img'));
 });
+

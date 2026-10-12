@@ -22,6 +22,16 @@
       return !(d?.data && (d.data.event.completed || (!d.error && Date.now() - d.at <= 90000 && (d.data.event.special || d.data.event.state === 'post'))));
     });
   }
+  function liveSide(team, scheduled) {
+    const known = S.teams.find(t => t.id === team.id);
+    const flag = known?.group.endsWith('nations');
+    const url = flag ? 'https://a.espncdn.com/i/teamlogos/countries/500/' + known.abbreviation.toLowerCase() + '.png' :
+      S.safeURL(team.logo, true) || S.safeURL(scheduled.logo, true) || (known ? 'https://a.espncdn.com/i/teamlogos/soccer/500/' + known.id + '.png' : '');
+    const initials = team.abbreviation || team.name.slice(0, 3).toUpperCase();
+    const crest = '<span class="crest" aria-hidden="true">' + E(initials) + (S.safeURL(url, true) ? '<img class="team-logo" src="' + E(url) + '" alt="" width="30" height="30">' : '') + '</span>';
+    return '<div class="live-side">' + crest + '<span class="live-team-name">' + E(team.name) + '</span></div>';
+  }
+  document.addEventListener('error', event => { if (event.target?.classList?.contains('team-logo')) event.target.hidden = true; }, true);
   function render() {
     const active = activeMatches();
     section.hidden = !active.length;
@@ -37,7 +47,7 @@
       const statsMarkup = stats.length ? '<div class="live-stat-table" role="table" aria-label="Live match statistics"><div class="live-stat-row stat-labels" role="row"><span role="columnheader">' + E(m.home.abbreviation || m.home.name) + '</span><span role="columnheader">Match stats</span><span role="columnheader">' + E(m.away.abbreviation || m.away.name) + '</span></div>' + stats.map(s => '<div class="live-stat-row" role="row"><span role="cell">' + E(s.home) + '</span><span role="cell">' + E(s.label) + '</span><span role="cell">' + E(s.away) + '</span></div>').join('') + '</div>' : '';
       const rows = L.broadcastListings(tv, m, S);
       const tvMarkup = rows.map(c => '<div class="tv-country"><a href="' + c.source + '" aria-label="Open ' + E(c.name) + ' football TV guide">' + E(c.name) + ' ↗</a><div>' + (c.channels.length ? '<span>' + c.channels.map(E).join(' · ') + '</span>' : '<span class="muted">' + (!tv && tvPending ? 'Checking listings…' : !c.fresh ? 'Listings unavailable' : 'No confirmed listing') + '</span>') + (c.fresh ? '<small>Checked ' + E(stamp.format(c.checkedAt)) + (c.error ? ' · Refresh unavailable' : '') + '</small>' : '') + '</div></div>').join('');
-      return '<article class="live-game"><div class="live-game-heading"><span class="badge live">' + (unconfirmed ? 'LIVE STATUS UNCONFIRMED' : 'LIVE · ' + E(m.detail)) + '</span><span class="meta">' + E(m.competition) + '</span></div><div class="live-scoreboard"><div class="live-side">' + E(m.home.name) + '</div><div class="live-score" aria-label="Score: ' + E(m.home.score) + ' to ' + E(m.away.score) + '">' + E(m.home.score) + '<span>–</span>' + E(m.away.score) + '</div><div class="live-side">' + E(m.away.name) + '</div></div><div class="live-game-body"><div>' + statsMarkup + (statsText ? '<p class="meta">' + E(statsText) + '</p>' : '') + (fresh ? '<p class="meta">Score &amp; stats checked ' + E(stamp.format(detail.at)) + '</p>' : '<p class="meta">Score from the team schedule' + (unconfirmed ? ' · awaiting live confirmation' : '') + '</p>') + (m.link ? '<a class="match-link" href="' + E(m.link) + '">Full match details ↗</a>' : '') + '</div><aside class="live-tv" aria-label="Where to watch"><h3>Where to watch</h3><p class="meta">TV &amp; streaming · match-specific listings</p>' + tvMarkup + '<p class="tv-note">Listings: FotMob. A missing listing does not mean the game is unavailable.' + (tvError ? ' The latest listing refresh failed.' : '') + '</p></aside></div></article>';
+      return '<article class="live-game"><div class="live-game-heading"><span class="badge live">' + (unconfirmed ? 'LIVE STATUS UNCONFIRMED' : 'LIVE · ' + E(m.detail)) + '</span><span class="meta">' + E(m.competition) + '</span></div><div class="live-scoreboard">' + liveSide(m.home, match.home) + '<div class="live-score" aria-label="Score: ' + E(m.home.score) + ' to ' + E(m.away.score) + '">' + E(m.home.score) + '<span>–</span>' + E(m.away.score) + '</div>' + liveSide(m.away, match.away) + '</div><div class="live-game-body"><div>' + statsMarkup + (statsText ? '<p class="meta">' + E(statsText) + '</p>' : '') + (fresh ? '<p class="meta">Score &amp; stats checked ' + E(stamp.format(detail.at)) + '</p>' : '<p class="meta">Score from the team schedule' + (unconfirmed ? ' · awaiting live confirmation' : '') + '</p>') + (m.link ? '<a class="match-link" href="' + E(m.link) + '">Full match details ↗</a>' : '') + '</div><aside class="live-tv" aria-label="Where to watch"><h3>Where to watch</h3><p class="meta">TV &amp; streaming · match-specific listings</p>' + tvMarkup + '<p class="tv-note">Listings: FotMob. A missing listing does not mean the game is unavailable.' + (tvError ? ' The latest listing refresh failed.' : '') + '</p></aside></div></article>';
     }).join('');
   }
   async function loadDetail(match, force = false) {
@@ -81,3 +91,4 @@
   setInterval(() => { render(); refresh(); }, 30000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); refresh(); } });
 })();
+
