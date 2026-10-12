@@ -1,3 +1,4 @@
+.topbar { flex-wrap:wrap; }
 .sports-page { width:min(100%,1200px); --sports-accent:#0078c2; --sports-soft:rgba(0,149,242,.07); }
 :root.dark-mode .sports-page { --sports-accent:#70c8ff; --sports-soft:rgba(0,149,242,.12); }
 .sports-heading { display:flex; align-items:center; justify-content:space-between; gap:24px; margin:42px 0 18px; }
