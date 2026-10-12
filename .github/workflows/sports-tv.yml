@@ -1,0 +1,44 @@
+name: Refresh football TV listings
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update_sports_tv.py
+      - .github/workflows/sports-tv.yml
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: sports-tv
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_sports_tv.py'
+      - run: python scripts/update_sports_tv.py
+      - name: Save TV listings and rebuild Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/sports-tv.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/sports-tv.json
+          git commit -m "Refresh football TV listings"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"

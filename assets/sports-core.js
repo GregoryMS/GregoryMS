@@ -56,7 +56,7 @@
       special, state: type.state || 'pre', status: type.description || 'Scheduled',
       detail: type.state === 'in' ? status.displayClock || type.shortDetail || 'Live' : type.shortDetail || type.description || '',
       timeTBD: c.dateValid === false || c.timeValid === false,
-      competition: raw.league?.name || raw.season?.displayName || 'Football',
+      competition: raw.league?.name || raw.season?.displayName || 'Football', leagueSlug: raw.league?.slug || '',
       venue: c.venue?.fullName || '', link: safeURL(raw.links?.find(x => x.rel?.includes('summary'))?.href || raw.links?.[0]?.href) };
   }
   function combineEvents(feeds) {
