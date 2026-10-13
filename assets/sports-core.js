@@ -17,6 +17,8 @@
     ['19970', 'Chelsea', 'women-clubs', 'eng.w.1', 'CHE'],
     ['19257', 'Manchester City', 'women-clubs', 'eng.w.1', 'MCI'],
     ['19973', 'Arsenal', 'women-clubs', 'eng.w.1', 'ARS'],
+    ['20103', 'Bayern Munich', 'women-clubs', null, 'FCB'],
+    ['19976', 'Brighton', 'women-clubs', 'eng.w.1', 'BHA'],
     ['206', 'Canada', 'men-nations', null, 'CAN'],
     ['464', 'Norway', 'men-nations', null, 'NOR'],
     ['580', 'Scotland', 'men-nations', null, 'SCO'],
