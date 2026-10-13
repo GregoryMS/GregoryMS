@@ -1120,6 +1120,11 @@
     });
 
     chatgptSearchButton.addEventListener('click', () => {
+      if (!getQuery()) {
+        closeAutocomplete();
+        window.location.href = 'https://chatgpt.com/';
+        return;
+      }
       // Prefill the composer; automatic submission can run before ChatGPT verification is ready.
       runSearch('https://chatgpt.com/?hints=search&prompt=');
     });
