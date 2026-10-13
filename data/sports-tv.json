@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-12T22:08:39.672202+00:00",
+      "checkedAt": "2026-10-13T03:03:24.296083+00:00",
       "listings": [
         {
           "home": "Coventry City",
@@ -213,26 +213,14 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-12T22:08:39.672202+00:00",
+      "checkedAt": "2026-10-13T03:03:24.296083+00:00",
       "listings": [
         {
           "home": "Coventry City",
           "away": "Newcastle United",
           "start": "2026-10-12T19:00:00+00:00",
           "channels": [
-            "DAZN Canada",
             "Fubo Sports CA"
-          ]
-        },
-        {
-          "home": "Canada (W)",
-          "away": "Denmark (W)",
-          "start": "2026-10-12T19:30:00+00:00",
-          "channels": [
-            "OneSoccer",
-            "TSN+",
-            "TSN4",
-            "TSN5"
           ]
         },
         {
@@ -370,20 +358,27 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "AEK Athens",
+          "start": "2026-10-20T19:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-12T22:08:39.672202+00:00",
+      "checkedAt": "2026-10-13T03:03:24.296083+00:00",
       "listings": [
         {
           "home": "Coventry City",
           "away": "Newcastle United",
           "start": "2026-10-12T19:00:00+00:00",
           "channels": [
-            "V sport Premier League NO",
-            "Viaplay NO"
+            "Viaplay"
           ]
         },
         {
@@ -547,22 +542,21 @@
           "channels": [
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "AEK Athens",
+          "start": "2026-10-20T19:00:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-12T22:08:39.672202+00:00",
+      "checkedAt": "2026-10-13T03:03:24.296083+00:00",
       "listings": [
-        {
-          "home": "Coventry City",
-          "away": "Newcastle United",
-          "start": "2026-10-12T19:00:00+00:00",
-          "channels": [
-            "V Sport Premium",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Sweden (W)",
           "away": "Lithuania (W)",
@@ -680,12 +674,28 @@
           ]
         },
         {
+          "home": "Chelsea (W)",
+          "away": "Tottenham Hotspur (W)",
+          "start": "2026-10-18T11:00:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
+          ]
+        },
+        {
           "home": "Brighton & Hove Albion",
           "away": "Crystal Palace",
           "start": "2026-10-18T13:00:00+00:00",
           "channels": [
             "V Sport Football",
             "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Manchester City (W)",
+          "away": "Brighton (W)",
+          "start": "2026-10-18T13:30:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
           ]
         },
         {
@@ -704,23 +714,21 @@
           "channels": [
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "AEK Athens",
+          "start": "2026-10-20T19:00:00+00:00",
+          "channels": [
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-12T22:08:39.672202+00:00",
+      "checkedAt": "2026-10-13T03:03:24.296083+00:00",
       "listings": [
-        {
-          "home": "Coventry City",
-          "away": "Newcastle United",
-          "start": "2026-10-12T19:00:00+00:00",
-          "channels": [
-            "Sky Sport Premier League",
-            "Sky Ultra HD",
-            "WOW"
-          ]
-        },
         {
           "home": "Arsenal",
           "away": "Lille",
@@ -855,6 +863,14 @@
             "DAZN Deutschland",
             "Magenta Sport",
             "Sport1"
+          ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "AEK Athens",
+          "start": "2026-10-20T19:00:00+00:00",
+          "channels": [
+            "DAZN Deutschland"
           ]
         }
       ],
