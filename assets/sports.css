@@ -188,3 +188,6 @@ footer { line-height:1.8; }
 @media(max-width:600px) { .sports-heading { margin-top:28px; align-items:flex-start; gap:10px; } .sports-heading h1 { font-size:38px; } .sports-heading>.pill { padding:8px 12px; font-size:12px; flex-shrink:0; } .intro { font-size:14px; } .feed-status { flex-direction:column; gap:4px; } .spotlights,.team-grid { grid-template-columns:1fr; } .spotlight { padding:22px; } .section-heading { align-items:flex-start; flex-wrap:wrap; } h2 { font-size:24px; } .chip { padding:8px 12px; } .table-heading { padding:16px; } th,td { padding:10px 9px; } .table-team { gap:7px; } .table-scroll th.team-cell { min-width:185px; } }
 
 
+
+.fotmob-link { width:44px; height:44px; padding:6px; flex-shrink:0; }
+.fotmob-link img { display:block; width:30px; height:30px; border-radius:7px; }
