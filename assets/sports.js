@@ -56,6 +56,23 @@
     $('team-filter').value = state.team;
     document.querySelectorAll('[data-group]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.group === state.group)));
   }
+  function fixtureRow(e) {
+    const showScore = e.completed || e.live;
+    const status = e.live ? e.detail || 'In play' : e.completed ? e.detail || 'FT' : e.special ? e.status : '';
+    const time = e.timeTBD ? 'TBC' : timeFormat.format(e.timestamp);
+    const side = (team, label) => '<div class="fixture-team' + (followed(team.id) ? ' followed' : '') + '">' + logo(team) + '<span class="fixture-name"><span class="sr-only">' + label + ': </span>' + E(team.name) + '</span>' + (showScore ? '<strong class="fixture-score">' + E(team.score) + '</strong>' : '') + '</div>';
+    const penalties = e.home.penalties !== null && e.away.penalties !== null ? '<p class="fixture-note">Penalties: ' + E(e.home.penalties) + '–' + E(e.away.penalties) + '</p>' : '';
+    return '<article class="fixture-row' + (e.live ? ' is-live' : '') + '"><div class="fixture-time">' + (e.live ? '<span class="fixture-live">Live</span>' : '') + (status ? '<span class="fixture-status">' + E(status) + '</span>' : '<time datetime="' + E(e.date) + '">' + E(time) + '</time><span class="fixture-time-label">' + (e.timeTBD ? 'Time to be confirmed' : 'Kick-off') + '</span>') + '</div><div class="fixture-teams">' + side(e.home, 'Home') + side(e.away, 'Away') + penalties + '</div><div class="fixture-context"><span class="fixture-category">' + E(eventCategory(e)) + '</span><span class="fixture-competition">' + E(e.competition) + '</span>' + (e.venue ? '<span class="fixture-venue">' + E(e.venue) + '</span>' : '') + '</div>' + (e.link ? '<a class="fixture-link" href="' + E(e.link) + '" aria-label="Match details: ' + E(e.home.name) + ' versus ' + E(e.away.name) + '">Details <span aria-hidden="true">↗</span></a>' : '') + (feedProblem(e) ? '<p class="fixture-warning">Refresh unavailable · previously loaded match</p>' : '') + '</article>';
+  }
+  function matchDays(events) {
+    const days = new Map();
+    for (const e of events) {
+      const day = dateFormat.format(e.timestamp);
+      if (!days.has(day)) days.set(day, []);
+      days.get(day).push(e);
+    }
+    return [...days].map(([day, matches]) => '<section class="match-day"><div class="match-day-heading"><h3>' + E(day) + '</h3><span>' + matches.length + (matches.length === 1 ? ' match' : ' matches') + '</span></div><div class="match-day-list">' + matches.map(fixtureRow).join('') + '</div></section>').join('');
+  }
   function rebuildEvents() {
     const feeds = [];
     for (const values of state.schedules.values()) for (const key of ['fixtures', 'results']) if (values[key]?.data) feeds.push(values[key].data);
@@ -76,7 +93,7 @@
     const missing = selectedTeams().some(t => !state.schedules.get(t.id)?.fixtures || !state.schedules.get(t.id)?.results);
     $('live-count').textContent = live.length;
     $('matches-meta').textContent = 'All competitions · ' + events.length + (state.view === 'recent' ? ' results' : state.view === 'live' ? ' live matches' : ' upcoming matches') + (failed.length ? ' · Partial coverage: ' + failed.map(teamLabel).join(', ') : missing ? ' · Loading remaining teams…' : '') + (events.length > visible.length ? ' · Showing ' + visible.length : '');
-    $('match-list').innerHTML = visible.length ? visible.map(e => '<article class="match-card">' + matchMarkup(e) + '</article>').join('') : '<p class="empty">' + (state.loading && missing ? 'Loading your matches…' : failed.length ? 'Match feeds are unavailable for some selected teams. Try Refresh or use the ESPN team links below.' : state.view === 'live' ? 'None of your selected teams are playing live right now.' : state.view === 'recent' ? 'No results published in the current schedule feeds.' : 'No upcoming fixtures published for your selected teams.') + '</p>';
+    $('match-list').innerHTML = visible.length ? matchDays(visible) : '<p class="empty">' + (state.loading && missing ? 'Loading your matches…' : failed.length ? 'Match feeds are unavailable for some selected teams. Try Refresh or use the ESPN team links below.' : state.view === 'live' ? 'None of your selected teams are playing live right now.' : state.view === 'recent' ? 'No results published in the current schedule feeds.' : 'No upcoming fixtures published for your selected teams.') + '</p>';
     $('match-list').setAttribute('aria-busy', String(state.loading));
     $('show-more').hidden = visible.length >= events.length;
     document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
@@ -195,3 +212,4 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastAuto >= 60000) { lastAuto = Date.now(); refresh(); } });
   renderFilters(); render(); refresh();
 })();
+
