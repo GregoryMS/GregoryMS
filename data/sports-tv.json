@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-13T10:36:41.777525+00:00",
+      "checkedAt": "2026-10-13T17:48:10.295802+00:00",
       "listings": [
         {
           "home": "Coventry City",
@@ -80,7 +80,8 @@
           "away": "FK Kauno Žalgiris",
           "start": "2026-10-15T19:00:00+00:00",
           "channels": [
-            "HBO Max (UK)"
+            "HBO Max (UK)",
+            "TNT Sports 2"
           ]
         },
         {
@@ -88,7 +89,8 @@
           "away": "Chelsea",
           "start": "2026-10-17T11:30:00+00:00",
           "channels": [
-            "HBO Max (UK)"
+            "HBO Max (UK)",
+            "TNT Sports 1"
           ]
         },
         {
@@ -176,6 +178,7 @@
           "start": "2026-10-18T15:30:00+00:00",
           "channels": [
             "NOW",
+            "Sky Sports Football",
             "Sky Sports Main Event",
             "Sky Sports Main Event UHD",
             "Sky Sports Premier League",
@@ -206,14 +209,15 @@
           "away": "Arsenal",
           "start": "2026-10-21T19:00:00+00:00",
           "channels": [
-            "HBO Max (UK)"
+            "HBO Max (UK)",
+            "TNT Sports 1"
           ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-13T10:36:41.777525+00:00",
+      "checkedAt": "2026-10-13T17:48:10.295802+00:00",
       "listings": [
         {
           "home": "Coventry City",
@@ -260,7 +264,8 @@
           "away": "FK Kauno Žalgiris",
           "start": "2026-10-15T19:00:00+00:00",
           "channels": [
-            "DAZN Canada"
+            "DAZN Canada",
+            "OneSoccer"
           ]
         },
         {
@@ -371,7 +376,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-13T10:36:41.777525+00:00",
+      "checkedAt": "2026-10-13T17:48:10.295802+00:00",
       "listings": [
         {
           "home": "Coventry City",
@@ -435,6 +440,7 @@
           "away": "FK Kauno Žalgiris",
           "start": "2026-10-15T19:00:00+00:00",
           "channels": [
+            "TV 2 Play (NO)",
             "V sport 2 NO",
             "Viaplay NO"
           ]
@@ -555,7 +561,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-13T10:36:41.777525+00:00",
+      "checkedAt": "2026-10-13T17:48:10.295802+00:00",
       "listings": [
         {
           "home": "Sweden (W)",
@@ -720,6 +726,7 @@
           "away": "AEK Athens",
           "start": "2026-10-20T19:00:00+00:00",
           "channels": [
+            "V Sport Extra",
             "Viaplay SE"
           ]
         }
@@ -727,7 +734,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-13T10:36:41.777525+00:00",
+      "checkedAt": "2026-10-13T17:48:10.295802+00:00",
       "listings": [
         {
           "home": "Arsenal",
