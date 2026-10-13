@@ -189,5 +189,23 @@ footer { line-height:1.8; }
 
 
 
-.fotmob-link { width:44px; height:44px; padding:6px; flex-shrink:0; }
-.fotmob-link img { display:block; width:30px; height:30px; border-radius:7px; }
+.fotmob-link {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  padding:0;
+  flex:0 0 44px;
+  border:0;
+  border-radius:13px;
+  background:#00985f;
+  overflow:hidden;
+  box-shadow:0 2px 5px rgba(0,80,50,.12);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.fotmob-link img { display:block; width:100%; height:100%; object-fit:contain; border-radius:inherit; }
+.fotmob-link:hover { background:#00985f; transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,80,50,.22); }
+.fotmob-link:active { transform:translateY(0); }
+.fotmob-link:focus-visible { outline:2px solid var(--text); outline-offset:4px; }
+@media(prefers-reduced-motion:reduce) { .fotmob-link { transition:none; } .fotmob-link:hover { transform:none; } }
