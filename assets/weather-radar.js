@@ -117,7 +117,7 @@
     if(started || !location)return;
     started=true;
     if(!root.L) { $('radarStatus').textContent='The radar map could not load. Refresh this page to retry, or open RainViewer below.';return; }
-    map=root.L.map('radarMap',{scrollWheelZoom:false,minZoom:2,maxZoom:10,fadeAnimation:false});
+    map=root.L.map('radarMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
     root.GregleLightning?.attach(map);
     const base=root.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
     base.on('tileerror',()=>{baseFailed=true;status();});
