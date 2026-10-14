@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-13T22:45:26.117644+00:00",
+      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
       "listings": [
         {
           "home": "Scotland (W)",
@@ -212,24 +212,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-13T22:45:26.117644+00:00",
+      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
       "listings": [
-        {
-          "home": "Arsenal",
-          "away": "Lille",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
-        {
-          "home": "Viking",
-          "away": "Bayern München",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "Paris Saint-Germain",
@@ -358,46 +342,21 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Arsenal",
+          "start": "2026-10-21T19:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-13T22:45:26.117644+00:00",
+      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
       "listings": [
-        {
-          "home": "Norway (W)",
-          "away": "Romania (W)",
-          "start": "2026-10-13T16:00:00+00:00",
-          "channels": [
-            "TV 2 Direkte",
-            "TV 2 Play (NO)"
-          ]
-        },
-        {
-          "home": "Sweden (W)",
-          "away": "Lithuania (W)",
-          "start": "2026-10-13T17:00:00+00:00",
-          "channels": [
-            "SVT2"
-          ]
-        },
-        {
-          "home": "Arsenal",
-          "away": "Lille",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)"
-          ]
-        },
-        {
-          "home": "Viking",
-          "away": "Bayern München",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "Paris Saint-Germain",
@@ -535,41 +494,21 @@
           "channels": [
             "TV 2 Play (NO)"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Arsenal",
+          "start": "2026-10-21T19:00:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-13T22:45:26.117644+00:00",
+      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
       "listings": [
-        {
-          "home": "Sweden (W)",
-          "away": "Lithuania (W)",
-          "start": "2026-10-13T17:00:00+00:00",
-          "channels": [
-            "SVT Play",
-            "SVT2",
-            "SVT24"
-          ]
-        },
-        {
-          "home": "Arsenal",
-          "away": "Lille",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "V Sport 1",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Viking",
-          "away": "Bayern München",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "V Sport Extra",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "Paris Saint-Germain",
@@ -708,29 +647,23 @@
             "V Sport Extra",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Arsenal",
+          "start": "2026-10-21T19:00:00+00:00",
+          "channels": [
+            "V Sport Football",
+            "V Ultra HD",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-13T22:45:26.117644+00:00",
+      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
       "listings": [
-        {
-          "home": "Arsenal",
-          "away": "Lille",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "DAZN Deutschland"
-          ]
-        },
-        {
-          "home": "Viking",
-          "away": "Bayern München",
-          "start": "2026-10-13T19:00:00+00:00",
-          "channels": [
-            "Prime Video (DE)"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "Paris Saint-Germain",
@@ -853,6 +786,14 @@
           "home": "Manchester City",
           "away": "AEK Athens",
           "start": "2026-10-20T19:00:00+00:00",
+          "channels": [
+            "DAZN Deutschland"
+          ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Arsenal",
+          "start": "2026-10-21T19:00:00+00:00",
           "channels": [
             "DAZN Deutschland"
           ]
