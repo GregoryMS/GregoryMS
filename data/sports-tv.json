@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
+      "checkedAt": "2026-10-14T06:42:58.638476+00:00",
       "listings": [
         {
           "home": "Scotland (W)",
@@ -212,7 +212,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
+      "checkedAt": "2026-10-14T06:42:58.638476+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -355,7 +355,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
+      "checkedAt": "2026-10-14T06:42:58.638476+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -507,7 +507,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
+      "checkedAt": "2026-10-14T06:42:58.638476+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -662,7 +662,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-14T01:25:57.916666+00:00",
+      "checkedAt": "2026-10-14T06:42:58.638476+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -723,6 +723,7 @@
             "Sky Bundesliga",
             "Sky Bundesliga 1",
             "Sky Bundesliga UHD",
+            "Sky Top Event",
             "WOW"
           ]
         },
@@ -768,6 +769,7 @@
           "start": "2026-10-18T15:30:00+00:00",
           "channels": [
             "Sky Sport Premier League",
+            "Sky Top Event",
             "Sky Ultra HD",
             "WOW"
           ]
