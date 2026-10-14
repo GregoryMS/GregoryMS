@@ -33,7 +33,7 @@
     function ensureMap() {
       if(map)return;
       if(!win.L)throw Error('Map unavailable');
-      map=win.L.map('ptypeMap',{scrollWheelZoom:false,minZoom:2,maxZoom:10,fadeAnimation:false});
+      map=win.L.map('ptypeMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
       base=win.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
       base.on('tileerror',()=>{baseFailed=true;status('The background map could not fully load. Try Refresh.');});
       marker=win.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
