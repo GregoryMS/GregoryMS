@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-14T12:25:57.235402+00:00",
+      "checkedAt": "2026-10-14T17:37:31.470311+00:00",
       "listings": [
         {
           "home": "Scotland (W)",
@@ -212,7 +212,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-14T12:25:57.235402+00:00",
+      "checkedAt": "2026-10-14T17:37:31.470311+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -355,7 +355,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-14T12:25:57.235402+00:00",
+      "checkedAt": "2026-10-14T17:37:31.470311+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -507,7 +507,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-14T12:25:57.235402+00:00",
+      "checkedAt": "2026-10-14T17:37:31.470311+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -662,7 +662,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-14T12:25:57.235402+00:00",
+      "checkedAt": "2026-10-14T17:37:31.470311+00:00",
       "listings": [
         {
           "home": "Manchester City",
