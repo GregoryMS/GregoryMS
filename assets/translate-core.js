@@ -36,5 +36,12 @@
     if(typeof value!=='string'||!value.trim()||/MYMEMORY WARNING|QUERY LENGTH LIMIT EXCEEDED|INVALID LANGUAGE PAIR/i.test(value))throw Error('MyMemory could not translate this text. Try another language or service.');
     return decodeEntities(value);
   }
-  return {languages,splitText,plan,requestURL,result,decodeEntities};
+  function microsoftURL(text,from,to){
+    const map={'no':'nb','zh-CN':'zh-Hans','zh-TW':'zh-Hant'};
+    const u=new URL('https://www.bing.com/translator');u.searchParams.set('from',map[from]||from);u.searchParams.set('to',map[to]||to);
+    // Avoid silently truncating drafts beyond the embedded translator's limit.
+    if(text&&text.length<=1000)u.searchParams.set('text',text);
+    return u.href;
+  }
+  return {languages,splitText,plan,requestURL,result,decodeEntities,microsoftURL};
 });

@@ -8,13 +8,13 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/translate-app/apple-touch-icon.png?v=20261015-translate"><link rel="manifest" href="/translate.webmanifest?v=20261015-translate">
   <link rel="icon" href="/assets/translate-app/favicon.ico?v=20261015-translate" sizes="16x16 32x32 48x48"><link rel="icon" type="image/png" sizes="32x32" href="/assets/translate-app/favicon-32.png?v=20261015-translate"><link rel="icon" type="image/svg+xml" sizes="any" href="/assets/translate-app/icon.svg?v=20261015-translate">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/translate.css?v=20261015-mymemory"><link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
-  <script src="assets/theme.js" defer></script><script src="assets/translate-core.js?v=20261015-mymemory" defer></script><script src="assets/translate.js?v=20261015-mymemory" defer></script>
+  <link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/translate.css?v=20261015-switcher"><link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
+  <script src="assets/theme.js" defer></script><script src="assets/translate-core.js?v=20261015-switcher" defer></script><script src="assets/translate.js?v=20261015-switcher" defer></script>
 </head>
 <body>
   <header class="topbar translate-topbar"><div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Translate</span></div><div class="top-actions"><a class="pill" href="links.html">← Tools</a><a class="pill" href="index.html">← Home</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div></header>
   <main class="translate-page">
-    <section class="translate-heading" aria-labelledby="pageTitle"><div><p class="eyebrow">A world of words</p><h1 id="pageTitle">Translate<span class="accent-dot">.</span></h1><p class="subtitle">Find the right words, in another language.</p></div><div class="provider-badge"><span class="provider-symbol" aria-hidden="true">↔</span><div><strong>MyMemory</strong><span>Text translation</span></div></div></section>
+    <section class="translate-heading" aria-labelledby="pageTitle"><div><p class="eyebrow">A world of words</p><h1 id="pageTitle">Translate<span class="accent-dot">.</span></h1><p class="subtitle">Find the right words, in another language.</p></div><div class="provider-badge provider-picker"><span class="provider-symbol" id="providerSymbol" aria-hidden="true">↔</span><div><label class="sr-only" for="providerSelect">Translator service</label><select id="providerSelect" aria-describedby="providerHint"><option value="mymemory">MyMemory</option><option value="microsoft">Microsoft Translate</option></select><span id="providerHint">Switch translator</span></div></div></section>
     <nav class="translation-services" aria-label="Other translation services"><span class="services-label">Explore more</span><a class="service-link featured" href="https://www.deepl.com/translator" target="_blank" rel="noopener noreferrer">DeepL <span aria-hidden="true">↗</span></a><a class="service-link" href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Google Translate <span aria-hidden="true">↗</span></a><a class="service-link" href="https://www.bing.com/translator" target="_blank" rel="noopener noreferrer">Microsoft Translate <span aria-hidden="true">↗</span></a><a class="service-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT <span aria-hidden="true">↗</span></a><a class="service-link" href="https://www.reverso.net/text-translation" target="_blank" rel="noopener noreferrer">Reverso <span aria-hidden="true">↗</span></a><a class="service-link" href="https://papago.naver.com/" target="_blank" rel="noopener noreferrer">Papago <span aria-hidden="true">↗</span></a></nav>
     <form id="translationForm" class="translation-form">
       <div class="translation-panels">
@@ -31,9 +31,16 @@
         </section>
       </div>
       <div class="translate-actions"><p id="translationStatus" role="status" aria-live="polite"></p><div><button class="pill" id="cancelButton" type="button" hidden>Cancel</button><button class="pill translate-submit" id="translateButton" type="submit" disabled>Translate</button></div></div>
+      <div class="quota-fallback" id="quotaFallback" hidden><p>Keep translating with Microsoft when MyMemory is unavailable.</p><button class="pill" id="useMicrosoft" type="button">Switch to Microsoft Translate →</button></div>
     </form>
+    <section class="translator-workspace" id="microsoftWorkspace" aria-label="Microsoft Translate" hidden>
+      <div class="workspace-toolbar"><div><span class="workspace-dot" aria-hidden="true"></span><span>Microsoft Translate</span></div><div class="embed-actions"><button class="text-button" id="copyOriginal" type="button" hidden>Copy original text</button><a class="text-button" id="openMicrosoft" href="https://www.bing.com/translator" target="_blank" rel="noopener noreferrer">Open Microsoft ↗</a></div></div>
+      <p id="microsoftNotice" class="embed-notice" role="status" aria-live="polite"></p>
+      <iframe id="translatorFrame" title="Microsoft Bing Translator" referrerpolicy="no-referrer"></iframe>
+      <div class="embed-footer"><button class="text-button" id="returnMyMemory" type="button">← Back to MyMemory</button><p>Microsoft handles this panel. Your MyMemory draft is kept when you switch back.</p></div>
+    </section>
     <noscript><p>Enable JavaScript to translate here, or use one of the translation services above.</p></noscript>
-    <div class="workspace-help"><p>Free allowance: 5,000 characters per day. Translate when you’re ready; typing doesn’t use your allowance.</p><p>Your text goes to MyMemory when you press Translate. Gregle doesn’t save it. <a href="https://mymemory.translated.net/doc/usagelimits.php" target="_blank" rel="noopener noreferrer">About the free allowance ↗</a></p></div>
+    <div class="workspace-help" id="myMemoryHelp"><p>Free allowance: 5,000 characters per day. Translate when you’re ready; typing doesn’t use your allowance.</p><p>Your text goes to MyMemory when you press Translate. Gregle doesn’t save it. <a href="https://mymemory.translated.net/doc/usagelimits.php" target="_blank" rel="noopener noreferrer">About the free allowance ↗</a></p></div>
     <footer><p>Words travel further.</p><a href="index.html">Back to Gregle</a></footer>
   </main>
 </body></html>
