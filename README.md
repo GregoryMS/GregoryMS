@@ -27,6 +27,23 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 Open `http://127.0.0.1:8000`. Weather, headlines, autocomplete, map routing and live comic archives use external services and require network access. Browser storage and clipboard access may be restricted; the pages provide fallbacks for these cases.
 
+## BBC headlines
+
+The homepage reads `data/bbc-news.json` from Gregle itself. The
+`bbc-news.yml` workflow refreshes it from BBC's official front-page RSS feed
+every 15 minutes and requests a Pages rebuild, following the existing data
+workflows. GitHub's scheduler can delay runs. The browser checks for updates
+every five minutes while visible and when returning to the page.
+
+`scripts/update_bbc_news.py` validates the feed date and BBC article URLs before
+atomically replacing the snapshot; failed refreshes leave the last good file
+intact. The ticker retains usable headlines during transient request failures,
+times out stalled requests after eight seconds and falls back to a BBC News
+link when the feed is more than six hours old. It no longer uses rss2json.
+
+Run `node --test tests/bbc-news.test.cjs` and
+`python3 -m unittest discover -s tests -p 'test_bbc_news.py'` for focused checks.
+
 ## Search suggestions
 
 Typing in the homepage search box requests up to eight suggestions from Google's autocomplete feed after a short pause. Queries are sent to Google for suggestions; selecting one (by click, tap, or arrow keys and Enter) searches Brave. The Search Gregle button continues to use Gregle. Escape, Tab, or leaving the field dismisses suggestions. Matching recent searches appear immediately and remain available if the external service fails. Suggestions are cached only in memory for the current page visit; recent searches continue to use local browser storage.
@@ -305,3 +322,4 @@ The **Live now** section appears only when the schedule feeds report a followed 
 Each live match has a compact UK, Canada, Norway, Sweden and Germany TV/streaming guide. `scripts/update_sports_tv.py` fetches FotMob’s public country-specific TV listings into `data/sports-tv.json`; `.github/workflows/sports-tv.yml` refreshes them every 30 minutes and requests a Pages rebuild, matching the existing data-update workflows. The browser reloads that snapshot every five minutes during live games. Listings retain their country, home/away names, women’s-team markers and programme start time. Matching requires both teams, sides, gender and a start within 90 minutes of kick-off (to allow pre-match programmes). No general rights-holder guesses are used. Listings more than six hours old, unmatched games, and unconfirmed kick-off times show an unavailable/no-confirmed-listing message with a country guide link. Partial refresh failures retain each country’s original check time. Provider coverage and listings can change.
 
 Run `node --test tests/sports*.test.cjs` and `python3 -m unittest discover -s tests -p 'test_sports_tv.py'` for the sports checks.
+
