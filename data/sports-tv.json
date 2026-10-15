@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-15T04:39:43.111680+00:00",
+      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -174,7 +174,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-15T04:39:43.111680+00:00",
+      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -317,7 +317,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-15T04:39:43.111680+00:00",
+      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -471,7 +471,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-15T04:39:43.111680+00:00",
+      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -624,7 +624,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-15T04:39:43.111680+00:00",
+      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
       "listings": [
         {
           "home": "St. Louis City",
