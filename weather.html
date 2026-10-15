@@ -71,7 +71,6 @@
         <div id="hourlyPanel" hidden>
           <div class="hourly-toolbar"><p class="updated" id="hourlyStatus" role="status"></p><div class="hourly-navigation"><button class="pill" id="hourlyRetry" type="button" hidden>Try again</button><button class="hourly-arrow" id="hourlyPrevious" type="button" aria-label="Earlier hours" aria-controls="hourlyGrid" disabled>←</button><button class="hourly-arrow" id="hourlyNext" type="button" aria-label="Later hours" aria-controls="hourlyGrid" disabled>→</button></div></div>
           <div class="hourly-grid" id="hourlyGrid" tabindex="0" role="region" aria-label="Hourly forecast; scroll for more hours"></div>
-          <p class="hourly-credit">Hourly forecast: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0). Precipitation chance covers rain or snow. — means not provided.</p>
         </div>
       </section>
     </div>
@@ -123,7 +122,7 @@
         </div>
         <p class="radar-meta">Each colour scale runs from light to heavy precipitation.</p>
         <p id="ptypeStatus" class="radar-meta" role="status">Precipitation types load when you open this tab.</p>
-        <div class="radar-forecast-caption"><span>Data: Environment and Climate Change Canada</span><a href="https://weather.gc.ca/" target="_blank" rel="noopener noreferrer">Open Environment Canada ↗</a></div>
+        <div class="radar-forecast-caption"><a href="https://weather.gc.ca/" target="_blank" rel="noopener noreferrer">Open Environment Canada ↗</a></div>
         <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta">Environment Canada’s surface precipitation-type composite combines radar observations and modelled surface temperatures to estimate what is reaching the ground. It updates every six minutes at 1 km resolution, with up to three hours of history. This is a recent estimate, not a forecast. Coverage varies across North America; blank areas may mean no precipitation or missing radar coverage. Times use the selected location’s time zone. Map areas are requested from OpenStreetMap and Environment Canada. <a href="https://eccc-msc.github.io/open-data/msc-data/obs_radar/readme_radar_geomet_en/">About the data ↗</a></p></details>
       </div>
       <div id="radarSmoke" hidden>
@@ -167,7 +166,7 @@
   <script src="assets/weather-precip-type.js?v=20261014-scroll-zoom"></script>
   <script src="assets/weather-map-layers.js?v=20261010-ptype"></script>
   <script src="assets/weather-lightning.js?v=20261010-lightning"></script>
-  <script src="assets/weather-radar.js?v=20261014-scroll-zoom"></script>
+  <script src="assets/weather-radar.js?v=20261015-cleanup"></script>
   <script src="assets/tide-core.js"></script>
   <script src="assets/tide-data.js"></script>
   <script src="assets/tide-ui.js"></script>

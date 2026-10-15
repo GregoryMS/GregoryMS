@@ -33,7 +33,7 @@
       imageFailed?'The next radar image could not load. Try Refresh.':
       buffering?'Loading radar image…':
       stale(frames.at(-1))?'Radar is delayed — the latest image is over 30 minutes old.':
-      'Drag to explore · Use + / − to zoom · Play or drag the timeline to see recent precipitation movement.';
+      '';
   }
   function layerFor(frame) {
     let layer=layers.get(frame.path);
