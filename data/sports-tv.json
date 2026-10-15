@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
+      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -174,7 +174,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
+      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -312,12 +312,20 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Aston Villa",
+          "away": "Manchester City",
+          "start": "2026-10-24T11:30:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
+      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -466,12 +474,20 @@
             "V sport 2 NO",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Aston Villa",
+          "away": "Manchester City",
+          "start": "2026-10-24T11:30:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
+      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -503,7 +519,8 @@
           "start": "2026-10-17T11:45:00+00:00",
           "channels": [
             "SVT Play",
-            "TV4 Fotboll"
+            "TV4 Fotboll",
+            "TV4 Play Sport"
           ]
         },
         {
@@ -624,7 +641,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-15T09:27:29.604939+00:00",
+      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
       "listings": [
         {
           "home": "St. Louis City",
