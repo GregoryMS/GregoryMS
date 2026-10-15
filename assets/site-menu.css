@@ -23,6 +23,8 @@
   box-shadow: var(--shadow-soft, none); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   transition: background .2s, border-color .2s, box-shadow .2s, transform .18s;
 }
+.gregle-menu-toggle > svg { width: 20px; height: 20px; transition: color .2s; }
+.gregle-app-menu > .gregle-menu-toggle:hover > svg { color: #9850ff; }
 .nav-tools .gregle-menu-toggle { width: 42px; height: 42px; }
 .nav-tools .gregle-menu-toggle:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
 .gregle-menu-toggle::-webkit-details-marker { display: none; }
