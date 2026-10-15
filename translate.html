@@ -2,26 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Translate</title><meta name="description" content="Translate with Microsoft Bing, with quick links to Google Translate, DeepL, ChatGPT and other translation services.">
+  <title>Translate</title><meta name="description" content="A Gregle-styled text translator powered by MyMemory, with links to DeepL, Google Translate, Microsoft and more.">
   <meta name="application-name" content="Translate"><meta name="apple-mobile-web-app-title" content="Translate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#242424" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/translate-app/apple-touch-icon.png?v=20261015-translate"><link rel="manifest" href="/translate.webmanifest?v=20261015-translate">
   <link rel="icon" href="/assets/translate-app/favicon.ico?v=20261015-translate" sizes="16x16 32x32 48x48"><link rel="icon" type="image/png" sizes="32x32" href="/assets/translate-app/favicon-32.png?v=20261015-translate"><link rel="icon" type="image/svg+xml" sizes="any" href="/assets/translate-app/icon.svg?v=20261015-translate">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/translate.css"><link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
-  <script src="assets/theme.js" defer></script><script src="assets/translate.js" defer></script>
+  <link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/translate.css?v=20261015-mymemory"><link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
+  <script src="assets/theme.js" defer></script><script src="assets/translate-core.js?v=20261015-mymemory" defer></script><script src="assets/translate.js?v=20261015-mymemory" defer></script>
 </head>
 <body>
   <header class="topbar translate-topbar"><div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Translate</span></div><div class="top-actions"><a class="pill" href="links.html">← Tools</a><a class="pill" href="index.html">← Home</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div></header>
   <main class="translate-page">
-    <section class="translate-heading" aria-labelledby="pageTitle"><div><p class="eyebrow">A world of words</p><h1 id="pageTitle">Translate<span class="accent-dot">.</span></h1><p class="subtitle">Find the right words, in another language.</p></div><div class="provider-badge"><span class="microsoft-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><strong>Microsoft Translator</strong><span>Powered by Bing</span></div></div></section>
-    <nav class="translation-services" aria-label="Other translation services"><span class="services-label">Explore more</span><a class="service-link featured" href="https://www.deepl.com/translator" target="_blank" rel="noopener noreferrer">DeepL <span aria-hidden="true">↗</span></a><a class="service-link" href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Google Translate <span aria-hidden="true">↗</span></a><a class="service-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT <span aria-hidden="true">↗</span></a><a class="service-link" href="https://www.reverso.net/text-translation" target="_blank" rel="noopener noreferrer">Reverso <span aria-hidden="true">↗</span></a><a class="service-link" href="https://papago.naver.com/" target="_blank" rel="noopener noreferrer">Papago <span aria-hidden="true">↗</span></a><a class="service-link" href="https://translate.yandex.com/" target="_blank" rel="noopener noreferrer">Yandex <span aria-hidden="true">↗</span></a></nav>
-    <section class="translator-workspace" aria-label="Microsoft translation workspace">
-      <div class="workspace-toolbar"><div><span class="workspace-dot" aria-hidden="true"></span><span>Text translation</span></div><a class="text-button" href="https://www.bing.com/translator" target="_blank" rel="noopener noreferrer">Open Microsoft ↗</a></div>
-      <iframe id="translatorFrame" title="Microsoft Bing Translator" src="https://www.bing.com/translator?from=auto-detect&amp;to=en" referrerpolicy="no-referrer"></iframe>
-    </section>
-    <div class="workspace-help"><p>Choose your languages above, then type or paste your text. Microsoft handles the translation.</p><p>If the panel is unavailable, <a href="https://www.bing.com/translator" target="_blank" rel="noopener noreferrer">open Microsoft Translator ↗</a> or <button class="text-button" id="reloadTranslator" type="button">reload the panel</button>.</p></div>
-    <p id="translatorStatus" class="sr-only" role="status" aria-live="polite"></p>
+    <section class="translate-heading" aria-labelledby="pageTitle"><div><p class="eyebrow">A world of words</p><h1 id="pageTitle">Translate<span class="accent-dot">.</span></h1><p class="subtitle">Find the right words, in another language.</p></div><div class="provider-badge"><span class="provider-symbol" aria-hidden="true">↔</span><div><strong>MyMemory</strong><span>Text translation</span></div></div></section>
+    <nav class="translation-services" aria-label="Other translation services"><span class="services-label">Explore more</span><a class="service-link featured" href="https://www.deepl.com/translator" target="_blank" rel="noopener noreferrer">DeepL <span aria-hidden="true">↗</span></a><a class="service-link" href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Google Translate <span aria-hidden="true">↗</span></a><a class="service-link" href="https://www.bing.com/translator" target="_blank" rel="noopener noreferrer">Microsoft <span aria-hidden="true">↗</span></a><a class="service-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT <span aria-hidden="true">↗</span></a><a class="service-link" href="https://www.reverso.net/text-translation" target="_blank" rel="noopener noreferrer">Reverso <span aria-hidden="true">↗</span></a><a class="service-link" href="https://papago.naver.com/" target="_blank" rel="noopener noreferrer">Papago <span aria-hidden="true">↗</span></a><a class="service-link" href="https://translate.yandex.com/" target="_blank" rel="noopener noreferrer">Yandex <span aria-hidden="true">↗</span></a></nav>
+    <form id="translationForm" class="translation-form">
+      <div class="translation-panels">
+        <section class="text-panel source-panel" aria-label="Source text">
+          <div class="language-row"><label for="sourceLanguage">From</label><select id="sourceLanguage" aria-label="Source language"></select><button id="clearButton" class="text-button" type="button">Clear</button></div>
+          <label class="sr-only" for="sourceText">Text to translate</label><textarea id="sourceText" placeholder="Type or paste your text here…" maxlength="5000" dir="auto" autocomplete="off" spellcheck="false"></textarea>
+          <div class="panel-foot"><span>Original text</span><span id="characterCount">0 / 5,000</span></div>
+        </section>
+        <button class="swap-button" id="swapLanguages" type="button" aria-label="Swap languages" title="Swap languages">⇄</button>
+        <section class="text-panel output-panel" aria-label="Translation">
+          <div class="language-row"><label for="targetLanguage">To</label><select id="targetLanguage" aria-label="Target language"></select><button id="copyButton" class="text-button" type="button" disabled>Copy</button></div>
+          <label class="sr-only" for="translatedText">Translated text</label><textarea id="translatedText" placeholder="Your translation will appear here." readonly dir="auto" spellcheck="false"></textarea>
+          <div class="panel-foot"><span id="resultLabel">Your translation</span><span>MyMemory</span></div>
+        </section>
+      </div>
+      <div class="translate-actions"><p id="translationStatus" role="status" aria-live="polite"></p><div><button class="pill" id="cancelButton" type="button" hidden>Cancel</button><button class="pill translate-submit" id="translateButton" type="submit" disabled>Translate</button></div></div>
+    </form>
+    <noscript><p>Enable JavaScript to translate here, or use one of the translation services above.</p></noscript>
+    <div class="workspace-help"><p>Free allowance: 5,000 characters per day. Translate when you’re ready; typing doesn’t use your allowance.</p><p>Your text goes to MyMemory when you press Translate. Gregle doesn’t save it. <a href="https://mymemory.translated.net/doc/usagelimits.php" target="_blank" rel="noopener noreferrer">About the free allowance ↗</a></p></div>
     <footer><p>Words travel further.</p><a href="index.html">Back to Gregle</a></footer>
   </main>
 </body></html>
