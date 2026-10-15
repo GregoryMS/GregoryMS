@@ -3,18 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
+      "checkedAt": "2026-10-15T21:48:06.246136+00:00",
       "listings": [
-        {
-          "home": "Manchester City",
-          "away": "Paris Saint-Germain",
-          "start": "2026-10-14T19:00:00+00:00",
-          "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 1",
-            "TNT Sports Ultimate"
-          ]
-        },
         {
           "home": "St. Louis City",
           "away": "Vancouver Whitecaps",
@@ -203,7 +193,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
+      "checkedAt": "2026-10-15T21:48:06.246136+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -379,7 +369,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
+      "checkedAt": "2026-10-15T21:48:06.246136+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -557,7 +547,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
+      "checkedAt": "2026-10-15T21:48:06.246136+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -711,7 +701,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
+      "checkedAt": "2026-10-15T21:48:06.246136+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -822,6 +812,7 @@
           "channels": [
             "DAZN Deutschland",
             "Magenta Sport",
+            "OneFootball Deutschland",
             "Sport1"
           ]
         },
