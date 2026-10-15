@@ -1,18 +1,38 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-15T07:44:45+00:00",
-  "fetchedAt": "2026-10-15T07:44:50.466658+00:00",
+  "feedUpdatedAt": "2026-10-15T12:52:41+00:00",
+  "fetchedAt": "2026-10-15T12:52:46.148384+00:00",
   "items": [
     {
-      "title": "Musk says US government may be behind slowdown of Ukraine drone speeds",
-      "link": "https://www.bbc.co.uk/news/articles/c8wy9veedgygo?at_medium=RSS&at_campaign=rss"
+      "title": "Man killed by tiger climbed two fences before suffering multiple injuries, inquest hears",
+      "link": "https://www.bbc.co.uk/news/articles/cxr5y83v1eldo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Russia accuses Ukraine of attacking oil refinery after Zelensky says strikes to resume",
+      "link": "https://www.bbc.co.uk/news/articles/cqwyrnwd9dw1o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "UK threatens to ban Eritreans over migrant return policy",
       "link": "https://www.bbc.co.uk/news/articles/c30rl1q1j200o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "UK economy sees surprise growth in August ahead of Healey's first Budget",
+      "title": "Watch: Swimmer's emotional TV plea for cancer research leads to meeting with PM",
+      "link": "https://www.bbc.co.uk/news/videos/cxnv01gylmvjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Severe drought declared in parts of southern England",
+      "link": "https://www.bbc.co.uk/news/articles/cwm243lrgdpgo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Watch: Harry and Meghan at first joint engagement since UK return",
+      "link": "https://www.bbc.co.uk/news/videos/cme8r0eexr3yo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "At least 33 pupils and teacher killed after school roof collapses in Pakistan",
+      "link": "https://www.bbc.co.uk/news/articles/cked326llddgo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Healey says surprise UK growth is 'sign of resilience' ahead of Budget",
       "link": "https://www.bbc.co.uk/news/articles/ck8dz1me439no?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -20,28 +40,8 @@
       "link": "https://www.bbc.co.uk/news/articles/cw3dj458re1vo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Hundreds of IDF investigations into killings without public outcome, BBC Verify finds",
-      "link": "https://www.bbc.co.uk/news/articles/c574e228vlygo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "White House defends new press secretary amid questions about her legal credentials",
-      "link": "https://www.bbc.co.uk/news/articles/ckqxne2evqreo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "UK temperatures to rise to 23C before autumn chill sets in",
-      "link": "https://www.bbc.co.uk/weather/articles/c6d7qv73nldgo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Inside Brooklyn novelty shop at centre of 'surreal' row with Kelly Clarkson over mechanical bird",
-      "link": "https://www.bbc.co.uk/news/articles/cxvgdneplgzeo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'An inspiration to us all': PM launches brain cancer review after meeting swimmer Archie Goodburn",
-      "link": "https://www.bbc.co.uk/news/articles/cm74pn052j2vo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "What if you could turn off your algorithm? Australia is about to try",
-      "link": "https://www.bbc.co.uk/news/videos/ck78pj2qy42po?at_medium=RSS&at_campaign=rss"
+      "title": "Tiny critically endangered puddle frogs hatch at London Zoo",
+      "link": "https://www.bbc.co.uk/news/articles/cr2keqxggx0wo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
