@@ -1,0 +1,16 @@
+{
+  "id": "/translate.html",
+  "name": "Translate",
+  "short_name": "Translate",
+  "description": "Translate with Microsoft and explore your favourite translation services.",
+  "start_url": "/translate.html",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#232323",
+  "background_color": "#232323",
+  "icons": [
+    {"src":"/assets/translate-app/icon-192.png?v=20261015-translate","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/assets/translate-app/icon-512.png?v=20261015-translate","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "lang": "en"
+}

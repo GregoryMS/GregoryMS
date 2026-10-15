@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Translate</title>
+  <rect width="512" height="512" fill="#232323"/>
+  <rect x="112" y="118" width="210" height="210" rx="28" fill="#faf9f6"/>
+  <rect x="208" y="214" width="192" height="180" rx="26" fill="#232323"/>
+  <rect x="222" y="228" width="178" height="166" rx="22" fill="#9850ff"/>
+  <g fill="none" stroke="#232323" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M154 265 193 167 232 265M166 235h54"/>
+  </g>
+  <g fill="none" stroke="#faf9f6" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M257 274h108M311 255v19M342 274c-12 43-37 68-81 85M277 296c14 31 39 50 83 63"/>
+  </g>
+</svg>
