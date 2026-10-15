@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
+      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -38,7 +38,8 @@
           "start": "2026-10-17T11:30:00+00:00",
           "channels": [
             "HBO Max (UK)",
-            "TNT Sports 1"
+            "TNT Sports 1",
+            "TNT Sports Ultimate"
           ]
         },
         {
@@ -109,6 +110,14 @@
           ]
         },
         {
+          "home": "Newcastle United (W)",
+          "away": "Sunderland (W)",
+          "start": "2026-10-18T13:00:00+00:00",
+          "channels": [
+            "WSL Youtube"
+          ]
+        },
+        {
           "home": "Manchester City (W)",
           "away": "Brighton (W)",
           "start": "2026-10-18T13:30:00+00:00",
@@ -169,12 +178,32 @@
             "HBO Max (UK)",
             "TNT Sports 2"
           ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Newcastle United",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports+ HD",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Manchester United (W)",
+          "away": "Manchester City (W)",
+          "start": "2026-10-25T18:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports UHD 1",
+            "Sky Sports+ app"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
+      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -273,6 +302,15 @@
           ]
         },
         {
+          "home": "Manchester City (W)",
+          "away": "Brighton (W)",
+          "start": "2026-10-18T13:30:00+00:00",
+          "channels": [
+            "Sportsnet NOW",
+            "Sportsnet One"
+          ]
+        },
+        {
           "home": "Nottingham Forest",
           "away": "Arsenal",
           "start": "2026-10-18T15:30:00+00:00",
@@ -320,12 +358,28 @@
           "channels": [
             "Fubo Sports CA"
           ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Everton",
+          "start": "2026-10-24T14:00:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Tottenham Hotspur",
+          "start": "2026-10-24T16:30:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
+      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -482,12 +536,28 @@
           "channels": [
             "Viaplay"
           ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Everton",
+          "start": "2026-10-24T14:00:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Tottenham Hotspur",
+          "start": "2026-10-24T16:30:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
+      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
       "listings": [
         {
           "home": "St. Louis City",
@@ -641,7 +711,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-15T14:25:53.710090+00:00",
+      "checkedAt": "2026-10-15T18:40:51.488610+00:00",
       "listings": [
         {
           "home": "St. Louis City",
