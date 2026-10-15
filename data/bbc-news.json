@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-15T20:33:26+00:00",
-  "fetchedAt": "2026-10-15T20:33:33.341827+00:00",
+  "feedUpdatedAt": "2026-10-15T23:13:41+00:00",
+  "fetchedAt": "2026-10-15T23:13:53.611279+00:00",
   "items": [
+    {
+      "title": "Bus hits train stopped on French side of Channel Tunnel, with 19 injured",
+      "link": "https://www.bbc.co.uk/news/articles/c6wyrnmgzn01o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Trump calls off livestream of Fort Hood attacker's execution by firing squad",
       "link": "https://www.bbc.co.uk/news/articles/crx23qlnj27qo?at_medium=RSS&at_campaign=rss"
@@ -38,10 +42,6 @@
     {
       "title": "Former DUP leader Donaldson sentenced to 15 years in prison for child sex abuse",
       "link": "https://www.bbc.co.uk/news/articles/cwdr8grnykrlo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Man killed by tiger climbed two fences before suffering multiple injuries, inquest hears",
-      "link": "https://www.bbc.co.uk/news/articles/cxr5y83v1eldo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
