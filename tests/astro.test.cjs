@@ -158,13 +158,12 @@ test('moon phases cross new moon without skipping or duplicating a quarter', () 
     phases.forEach((event,i)=>assert.ok(event.time > (i ? phases[i-1].time : date) && event.time < date + 35*24*A.HOUR));
   }
 });
-test('weather icon preserves selected coordinates and lunar dates follow forecast timezone', async () => {
+test('weather link preserves selected coordinates and lunar dates follow forecast timezone', async () => {
   const h=harness(); h.pending[0].resolve(response()); await h.flush();
   h.buttons[1].fire('click');
-  assert.equal(h.get('weather-icon-link').href,h.get('weather-link').href);
-  assert.equal(new URL(h.get('weather-icon-link').href,'https://example.test').searchParams.get('name'),'Victoria');
+  assert.equal(new URL(h.get('weather-link').href,'https://example.test').searchParams.get('name'),'Victoria');
   h.pending[1].resolve({...response(),timezone:'Pacific/Auckland'}); await h.flush();
-  assert.equal(new URL(h.get('weather-icon-link').href,'https://example.test').searchParams.get('tz'),'Pacific/Auckland');
+  assert.equal(new URL(h.get('weather-link').href,'https://example.test').searchParams.get('tz'),'Pacific/Auckland');
   const dates=h.get('moon-phase-dates').children;
   assert.equal(dates.length,4);
   dates.forEach(card=>{
