@@ -25,11 +25,27 @@
   <script src="assets/sports-live-core.js?v=20261012-teams" defer></script>
   <script src="assets/sports-live.js?v=20261012-live-layout" defer></script>
   <script src="assets/sports.js?v=20261012-match-centre" defer></script>
+  <link rel="stylesheet" href="assets/site-menu.css?v=20261015-menu">
+  <script src="assets/site-menu.js?v=20261015-menu" defer></script>
 </head>
 <body>
-  <header class="topbar">
+  <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Sports</span></div>
-    <div class="top-actions"><a class="pill fotmob-link" href="https://www.fotmob.com/" aria-label="FotMob" title="FotMob"><img src="assets/fotmob-logo.svg" alt="" width="30" height="30"></a><a class="pill" href="index.html">← Home</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+    <div class="top-actions"><a class="pill fotmob-link" href="https://www.fotmob.com/" aria-label="FotMob" title="FotMob"><img src="assets/fotmob-logo.svg" alt="" width="30" height="30"></a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button><!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>
+<div class="gregle-app-grid"><a class="gregle-app" href="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="/earthquakes.html"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="/sports.html" aria-current="page"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Tools</span></a></div>
+</nav></details>
+<!-- /Gregle app menu --></div>
   </header>
   <main class="page sports-page">
     <div class="sports-heading"><div><p class="eyebrow">Football · The best teams</p><h1>Sports</h1></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
@@ -69,7 +85,7 @@
       <p class="table-help">P: played · W/D/L: won/drawn/lost · GF/GA: goals for/against · GD: goal difference · Pts: points. MLS shows each conference separately.</p>
     </section>
     <section aria-labelledby="teams-heading" class="teams-section"><div class="section-heading"><h2 id="teams-heading">Your teams</h2><span id="team-count" class="meta">22 followed teams</span></div><p class="meta">Select a team to focus its matches. National teams include men and women; their fixtures span international competitions and friendlies.</p><div id="team-cards" class="team-grid"></div></section>
-    <footer><div><p>Scores, stats &amp; crests: <a href="https://www.espn.com/soccer/">ESPN</a> · TV listings: <a href="https://www.fotmob.com/tv-guide/gb">FotMob</a>. Times use your device’s time zone.</p><p>Fixtures and tables refresh every minute while visible. Live stats refresh every 30 seconds. Fixtures, kick-off times and coverage may change. Feed failures are shown beside affected teams or tables.</p></div><a href="links.html">Back to tools</a></footer>
+    <footer><div><p>Scores, stats &amp; crests: <a href="https://www.espn.com/soccer/">ESPN</a> · TV listings: <a href="https://www.fotmob.com/tv-guide/gb">FotMob</a>. Times use your device’s time zone.</p><p>Fixtures and tables refresh every minute while visible. Live stats refresh every 30 seconds. Fixtures, kick-off times and coverage may change. Feed failures are shown beside affected teams or tables.</p></div></footer>
   </main>
 </body>
 </html>

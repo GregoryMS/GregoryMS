@@ -25,11 +25,27 @@
   <script src="assets/earthquake-core.js?v=20261009-bulletin-text" defer></script>
   <script src="assets/earthquakes.js" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
+  <link rel="stylesheet" href="assets/site-menu.css?v=20261015-menu">
+  <script src="assets/site-menu.js?v=20261015-menu" defer></script>
 </head>
 <body>
-  <header class="topbar">
+  <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Earthquakes &amp; tsunamis</span></div>
-    <div class="top-actions"><a class="pill weather-shortcut" href="weather.html" aria-label="Local weather forecast" title="Weather"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16a4 4 0 0 1 1-8 6 6 0 0 1 11-1 4.5 4.5 0 1 1 2 9H4Z"/><path d="m7 19-1 2m7-2-1 2m7-2-1 2"/></svg></a><a class="pill" href="index.html">← Home</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+    <div class="top-actions"><a class="pill weather-shortcut" href="weather.html" aria-label="Local weather forecast" title="Weather"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16a4 4 0 0 1 1-8 6 6 0 0 1 11-1 4.5 4.5 0 1 1 2 9H4Z"/><path d="m7 19-1 2m7-2-1 2m7-2-1 2"/></svg></a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button><!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>
+<div class="gregle-app-grid"><a class="gregle-app" href="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="/earthquakes.html" aria-current="page"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="/sports.html"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Tools</span></a></div>
+</nav></details>
+<!-- /Gregle app menu --></div>
   </header>
   <main class="page seismic-page">
     <div class="seismic-heading"><div><p class="eyebrow">A moving planet</p><h1>Earthquakes &amp; tsunamis</h1><p class="intro">Recent activity, with a view of the coast and beyond.</p></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
@@ -53,7 +69,7 @@
       <div class="map-caption"><div class="legend" aria-label="Magnitude legend"><span><i class="dot small"></i>2.5–4.4</span><span><i class="dot medium"></i>4.5–5.9</span><span><i class="dot large"></i>6.0+</span><span><i class="tsunami-key">◆</i>Tsunami bulletin epicentre</span></div><span class="meta">Select a marker or an earthquake</span></div>
       <p id="quake-status" class="meta" role="status">Loading earthquakes…</p>
     </section>
-    <footer class="seismic-footer"><div><p>Earthquakes: <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php">USGS</a> · Tsunamis: <a href="https://www.tsunami.gov/">NOAA</a> · Checks every minute while this page is visible.</p><p>Times are local to your device. Earthquake reports are preliminary. Smaller events may be missing outside the U.S.</p><p>This is a monitoring tool, not an emergency alert service. Follow local authorities and <a href="https://www.emergencyinfobc.gov/">EmergencyInfoBC</a>. Tsunami markers show source earthquakes, not inundation or evacuation areas.</p></div><a href="links.html">Back to tools</a></footer>
+    <footer class="seismic-footer"><div><p>Earthquakes: <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php">USGS</a> · Tsunamis: <a href="https://www.tsunami.gov/">NOAA</a> · Checks every minute while this page is visible.</p><p>Times are local to your device. Earthquake reports are preliminary. Smaller events may be missing outside the U.S.</p><p>This is a monitoring tool, not an emergency alert service. Follow local authorities and <a href="https://www.emergencyinfobc.gov/">EmergencyInfoBC</a>. Tsunami markers show source earthquakes, not inundation or evacuation areas.</p></div></footer>
   </main>
 </body>
 </html>

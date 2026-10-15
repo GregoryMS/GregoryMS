@@ -20,12 +20,28 @@
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.13/dist/hls.min.js" integrity="sha384-z+tuLqMWl1/cPv7O+39RO0EURSNvorimpcCaMgeNwU+qFBx+AlUIl7jaAwg0cYil" crossorigin="anonymous" defer></script>
   <script src="assets/radio-core.js?v=20260924-2" defer></script>
   <script src="assets/radio.js?v=20260924-2" defer></script>
+  <link rel="stylesheet" href="assets/site-menu.css?v=20261015-menu">
+  <script src="assets/site-menu.js?v=20261015-menu" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#browse">Skip to station search</a>
-  <header class="topbar">
+  <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Radio</span></div>
-    <div class="top-actions"><a class="pill" href="links.html">← Tools</a><a class="pill" href="https://gregle.uk">Home</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div>
+    <div class="top-actions"><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button><!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>
+<div class="gregle-app-grid"><a class="gregle-app" href="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="/earthquakes.html"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="/sports.html"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Tools</span></a></div>
+</nav></details>
+<!-- /Gregle app menu --></div>
   </header>
   <main class="page radio-page">
     <div class="hero"><p class="eyebrow">A world of sound</p><h1>Find your frequency.</h1><p class="subtitle">Your familiar favourites. Something from somewhere new.<br>Live radio, all in one place.</p></div>
@@ -63,7 +79,7 @@
     </section>
     <noscript><p>Turn on JavaScript to use the player and search, or listen directly at <a href="https://www.bbc.co.uk/sounds/play/live:bbc_radio_one">BBC Radio 1</a> and <a href="https://radio.nrk.no/direkte/p3">NRK P3</a>.</p></noscript>
     <details><summary>About stations &amp; listening</summary><p>Search uses the community-maintained <a href="https://www.radio-browser.info/" target="_blank" rel="noopener noreferrer">Radio Browser</a> directory. Featured stations use broadcaster streams. Some broadcasts may be unavailable in your country or browser; the station website is always a useful alternative. This player does not bypass regional restrictions.</p><p>Playback starts only when you choose a station. Keep this page open while listening. Search terms go to Radio Browser, and audio loads directly from the station. No account is needed.</p></details>
-    <footer><p>Live radio. Made to be useful.</p><a href="links.html">Back to Tools</a></footer>
+    <footer><p>Live radio. Made to be useful.</p></footer>
   </main>
 </body>
 </html>

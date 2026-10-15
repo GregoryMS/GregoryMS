@@ -10,9 +10,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/translate.css?v=20261015-switcher"><link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/theme.js" defer></script><script src="assets/translate-core.js?v=20261015-switcher" defer></script><script src="assets/translate.js?v=20261015-switcher" defer></script>
+  <link rel="stylesheet" href="assets/site-menu.css?v=20261015-menu">
+  <script src="assets/site-menu.js?v=20261015-menu" defer></script>
 </head>
 <body>
-  <header class="topbar translate-topbar"><div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Translate</span></div><div class="top-actions"><a class="pill" href="links.html">← Tools</a><a class="pill" href="index.html">← Home</a><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button></div></header>
+  <header class="gregle-menu-header topbar translate-topbar"><div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Translate</span></div><div class="top-actions"><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button><!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>
+<div class="gregle-app-grid"><a class="gregle-app" href="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="/translate.html" aria-current="page"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="/earthquakes.html"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="/sports.html"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Tools</span></a></div>
+</nav></details>
+<!-- /Gregle app menu --></div></header>
   <main class="translate-page">
     <section class="translate-heading" aria-labelledby="pageTitle"><div><p class="eyebrow">A world of words</p><h1 id="pageTitle">Translate<span class="accent-dot">.</span></h1><p class="subtitle">Find the right words, in another language.</p></div><div class="provider-badge provider-picker"><span class="provider-symbol" id="providerSymbol" aria-hidden="true">↔</span><div><label class="sr-only" for="providerSelect">Translator service</label><select id="providerSelect" aria-describedby="providerHint"><option value="mymemory">MyMemory</option><option value="microsoft">Microsoft Translate</option></select><span id="providerHint">Switch translator</span></div></div></section>
     <nav class="translation-services" aria-label="Other translation services"><span class="services-label">Explore more</span><a class="service-link featured" href="https://www.deepl.com/translator" target="_blank" rel="noopener noreferrer">DeepL <span aria-hidden="true">↗</span></a><a class="service-link" href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Google Translate <span aria-hidden="true">↗</span></a><a class="service-link" href="https://www.bing.com/translator" target="_blank" rel="noopener noreferrer">Microsoft Translate <span aria-hidden="true">↗</span></a><a class="service-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT <span aria-hidden="true">↗</span></a><a class="service-link" href="https://www.reverso.net/text-translation" target="_blank" rel="noopener noreferrer">Reverso <span aria-hidden="true">↗</span></a><a class="service-link" href="https://papago.naver.com/" target="_blank" rel="noopener noreferrer">Papago <span aria-hidden="true">↗</span></a></nav>
@@ -41,6 +57,6 @@
     </section>
     <noscript><p>Enable JavaScript to translate here, or use one of the translation services above.</p></noscript>
     <div class="workspace-help" id="myMemoryHelp"><p>Free allowance: 5,000 characters per day. Translate when you’re ready; typing doesn’t use your allowance.</p><p>Your text goes to MyMemory when you press Translate. Gregle doesn’t save it. <a href="https://mymemory.translated.net/doc/usagelimits.php" target="_blank" rel="noopener noreferrer">About the free allowance ↗</a></p></div>
-    <footer><p>Words travel further.</p><a href="index.html">Back to Gregle</a></footer>
+    <footer><p>Words travel further.</p></footer>
   </main>
 </body></html>

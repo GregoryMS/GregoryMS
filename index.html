@@ -769,9 +769,11 @@
       background: #eaeaea;
     }
   </style>
+  <link rel="stylesheet" href="assets/site-menu.css?v=20261015-menu">
+  <script src="assets/site-menu.js?v=20261015-menu" defer></script>
 </head>
 <body>
-  <header class="topbar">
+  <header class="gregle-menu-header topbar">
     <div class="left-tools">
       <a class="weather-chip" id="weatherChip" href="/weather.html?lat=48.4284&amp;lon=-123.3656&amp;name=Victoria&amp;country=CA&amp;tz=America%2FVancouver" aria-label="Open weather forecast for Victoria"><span class="weather-chip-icon" aria-hidden="true"></span><span>--°C</span></a>
       <div class="utc-chip" id="utcClock"><strong>UTC</strong>&nbsp; --:--</div>
@@ -780,28 +782,21 @@
     <div class="nav-tools">
       <a class="login-button" href="https://cloud.gregle.de" rel="noreferrer">Login</a>
       <a class="quick-link mail-link" href="https://mail.proton.me" rel="noreferrer">Mail</a>
-      <div class="menu-wrap">
-        <button class="menu-button" id="menuToggle" aria-expanded="false" aria-controls="menuPanel">☰</button>
-        <nav class="menu-panel" id="menuPanel" aria-label="Custom links menu">
-          <a class="menu-link" href="https://portal.gregle.de" rel="noreferrer">Portal</a>
-          <a class="menu-link" href="https://42.gsuth.uk" rel="noreferrer">Notes</a>
-          <a class="menu-link" href="https://maps.apple.com" rel="noreferrer">Maps</a>
-          <a class="menu-link" href="/weather.html">Weather</a>
-          <a class="menu-link" href="/earthquakes.html">Earthquakes</a>
-          <a class="menu-link" href="/astro.html">Astronomy</a>
-          <a class="menu-link" href="/sports.html">Sports</a>
-          <a class="menu-link" href="/news.html">News</a>
-          <a class="menu-link" href="/finance.html">Finance</a>
-          <a class="menu-link" href="/translate.html">Translate</a>
-          <a class="menu-link" href="https://music.apple.com" rel="noreferrer">Music</a>
-          <a class="menu-link" href="https://gregle.uk/radio.html" rel="noreferrer">Radio</a>
-          <a class="menu-link" href="https://spaceweather.com" rel="noreferrer">SpaceWeather</a>
-          <a class="menu-link" href="https://news.ycombinator.com" rel="noreferrer">Hacker News</a>
-          <a class="menu-link" href="https://xkcd.com" rel="noreferrer">xkcd</a>
-          <a class="menu-link" href="/links.html">Tools</a>
-          <a class="menu-link" href="https://gsuth.uk">Contact</a>
-        </nav>
-      </div>
+      <!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>
+<div class="gregle-app-grid"><a class="gregle-app" href="/" aria-current="page"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="/earthquakes.html"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="/sports.html"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Tools</span></a></div>
+<section class="gregle-menu-more" aria-label="More links"><h3>More links</h3><div><a href="https://portal.gregle.de" rel="noreferrer">Portal</a><a href="https://42.gsuth.uk" rel="noreferrer">Notes</a><a href="https://maps.apple.com" rel="noreferrer">Maps</a><a href="https://music.apple.com" rel="noreferrer">Music</a><a href="https://gregle.uk/radio.html" rel="noreferrer">Radio</a><a href="https://spaceweather.com" rel="noreferrer">SpaceWeather</a><a href="https://news.ycombinator.com" rel="noreferrer">Hacker News</a><a href="https://xkcd.com" rel="noreferrer">xkcd</a><a href="https://gsuth.uk" rel="noreferrer">Contact</a></div></section></nav></details>
+<!-- /Gregle app menu -->
     </div>
   </header>
 
@@ -875,8 +870,6 @@
     const weatherChip = document.getElementById('weatherChip');
     const utcClock = document.getElementById('utcClock');
     const tickerTrack = document.getElementById('tickerTrack');
-    const menuToggle = document.getElementById('menuToggle');
-    const menuPanel = document.getElementById('menuPanel');
     const brandToggle = document.getElementById('brandToggle');
 
     let activeSuggestionIndex = -1;
@@ -1211,17 +1204,6 @@
       applyTheme(nextTheme);
     });
 
-    menuToggle.addEventListener('click', () => {
-      const open = menuPanel.classList.toggle('open');
-      menuToggle.setAttribute('aria-expanded', String(open));
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!menuPanel.contains(event.target) && !menuToggle.contains(event.target)) {
-        menuPanel.classList.remove('open');
-        menuToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
 
     const DEFAULT_WEATHER_LOCATION = {
       name: 'Victoria',
