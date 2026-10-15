@@ -71,7 +71,11 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}, ov
     consumptionValue: '18', distance: '100', distanceUnit: 'km', journeyType: '1', chargingEfficiency: '90' })
     .forEach(([id, value]) => { get(id).value = value; });
   Object.assign(context, overrides);
-  vm.runInContext(scripts(file, true), context, { filename: file });
+  // BBC retrieval and timeout behavior have their own suite. Keep their startup
+  // timer out of search/weather tests that inspect and advance mock timers.
+  const code = scripts(file, true);
+  vm.runInContext(file === 'index.html' ? code.replace(/^    loadBBCNews\(\);$/m, '') : code,
+    context, { filename: file });
   return { context, get, ready, map, markers, timers };
 }
 
@@ -1009,4 +1013,5 @@ test('cached homepage weather keeps its own location and rejects invalid cached 
   cached.latitude=999;
   assert.equal(vm.runInContext('readCachedWeather()',env.context),null);
 });
+
 
