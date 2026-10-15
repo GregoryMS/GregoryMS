@@ -5,7 +5,7 @@
   const KEY = 'gregle-news-v1';
   const defaults = {feeds:[],articles:[],read:[],saved:[],updated:null};
   let state = {...defaults}, view = 'all', selected = '', limit = 40, refreshing = false, opened = null;
-  let storageOK = true, notice = '', failures = new Map();
+  let storageOK = true, notice = '', failures = new Map(), pendingFeeds = [];
   const safeURL = value => { try { const u = new URL(value); return ['http:','https:'].includes(u.protocol) && !u.username && !u.password ? u.href : ''; } catch { return ''; } };
   const feedURL = value => {
     const url = safeURL(value);
@@ -162,7 +162,7 @@
     try{return parseFeed(await request('https://api.allorigins.win/raw?url='+encodeURIComponent(f.url)),f.url);}catch{throw Error('Could not retrieve this feed. Check its URL or try Refresh later.');}
   }
   async function refresh(only) {
-    if(refreshing)return;const jobs=only||[...state.feeds];if(!jobs.length)return;
+    if(refreshing){if(only)pendingFeeds.push(...only);return;}const jobs=only||[...state.feeds];if(!jobs.length)return;
     refreshing=true;notice='Checking your feeds…';let index=0,done=0,success=0;render();
     await Promise.all(Array.from({length:Math.min(4,jobs.length)},async()=>{
       while(index<jobs.length){const f=jobs[index++];try{
@@ -180,12 +180,13 @@
       done++;notice=`Updating feeds · ${done} of ${jobs.length}`;render();}
     }));
     if(success)state.updated=Date.now();refreshing=false;notice=success?`Updated ${success} of ${jobs.length} feeds${failures.size?' · Some feeds are unavailable; cached stories kept':''}`:'Feeds could not be reached. Check the feed URLs or try Refresh later. Cached articles are still available.';persist();render();
+    const queued=[...new Map(pendingFeeds.filter(f=>state.feeds.some(s=>s.url===f.url)).map(f=>[f.url,f])).values()];pendingFeeds=[];if(queued.length)refresh(queued);
   }
   function addFeeds(incoming) {
     const known=new Set(state.feeds.map(f=>f.url)),added=[];let duplicates=0;
     for(const f of incoming){if(known.has(f.url)){duplicates++;continue;}if(state.feeds.length>=500)break;known.add(f.url);state.feeds.push(f);added.push(f);}
     notice=`Added ${added.length} ${added.length===1?'feed':'feeds'}${duplicates?' · '+duplicates+' already subscribed':''}${state.feeds.length>=500?' · Maximum 500 feeds reached':''}`;persist();render();
-    if(added.length){if(refreshing)notice+=' · Refresh again to load the new feeds';else refresh(added);}return added.length;
+    if(added.length)refresh(added);return added.length;
   }
   async function importFile(file) {
     if(!file)return;
