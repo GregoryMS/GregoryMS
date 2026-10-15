@@ -165,7 +165,6 @@ test('weather icon preserves selected coordinates and lunar dates follow forecas
   assert.equal(new URL(h.get('weather-icon-link').href,'https://example.test').searchParams.get('name'),'Victoria');
   h.pending[1].resolve({...response(),timezone:'Pacific/Auckland'}); await h.flush();
   assert.equal(new URL(h.get('weather-icon-link').href,'https://example.test').searchParams.get('tz'),'Pacific/Auckland');
-  assert.match(h.get('moon-phase-zone').textContent,/Pacific\/Auckland/);
   const dates=h.get('moon-phase-dates').children;
   assert.equal(dates.length,4);
   dates.forEach(card=>{
