@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dictionary &amp; Thesaurus · Gregle</title>
+<meta name="description" content="Look up words, definitions and synonyms in British English, French, Norwegian and German, with Oxford English references.">
+<meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#242424" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="assets/dictionary-book.svg">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/dictionary.css?v=20261015"><link rel="stylesheet" href="assets/site-menu.css?v=20261015-selected-dots">
+<script src="assets/theme.js" defer></script><script src="assets/site-menu.js?v=20261015-menu" defer></script><script src="assets/dictionary.js?v=20261015" defer></script>
+</head><body>
+<header class="gregle-menu-header topbar translate-topbar"><div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Dictionary</span></div><div class="top-actions"><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button><!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>
+<div class="gregle-app-grid"><a class="gregle-app" href="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="/earthquakes.html"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="/sports.html"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Tools</span></a></div>
+</nav></details>
+<!-- /Gregle app menu --></div></header>
+<main class="page dictionary-page">
+<section class="dictionary-heading"><div><p class="eyebrow">A word for everything</p><h1>Dictionary<span class="accent-dot">.</span></h1><p class="subtitle">Meanings, synonyms, and the right word.</p></div><img class="book-emblem" src="assets/dictionary-book.svg" width="94" height="94" alt=""></section>
+<section class="lookup-card" aria-label="Word lookup">
+<div class="lookup-controls"><div class="mode-switch" role="group" aria-label="Lookup type"><button type="button" data-mode="dictionary" aria-pressed="true">Dictionary</button><button type="button" data-mode="thesaurus" aria-pressed="false">Thesaurus</button></div>
+<div class="language-picker"><label for="language">Language</label><select id="language"><option value="en-GB">British English</option><option value="fr">French · Français</option><option value="no">Norwegian · Norsk</option><option value="de">German · Deutsch</option></select></div></div>
+<form id="lookupForm" class="dictionary-search"><label for="word" class="sr-only">Word or phrase</label><input id="word" name="q" type="search" maxlength="100" placeholder="Enter a word or phrase…" autocomplete="off" autocapitalize="none" spellcheck="true" required><button class="pill primary" type="submit">Look up</button></form>
+<p class="language-note" id="languageNote">British spelling · UK pronunciation · Oxford reference</p>
+<div class="examples" id="examples"></div>
+</section>
+<nav class="reference-links" aria-label="Dictionary and thesaurus references"><span class="source-label">References</span><div id="sourceLinks"><a class="reference preferred" href="https://www.oxfordlearnersdictionaries.com/" target="_blank" rel="noopener noreferrer">Oxford English ↗</a><a class="reference" href="https://www.collinsdictionary.com/dictionary/english-thesaurus" target="_blank" rel="noopener noreferrer">Collins Thesaurus ↗</a></div></nav>
+<div id="results" aria-busy="false"><p class="dictionary-status" id="searchStatus" role="status" aria-live="polite">Choose a language and look up a word.</p>
+<article class="dictionary-entry" id="entry" hidden><div class="entry-heading"><div><span class="entry-language" id="entryLanguage"></span><h2 id="entryTitle"></h2><span class="pronunciation" id="pronunciation"></span></div><button class="pill" id="speak" type="button" title="Hear this word using your device’s voice">◖ Listen</button></div><div id="entryContent"></div><p class="source-credit" id="sourceCredit"></p></article>
+<section class="welcome" id="welcome" aria-label="About this dictionary"><article><p class="mini-label">01 / Meanings</p><h2>Make every word count.</h2><p>Look up definitions in English for all four languages. For British usage and Oxford pronunciations, open the Oxford English reference.</p></article><article><p class="mini-label">02 / Possibilities</p><h2>Find another way to say it.</h2><p>Switch to Thesaurus for synonyms and antonyms. Select any word to explore its meaning, or go further with a language’s own reference.</p></article></section></div>
+<noscript><p>Enable JavaScript for word lookup. You can also use the Oxford and Collins reference links above.</p></noscript>
+<footer class="dictionary-footer"><p>On-page entries: Wiktionary. Oxford entries open on Oxford’s site.</p><a href="translate.html">Translate a phrase →</a></footer>
+</main></body></html>

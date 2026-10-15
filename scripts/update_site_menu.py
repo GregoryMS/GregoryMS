@@ -18,7 +18,8 @@ APPS = [
 ]
 EXTRAS = [
     ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),
-    ('Maps', 'https://maps.apple.com'), ('Music', 'https://music.apple.com'),
+    ('Maps', 'https://maps.apple.com'), ('Dictionary', '/dictionary.html'),
+    ('Music', 'https://music.apple.com'),
     ('Radio', 'https://gregle.uk/radio.html'), ('SpaceWeather', 'https://spaceweather.com'),
     ('Hacker News', 'https://news.ycombinator.com'), ('xkcd', 'https://xkcd.com'),
     ('Contact', 'https://gsuth.uk'),
