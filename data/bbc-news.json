@@ -1,12 +1,8 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-15T17:42:26+00:00",
-  "fetchedAt": "2026-10-15T17:42:27.331018+00:00",
+  "feedUpdatedAt": "2026-10-15T20:33:26+00:00",
+  "fetchedAt": "2026-10-15T20:33:33.341827+00:00",
   "items": [
-    {
-      "title": "Former DUP leader Donaldson sentenced to 15 years in prison for child sex abuse",
-      "link": "https://www.bbc.co.uk/news/articles/cwdr8grnykrlo?at_medium=RSS&at_campaign=rss"
-    },
     {
       "title": "Trump calls off livestream of Fort Hood attacker's execution by firing squad",
       "link": "https://www.bbc.co.uk/news/articles/crx23qlnj27qo?at_medium=RSS&at_campaign=rss"
@@ -20,28 +16,32 @@
       "link": "https://www.bbc.co.uk/news/articles/cwy7ldzl7j4po?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Severe drought declared in parts of southern England",
-      "link": "https://www.bbc.co.uk/news/articles/cwm243lrgdpgo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Meghan makes first official public appearance since moving back to UK",
-      "link": "https://www.bbc.co.uk/news/articles/c6gelgd1lxv2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Swimmer's emotional TV plea for cancer research leads to meeting with PM",
-      "link": "https://www.bbc.co.uk/news/videos/cxnv01gylmvjo?at_medium=RSS&at_campaign=rss"
+      "title": "Why Harry and Meghan's UK relaunch felt so much like a royal engagement",
+      "link": "https://www.bbc.co.uk/news/articles/cwvgdnjqpyvmo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Banks say Healey is planning Budget tax raid on their profits",
       "link": "https://www.bbc.co.uk/news/articles/c32l4k2xdvrzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Man killed by tiger climbed two fences before suffering multiple injuries, inquest hears",
-      "link": "https://www.bbc.co.uk/news/articles/cxr5y83v1eldo?at_medium=RSS&at_campaign=rss"
+      "title": "This 75,000-year-old wound suggests Neanderthal life was more violent than we thought",
+      "link": "https://www.bbc.co.uk/news/articles/c6jrwn3y3xe9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Infantino apologises to Fifa Council - but told he is still not fit to lead",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmd7qgj3zwero?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Swimmer's emotional TV plea for cancer research leads to meeting with PM",
+      "link": "https://www.bbc.co.uk/news/videos/cxnv01gylmvjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "London housing project wins top architecture award",
+      "link": "https://www.bbc.co.uk/news/articles/cq8jzgl7zz9po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Former DUP leader Donaldson sentenced to 15 years in prison for child sex abuse",
+      "link": "https://www.bbc.co.uk/news/articles/cwdr8grnykrlo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Man killed by tiger climbed two fences before suffering multiple injuries, inquest hears",
+      "link": "https://www.bbc.co.uk/news/articles/cxr5y83v1eldo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
