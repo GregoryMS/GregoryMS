@@ -15,13 +15,19 @@
   --gm-hover: #3a3443; --gm-active: #49345f; --gm-accent: #c698ff;
 }
 .gregle-app-menu > .gregle-menu-toggle {
-  display: grid; place-items: center; list-style: none; width: 42px; height: 42px;
-  box-sizing: border-box; margin: 0; padding: 0; border: 1px solid transparent; border-radius: 50%;
-  color: var(--gm-ink); cursor: pointer; user-select: none;
+  display: grid; place-items: center; list-style: none; width: 44px; height: 44px;
+  box-sizing: border-box; margin: 0; padding: 0;
+  border: 1px solid var(--border, var(--line, var(--gm-line))); border-radius: 999px;
+  background: var(--panel-strong, var(--panel, var(--gm-bg)));
+  color: var(--text, var(--gm-ink)); cursor: pointer; user-select: none;
+  box-shadow: var(--shadow-soft, none); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: background .2s, border-color .2s, box-shadow .2s, transform .18s;
 }
+.nav-tools .gregle-menu-toggle { width: 42px; height: 42px; }
+.nav-tools .gregle-menu-toggle:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
 .gregle-menu-toggle::-webkit-details-marker { display: none; }
 .gregle-app-menu > .gregle-menu-toggle:hover,
-.gregle-app-menu[open] > .gregle-menu-toggle { background: var(--gm-hover); }
+.gregle-app-menu[open] > .gregle-menu-toggle { background: var(--soft, var(--panel-strong, var(--gm-hover))); }
 .gregle-app-menu .gregle-menu-toggle:focus-visible,
 .gregle-app-menu a:focus-visible { outline: 3px solid var(--gm-accent); outline-offset: 2px; }
 .gregle-app-menu .gregle-menu-panel {
