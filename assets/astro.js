@@ -10,7 +10,7 @@
   };
   let place = window.GregleTides.locationFromURL(window.location?.href) || presets.vancouver, forecast = null, forecastController, searchController, selectedSite = null, sitesBrowser;
   let selection = 0, searchVersion = 0, chartVersion = 0, geoVersion = 0, checkedAt = 0;
-  let moonEvents = null, moonController, moonDatesLoading = true;
+  let moonEvents = null, moonController;
   const number = (value, suffix = '', decimals = 0) => Number.isFinite(value) ? value.toFixed(decimals) + suffix : '—';
   function element(tag, text, className) {
     const el = document.createElement(tag);
@@ -81,7 +81,6 @@
       date.dateTime = new Date(event.time).toISOString();
       card.append(icon, element('strong', event.name), date); return card;
     }));
-    $('moon-phase-zone').textContent = (hasVerifiedDates ? 'Phase dates: US Naval Observatory' : (moonDatesLoading ? 'Loading precise phase dates · showing SunCalc estimates' : 'Estimated phase dates: SunCalc · precise dates unavailable; estimates may differ by a day')) + ' · ' + (forecast?.timezone || place.timezone || 'UTC') + '. Symbols are a phase guide; the Moon’s apparent orientation varies.';
     // Sample actual solar altitude across 48 hours: works through local midnight and polar day/night.
     const step = A.HOUR / 4, end = now + 48 * A.HOUR;
     let start = null, finish = null;
@@ -94,12 +93,12 @@
   }
   async function loadMoonDates() {
     moonController?.abort();
-    const controller = new AbortController(); moonController = controller; moonDatesLoading = true;
+    const controller = new AbortController(); moonController = controller;
     try {
       const data = await json('https://aa.usno.navy.mil/api/moon/phases/date?' + new URLSearchParams({date:new Date().toISOString().slice(0,10), nump:'5'}), controller);
       if (moonController !== controller) return;
-      moonEvents = A.parseMoonPhases(data); moonDatesLoading = false; skySummary();
-    } catch (_) { if (moonController === controller) { moonDatesLoading = false; skySummary(); } }
+      moonEvents = A.parseMoonPhases(data); skySummary();
+    } catch (_) { if (moonController === controller) { skySummary(); } }
   }
   function renderConditions() {
     const c = forecast?.current;
