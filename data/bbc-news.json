@@ -1,27 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-16T18:56:54+00:00",
-  "fetchedAt": "2026-10-16T18:57:04.607102+00:00",
+  "feedUpdatedAt": "2026-10-16T21:59:08+00:00",
+  "fetchedAt": "2026-10-16T21:59:15.472697+00:00",
   "items": [
     {
-      "title": "Zelensky says Ukraine has right to defend itself after Trump calls refinery strikes a 'disgrace'",
-      "link": "https://www.bbc.co.uk/news/articles/c58jz174w89ro?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Will Ukraine get the support needed as tensions with US rise?",
+      "link": "https://www.bbc.co.uk/news/videos/cm2ke1v8e4geo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: BBC follows Ukraine's Operation Vivaldi pushing Russia back on frontline",
-      "link": "https://www.bbc.co.uk/news/videos/cm1ex06026e8o?at_medium=RSS&at_campaign=rss"
+      "title": "Inside Ukrainian offensive pushing Russia back - with Starlink playing a key role",
+      "link": "https://www.bbc.co.uk/news/articles/cvx284w16z1po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Nurse stole £750k from 99-year-old woman for cosmetic surgery and home improvements",
+      "link": "https://www.bbc.co.uk/news/articles/cm9qzx43rlzjo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Man killed by tiger may have had medical records breached by NHS staff",
       "link": "https://www.bbc.co.uk/news/articles/c875prd12vkqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Palestinians and US journalist injured by Israeli settlers in West Bank harvest attack",
-      "link": "https://www.bbc.co.uk/news/articles/c65ynk7212vqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Nurse stole £750k from 99-year-old woman for cosmetic surgery and home improvements",
-      "link": "https://www.bbc.co.uk/news/articles/cm9qzx43rlzjo?at_medium=RSS&at_campaign=rss"
+      "title": "Chris Mason: Burnham and Swinney tussle over where power lies in Scotland",
+      "link": "https://www.bbc.co.uk/news/articles/cmlyl889jqzjo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Watch: Did Tesla really just unveil a flying car?",
@@ -32,16 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/c6wyrk0gxlw2o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Palestinians and US journalist injured by Israeli settlers in West Bank harvest attack",
+      "link": "https://www.bbc.co.uk/news/articles/c65ynk7212vqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Norwegian teen 'hitman' jailed over UK murder plot",
       "link": "https://www.bbc.co.uk/news/articles/cw8rzpl1ldkdo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Woman says she was left 'bewildered and confused' by alleged Russell Brand assault",
       "link": "https://www.bbc.co.uk/news/articles/ck8dz6m1d2n6o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Pope pictured for first time since surgery as he says Mass at makeshift altar in hospital",
-      "link": "https://www.bbc.co.uk/news/articles/cw146ej00yn7o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
