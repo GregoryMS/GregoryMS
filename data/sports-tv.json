@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-16T18:49:07.470201+00:00",
+      "checkedAt": "2026-10-16T22:05:55.948220+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "FK Kauno Žalgiris",
-          "start": "2026-10-15T19:00:00+00:00",
-          "channels": [
-            "HBO Max (UK)"
-          ]
-        },
         {
           "home": "Everton",
           "away": "Chelsea",
@@ -199,7 +191,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-16T18:49:07.470201+00:00",
+      "checkedAt": "2026-10-16T22:05:55.948220+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -390,7 +382,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-16T18:49:07.470201+00:00",
+      "checkedAt": "2026-10-16T22:05:55.948220+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -582,7 +574,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-16T18:49:07.470201+00:00",
+      "checkedAt": "2026-10-16T22:05:55.948220+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -728,7 +720,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-16T18:49:07.470201+00:00",
+      "checkedAt": "2026-10-16T22:05:55.948220+00:00",
       "listings": [
         {
           "home": "Everton",
