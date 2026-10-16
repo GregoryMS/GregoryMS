@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/links.css?v=20261015-contact">
-  <script src="assets/links.js?v=20261015-search" defer></script>
+  <link rel="stylesheet" href="assets/links.css?v=20261015-useful">
+  <script src="assets/links.js?v=20261015-useful" defer></script>
   <script src="assets/theme.js" defer></script>
   <link rel="stylesheet" href="assets/site-menu.css?v=20261015-selected-dots">
   <script src="assets/site-menu.js?v=20261015-menu" defer></script>
@@ -40,7 +40,7 @@
       <p class="subtitle">Useful tools, quick searches and everyday links.</p>
     </div>
     <form class="tools-search" id="toolsSearchForm" role="search" aria-label="Search tools and links" hidden>
-      <div class="tools-search-field"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><label class="sr-only" for="toolSearch">Search tools and links</label><input id="toolSearch" type="search" placeholder="Search tools and links…" autocomplete="off" aria-controls="toolGrid" spellcheck="false"><button class="text-button tools-clear" id="clearToolSearch" type="button" hidden>Clear</button></div>
+      <div class="tools-search-field"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><label class="sr-only" for="toolSearch">Search tools and links</label><input id="toolSearch" type="search" placeholder="Search tools and links…" autocomplete="off" aria-controls="toolGrid usefulLinkGrid" spellcheck="false"><button class="text-button tools-clear" id="clearToolSearch" type="button" hidden>Clear</button></div>
       <p class="tools-count" id="toolCount" role="status" aria-live="polite" aria-atomic="true"></p>
     </form>
     <nav class="tool-grid" id="toolGrid" aria-label="Gregle tools and links">
@@ -142,7 +142,18 @@
         <span class="card-label">Earth · Live activity</span>
       </a>
     </nav>
-    <div class="tools-empty" id="toolsEmpty" hidden><h2>No matching tools</h2><p>Try another word, such as “weather”, “words” or “calculator”.</p><button class="pill" id="resetToolSearch" type="button">Show all tools</button></div>
+    <div class="tools-empty" id="toolsEmpty" hidden><h2>No matching tools or links</h2><p>Try another word, such as “weather”, “words” or “calculator”.</p><button class="pill" id="resetToolSearch" type="button">Show all tools &amp; links</button></div>
+    <section class="useful-links" id="usefulLinks" aria-labelledby="usefulLinksTitle">
+      <h2 id="usefulLinksTitle">Useful links</h2>
+      <nav class="tool-grid" id="usefulLinkGrid" aria-label="Useful external links">
+        <a class="tool-card" href="https://spaceweather.com/">
+          <div class="card-top"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></span><span class="arrow" aria-hidden="true">↗</span></div>
+          <h3>SpaceWeather.com</h3>
+          <p>Visit SpaceWeather.com for space weather updates.</p>
+          <span class="card-label">Astronomy · External link</span>
+        </a>
+      </nav>
+    </section>
     <footer><p>Small tools. Made to be useful.</p></footer>
   </main>
 </body>
