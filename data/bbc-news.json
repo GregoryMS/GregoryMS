@@ -1,31 +1,35 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-16T01:25:05+00:00",
-  "fetchedAt": "2026-10-16T01:25:14.771005+00:00",
+  "feedUpdatedAt": "2026-10-16T06:16:32+00:00",
+  "fetchedAt": "2026-10-16T06:16:35.703782+00:00",
   "items": [
     {
-      "title": "Bus hits train stopped on French side of Channel Tunnel, with 19 injured",
-      "link": "https://www.bbc.co.uk/news/articles/c6wyrnmgzn01o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Trump calls off livestream of Fort Hood attacker's execution by firing squad",
-      "link": "https://www.bbc.co.uk/news/articles/crx23qlnj27qo?at_medium=RSS&at_campaign=rss"
+      "title": "Three children and teacher killed in US primary school shooting",
+      "link": "https://www.bbc.co.uk/news/articles/cm89zp48k4kzo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Same-day test helps doctors detect hidden infections in critically ill children",
       "link": "https://www.bbc.co.uk/news/articles/cw5yn83m8gypo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Sparks fly at the Celebrity Traitors round table and a 'terrifying' death march",
-      "link": "https://www.bbc.co.uk/news/articles/cq4g17j1ej95o?at_medium=RSS&at_campaign=rss"
+      "title": "Banks say Healey planning to increase tax on their profits in Budget",
+      "link": "https://www.bbc.co.uk/news/articles/c32l4k2xdvrzo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Porn showing choking or incest to be banned from early November, government says",
       "link": "https://www.bbc.co.uk/news/articles/cmpqgepejr2ro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Banks say Healey is planning Budget tax raid on their profits",
-      "link": "https://www.bbc.co.uk/news/articles/c32l4k2xdvrzo?at_medium=RSS&at_campaign=rss"
+      "title": "Bus hits train stopped on French side of Channel Tunnel, with 19 injured",
+      "link": "https://www.bbc.co.uk/news/articles/c6wyrnmgzn01o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sparks fly at the Celebrity Traitors round table and a 'terrifying' death march",
+      "link": "https://www.bbc.co.uk/news/articles/cq4g17j1ej95o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Watch: Will disenchanted Iowa Republicans reject Trump in the midterms?",
+      "link": "https://www.bbc.co.uk/news/videos/c32l4kqg2q4ro?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Reform faces questions over candidate vetting after undercover filming",
@@ -36,12 +40,8 @@
       "link": "https://www.bbc.co.uk/news/articles/cq8jzgl7zz9po?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trans people should use hospital spaces according to biological sex, NHS England says",
-      "link": "https://www.bbc.co.uk/news/articles/cry83dyddv6no?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "India's 'cockroach' protesters set to return despite police crackdown",
-      "link": "https://www.bbc.co.uk/news/articles/cmx237n1y9lzo?at_medium=RSS&at_campaign=rss"
+      "title": "Met needs to move away from criminalising sex workers, officers say after Levy failings",
+      "link": "https://www.bbc.co.uk/news/articles/c2l8jpzwv9jo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
