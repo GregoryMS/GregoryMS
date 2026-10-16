@@ -14,7 +14,7 @@ APPS = [
     ('Sports', '/sports.html', 'assets/sports-app/icon-192.png'),
     ('News', '/news.html', 'assets/news-app/icon-192.png'),
     ('Finance', '/finance.html', 'assets/finance-app/icon-192.png'),
-    ('Tools', '/links.html', 'assets/tools-app.svg'),
+    ('More', '/links.html', 'assets/tools-app.svg'),
 ]
 EXTRAS = [
     ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),

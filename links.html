@@ -4,17 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A collection of useful tools from Gregle: fuel and EV costs, comic search and more.">
-  <title>Links · Gregle</title>
+  <title>Tools &amp; Links · Gregle</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
   <link rel="stylesheet" href="assets/tools.css">
+  <link rel="stylesheet" href="assets/links.css?v=20261015-compact">
+  <script src="assets/links.js?v=20261015-search" defer></script>
   <script src="assets/theme.js" defer></script>
   <link rel="stylesheet" href="assets/site-menu.css?v=20261015-selected-dots">
   <script src="assets/site-menu.js?v=20261015-menu" defer></script>
 </head>
 <body>
   <header class="gregle-menu-header topbar">
-    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Links</span></div>
+    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Tools &amp; Links</span></div>
     <div class="top-actions"><button class="pill theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">◐</button><!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
 <summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
@@ -27,17 +29,21 @@
 <a class="gregle-app" href="/sports.html"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
 <a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
 <a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
-<a class="gregle-app" href="/links.html" aria-current="page"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Tools</span></a></div>
+<a class="gregle-app" href="/links.html" aria-current="page"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>More</span></a></div>
 </nav></details>
 <!-- /Gregle app menu --></div>
   </header>
-  <main class="page">
+  <main class="page tools-page">
     <div class="hero">
       <p class="eyebrow">The useful little things</p>
-      <h1>Tools &amp; links</h1>
-      <p class="subtitle">Calculators, searches and other things I make.<br>A growing collection, all in one place.</p>
+      <h1>Tools &amp; Links</h1>
+      <p class="subtitle">Useful tools, quick searches and everyday links.</p>
     </div>
-    <nav class="tool-grid" aria-label="Gregle tools">
+    <form class="tools-search" id="toolsSearchForm" role="search" aria-label="Search tools and links" hidden>
+      <div class="tools-search-field"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><label class="sr-only" for="toolSearch">Search tools and links</label><input id="toolSearch" type="search" placeholder="Search tools and links…" autocomplete="off" aria-controls="toolGrid" spellcheck="false"><button class="text-button tools-clear" id="clearToolSearch" type="button" hidden>Clear</button></div>
+      <p class="tools-count" id="toolCount" role="status" aria-live="polite" aria-atomic="true"></p>
+    </form>
+    <nav class="tool-grid" id="toolGrid" aria-label="Gregle tools and links">
       <!-- Add a tool by copying one of these cards and changing its link, title and description. -->
       <a class="tool-card" href="news.html">
         <div class="card-top"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM8 8h8M8 12h3M8 16h3M14 12h2M14 16h2"/></svg></span><span class="arrow" aria-hidden="true">↗</span></div>
@@ -130,6 +136,7 @@
         <span class="card-label">Earth · Live activity</span>
       </a>
     </nav>
+    <div class="tools-empty" id="toolsEmpty" hidden><h2>No matching tools</h2><p>Try another word, such as “weather”, “words” or “calculator”.</p><button class="pill" id="resetToolSearch" type="button">Show all tools</button></div>
     <footer><p>Small tools. Made to be useful.</p></footer>
   </main>
 </body>
