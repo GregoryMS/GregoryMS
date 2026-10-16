@@ -39,6 +39,7 @@ function element(tag = 'div') {
     append(...children) { this.children.push(...children); },
     appendChild(child) { this.children.push(child); },
     replaceChildren(...children) { this.children = children; },
+    querySelector(selector) { return this.querySelectorAll(selector)[0] || null; },
     querySelectorAll: () => [], focus() {}, select() {}, remove() {}, contains: () => false
   };
 }
