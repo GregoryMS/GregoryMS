@@ -3,7 +3,6 @@
 .dictionary-heading .subtitle { margin:0; }
 .dictionary-heading h1 { margin-bottom:12px; }
 .accent-dot { color:#9850ff; }
-.book-emblem { width:94px; height:94px; flex:none; filter:drop-shadow(0 14px 18px #8143b522); }
 .lookup-card { padding:26px; background:var(--panel); border:1px solid var(--line); border-radius:26px; box-shadow:var(--shadow); }
 .lookup-controls { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:18px; margin-bottom:24px; }
 .mode-switch { display:inline-flex; border-radius:99px; background:var(--soft); padding:4px; gap:4px; }
@@ -48,4 +47,4 @@
 .dictionary-icon-link { width:44px; padding:0; }
 .dictionary-icon-link svg { width:23px;height:23px; }
 [hidden] { display:none !important; }
-@media(max-width:600px) { .dictionary-heading { padding:30px 0 24px; gap:12px; } .book-emblem { width:65px; height:65px; } .dictionary-heading h1 { font-size:35px; letter-spacing:-1.6px; } .lookup-card { padding:18px; } .lookup-controls { gap:16px; margin-bottom:18px; } .language-picker { width:100%; justify-content:space-between; } .dictionary-search { gap:8px; } .dictionary-search input { padding:14px 12px; font-size:16px; } .dictionary-search .primary { padding:10px 15px; } .dictionary-entry { padding:24px 20px; } .welcome { grid-template-columns:1fr; gap:12px; } .reference-links { align-items:flex-start; } .entry-heading { align-items:flex-start; } .entry-heading .pill { padding:8px 12px; } }
+@media(max-width:600px) { .dictionary-heading { padding:30px 0 24px; gap:12px; } .dictionary-heading h1 { font-size:35px; letter-spacing:-1.6px; } .lookup-card { padding:18px; } .lookup-controls { gap:16px; margin-bottom:18px; } .language-picker { width:100%; justify-content:space-between; } .dictionary-search { gap:8px; } .dictionary-search input { padding:14px 12px; font-size:16px; } .dictionary-search .primary { padding:10px 15px; } .dictionary-entry { padding:24px 20px; } .welcome { grid-template-columns:1fr; gap:12px; } .reference-links { align-items:flex-start; } .entry-heading { align-items:flex-start; } .entry-heading .pill { padding:8px 12px; } }
