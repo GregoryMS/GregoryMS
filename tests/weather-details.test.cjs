@@ -78,7 +78,7 @@ test('daylight timeline fills the local day and aligns photography phase boundar
 });
 test('timeline uses the full 23- or 25-hour local DST day and handles the date line',()=>{
   const place={latitude:49.24,longitude:-123.12};
-  for(const [key,hours] of [['2026-03-08',23],['2026-11-01',25]]) {
+  for(const [key,hours] of [['2025-03-09',23],['2025-11-02',25]]) {
     const timeline=photo.solarTimeline(sun,place,key,'America/Vancouver');
     assert.equal(timeline.end-timeline.start,hours*3600000);
     assert.equal(photo.dateKey(timeline.start,'America/Vancouver'),key);
