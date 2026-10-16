@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
+      "checkedAt": "2026-10-16T09:50:10.099379+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
@@ -192,7 +192,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
+      "checkedAt": "2026-10-16T09:50:10.099379+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -359,7 +359,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
+      "checkedAt": "2026-10-16T09:50:10.099379+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -527,7 +527,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
+      "checkedAt": "2026-10-16T09:50:10.099379+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -673,7 +673,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
+      "checkedAt": "2026-10-16T09:50:10.099379+00:00",
       "listings": [
         {
           "home": "Everton",
