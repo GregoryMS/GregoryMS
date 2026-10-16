@@ -35,6 +35,19 @@
     if(data.error) {if(data.error.code==='missingtitle')return null;throw Error('service');}
     return data.parse;
   }
+  // MobileFrontend wraps each language in sections on iPhone responses.
+  // Flatten only those structural containers, retaining heading/content order.
+  function pageBlocks(root) {
+    const blocks=[];
+    function visit(parent) {
+      for(const child of Array.from(parent.children)) {
+        if(child.tagName.toUpperCase()==='SECTION')visit(child);
+        else blocks.push(child);
+      }
+    }
+    visit(root);
+    return blocks;
+  }
   // Read only the selected modern language. Never insert remote markup into the page.
   function parse(html, lang) {
     const doc=new DOMParser().parseFromString(html,'text/html');
@@ -49,7 +62,7 @@
         if(lang.codes.includes(code)&&a.closest('[lang]')!==root&&text&&text.length<80&&!text.includes(':'))target.push(text);
       });
     }
-    for(const node of root.children) {
+    for(const node of pageBlocks(root)) {
       const h=node.matches('h2,h3,h4,h5,h6')?node:node.matches('.mw-heading')?node.querySelector('h2,h3,h4,h5,h6'):null;
       if(h) {
         const title=clean(h.textContent.replace(/\[edit\]/g,''));
@@ -69,7 +82,7 @@
         if(ipaNodes.length)result.ipa=(language==='en-GB'?uk:ipaNodes[0])?.textContent||'';
       }
       if(pos&&group&&node.matches('ol')) {
-        for(const li of node.querySelectorAll(':scope > li')) {
+        for(const li of Array.from(node.children).filter(child=>child.tagName.toUpperCase()==='LI')) {
           const copy=li.cloneNode(true);
           copy.querySelectorAll('style,script,link,template,ul,ol,dl,table,.citation,.HQToggle,.synonym,.antonym,.nyms-toggle,.mw-editsection,sup').forEach(n=>n.remove());
           const text=clean(copy.textContent).replace(/\[\s*quotations\s*▼?\s*\]/gi,'').trim();
@@ -91,7 +104,7 @@
     const doc=new DOMParser().parseFromString(html,'text/html');
     const root=doc.querySelector('.mw-parser-output')||doc.body;
     const terms={synonyms:[],antonyms:[]};let active=false,relation='';
-    for(const node of root.children) {
+    for(const node of pageBlocks(root)) {
       const h=node.matches('h2,h3,h4,h5,h6')?node:node.matches('.mw-heading')?node.querySelector('h2,h3,h4,h5,h6'):null;
       if(h){const title=clean(h.textContent);if(h.tagName==='H2')active=/^Norsk(?: bokmål| nynorsk)?$/.test(title);relation=/^Synonymer$/.test(title)?'synonyms':/^Antonymer$/.test(title)?'antonyms':'';continue;}
       if(active&&relation)node.querySelectorAll('li a[href]').forEach(a=>{const text=clean(a.textContent),href=a.getAttribute('href');if(text&&text.length<80&&!text.includes(':')&&(href.startsWith('/wiki/')||href.startsWith('/w/index.php?title=')))terms[relation].push(text);});
@@ -103,6 +116,8 @@
     if(entry)render();
   }
   function britishText(text) {
+    // Keep spelling-reference targets exact, rather than making colour refer to itself.
+    if(/standard spelling of|alternative (?:form|spelling) of/.test(text))return text;
     const forms={color:'colour',colors:'colours',colored:'coloured',coloring:'colouring',colorful:'colourful',colorless:'colourless',favor:'favour',favors:'favours',favored:'favoured',favorable:'favourable',gray:'grey',center:'centre',centers:'centres',centered:'centred',theater:'theatre',theaters:'theatres',honor:'honour',honors:'honours',honored:'honoured',neighbor:'neighbour',neighbors:'neighbours',behavior:'behaviour',behaviors:'behaviours',marvelous:'marvellous',humor:'humour',odor:'odour'};
     return text.replace(/\b[a-z]+\b/gi,w=>{const replacement=forms[w.toLowerCase()];return replacement?(w[0]===w[0].toUpperCase()?replacement[0].toUpperCase()+replacement.slice(1):replacement):w;});
   }
