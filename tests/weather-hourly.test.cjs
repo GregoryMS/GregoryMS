@@ -45,3 +45,10 @@ test('hourly failures offer retry and switching back cancels pending work',async
   h.el('hourlyRetry').events.click();await h.respond(1);assert.equal(h.el('hourlyRetry').hidden,true);
   h.api.setLocation({name:'London',latitude:51.5,longitude:-.12});h.api.setActive(false);await h.respond(2);assert.equal(h.el('hourlyGrid').children.length,0);assert(h.el('hourlyPanel').hidden);
 });
+
+
+test('hourly feels-like preserves zero and missing values',()=>{
+  const data=fixture();data.hourly.apparent_temperature=data.hourly.time.map((_,i)=>i===0?0:null);
+  const parsed=core.parseHours(data,now);assert.equal(parsed.hours[0].feelsLike,0);assert.equal(parsed.hours[1].feelsLike,null);
+  assert.match(core.forecastURL({latitude:0,longitude:0}),/apparent_temperature/);
+});

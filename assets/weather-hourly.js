@@ -5,14 +5,14 @@
   else root.GregleWeatherHourly=api.createController(root);
 })(globalThis,function() {
   'use strict';
-  const fields=['temperature_2m','weather_code','is_day','precipitation_probability','wind_speed_10m'];
+  const fields=['temperature_2m','apparent_temperature','weather_code','is_day','precipitation_probability','wind_speed_10m'];
   function forecastURL(location) {
     if(!Number.isFinite(location?.latitude) || !Number.isFinite(location.longitude) || Math.abs(location.latitude)>90 || Math.abs(location.longitude)>180) throw Error('Invalid coordinates');
     return 'https://api.open-meteo.com/v1/forecast?latitude='+location.latitude.toFixed(2)+'&longitude='+location.longitude.toFixed(2)+'&hourly='+fields.join(',')+'&timezone=auto&timeformat=unixtime&forecast_hours=24&temperature_unit=celsius&wind_speed_unit=kmh';
   }
   function parseHours(data,now=Date.now()) {
     const h=data?.hourly;
-    if(data?.error || !h || !Array.isArray(h.time) || !h.time.length || fields.some(f=>!Array.isArray(h[f]) || h[f].length!==h.time.length)) throw Error('Incomplete hourly forecast');
+    if(data?.error || !h || !Array.isArray(h.time) || !h.time.length || fields.filter(f=>f!=='apparent_temperature').some(f=>!Array.isArray(h[f]) || h[f].length!==h.time.length)) throw Error('Incomplete hourly forecast');
     const timezone=data.timezone;
     if(typeof timezone!=='string' || !timezone) throw Error('Missing time zone');
     const time=new Intl.DateTimeFormat('en-CA',{hour:'numeric',minute:'2-digit',timeZone:timezone});
@@ -26,7 +26,7 @@
       previous=timestamp;
       if(timestamp<start || timestamp>=start+24*3600000) return [];
       const chance=h.precipitation_probability[i],wind=h.wind_speed_10m[i];
-      return [{timestamp,time:time.format(timestamp),day:day.format(timestamp),label:full.format(timestamp),temperature:h.temperature_2m[i],code:h.weather_code[i],night:h.is_day[i]===0,
+      return [{timestamp,time:time.format(timestamp),day:day.format(timestamp),label:full.format(timestamp),temperature:h.temperature_2m[i],feelsLike:Number.isFinite(h.apparent_temperature?.[i])?h.apparent_temperature[i]:null,code:h.weather_code[i],night:h.is_day[i]===0,
         chance:Number.isFinite(chance)&&chance>=0&&chance<=100?chance:null,wind:Number.isFinite(wind)&&wind>=0?wind:null}];
     });
     if(!hours.length || !hours.some(h=>Number.isFinite(h.temperature))) throw Error('Hourly forecast unavailable');
@@ -52,7 +52,7 @@
         const temp=node('p','hourly-temperature',Number.isFinite(hour.temperature)?Math.round(hour.temperature)+'°C':'—');
         const condition=node('p','forecast-condition',core.condition(hour.code));
         const details=node('dl','hourly-details');
-        for(const [label,value] of [['Precipitation',Number.isFinite(hour.chance)?Math.round(hour.chance)+'%':'—'],['Wind',Number.isFinite(hour.wind)?Math.round(hour.wind)+' km/h':'—']]) {
+        for(const [label,value] of [['Feels like',Number.isFinite(hour.feelsLike)?Math.round(hour.feelsLike)+'°C':'—'],['Precipitation',Number.isFinite(hour.chance)?Math.round(hour.chance)+'%':'—'],['Wind',Number.isFinite(hour.wind)?Math.round(hour.wind)+' km/h':'—']]) {
           const row=node('div','');row.append(node('dt','',label),node('dd','',value));details.append(row);
         }
         card.append(time,date,icon,temp,condition,details);return card;
@@ -95,3 +95,4 @@
   }
   return {forecastURL,parseHours,createController};
 });
+

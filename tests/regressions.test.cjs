@@ -9,7 +9,7 @@ const scripts = (file, isolateTides = false) => [...fs.readFileSync(path.join(ro
   .matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => {
     const src = match[0].match(/src="(assets\/[^"?]+\.js)(?:\?[^"]*)?"/);
     // Independent map and alert controllers are exercised in their dedicated suites.
-    if (isolateTides && /assets\/weather-(?:radar|map-layers|alerts|context|smoke)\.js$/.test(src?.[1] || "")) return "";
+    if (isolateTides && /assets\/weather-(?:radar|map-layers|alerts|context|smoke|details|photography)\.js$/.test(src?.[1] || "")) return "";
     // Weather regressions isolate the independent tide service; tides.test.cjs covers the real integration.
     if (isolateTides && src?.[1] === 'assets/tide-data.js') return 'globalThis.GregleTideData={load:()=>new Promise(()=>{})};';
     return src ? fs.readFileSync(path.join(root, src[1]), 'utf8') : match[1];
@@ -286,7 +286,7 @@ test('Vancouver loads current conditions and forecasts directly and safely', asy
   const [card] = env.get('forecastGrid').children;
   assert.equal(card.children[0].textContent, 'Tonight');
   assert.match(card.children[1].innerHTML, /^<svg/);
-  const copy = card.children[4].children[1].children[1];
+  const copy = card.children.find(child=>child.tagName==='DETAILS').children[1].children[1];
   assert.equal(copy.textContent, '<img src=x> Low 13.');
   assert.equal(copy.innerHTML, '');
   assert.equal(env.get('currentHigh').textContent, '—');
@@ -1014,5 +1014,6 @@ test('cached homepage weather keeps its own location and rejects invalid cached 
   cached.latitude=999;
   assert.equal(vm.runInContext('readCachedWeather()',env.context),null);
 });
+
 
 
