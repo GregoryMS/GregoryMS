@@ -30,3 +30,13 @@
 .tools-page footer { margin-top:24px; }
 @media(min-width:1000px) { .tools-page .tool-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 @media(max-width:620px) { .tools-page .tool-grid { grid-template-columns:1fr; gap:10px; } .tools-page .tool-card { padding:16px; } .tools-page .hero { padding:24px 0 20px; } .tools-page .card-label { font-size:10px; } }
+
+/* Featured contact destination stays part of the searchable directory. */
+.tools-page .contact-card { grid-column:1 / -1; grid-template-columns:38px minmax(0,1fr) auto; border-color:#9850ff66; background:linear-gradient(110deg,#9850ff0b,#9850ff03),var(--panel); box-shadow:0 3px 16px #9850ff0a; }
+.tools-page .contact-card .tool-icon { background:#9850ff17; color:#8242cc; }
+.tools-page .contact-card h2 { font-size:20px; font-weight:500; }
+.tools-page .contact-card p { grid-column:2; -webkit-line-clamp:unset; }
+.contact-domain { grid-column:3; grid-row:1 / 3; align-self:center; display:inline-flex; align-items:center; gap:14px; padding:9px 16px; border-radius:999px; color:#7540b4; background:#9850ff12; font-size:14px; font-weight:500; white-space:nowrap; }
+:root.dark-mode .contact-domain,:root.dark-mode .tools-page .contact-card .tool-icon { color:#cba8ff; }
+.tools-page .contact-card:hover { border-color:#9850ff; box-shadow:0 5px 20px #9850ff1c; }
+@media(max-width:620px) { .tools-page .contact-card { grid-template-columns:38px minmax(0,1fr); } .contact-domain { grid-column:2; grid-row:3; justify-self:start; margin-top:2px; padding:6px 12px; font-size:12px; } }
