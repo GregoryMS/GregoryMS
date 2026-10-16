@@ -3,23 +3,14 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-16T00:24:52.357742+00:00",
+      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
       "listings": [
-        {
-          "home": "St. Louis City",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-15T00:30:00+00:00",
-          "channels": [
-            "Apple TV (UK)"
-          ]
-        },
         {
           "home": "Brighton & Hove Albion",
           "away": "FK Kauno Žalgiris",
           "start": "2026-10-15T19:00:00+00:00",
           "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 2"
+            "HBO Max (UK)"
           ]
         },
         {
@@ -170,6 +161,14 @@
           ]
         },
         {
+          "home": "Colorado Rapids",
+          "away": "Vancouver Whitecaps",
+          "start": "2026-10-25T01:30:00+00:00",
+          "channels": [
+            "Apple TV (UK)"
+          ]
+        },
+        {
           "home": "Crystal Palace",
           "away": "Newcastle United",
           "start": "2026-10-25T14:00:00+00:00",
@@ -193,25 +192,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-16T00:24:52.357742+00:00",
+      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
       "listings": [
-        {
-          "home": "St. Louis City",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-15T00:30:00+00:00",
-          "channels": [
-            "Apple TV (US)"
-          ]
-        },
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "FK Kauno Žalgiris",
-          "start": "2026-10-15T19:00:00+00:00",
-          "channels": [
-            "DAZN Canada",
-            "OneSoccer"
-          ]
-        },
         {
           "home": "Everton",
           "away": "Chelsea",
@@ -342,6 +324,14 @@
           ]
         },
         {
+          "home": "RB Leipzig (W)",
+          "away": "Bayern München (W)",
+          "start": "2026-10-23T16:30:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
+        },
+        {
           "home": "Aston Villa",
           "away": "Manchester City",
           "start": "2026-10-24T11:30:00+00:00",
@@ -369,26 +359,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-16T00:24:52.357742+00:00",
+      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
       "listings": [
-        {
-          "home": "St. Louis City",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-15T00:30:00+00:00",
-          "channels": [
-            "Apple TV (NO)"
-          ]
-        },
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "FK Kauno Žalgiris",
-          "start": "2026-10-15T19:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "V sport 2 NO",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Everton",
           "away": "Chelsea",
@@ -520,6 +492,14 @@
           ]
         },
         {
+          "home": "RB Leipzig (W)",
+          "away": "Bayern München (W)",
+          "start": "2026-10-23T16:30:00+00:00",
+          "channels": [
+            "Viaplay NO"
+          ]
+        },
+        {
           "home": "Aston Villa",
           "away": "Manchester City",
           "start": "2026-10-24T11:30:00+00:00",
@@ -547,24 +527,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-16T00:24:52.357742+00:00",
+      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
       "listings": [
-        {
-          "home": "St. Louis City",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-15T00:30:00+00:00",
-          "channels": [
-            "Apple TV (SE)"
-          ]
-        },
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "FK Kauno Žalgiris",
-          "start": "2026-10-15T19:00:00+00:00",
-          "channels": [
-            "Disney+ Sverige"
-          ]
-        },
         {
           "home": "Everton",
           "away": "Chelsea",
@@ -696,21 +660,21 @@
           "channels": [
             "Disney+ Sverige"
           ]
+        },
+        {
+          "home": "RB Leipzig (W)",
+          "away": "Bayern München (W)",
+          "start": "2026-10-23T16:30:00+00:00",
+          "channels": [
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-16T00:24:52.357742+00:00",
+      "checkedAt": "2026-10-16T05:03:11.051625+00:00",
       "listings": [
-        {
-          "home": "St. Louis City",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-15T00:30:00+00:00",
-          "channels": [
-            "Apple TV (DE)"
-          ]
-        },
         {
           "home": "Everton",
           "away": "Chelsea",
@@ -837,6 +801,7 @@
           "away": "Bayern München (W)",
           "start": "2026-10-23T16:30:00+00:00",
           "channels": [
+            "DAZN Deutschland",
             "Magenta Sport"
           ]
         }
