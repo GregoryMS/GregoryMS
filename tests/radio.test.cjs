@@ -3,7 +3,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { featured, webURL, normalizeStation, mergeStations, localMatches, searchParams, Directory, Player } = require('../assets/radio-core.js');
-const station = featured[1];
+// Exercise the direct-audio path independently of featured stations' formats.
+const station = { ...featured[1], url: 'https://example.com/live.mp3', hls: false };
 const flush = () => new Promise(resolve => setImmediate(resolve));
 
 test('radio streams and external links reject executable, credentialed and insecure stream URLs', () => {
@@ -181,7 +182,7 @@ test('Now Playing actions control the current player and clear on stop or stream
   const h = harness();
   const { controls, session, actions } = mediaHarness({ onPlay: () => h.player.resume(), onPause: () => h.player.pause(), onStop: () => h.player.stop() });
   h.player.onChange = update => { h.states.push(update); controls.update(update); };
-  h.player.play(featured[1]); h.audios[0].events.playing();
+  h.player.play(station); h.audios[0].events.playing();
   actions.pause(); assert.equal(h.audios[0].paused, true); assert.equal(session.playbackState, 'paused');
   actions.play(); assert.equal(h.audios[0].playCount, 2);
   h.player.play(featured[4]); h.audios[1].events.playing();
@@ -189,7 +190,7 @@ test('Now Playing actions control the current player and clear on stop or stream
   for (const action of ['seekbackward', 'seekforward', 'seekto', 'previoustrack', 'nexttrack']) assert.equal(actions[action], null);
   actions.stop(); assert.equal(session.metadata, null); assert.equal(session.playbackState, 'none');
   assert.equal(actions.play, null); assert.equal(actions.pause, null); assert.equal(actions.stop, null);
-  h.player.play(featured[1]); h.audios[2].events.error();
+  h.player.play(station); h.audios[2].events.error();
   assert.equal(session.metadata, null); assert.equal(session.playbackState, 'none');
 });
 
@@ -223,4 +224,84 @@ test('radio installs with its own name, start page and correctly sized PNG icons
   assert.match(html, /name="apple-mobile-web-app-title" content="Gregle Radio"/);
   assert.match(html, /rel="apple-touch-icon"[^>]+href="\/assets\/radio-app\/apple-touch-icon.png"/);
   assert.match(html, /rel="manifest" href="\/radio.webmanifest"/);
+});
+
+test('NRK P3 uses its live HLS manifest in native players', () => {
+  const p3 = featured.find(s => s.id === 'nrk-p3');
+  assert.equal(p3.hls, true);
+  assert.match(p3.url, /^https:\/\/nrk-live-radio-world\.akamaized\.net\/p3\/muxed\.m3u8\?/);
+  const h = harness(), create = h.player.createAudio;
+  h.player.createAudio = () => { const a = create(); a.canPlayType = () => 'probably'; return a; };
+  h.player.play(p3);
+  assert.equal(h.audios[0].src, p3.url);
+  h.audios[0].events.playing();
+  assert.equal(h.states.at(-1).state, 'playing');
+  h.player.stop();
+});
+
+test('an interrupted live stream reconnects, but repeated disconnects exhaust its budget', () => {
+  const h = harness(); h.player.play(station);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const a = h.audios.at(-1); a.events.playing(); a.ended = true;
+    a.events.pause(); a.events.ended();
+    assert.equal(h.states.at(-1).state, 'loading');
+    assert.match(h.states.at(-1).message, /Reconnecting/);
+    assert.equal(a.removed, true);
+    assert.equal(h.timers.size, 1);
+    [...h.timers.values()][0]();
+    assert.equal(h.audios.length, attempt + 2);
+    a.events.ended(); // Old events cannot schedule another attempt.
+    assert.equal(h.timers.size, 1);
+  }
+  h.audios.at(-1).events.playing(); h.audios.at(-1).events.ended();
+  assert.equal(h.states.at(-1).state, 'error');
+  assert.equal(h.timers.size, 0);
+});
+
+test('Stop, Pause and station switches cancel pending reconnects, including stale callbacks', () => {
+  for (const action of ['stop', 'pause', 'switch']) {
+    const h = harness(); h.player.play(station); h.audios[0].events.playing(); h.audios[0].events.ended();
+    const pending = [...h.timers.values()][0];
+    if (action === 'switch') h.player.play(featured[4]); else h.player[action]();
+    pending();
+    assert.equal(h.audios.length, action === 'switch' ? 2 : 1);
+    assert.equal(h.states.at(-1).state, {stop:'stopped',pause:'paused',switch:'loading'}[action]);
+    h.player.stop();
+  }
+});
+
+test('network loss and prolonged buffering reconnect; decode errors and deliberate pauses do not', () => {
+  for (const failure of ['network', 'buffer', 'decode', 'pause']) {
+    const h = harness(); h.player.play(station); const a = h.audios[0]; a.events.playing();
+    if (failure === 'buffer') { a.events.waiting(); [...h.timers.values()][0](); }
+    else if (failure === 'pause') { h.player.pause(); a.events.ended(); }
+    else { a.error = {code: failure === 'network' ? 2 : 3}; a.events.error(); }
+    assert.equal(h.states.at(-1).state, failure === 'decode' ? 'error' : failure === 'pause' ? 'paused' : 'loading');
+    assert.equal(h.timers.size, ['network','buffer'].includes(failure) ? 1 : 0);
+    h.player.stop();
+  }
+});
+
+test('NRK P3 uses Hls.js without native HLS and recovers a fatal network interruption', () => {
+  const instances = [];
+  class Hls {
+    static Events = { MEDIA_ATTACHED: 'attached', MANIFEST_PARSED: 'parsed', ERROR: 'error' };
+    static ErrorTypes = { NETWORK_ERROR: 'networkError' };
+    static isSupported = () => true;
+    constructor() { this.events = {}; instances.push(this); }
+    on(name, fn) { this.events[name] = fn; }
+    attachMedia(audio) { this.audio = audio; }
+    loadSource(url) { this.url = url; }
+    destroy() { this.destroyed = true; }
+  }
+  const h = harness(Hls), p3 = featured.find(s => s.id === 'nrk-p3');
+  h.player.play(p3); const engine = instances[0]; engine.events.attached(); engine.events.parsed();
+  assert.equal(engine.url, p3.url);
+  h.audios[0].events.playing();
+  engine.events.error(null, {fatal:true, type:'networkError'});
+  assert.equal(engine.destroyed, true); assert.equal(h.states.at(-1).state, 'loading');
+  [...h.timers.values()][0]();
+  assert.equal(instances.length, 2);
+  h.player.stop(); engine.events.error(null, {fatal:true, type:'networkError'});
+  assert.equal(h.timers.size, 0); assert.equal(h.states.at(-1).state, 'stopped');
 });
