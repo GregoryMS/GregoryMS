@@ -181,14 +181,43 @@
 .photo-day-control label { font-size:12px; color:var(--muted); }
 .photo-day-control select { font:inherit; font-size:13px; max-width:180px; }
 .photo-status { margin:12px 0 18px; color:var(--text); font-size:14px; }
-.photo-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
-.photo-card { border:1px solid var(--line); border-radius:20px; padding:22px 18px; background:var(--panel); min-width:0; }
-.photo-card h3 { font-size:13px; font-weight:600; margin-bottom:14px; }
-.photo-card h3::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:8px; background:var(--rain); }
-.photo-card--golden h3::before { background:var(--sun); }
-.photo-card--next { border-color:var(--rain); }
-.photo-time { font-size:17px; font-weight:500; font-variant-numeric:tabular-nums; line-height:1.5; margin-bottom:8px; }
-.photo-duration { color:var(--muted); font-size:11px; margin:0; }
+/* Solar light phases share the same colours in the timeline and its key. */
+.photo-light--night { --light-colour:#263751; }
+.photo-light--twilight { --light-colour:#929dc3; }
+.photo-light--blue { --light-colour:#408bd0; }
+.photo-light--golden { --light-colour:#e8ae3c; }
+.photo-light--daylight { --light-colour:#ffe3a0; }
+.photo-timeline-panel { padding:24px; border:1px solid var(--line); border-radius:22px; background:var(--panel); }
+.photo-timeline-heading { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px 18px; }
+.photo-timeline-heading h3 { font-size:15px; font-weight:600; margin:0; }
+.photo-timeline-heading > span { font-size:11px; color:var(--muted); }
+.photo-legend { display:flex; flex-wrap:wrap; gap:9px 18px; margin:16px 0 4px; font-size:11px; color:var(--muted); }
+.photo-legend > span { display:inline-flex; align-items:center; gap:6px; }
+.photo-swatch { display:inline-block; flex-shrink:0; width:9px; height:9px; border-radius:50%; background:var(--light-colour); box-shadow:0 0 0 1px var(--line); }
+.photo-timeline-chart { position:relative; padding-top:24px; }
+.photo-timeline-track { position:relative; height:46px; border-radius:12px; overflow:hidden; background:var(--soft); }
+.photo-phase { position:absolute; top:0; bottom:0; padding:0; border:0; border-radius:0; background:var(--light-colour); min-width:0; }
+.photo-phase:hover { filter:brightness(1.08); }
+.photo-phase[aria-pressed="true"] { box-shadow:inset 0 0 0 2px var(--text); z-index:1; }
+.photo-phase:focus-visible { outline:2px solid #fff; outline-offset:-4px; z-index:2; box-shadow:inset 0 0 0 2px var(--text); }
+.photo-timeline-axis { position:relative; height:26px; margin-top:9px; color:var(--muted); font-size:10px; font-variant-numeric:tabular-nums; }
+.photo-timeline-axis span { position:absolute; transform:translateX(-50%); white-space:nowrap; }
+.photo-timeline-axis span:first-child { transform:none; }
+.photo-timeline-axis span:last-child { transform:translateX(-100%); }
+.photo-now { position:absolute; top:18px; height:58px; border-left:2px solid var(--text); pointer-events:none; z-index:3; }
+.photo-now[hidden] { display:none; }
+.photo-now span { position:absolute; top:-18px; left:-1px; transform:translateX(-50%); padding:0 5px; border-radius:5px; background:var(--panel); color:var(--text); font-size:10px; line-height:18px; font-weight:600; }
+.photo-timeline-selection { display:flex; align-items:center; flex-wrap:wrap; gap:6px 14px; min-height:48px; padding:10px 0 16px; border-bottom:1px solid var(--line); font-size:13px; }
+.photo-selection-kind { display:inline-flex; align-items:center; gap:7px; }
+.photo-selection-kind::before { content:''; width:8px; height:8px; border-radius:50%; background:var(--light-colour); box-shadow:0 0 0 1px var(--line); }
+.photo-timeline-selection strong { font-size:13px; font-weight:500; font-variant-numeric:tabular-nums; }
+.photo-selection-duration { color:var(--muted); font-size:11px; }
+.photo-window-labels { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 22px; padding-top:12px; }
+.photo-window-label { display:grid; grid-template-columns:9px 1fr; gap:3px 8px; align-items:center; min-height:58px; border:0; border-radius:9px; padding:8px; background:transparent; color:var(--text); text-align:left; }
+.photo-window-label:hover,.photo-window-label[aria-pressed="true"] { background:var(--soft); }
+.photo-window-name { font-size:11px; color:var(--muted); }
+.photo-window-time { grid-column:2; font-size:12px; font-variant-numeric:tabular-nums; }
+.photo-window-label:disabled { cursor:default; opacity:.6; }
 .photo-sun,.photo-weather { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; font-variant-numeric:tabular-nums; }
 .photo-sun { margin:20px 0; padding:18px 0; border-block:1px solid var(--line); }
 .photo-sun dt,.photo-weather dt { font-size:11px; color:var(--muted); margin-bottom:4px; }
@@ -198,11 +227,15 @@
 .photo-weather { margin:0; }
 .photo-about { font-size:11px; color:var(--muted); margin-top:14px; line-height:1.7; }
 .photo-about p { max-width:800px; margin:10px 0 0; }
-@media(max-width:1000px) { .photo-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:600px) {
   .photo-heading { flex-direction:row; align-items:center; flex-wrap:wrap; gap:16px; }
-  .photo-card { padding:18px 14px; border-radius:16px; }
-  .photo-time { font-size:15px; }
+  .photo-timeline-panel { padding:18px 14px; border-radius:18px; }
+  .photo-legend { gap:8px 12px; font-size:10px; }
+  .photo-window-labels { gap:4px 6px; }
+  .photo-window-label { padding:8px 4px; }
+  .photo-window-time { font-size:11px; }
+  .photo-timeline-selection { gap:6px 10px; }
+  .photo-timeline-selection strong { font-size:12px; }
   .photo-sun,.photo-weather { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .photo-day-control label { display:none; }
   .metrics { gap:12px 18px; }

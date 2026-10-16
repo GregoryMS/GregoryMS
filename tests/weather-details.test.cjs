@@ -62,3 +62,35 @@ test('late details cannot overwrite a new city, station pressure wins, and feels
   await h.respond(1,fixture());assert.equal(h.el('feelsLike').textContent,'0°C');assert.equal(h.el('pressure').textContent,'99.0 kPa ↓');assert.equal(feels.textContent,'Feels like 0° / —');
   h.api.setForecastDays([{date:'2026-10-16'}],'2026-10-16T12:00:00Z','UTC');assert.equal(feels.textContent,'Feels like 0° / —');
 });
+
+test('daylight timeline fills the local day and aligns photography phase boundaries with the displayed windows',()=>{
+  const place={latitude:49.24,longitude:-123.12},zone='America/Vancouver',key='2026-10-16';
+  const timeline=photo.solarTimeline(sun,place,key,zone),{windows}=photo.lightWindows(sun,place,key,zone);
+  assert.equal(timeline.end-timeline.start,24*3600000);
+  assert.equal(timeline.segments[0].start,timeline.start);assert.equal(timeline.segments.at(-1).end,timeline.end);
+  assert(Math.abs(timeline.segments.reduce((sum,s)=>sum+s.width,0)-100)<1e-9);
+  for(let i=1;i<timeline.segments.length;i++)assert.equal(timeline.segments[i-1].end,timeline.segments[i].start);
+  for(const window of windows) {
+    const segment=timeline.segments.find(s=>s.kind===window.kind&&s.start===window.start);
+    assert(segment,window.id);assert.equal(segment.end,window.end);
+  }
+  assert.deepEqual([...new Set(timeline.segments.map(s=>s.kind))].sort(),['blue','daylight','golden','night','twilight']);
+});
+test('timeline uses the full 23- or 25-hour local DST day and handles the date line',()=>{
+  const place={latitude:49.24,longitude:-123.12};
+  for(const [key,hours] of [['2026-03-08',23],['2026-11-01',25]]) {
+    const timeline=photo.solarTimeline(sun,place,key,'America/Vancouver');
+    assert.equal(timeline.end-timeline.start,hours*3600000);
+    assert.equal(photo.dateKey(timeline.start,'America/Vancouver'),key);
+    assert.equal(photo.dateKey(timeline.end,'America/Vancouver'),photo.addDay(key,1));
+    assert(timeline.ticks.every((t,i,a)=>!i||t.timestamp>a[i-1].timestamp));
+  }
+  const timeline=photo.solarTimeline(sun,{latitude:-36.85,longitude:174.76},'2026-10-17','Pacific/Auckland');
+  assert.equal(photo.dateKey(timeline.start,'Pacific/Auckland'),'2026-10-17');
+});
+test('timeline represents continuous polar daylight and night without invalid segments',()=>{
+  for(const [key,kind] of [['2026-06-21','daylight'],['2026-12-21','night']]) {
+    const timeline=photo.solarTimeline(sun,{latitude:89,longitude:0},key,'UTC');
+    assert.equal(timeline.segments.length,1);assert.equal(timeline.segments[0].kind,kind);assert.equal(timeline.segments[0].width,100);
+  }
+});

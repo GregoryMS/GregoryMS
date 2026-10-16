@@ -19,7 +19,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261016-photo-feels">
+  <link rel="stylesheet" href="assets/weather.css?v=20261016-light-timeline">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-mobile-layers">
@@ -165,7 +165,7 @@
       <div class="forecast-head photo-heading"><div><p class="eyebrow">Chase the light</p><h2 id="photoHeading">Photography</h2></div><div class="photo-day-control"><label for="photoDay">Light windows</label><select id="photoDay" class="pill"><option>Today</option></select></div></div>
       <p id="photoLocation" class="updated"></p>
       <p id="photoStatus" class="photo-status" role="status">Loading local light times…</p>
-      <div id="photoWindows" class="photo-grid"></div>
+      <div id="photoWindows"></div>
       <dl id="photoSun" class="photo-sun"></dl>
       <div class="photo-weather-panel"><h3 id="photoWeatherLabel">Light-window weather</h3><dl id="photoWeather" class="photo-weather"></dl></div>
       <details class="photo-about"><summary>About these times</summary><p>Golden hour: sun −4° to 6° above the horizon. Blue hour: −6° to −4°. Times are calculated locally with SunCalc for the selected location and time zone. Terrain and clouds affect the light. Weather near the next window: Open-Meteo hourly model forecast.</p></details>
@@ -185,7 +185,7 @@
   </main>
   <script src="assets/weather-core.js?v=20261002-icons"></script>
   <script src="assets/weather-hourly.js?v=20261016-feels"></script>
-  <script src="assets/weather-photography.js?v=20261016-light"></script>
+  <script src="assets/weather-photography.js?v=20261016-timeline"></script>
   <script src="assets/weather-details.js?v=20261016-feels"></script>
   <script src="assets/weather-context.js?v=20261009-history"></script>
   <script src="assets/weather-alerts.js?v=20261008-alerts"></script>
