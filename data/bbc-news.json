@@ -1,15 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-17T04:33:22+00:00",
-  "fetchedAt": "2026-10-17T04:33:28.558710+00:00",
+  "feedUpdatedAt": "2026-10-17T08:45:15+00:00",
+  "fetchedAt": "2026-10-17T08:45:23.799465+00:00",
   "items": [
+    {
+      "title": "Trump waives several Russia sanctions as row with Zelensky intensifies",
+      "link": "https://www.bbc.co.uk/news/articles/cxr5yvzv7rp0o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Oregon teacher fought school attacker before armed dad shot suspect 'multiple times'",
       "link": "https://www.bbc.co.uk/news/articles/cv98zw1k8kp3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Trump waives several Russia sanctions as new US law takes effect",
-      "link": "https://www.bbc.co.uk/news/articles/cxr5yvzv7rp0o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Third runway at Heathrow Airport would drive growth, Healey says",
@@ -20,28 +20,28 @@
       "link": "https://www.bbc.co.uk/news/articles/c6e3xnjlz12do?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Five days, one briefing: How Katie Zacharia’s short tenure unfolded",
-      "link": "https://www.bbc.co.uk/news/videos/c6j47ewnn0vyo?at_medium=RSS&at_campaign=rss"
+      "title": "Faisal Islam: What I learned from a week with the world's top finance leaders",
+      "link": "https://www.bbc.co.uk/news/articles/cm4g189jvnxjo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Chris Mason: Burnham and Swinney tussle over where power lies in Scotland",
-      "link": "https://www.bbc.co.uk/news/articles/cmlyl889jqzjo?at_medium=RSS&at_campaign=rss"
+      "title": "Boy, 16, and 80-year-old man die in light aircraft crash near Loch Lomond",
+      "link": "https://www.bbc.co.uk/news/articles/cky83g11q46lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Miranda's tears, joy and dance moves steal show as deadly boredom sets in on The Celebrity Traitors",
       "link": "https://www.bbc.co.uk/news/articles/cq70pre80gwko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Faisal Islam: What I learned from a week with the world's top finance leaders",
-      "link": "https://www.bbc.co.uk/news/articles/cm4g189jvnxjo?at_medium=RSS&at_campaign=rss"
+      "title": "Toxic algorithms wouldn't let them go - now Australia wants an off switch",
+      "link": "https://www.bbc.co.uk/news/articles/cwr7y8er1n8vo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trump 'completely wrong' to restrict support for Ukraine, Italian minister tells BBC",
-      "link": "https://www.bbc.co.uk/news/articles/c64g18ljjd8do?at_medium=RSS&at_campaign=rss"
+      "title": "Why people who have never smoked are getting hooked on vaping",
+      "link": "https://www.bbc.co.uk/news/articles/ck62y33489zqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Man killed by tiger may have had medical records breached by NHS staff",
-      "link": "https://www.bbc.co.uk/news/articles/c875prd12vkqo?at_medium=RSS&at_campaign=rss"
+      "title": "Not sure what to wear for Halloween? These outfits are set to be the most popular this year",
+      "link": "https://www.bbc.co.uk/news/articles/crn4ej7vdwdno?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
