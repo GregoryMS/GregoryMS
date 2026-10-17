@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-17T00:29:34.545964+00:00",
+      "checkedAt": "2026-10-17T05:00:30.646612+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -152,6 +152,51 @@
           ]
         },
         {
+          "home": "Aston Villa",
+          "away": "Manchester City",
+          "start": "2026-10-24T11:30:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 1",
+            "TNT Sports Ultimate"
+          ]
+        },
+        {
+          "home": "Tottenham Hotspur (W)",
+          "away": "Arsenal (W)",
+          "start": "2026-10-24T11:45:00+00:00",
+          "channels": [
+            "BBC One England",
+            "BBC One Northern Ireland",
+            "BBC One Scotland",
+            "BBC One Wales",
+            "BBC Sport online",
+            "BBC iPlayer"
+          ]
+        },
+        {
+          "home": "Brighton (W)",
+          "away": "West Ham United (W)",
+          "start": "2026-10-24T16:15:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Football",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Tottenham Hotspur",
+          "start": "2026-10-24T16:30:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports Premier League",
+            "Sky Sports+ app"
+          ]
+        },
+        {
           "home": "Colorado Rapids",
           "away": "Vancouver Whitecaps",
           "start": "2026-10-25T01:30:00+00:00",
@@ -191,7 +236,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-17T00:29:34.545964+00:00",
+      "checkedAt": "2026-10-17T05:00:30.646612+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -335,7 +380,17 @@
           "away": "Manchester City",
           "start": "2026-10-24T11:30:00+00:00",
           "channels": [
+            "DAZN Canada",
             "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Tottenham Hotspur (W)",
+          "away": "Arsenal (W)",
+          "start": "2026-10-24T11:45:00+00:00",
+          "channels": [
+            "Sportsnet NOW",
+            "Sportsnet One"
           ]
         },
         {
@@ -343,7 +398,17 @@
           "away": "Everton",
           "start": "2026-10-24T14:00:00+00:00",
           "channels": [
+            "DAZN Canada",
             "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Brighton (W)",
+          "away": "West Ham United (W)",
+          "start": "2026-10-24T16:15:00+00:00",
+          "channels": [
+            "Sportsnet NOW",
+            "Sportsnet+"
           ]
         },
         {
@@ -351,6 +416,7 @@
           "away": "Tottenham Hotspur",
           "start": "2026-10-24T16:30:00+00:00",
           "channels": [
+            "DAZN Canada",
             "Fubo Sports CA"
           ]
         },
@@ -382,7 +448,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-17T00:29:34.545964+00:00",
+      "checkedAt": "2026-10-17T05:00:30.646612+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -527,7 +593,16 @@
           "away": "Manchester City",
           "start": "2026-10-24T11:30:00+00:00",
           "channels": [
-            "Viaplay"
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Tottenham Hotspur (W)",
+          "away": "Arsenal (W)",
+          "start": "2026-10-24T11:45:00+00:00",
+          "channels": [
+            "VG TV"
           ]
         },
         {
@@ -535,7 +610,17 @@
           "away": "Everton",
           "start": "2026-10-24T14:00:00+00:00",
           "channels": [
-            "Viaplay"
+            "TV3+ NO",
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Brighton (W)",
+          "away": "West Ham United (W)",
+          "start": "2026-10-24T16:15:00+00:00",
+          "channels": [
+            "VG TV"
           ]
         },
         {
@@ -543,7 +628,8 @@
           "away": "Tottenham Hotspur",
           "start": "2026-10-24T16:30:00+00:00",
           "channels": [
-            "Viaplay"
+            "V sport Premier League NO",
+            "Viaplay NO"
           ]
         },
         {
@@ -574,7 +660,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-17T00:29:34.545964+00:00",
+      "checkedAt": "2026-10-17T05:00:30.646612+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -715,12 +801,47 @@
           "channels": [
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Aston Villa",
+          "away": "Manchester City",
+          "start": "2026-10-24T11:30:00+00:00",
+          "channels": [
+            "Prime Video (SE)"
+          ]
+        },
+        {
+          "home": "Tottenham Hotspur (W)",
+          "away": "Arsenal (W)",
+          "start": "2026-10-24T11:45:00+00:00",
+          "channels": [
+            "SVT Play"
+          ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Everton",
+          "start": "2026-10-24T14:00:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Tottenham Hotspur",
+          "start": "2026-10-24T16:30:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "V Ultra HD",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-17T00:29:34.545964+00:00",
+      "checkedAt": "2026-10-17T05:00:30.646612+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -851,6 +972,42 @@
             "DAZN Deutschland",
             "Magenta Sport",
             "OneFootball Deutschland"
+          ]
+        },
+        {
+          "home": "Aston Villa",
+          "away": "Manchester City",
+          "start": "2026-10-24T11:30:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Tottenham Hotspur (W)",
+          "away": "Arsenal (W)",
+          "start": "2026-10-24T11:45:00+00:00",
+          "channels": [
+            "Sportdigital+",
+            "Sportdigital1+"
+          ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Everton",
+          "start": "2026-10-24T14:00:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Tottenham Hotspur",
+          "start": "2026-10-24T16:30:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
+            "WOW"
           ]
         }
       ],
