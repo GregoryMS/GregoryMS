@@ -6,16 +6,19 @@
   <title>Victoria Weather</title>
   <style>
     body { max-width: 48rem; margin: 2rem auto; padding: 0 1rem; font-family: system-ui, sans-serif; }
+    html { color-scheme: light; }
+    html.dark-mode { color-scheme: dark; background: #242424; color: #f1f1f1; }
     article { border-top: 1px solid #ddd; padding: 12px 0; }
   </style>
-  <link rel="stylesheet" href="assets/site-menu.css?v=20261015-selected-dots">
+  <link rel="stylesheet" href="assets/site-menu.css?v=20261017-theme-switch">
+  <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/site-menu.js?v=20261015-menu" defer></script>
 </head>
 <body>
 <header class="gregle-legacy-header gregle-menu-header"><a href="/">Gregle</a><!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
 <summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
-<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>
 <div class="gregle-app-grid"><a class="gregle-app" href="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
 <a class="gregle-app" href="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
 <a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>

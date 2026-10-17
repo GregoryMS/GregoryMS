@@ -643,7 +643,7 @@ test('homepage tools menu and tool cards resolve to the intended local pages', (
   for (const page of ['links.html', 'xkcd.html']) {
     const html = fs.readFileSync(path.join(root, page), 'utf8');
     assert(html.includes('href="assets/tools.css"'));
-    assert(html.includes('src="assets/theme.js"'));
+    assert.match(html, /src="assets\/theme\.js(?:\?[^"\s]+)?"/);
   }
 });
 

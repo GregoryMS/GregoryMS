@@ -13,7 +13,6 @@ button { cursor:pointer; }
 .breadcrumb { border-left:1px solid var(--line); padding-left:20px; color:var(--muted); font-size:14px; }
 .pill { min-height:44px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:9px 18px; background:var(--panel); color:var(--text); text-decoration:none; font-size:14px; transition:background .2s,transform .2s; }
 .pill:hover { background:var(--soft); }
-.theme-toggle { width:44px; padding:0; font-size:20px; flex-shrink:0; }
 .page { width:min(100%,1000px); margin:0 auto; padding:0 28px 32px; }
 .hero { text-align:center; padding:62px 0 36px; }
 .eyebrow { text-transform:uppercase; font-size:11px; font-weight:600; letter-spacing:.18em; color:var(--muted); margin:0 0 16px; }

@@ -12,6 +12,10 @@ test('every content page has the same nine valid app destinations and working ic
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
     const menu = source.match(/<!-- Gregle app menu -->([\s\S]*?)<!-- \/Gregle app menu -->/)[1];
+    assert.equal((source.match(/id="themeToggle"/g) || []).length, 1, file);
+    assert.match(menu, /<div class="gregle-menu-heading"><h2>Gregle apps<\/h2><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
+    assert(!source.includes('class="pill theme-toggle"'), file);
+    assert(!source.includes('id="brandToggle"'), file);
     const apps = [...menu.matchAll(/<a class="gregle-app" href="([^"]+)"[^>]*><img src="([^"]+)"/g)];
     assert.deepEqual(apps.map(a => a[1]), expected, file);
     for (const [,href,icon] of apps) {

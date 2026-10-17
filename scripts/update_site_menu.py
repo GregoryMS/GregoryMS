@@ -39,7 +39,7 @@ def menu(page):
         '<!-- Gregle app menu -->',
         '<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>',
         f'<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">{circles}</svg></summary>',
-        '<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><h2>Gregle apps</h2>',
+        '<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>',
         '<div class="gregle-app-grid">' + '\n'.join(links) + '</div>',
         extras + '</nav></details>',
         '<!-- /Gregle app menu -->',
