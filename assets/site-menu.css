@@ -34,15 +34,16 @@
 .gregle-app-menu .gregle-menu-toggle:focus-visible,
 .gregle-app-menu a:focus-visible { outline: 3px solid var(--gm-accent); outline-offset: 2px; }
 .gregle-app-menu .gregle-menu-panel {
+  display: flex; flex-direction: column;
   position: absolute; top: calc(100% + 12px); right: 0; z-index: 1101;
-  width: 340px; max-width: calc(100vw - 24px); max-height: calc(100dvh - 96px);
+  width: 340px; max-width: calc(100vw - 24px); max-height: calc(100dvh - var(--gregle-menu-top, 84px) - 12px);
   box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
   padding: 18px 14px 14px; border: 1px solid var(--gm-line); border-radius: 25px;
   background: var(--gm-bg); box-shadow: 0 12px 40px #0003, 0 2px 8px #0001;
   color: var(--gm-ink);
 }
 .gregle-app-menu:not([open]) > .gregle-menu-panel { display: none; }
-.gregle-app-menu .gregle-menu-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 10px 12px; }
+.gregle-app-menu .gregle-menu-heading { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 16px; margin: 0 10px 12px; }
 .gregle-app-menu h2 { margin: 0; color: var(--gm-muted); font: 600 13px/1.4 Arial, sans-serif; letter-spacing: .02em; }
 .gregle-app-menu .gregle-theme-switch {
   position: relative; flex: 0 0 34px; width: 34px; height: 1.4em; box-sizing: border-box;
@@ -67,16 +68,33 @@
 @media (prefers-reduced-motion: reduce) {
   .gregle-app-menu .gregle-theme-switch, .gregle-theme-switch::after { transition: none; }
 }
-.gregle-app-menu .gregle-app-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.gregle-app-menu .gregle-app-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 97px;
+  align-content: start; gap: 6px; flex: 0 1 303px; min-height: 97px; max-height: 303px;
+  overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: var(--gm-line) transparent;
+}
 .gregle-app-menu .gregle-app {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px;
   min-width: 0; min-height: 97px; box-sizing: border-box; padding: 10px 2px;
   border-radius: 18px; text-decoration: none; color: var(--gm-ink); font-size: 12px;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: pan-y;
 }
 .gregle-app-menu .gregle-app:hover { background: var(--gm-hover); }
 .gregle-app-menu .gregle-app[aria-current="page"] { background: var(--gm-active); color: var(--gm-accent); font-weight: 600; }
 .gregle-app-menu .gregle-app img { display: block; width: 44px; height: 44px; max-width: none; object-fit: contain; border-radius: 12px; }
-.gregle-app-menu .gregle-menu-more { margin-top: 14px; padding: 16px 4px 2px; border-top: 1px solid var(--gm-line); }
+.gregle-app-grid .gregle-app:focus-visible { outline-offset: -3px; }
+.gregle-app-grid .gregle-app[draggable="true"] { cursor: grab; }
+.gregle-app-grid .gregle-app.gregle-app-dragging { opacity: .35; }
+.gregle-app-menu .gregle-drag-preview {
+  position: fixed; z-index: 1200; margin: 0; pointer-events: none;
+  background: var(--gm-hover); box-shadow: 0 6px 20px #0003; opacity: .95;
+}
+.gregle-menu-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.gregle-app-menu .gregle-menu-more { flex-shrink: 0; margin-top: 14px; padding: 16px 4px 2px; border-top: 1px solid var(--gm-line); }
 .gregle-app-menu .gregle-menu-more h3 { margin: 0 6px 8px; color: var(--gm-muted); font: 600 12px/1.4 Arial, sans-serif; }
 .gregle-menu-more > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
 .gregle-app-menu .gregle-menu-more a { display: block; padding: 8px 10px; border-radius: 10px; color: var(--gm-ink); text-decoration: none; font-size: 13px; }

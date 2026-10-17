@@ -15,6 +15,8 @@ APPS = [
     ('News', '/news.html', 'assets/news-app/icon-192.png'),
     ('Finance', '/finance.html', 'assets/finance-app/icon-192.png'),
     ('More', '/links.html', 'assets/tools-app.svg'),
+    ('Radio', '/radio.html', 'assets/radio-app/icon-192.png'),
+    ('Dictionary', '/dictionary.html', 'assets/dictionary-app/icon-192.png'),
 ]
 EXTRAS = [
     ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),
@@ -40,7 +42,9 @@ def menu(page):
         '<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>',
         f'<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">{circles}</svg></summary>',
         '<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>',
-        '<div class="gregle-app-grid">' + '\n'.join(links) + '</div>',
+        '<p class="gregle-menu-sr-only" id="gregleAppHelp">Drag apps to rearrange them. On a touch screen, hold an app before dragging. With an app focused, use Alt and the arrow keys to move it.</p>',
+        '<div class="gregle-app-grid" aria-describedby="gregleAppHelp">' + '\n'.join(links) + '</div>',
+        '<div class="gregle-menu-sr-only" role="status" aria-live="polite" data-gregle-app-status></div>',
         extras + '</nav></details>',
         '<!-- /Gregle app menu -->',
     ])

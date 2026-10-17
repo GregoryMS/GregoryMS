@@ -6,8 +6,8 @@ const vm = require('node:vm');
 const {execFileSync} = require('node:child_process');
 const root = path.join(__dirname, '..');
 
-test('every content page has the same nine valid app destinations and working icons', () => {
-  const expected = ['/', '/translate.html', '/weather.html', '/earthquakes.html', '/astro.html', '/sports.html', '/news.html', '/finance.html', '/links.html'];
+test('every content page has the same eleven valid app destinations and working icons', () => {
+  const expected = ['/', '/translate.html', '/weather.html', '/earthquakes.html', '/astro.html', '/sports.html', '/news.html', '/finance.html', '/links.html', '/radio.html', '/dictionary.html'];
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -40,28 +40,73 @@ test('generated menu markup stays in sync with the shared configuration', () => 
   execFileSync('python3', ['scripts/update_site_menu.py','--check'], {cwd:root});
 });
 
-test('launcher supports arrow navigation, Escape, outside clicks and normal Tab exits', () => {
+function launcher(saved = null) {
   let focused;
-  const node = () => ({listeners:{},attrs:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(k,v){this.attrs[k]=v;},focus(){focused=this;}});
-  const summary=node(),panel=node(),apps=Array.from({length:9},node),menu=node(),document=node(),window=node();
+  const node = () => ({listeners:{},attrs:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(k,v){this.attrs[k]=v;},getAttribute(k){return this.attrs[k];},focus(){focused=this;},scrollIntoView(){}});
+  const summary=node(),panel=node(),grid=node(),status=node(),apps=Array.from({length:11},node),menu=node(),document=node(),window=node();
+  grid.children=[...apps];
+  grid.querySelectorAll=()=>grid.children;
+  grid.append=app=>{grid.children.splice(grid.children.indexOf(app),1);grid.children.push(app);};
+  apps.forEach((app,i)=>{
+    app.attrs.href='/app-'+i; app.textContent='App '+i;
+    app.parentElement=grid; app.querySelector=()=>({});
+    app.after=other=>{grid.children.splice(grid.children.indexOf(other),1);grid.children.splice(grid.children.indexOf(app)+1,0,other);};
+    app.before=other=>{grid.children.splice(grid.children.indexOf(other),1);grid.children.splice(grid.children.indexOf(app),0,other);};
+  });
+  let stored=saved;
+  const localStorage={getItem(){return stored;},setItem(k,v){assert.equal(k,'gregle-app-order');stored=v;}};
   menu.open=false; menu.hasAttribute=()=>true;
-  menu.querySelector=s=>s==='summary'?summary:panel;
-  menu.querySelectorAll=()=>apps;
+  menu.querySelector=s=>({'summary':summary,'nav':panel,'.gregle-app-grid':grid,'[data-gregle-app-status]':status})[s];
   menu.style={setProperty(){}};
   menu.contains=n=>[menu,summary,panel,...apps].includes(n);
   summary.getBoundingClientRect=()=>({bottom:60});
   document.getElementById=()=>menu; window.innerHeight=700;
-  vm.runInNewContext(fs.readFileSync(path.join(root,'assets/site-menu.js'),'utf8'),{document,window});
-  const key=(key,target)=>({key,target,preventDefault(){this.prevented=true;}});
+  vm.runInNewContext(fs.readFileSync(path.join(root,'assets/site-menu.js'),'utf8'),{document,window,localStorage,clearTimeout,cancelAnimationFrame(){}});
+  return {summary,panel,grid,status,apps,menu,document,window,focused:()=>focused,stored:()=>stored};
+}
+const key=(key,target,extra={})=>({key,target,...extra,preventDefault(){this.prevented=true;}});
+
+test('launcher supports arrow navigation, Escape, outside clicks and normal Tab exits', () => {
+  const env=launcher();
+  const {summary,panel,apps,menu,document}=env;
   summary.listeners.keydown(key('ArrowDown',summary));
-  assert(menu.open); assert.equal(focused,apps[0]); assert.equal(summary.attrs['aria-expanded'],'true');
-  panel.listeners.keydown(key('ArrowDown',apps[0])); assert.equal(focused,apps[3]);
-  panel.listeners.keydown(key('ArrowLeft',apps[0])); assert.equal(focused,apps[8]);
-  panel.listeners.keydown(key('Home',apps[8])); assert.equal(focused,apps[0]);
-  panel.listeners.keydown(key('End',apps[0])); assert.equal(focused,apps[8]);
-  document.listeners.keydown(key('Escape',apps[8])); assert(!menu.open); assert.equal(focused,summary);
+  assert(menu.open); assert.equal(env.focused(),apps[0]); assert.equal(summary.attrs['aria-expanded'],'true');
+  panel.listeners.keydown(key('ArrowDown',apps[0])); assert.equal(env.focused(),apps[3]);
+  panel.listeners.keydown(key('ArrowLeft',apps[0])); assert.equal(env.focused(),apps[10]);
+  panel.listeners.keydown(key('Home',apps[10])); assert.equal(env.focused(),apps[0]);
+  panel.listeners.keydown(key('End',apps[0])); assert.equal(env.focused(),apps[10]);
+  document.listeners.keydown(key('Escape',apps[10])); assert(!menu.open); assert.equal(env.focused(),summary);
   menu.open=true; document.listeners.click({target:summary}); assert(menu.open);
   document.listeners.click({target:{}}); assert(!menu.open);
   menu.open=true; menu.listeners.focusout({relatedTarget:apps[0]}); assert(menu.open);
   menu.listeners.focusout({relatedTarget:{}}); assert(!menu.open);
+});
+
+test('keyboard rearrangement saves order and navigation follows the reordered icons', () => {
+  const env=launcher();
+  const {apps,grid,panel,summary,status}=env;
+  panel.listeners.keydown(key('ArrowUp',apps[10],{altKey:true}));
+  assert.equal(grid.children[7],apps[10]);
+  assert.equal(env.focused(),apps[10]);
+  assert.equal(JSON.parse(env.stored())[7],'/app-10');
+  assert.equal(status.textContent,'App 10 moved to position 8 of 11.');
+  panel.listeners.keydown(key('ArrowRight',apps[10]));
+  assert.equal(env.focused(),apps[7]);
+  panel.listeners.keydown(key('Home',apps[10]));
+  panel.listeners.keydown(key('ArrowLeft',apps[0],{altKey:true}));
+  assert.equal(grid.children[0],apps[0]);
+  panel.listeners.keydown(key('ArrowLeft',apps[10],{altKey:true}));
+  const restored=launcher(env.stored());
+  assert.deepEqual(restored.grid.children.map(app=>app.attrs.href),JSON.parse(env.stored()));
+  summary.listeners.keydown(key('ArrowDown',summary));
+  assert.equal(env.focused(),grid.children[0]);
+});
+
+test('saved order ignores duplicate or unknown apps and retains newly added apps', () => {
+  const env=launcher(JSON.stringify(['/app-10','/app-10','https://example.org/','/app-2',null,{}]));
+  assert.deepEqual(env.grid.children.map(app=>app.attrs.href),['/app-10','/app-2','/app-0','/app-1','/app-3','/app-4','/app-5','/app-6','/app-7','/app-8','/app-9']);
+  assert.equal(launcher('{broken').grid.children.length,11);
+  assert.equal(launcher('{"apps":[]}').grid.children.length,11);
+  env.window.listeners.storage({key:'gregle-app-order',newValue:'["/app-9"]'});
+  assert.equal(env.grid.children[0],env.apps[9]);
 });
