@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-17T08:45:15+00:00",
-  "fetchedAt": "2026-10-17T08:45:23.799465+00:00",
+  "feedUpdatedAt": "2026-10-17T12:27:10+00:00",
+  "fetchedAt": "2026-10-17T12:27:18.359758+00:00",
   "items": [
+    {
+      "title": "Watch: 'Mood has really shifted' as Paris protesters clash with police",
+      "link": "https://www.bbc.co.uk/news/videos/c6vg08xlr8g3o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Trump waives several Russia sanctions as row with Zelensky intensifies",
       "link": "https://www.bbc.co.uk/news/articles/cxr5yvzv7rp0o?at_medium=RSS&at_campaign=rss"
@@ -12,36 +16,32 @@
       "link": "https://www.bbc.co.uk/news/articles/cv98zw1k8kp3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Third runway at Heathrow Airport would drive growth, Healey says",
-      "link": "https://www.bbc.co.uk/news/articles/cw0k07d2nj43o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Analysis: Zacharia was thrown into a whirlwind - and failed at a critical time for Trump",
-      "link": "https://www.bbc.co.uk/news/articles/c6e3xnjlz12do?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Faisal Islam: What I learned from a week with the world's top finance leaders",
-      "link": "https://www.bbc.co.uk/news/articles/cm4g189jvnxjo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Boy, 16, and 80-year-old man die in light aircraft crash near Loch Lomond",
       "link": "https://www.bbc.co.uk/news/articles/cky83g11q46lo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Miranda's tears, joy and dance moves steal show as deadly boredom sets in on The Celebrity Traitors",
-      "link": "https://www.bbc.co.uk/news/articles/cq70pre80gwko?at_medium=RSS&at_campaign=rss"
+      "title": "Swinney insists 'stars are aligning' for Scottish independence",
+      "link": "https://www.bbc.co.uk/news/articles/cmx2844n7nepo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Harry Styles debuts new track in memory of Liam Payne",
+      "link": "https://www.bbc.co.uk/news/articles/c34g180knv91o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Toxic algorithms wouldn't let them go - now Australia wants an off switch",
       "link": "https://www.bbc.co.uk/news/articles/cwr7y8er1n8vo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Why people who have never smoked are getting hooked on vaping",
+      "title": "Vapes were meant to help people quit cigarettes. Now a million non-smokers are vaping",
       "link": "https://www.bbc.co.uk/news/articles/ck62y33489zqo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Not sure what to wear for Halloween? These outfits are set to be the most popular this year",
       "link": "https://www.bbc.co.uk/news/articles/crn4ej7vdwdno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Two-week half terms: The school holiday no one can agree on",
+      "link": "https://www.bbc.co.uk/news/articles/cm3wvd7x01jqo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
