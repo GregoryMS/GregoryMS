@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-17T16:27:27.823071+00:00",
+      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -193,6 +193,7 @@
             "Sky Sports Main Event",
             "Sky Sports Main Event UHD",
             "Sky Sports Premier League",
+            "Sky Sports UHD 1",
             "Sky Sports+ app"
           ]
         },
@@ -205,12 +206,42 @@
           ]
         },
         {
+          "home": "Crystal Palace (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-10-25T12:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Mix",
+            "Sky Sports+ app"
+          ]
+        },
+        {
           "home": "Crystal Palace",
           "away": "Newcastle United",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
             "NOW",
             "Sky Sports+ HD",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Hull City",
+          "away": "Brentford",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Golf",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Liverpool",
+          "away": "Brighton & Hove Albion",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Premier League",
             "Sky Sports+ app"
           ]
         },
@@ -228,7 +259,8 @@
           "start": "2026-10-25T18:00:00+00:00",
           "channels": [
             "NOW",
-            "Sky Sports UHD 1",
+            "Sky Sports Football",
+            "Sky Sports UHD 2",
             "Sky Sports+ app"
           ]
         }
@@ -236,7 +268,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-17T16:27:27.823071+00:00",
+      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -448,7 +480,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-17T16:27:27.823071+00:00",
+      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -662,7 +694,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-17T16:27:27.823071+00:00",
+      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -843,7 +875,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-17T16:27:27.823071+00:00",
+      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
       "listings": [
         {
           "home": "Everton",
