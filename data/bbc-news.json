@@ -1,8 +1,16 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-16T21:59:08+00:00",
-  "fetchedAt": "2026-10-16T21:59:15.472697+00:00",
+  "feedUpdatedAt": "2026-10-17T00:16:10+00:00",
+  "fetchedAt": "2026-10-17T00:16:18.312850+00:00",
   "items": [
+    {
+      "title": "Oregon teacher fought school attacker before armed dad shot suspect 'multiple times'",
+      "link": "https://www.bbc.co.uk/news/articles/cv98zw1k8kp3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Analysis: Zacharia was thrown into a whirlwind - and failed at a critical time for Trump",
+      "link": "https://www.bbc.co.uk/news/articles/c6e3xnjlz12do?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Watch: Will Ukraine get the support needed as tensions with US rise?",
       "link": "https://www.bbc.co.uk/news/videos/cm2ke1v8e4geo?at_medium=RSS&at_campaign=rss"
@@ -34,14 +42,6 @@
     {
       "title": "Palestinians and US journalist injured by Israeli settlers in West Bank harvest attack",
       "link": "https://www.bbc.co.uk/news/articles/c65ynk7212vqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Norwegian teen 'hitman' jailed over UK murder plot",
-      "link": "https://www.bbc.co.uk/news/articles/cw8rzpl1ldkdo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Woman says she was left 'bewildered and confused' by alleged Russell Brand assault",
-      "link": "https://www.bbc.co.uk/news/articles/ck8dz6m1d2n6o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
