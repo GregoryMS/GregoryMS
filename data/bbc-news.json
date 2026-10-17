@@ -1,27 +1,31 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-17T17:58:19+00:00",
-  "fetchedAt": "2026-10-17T17:58:29.052644+00:00",
+  "feedUpdatedAt": "2026-10-17T20:26:15+00:00",
+  "fetchedAt": "2026-10-17T20:26:20.112700+00:00",
   "items": [
-    {
-      "title": "Watch: 'Mood has really shifted' as Paris protesters clash with police",
-      "link": "https://www.bbc.co.uk/news/videos/c6vg08xlr8g3o?at_medium=RSS&at_campaign=rss"
-    },
     {
       "title": "More NHS staff sacked over attacks victims' records",
       "link": "https://www.bbc.co.uk/news/articles/cmd7q8ld3dd3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "European diplomats attacked by Israeli settlers in West Bank",
+      "link": "https://www.bbc.co.uk/news/articles/c962ydpmjm3zo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "UK must protect against Russian 'hybrid attacks', ex-national security adviser says",
       "link": "https://www.bbc.co.uk/news/articles/cmze4y9rjepro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Scotland 'not like Manchester', Swinney says in dig at PM Burnham",
-      "link": "https://www.bbc.co.uk/news/articles/cmx2844n7nepo?at_medium=RSS&at_campaign=rss"
+      "title": "Swinney's emotional explanation for his commitment to independence",
+      "link": "https://www.bbc.co.uk/news/articles/cx5yn9n7v5zeo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Pope discharged from hospital days after lung cancer surgery",
       "link": "https://www.bbc.co.uk/news/articles/c5x2vkddrkrko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Chelsea's Martinez taken to hospital for 'precautionary tests'",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6rryqq00yp4o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Not sure what to wear for Halloween? These outfits are set to be the most popular this year",
@@ -38,10 +42,6 @@
     {
       "title": "Two-week half terms: The school holiday no one can agree on",
       "link": "https://www.bbc.co.uk/news/articles/cm3wvd7x01jqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Trial of German steakhouse heiress that sparked a huge spy scandal",
-      "link": "https://www.bbc.co.uk/news/articles/cwvgdn3d656vo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
