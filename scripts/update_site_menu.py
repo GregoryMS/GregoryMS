@@ -17,10 +17,11 @@ APPS = [
     ('More', '/links.html', 'assets/tools-app.svg'),
     ('Radio', '/radio.html', 'assets/radio-app/icon-192.png'),
     ('Dictionary', '/dictionary.html', 'assets/dictionary-app/icon-192.png'),
+    ('Maps', '/maps.html', 'assets/maps-app/icon.svg'),
 ]
 EXTRAS = [
     ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),
-    ('Maps', 'https://maps.apple.com'), ('Dictionary', '/dictionary.html'),
+    ('Maps', '/maps.html'), ('Dictionary', '/dictionary.html'),
     ('Music', 'https://music.apple.com'),
     ('Radio', 'https://gregle.uk/radio.html'), ('SpaceWeather', 'https://spaceweather.com'),
     ('Hacker News', 'https://news.ycombinator.com'), ('xkcd', 'https://xkcd.com'),

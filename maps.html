@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Explore OpenStreetMap with Gregle. Find places and addresses, drop a pin, find your location and share a map.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#242424" media="(prefers-color-scheme: dark)">
+  <title>Maps · Gregle</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/maps-app/icon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/tools.css">
+  <link rel="stylesheet" href="assets/maps.css?v=20261017-maps">
+  <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
+  <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
+  <script src="assets/maps-core.js?v=20261017-maps" defer></script>
+  <script src="assets/maps.js?v=20261017-maps" defer></script>
+  <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
+</head>
+<body class="maps-page">
+  <header class="gregle-menu-header topbar">
+    <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><h1 class="breadcrumb">Maps</h1></div>
+    <div class="top-actions"><a class="map-source" id="osm-link" href="https://www.openstreetmap.org/#map=13/48.42840/-123.36560" target="_blank" rel="noopener">OpenStreetMap <span aria-hidden="true">↗</span></a>
+      <!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>
+<p class="gregle-menu-sr-only" id="gregleAppHelp">Drag apps to rearrange them. On a touch screen, hold an app before dragging. With an app focused, use Alt and the arrow keys to move it.</p>
+<div class="gregle-app-grid" aria-describedby="gregleAppHelp"><a class="gregle-app" href="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="/earthquakes.html"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="/sports.html"><img src="/assets/sports-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>More</span></a>
+<a class="gregle-app" href="/radio.html"><img src="/assets/radio-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Radio</span></a>
+<a class="gregle-app" href="/dictionary.html"><img src="/assets/dictionary-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Dictionary</span></a>
+<a class="gregle-app" href="/maps.html" aria-current="page"><img src="/assets/maps-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Maps</span></a></div>
+<div class="gregle-menu-sr-only" role="status" aria-live="polite" data-gregle-app-status></div>
+</nav></details>
+<!-- /Gregle app menu -->
+    </div>
+  </header>
+  <main class="map-stage" aria-label="Gregle Maps">
+    <div id="gregle-map" aria-label="Interactive OpenStreetMap. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
+    <section class="map-search map-glass" aria-label="Find a place">
+      <form id="map-search-form" role="search" aria-label="Search the map">
+        <svg class="map-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+        <label class="sr-only" for="map-query">Search places and addresses</label>
+        <input id="map-query" type="search" placeholder="Search places and addresses" autocomplete="off" minlength="2" maxlength="180" required aria-controls="map-results">
+        <button class="map-search-submit" type="submit" aria-label="Search map" title="Search map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+      </form>
+      <div class="map-search-content" id="map-search-content" hidden>
+        <p id="map-search-status" role="status"></p>
+        <ol id="map-results" aria-label="Search results"></ol>
+        <a class="map-search-fallback" id="osm-search" href="https://www.openstreetmap.org/" target="_blank" rel="noopener" hidden>Search on OpenStreetMap ↗</a>
+        <div class="map-search-credit">Place search by <a href="https://github.com/komoot/photon" target="_blank" rel="noopener">Photon</a></div>
+      </div>
+    </section>
+    <div class="map-actions" role="group" aria-label="Map tools">
+      <button class="map-icon-button map-glass" id="map-locate" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button>
+      <button class="map-icon-button map-glass" id="map-share" type="button" aria-label="Copy map link" title="Copy map link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 1)"/></svg></button>
+      <button class="map-icon-button map-glass" id="map-fullscreen" type="button" aria-label="Enter full screen" title="Full screen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/></svg></button>
+    </div>
+    <section class="map-place map-glass" id="map-place" aria-labelledby="place-name">
+      <div class="place-heading"><span class="place-kicker" id="place-kicker">A world to explore</span><button class="map-dismiss" id="clear-pin" type="button" aria-label="Remove pin" title="Remove pin" hidden>×</button></div>
+      <h2 id="place-name">Explore from here.</h2>
+      <p id="place-detail">Find a favourite place, or tap the map to drop a pin.</p>
+      <div class="place-bottom" id="place-bottom" hidden><span id="place-coordinates"></span><button id="share-pin" type="button">Copy link <span aria-hidden="true">↗</span></button></div>
+    </section>
+    <div class="map-notice map-glass" id="map-notice" role="status" hidden></div>
+    <div class="map-link-copy map-glass" id="map-link-copy" hidden><label for="map-link-input">Copy this map link</label><div><input id="map-link-input" type="url" readonly><button class="map-dismiss" id="close-map-link" type="button" aria-label="Close map link">×</button></div></div>
+    <a class="map-report" href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue ↗</a>
+    <noscript><div class="map-noscript map-glass">Enable JavaScript to explore the map here, or <a href="https://www.openstreetmap.org/">open OpenStreetMap</a>.</div></noscript>
+  </main>
+</body>
+</html>

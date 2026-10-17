@@ -1,0 +1,4 @@
+{
+  "tileURL": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "searchURL": "https://photon.komoot.io/api/"
+}
