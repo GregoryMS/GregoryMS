@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
+      "checkedAt": "2026-10-17T21:28:23.650693+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -263,12 +263,24 @@
             "Sky Sports UHD 2",
             "Sky Sports+ app"
           ]
+        },
+        {
+          "home": "Fleetwood Town",
+          "away": "Arsenal",
+          "start": "2026-10-27T20:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Football",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports+ app"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
+      "checkedAt": "2026-10-17T21:28:23.650693+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -480,7 +492,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
+      "checkedAt": "2026-10-17T21:28:23.650693+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -694,7 +706,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
+      "checkedAt": "2026-10-17T21:28:23.650693+00:00",
       "listings": [
         {
           "home": "Everton",
@@ -875,7 +887,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-17T18:50:51.291941+00:00",
+      "checkedAt": "2026-10-17T21:28:23.650693+00:00",
       "listings": [
         {
           "home": "Everton",
