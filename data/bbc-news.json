@@ -1,38 +1,34 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-17T12:27:10+00:00",
-  "fetchedAt": "2026-10-17T12:27:18.359758+00:00",
+  "feedUpdatedAt": "2026-10-17T15:51:41+00:00",
+  "fetchedAt": "2026-10-17T15:51:56.190639+00:00",
   "items": [
     {
       "title": "Watch: 'Mood has really shifted' as Paris protesters clash with police",
       "link": "https://www.bbc.co.uk/news/videos/c6vg08xlr8g3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trump waives several Russia sanctions as row with Zelensky intensifies",
-      "link": "https://www.bbc.co.uk/news/articles/cxr5yvzv7rp0o?at_medium=RSS&at_campaign=rss"
+      "title": "More NHS staff sacked over attacks victims' records",
+      "link": "https://www.bbc.co.uk/news/articles/cmd7q8ld3dd3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Oregon teacher fought school attacker before armed dad shot suspect 'multiple times'",
-      "link": "https://www.bbc.co.uk/news/articles/cv98zw1k8kp3o?at_medium=RSS&at_campaign=rss"
+      "title": "UK must protect against Russian 'hybrid attacks', ex-national security adviser says",
+      "link": "https://www.bbc.co.uk/news/articles/cmze4y9rjepro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Boy, 16, and 80-year-old man die in light aircraft crash near Loch Lomond",
-      "link": "https://www.bbc.co.uk/news/articles/cky83g11q46lo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Swinney insists 'stars are aligning' for Scottish independence",
+      "title": "Scotland 'not like Manchester', Swinney says in dig at PM Burnham",
       "link": "https://www.bbc.co.uk/news/articles/cmx2844n7nepo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Harry Styles debuts new track in memory of Liam Payne",
-      "link": "https://www.bbc.co.uk/news/articles/c34g180knv91o?at_medium=RSS&at_campaign=rss"
+      "title": "Pope discharged from hospital days after lung cancer surgery",
+      "link": "https://www.bbc.co.uk/news/articles/c5x2vkddrkrko?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Toxic algorithms wouldn't let them go - now Australia wants an off switch",
       "link": "https://www.bbc.co.uk/news/articles/cwr7y8er1n8vo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Vapes were meant to help people quit cigarettes. Now a million non-smokers are vaping",
+      "title": "Why people who have never smoked are getting hooked on vapes",
       "link": "https://www.bbc.co.uk/news/articles/ck62y33489zqo?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -42,6 +38,10 @@
     {
       "title": "Two-week half terms: The school holiday no one can agree on",
       "link": "https://www.bbc.co.uk/news/articles/cm3wvd7x01jqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Trial of German steakhouse heiress that sparked a huge spy scandal",
+      "link": "https://www.bbc.co.uk/news/articles/cwvgdn3d656vo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
