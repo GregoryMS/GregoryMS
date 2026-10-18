@@ -2,9 +2,13 @@
   'use strict';
   const core = window.GregleMaps;
   const $ = id => document.getElementById(id);
-  const defaults = { tileURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', searchURL: 'https://photon.komoot.io/api/' };
+  const defaults = {
+    tileURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', searchURL: 'https://photon.komoot.io/api/',
+    topographicURL: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png', maritimeURL: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+    trafficURL: 'https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256'
+  };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, tiles, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer;
+  let map, layerControl, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -19,7 +23,7 @@
   };
   const updateURL = () => {
     const current = view();
-    try { history.replaceState(null, '', core.makeHash(current, selected)); } catch {}
+    try { history.replaceState(null, '', core.makeHash(current, selected, layerControl?.getState())); } catch {}
     $('osm-link').href = core.osmURL(current, selected);
   };
   const hideSearch = () => { searchContent.hidden = true; };
@@ -68,7 +72,7 @@
   }
   async function share() {
     const url = new URL(location.pathname, location.origin);
-    url.hash = core.makeHash(view(), selected);
+    url.hash = core.makeHash(view(), selected, layerControl?.getState());
     try {
       await navigator.clipboard.writeText(url.href);
       notify(selected ? 'Link to this pin copied.' : 'Link to this map copied.');
@@ -78,36 +82,25 @@
       $('map-link-input').focus(); $('map-link-input').select();
     }
   }
-  const controls = [$('map-locate'), $('map-share'), $('map-query'), document.querySelector('.map-search-submit')];
+  const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core) {
+  if (!window.L || !core || !window.GregleMapLayers || !window.GregleDriveBC) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261017-layers', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
-      for (const key of ['tileURL', 'searchURL']) if (typeof supplied[key] === 'string' && supplied[key].startsWith('https://')) config[key] = supplied[key];
+      for (const key of Object.keys(defaults)) if (typeof supplied[key] === 'string' && supplied[key].startsWith('https://')) config[key] = supplied[key];
     }
   } catch {}
   const initial = core.readHash(location.hash);
   map = L.map('gregle-map', { zoomControl: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
-  tiles = L.tileLayer(config.tileURL, {
-    maxZoom: 19, updateWhenIdle: true, keepBuffer: 1,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
-  });
-  let failedTiles = 0;
-  tiles.on('loading', () => { failedTiles = 0; });
-  tiles.on('tileerror', () => { failedTiles++; });
-  tiles.on('load', () => {
-    if (failedTiles) notify('Some map tiles could not load. Try moving or zooming the map, or open OpenStreetMap.', 'map', true);
-    else if ($('map-notice').dataset.kind === 'map') $('map-notice').hidden = true;
-  });
-  tiles.addTo(map);
+  layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: updateURL });
   renderPin(initial.pin); updateURL();
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
@@ -119,6 +112,8 @@
   window.addEventListener('hashchange', () => {
     intent++; cancelSearch(); hideSearch();
     const state = core.readHash(location.hash);
+    const layers = core.readLayers(location.hash);
+    if (layers) layerControl.setState(layers);
     renderPin(state.pin); map.setView([state.view.lat, state.view.lng], state.view.zoom); updateURL();
   });
   $('map-search-form').addEventListener('submit', async event => {

@@ -12,12 +12,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261017-maps">
+  <link rel="stylesheet" href="assets/maps.css?v=20261017-layers">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261017-maps" defer></script>
-  <script src="assets/maps.js?v=20261017-maps" defer></script>
+  <script src="assets/maps-core.js?v=20261017-layers" defer></script>
+  <script src="assets/maps-drivebc.js?v=20261017-layers" defer></script>
+  <script src="assets/maps-layers.js?v=20261017-layers" defer></script>
+  <script src="assets/maps.js?v=20261017-layers" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
 </head>
 <body class="maps-page">
@@ -63,10 +65,37 @@
       </div>
     </section>
     <div class="map-actions" role="group" aria-label="Map tools">
+      <button class="map-icon-button map-glass" id="map-layers-toggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="map-layers-panel" title="Map layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
       <button class="map-icon-button map-glass" id="map-locate" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button>
       <button class="map-icon-button map-glass" id="map-share" type="button" aria-label="Copy map link" title="Copy map link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 1)"/></svg></button>
       <button class="map-icon-button map-glass" id="map-fullscreen" type="button" aria-label="Enter full screen" title="Full screen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/></svg></button>
     </div>
+    <section class="map-layers-panel map-glass" id="map-layers-panel" aria-labelledby="map-layers-heading" hidden>
+      <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
+      <fieldset class="map-base-options"><legend>Base map</legend>
+        <label><input type="radio" name="map-base" value="street" checked><span><strong>Street</strong><small>OpenStreetMap</small></span></label>
+        <label><input type="radio" name="map-base" value="topographic"><span><strong>Topographic</strong><small>Contours &amp; terrain</small></span></label>
+      </fieldset>
+      <p class="layer-status" id="base-layer-status" role="status"></p>
+      <fieldset class="map-overlay-options"><legend>Overlays</legend>
+        <label><span><strong>Maritime</strong><small>OpenSeaMap · buoys, lights &amp; harbour marks</small></span><input id="map-maritime" type="checkbox"></label>
+        <p class="layer-status" id="maritime-layer-status" role="status" hidden></p>
+        <label><span><strong>DriveBC</strong><small>BC closures, incidents &amp; road conditions · no key</small></span><input id="map-drivebc" type="checkbox"></label>
+        <p class="layer-status" id="drivebc-layer-status" role="status" hidden></p>
+        <label><span><strong>Traffic</strong><small>TomTom · current traffic flow</small></span><input id="map-traffic" type="checkbox"></label>
+      </fieldset>
+      <p class="layer-status" id="traffic-layer-status" role="status">Connect a TomTom key to show traffic.</p>
+      <div class="traffic-legend" id="traffic-legend" aria-label="Traffic colours: red indicates slower traffic and green indicates faster traffic" hidden><span>Slower</span><i></i><span>Faster</span></div>
+      <div class="traffic-options"><button id="traffic-connect" type="button">Connect TomTom</button><button id="traffic-refresh" type="button" hidden>Refresh traffic</button></div>
+      <form id="traffic-key-form" class="traffic-key-form" hidden>
+        <label for="traffic-api-key">TomTom Traffic API key</label>
+        <input id="traffic-api-key" type="password" autocomplete="off" spellcheck="false" minlength="16" maxlength="256" required placeholder="Enter your API key" aria-describedby="traffic-key-help">
+        <p id="traffic-key-help">Saved only in this browser. Requests go directly to TomTom. Restrict your key to gregle.uk in your TomTom settings.</p>
+        <div><button class="traffic-save" type="submit">Connect traffic</button><button id="traffic-forget" type="button" hidden>Forget key</button></div>
+        <a href="https://docs.tomtom.com/pricing" target="_blank" rel="noopener">TomTom free allowance &amp; sign-up ↗</a>
+      </form>
+      <p class="layers-footnote" id="layers-footnote">Only enabled layers load. Your choices are included in copied map links.</p>
+    </section>
     <section class="map-place map-glass" id="map-place" aria-labelledby="place-name">
       <div class="place-heading"><span class="place-kicker" id="place-kicker">A world to explore</span><button class="map-dismiss" id="clear-pin" type="button" aria-label="Remove pin" title="Remove pin" hidden>×</button></div>
       <h2 id="place-name">Explore from here.</h2>

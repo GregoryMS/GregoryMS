@@ -24,9 +24,22 @@
   function viewHash(view) {
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
-  function makeHash(view, pin) {
+  function normalizeLayers(value) {
+    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, drivebc: value?.drivebc === true, traffic: value?.traffic === true };
+  }
+  function readLayers(hash) {
+    const params = new URLSearchParams(hash.replace(/^#/, ''));
+    if (!params.has('base') && !params.has('overlays')) return null;
+    const overlays = (params.get('overlays') || '').split(',');
+    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), drivebc: overlays.includes('drivebc'), traffic: overlays.includes('traffic') });
+  }
+  function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
     if (pin && validPoint(pin.lat, pin.lng)) hash += `&pin=${pin.lat.toFixed(5)},${pin.lng.toFixed(5)}&name=${encodeURIComponent(text(pin.name) || 'Dropped pin')}`;
+    if (layers) {
+      const state = normalizeLayers(layers);
+      hash += `&base=${state.base}&overlays=${['maritime', 'drivebc', 'traffic'].filter(key => state[key]).join(',')}`;
+    }
     return hash;
   }
   function osmURL(view, pin) {
@@ -57,5 +70,35 @@
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, readHash, makeHash, osmURL, readResults };
+  function readRoadEvents(data) {
+    if (!Array.isArray(data?.events)) throw new Error('Invalid DriveBC response');
+    const seen = new Set(), results = [];
+    for (const item of data.events.slice(0, 2000)) {
+      if (!item || item.status !== 'ACTIVE' || typeof item.id !== 'string' || !item.id.trim() || seen.has(item.id)) continue;
+      const geometry = item.geography;
+      let coordinates = geometry?.coordinates;
+      if (!Array.isArray(coordinates)) continue;
+      if (geometry.type === 'Point') {
+        if (Array.isArray(coordinates[0])) coordinates = coordinates[0];
+        if (!validPoint(coordinates[1], coordinates[0])) continue;
+        coordinates = [[coordinates[1], coordinates[0]]];
+      } else if (geometry.type === 'LineString') {
+        coordinates = coordinates.filter(p => Array.isArray(p) && validPoint(p[1], p[0])).map(p => [p[1], p[0]]);
+        if (coordinates.length < 2) continue;
+        if (coordinates.length > 800) {
+          const full = coordinates;
+          coordinates = Array.from({ length: 800 }, (_, i) => full[Math.round(i * (full.length - 1) / 799)]);
+        }
+      } else continue;
+      seen.add(item.id);
+      const type = ['CONSTRUCTION', 'SPECIAL_EVENT', 'INCIDENT', 'WEATHER_CONDITION', 'ROAD_CONDITION'].includes(item.event_type) ? item.event_type : 'ROAD_CONDITION';
+      const severity = ['MAJOR', 'MODERATE', 'MINOR'].includes(item.severity) ? item.severity : 'UNKNOWN';
+      const closed = Array.isArray(item.roads) && item.roads.some(road => road?.state === 'CLOSED');
+      const description = typeof item.description === 'string' ? item.description.trim().slice(0, 4000) : '';
+      const updated = typeof item.updated === 'string' && Number.isFinite(Date.parse(item.updated)) ? item.updated : null;
+      results.push({ id: item.id.slice(0, 160), name: text(item.headline) || type.replaceAll('_', ' '), description, type, severity, closed, coordinates, point: coordinates[Math.floor(coordinates.length / 2)], updated });
+    }
+    return results;
+  }
+  return { defaultView, validPoint, wrapLongitude, readHash, makeHash, osmURL, readResults, normalizeLayers, readLayers, readRoadEvents };
 });

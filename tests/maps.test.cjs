@@ -64,11 +64,57 @@ test('map uses attributable HTTPS tiles and a search provider configurable indep
   const config = JSON.parse(fs.readFileSync(path.join(root, 'assets/maps-config.json')));
   assert.equal(config.tileURL, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png');
   assert.equal(new URL(config.searchURL).protocol, 'https:');
-  const script = fs.readFileSync(path.join(root, 'assets/maps.js'), 'utf8');
+  const script = fs.readFileSync(path.join(root, 'assets/maps.js'), 'utf8') + fs.readFileSync(path.join(root, 'assets/maps-layers.js'), 'utf8');
   assert(script.includes('https://www.openstreetmap.org/copyright'));
   assert(!script.includes('nominatim.openstreetmap.org'));
   const page = fs.readFileSync(path.join(root, 'maps.html'), 'utf8');
   assert(page.includes('strict-origin-when-cross-origin'));
   assert(page.includes('https://www.openstreetmap.org/fixthemap'));
   assert(page.includes('<noscript>'));
+});
+
+test('map links preserve layer choices without serializing credentials or arbitrary providers', () => {
+  const layers = { base: 'topographic', maritime: true, drivebc: true, traffic: true, apiKey: 'must-not-be-shared', tileURL: 'https://example.org' };
+  const pin = { lat: 48.42, lng: -123.37, name: 'Harbour & park' };
+  const hash = maps.makeHash(maps.defaultView, pin, layers);
+  assert.deepEqual(maps.readLayers(hash), { base: 'topographic', maritime: true, drivebc: true, traffic: true });
+  assert.equal(maps.readHash(hash).pin.name, pin.name);
+  assert(!hash.includes('must-not-be-shared'));
+  assert(!hash.includes('example.org'));
+  assert.deepEqual(maps.readLayers(maps.makeHash(maps.defaultView, null, { base: 'street' })), { base: 'street', maritime: false, drivebc: false, traffic: false });
+  assert.equal(maps.readLayers('#map=13/48/-123'), null);
+});
+
+test('saved and linked layer preferences ignore invalid types and unknown overlays', () => {
+  assert.deepEqual(maps.normalizeLayers(null), { base: 'street', maritime: false, drivebc: false, traffic: false });
+  assert.deepEqual(maps.normalizeLayers({ base: 'javascript:alert(1)', maritime: 'true', traffic: 1 }), { base: 'street', maritime: false, drivebc: false, traffic: false });
+  assert.deepEqual(maps.readLayers('#base=unknown&overlays=maritime,drivebc,other,traffic'), { base: 'street', maritime: true, drivebc: true, traffic: true });
+  assert.deepEqual(maps.readLayers('#base=street&overlays='), { base: 'street', maritime: false, drivebc: false, traffic: false });
+});
+
+test('DriveBC events validate geometry, deduplicate IDs and keep report text separate from markup', () => {
+  const event = { id: 'drivebc.ca/test', status: 'ACTIVE', headline: '<img onerror=alert(1)>', description: '<script>not markup</script>', event_type: 'CONSTRUCTION', severity: 'MAJOR', roads: [{ state: 'CLOSED' }], updated: '2026-10-17T12:00:00-07:00', geography: { type: 'Point', coordinates: [-123.36, 48.43] } };
+  const results = maps.readRoadEvents({ events: [null, {}, { ...event, id: '' }, { ...event, id: 'archived', status: 'ARCHIVED' }, { ...event, id: 'invalid', geography: { type: 'Point', coordinates: [null, null] } }, event, event] });
+  assert.equal(results.length, 1);
+  assert.equal(results[0].name, event.headline);
+  assert.equal(results[0].description, event.description);
+  assert.deepEqual(results[0].point, [48.43, -123.36]);
+  assert.equal(results[0].closed, true);
+  assert.equal(results[0].severity, 'MAJOR');
+  assert.throws(() => maps.readRoadEvents({ error: 'Unavailable' }));
+  assert.deepEqual(maps.readRoadEvents({ events: [] }), []);
+});
+
+test('DriveBC supports legacy points and samples long road geometries while retaining both endpoints', () => {
+  const event = { id: 'road', status: 'ACTIVE', event_type: 'UNKNOWN', severity: 'n/a', updated: 'invalid' };
+  const coords = Array.from({ length: 1601 }, (_, i) => [-123 + i / 100000, 49 + i / 100000]);
+  const results = maps.readRoadEvents({ events: [{ ...event, geography: { type: 'LineString', coordinates: coords } }, { ...event, id: 'point', geography: { type: 'Point', coordinates: [[-124, 50]] } }] });
+  assert.equal(results.length, 2);
+  assert.equal(results[0].coordinates.length, 800);
+  assert.deepEqual(results[0].coordinates[0], [49, -123]);
+  assert.deepEqual(results[0].coordinates.at(-1), [coords.at(-1)[1], coords.at(-1)[0]]);
+  assert.equal(results[0].type, 'ROAD_CONDITION');
+  assert.equal(results[0].severity, 'UNKNOWN');
+  assert.equal(results[0].updated, null);
+  assert.deepEqual(results[1].point, [50, -124]);
 });

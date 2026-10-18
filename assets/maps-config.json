@@ -1,4 +1,7 @@
 {
   "tileURL": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  "searchURL": "https://photon.komoot.io/api/"
+  "searchURL": "https://photon.komoot.io/api/",
+  "topographicURL": "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
+  "maritimeURL": "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png",
+  "trafficURL": "https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256"
 }
