@@ -3,21 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-18T14:51:42.103531+00:00",
+      "checkedAt": "2026-10-18T18:06:03.515282+00:00",
       "listings": [
-        {
-          "home": "Newcastle United",
-          "away": "Aston Villa",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports Main Event",
-            "Sky Sports Main Event UHD",
-            "Sky Sports Premier League",
-            "Sky Sports UHD 1",
-            "Sky Sports+ app"
-          ]
-        },
         {
           "home": "Austin FC",
           "away": "Vancouver Whitecaps",
@@ -249,16 +236,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-18T14:51:42.103531+00:00",
+      "checkedAt": "2026-10-18T18:06:03.515282+00:00",
       "listings": [
-        {
-          "home": "Newcastle United",
-          "away": "Aston Villa",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "Fubo Sports CA"
-          ]
-        },
         {
           "home": "Austin FC",
           "away": "Vancouver Whitecaps",
@@ -457,16 +436,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-18T14:51:42.103531+00:00",
+      "checkedAt": "2026-10-18T18:06:03.515282+00:00",
       "listings": [
-        {
-          "home": "Newcastle United",
-          "away": "Aston Villa",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "Viaplay"
-          ]
-        },
         {
           "home": "Austin FC",
           "away": "Vancouver Whitecaps",
@@ -662,7 +633,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-18T14:51:42.103531+00:00",
+      "checkedAt": "2026-10-18T18:06:03.515282+00:00",
       "listings": [
         {
           "home": "Austin FC",
@@ -840,7 +811,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-18T14:51:42.103531+00:00",
+      "checkedAt": "2026-10-18T18:06:03.515282+00:00",
       "listings": [
         {
           "home": "Austin FC",
