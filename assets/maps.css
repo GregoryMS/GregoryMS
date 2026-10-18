@@ -271,3 +271,18 @@
 .aircraft-sources { margin-top: 10px; font-size: 10px; line-height: 1.6; color: var(--muted); }
 .aircraft-sources summary { cursor: pointer; color: var(--map-accent); }
 .aircraft-sources a { color: var(--map-accent); }
+
+.vessels-marker { background: transparent; border: 0; }
+.vessels-marker svg { width: 26px; height: 32px; overflow: visible; fill: #087e8b; stroke: #fff; stroke-width: 1.7; stroke-linejoin: round; filter: drop-shadow(0 1px 2px #0008); }
+.vessels-marker:focus-visible { outline: 3px solid #087e8b; outline-offset: 4px; border-radius: 50%; }
+.vessels-popup { color: #252525; font: 12px/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
+.vessels-popup .vessels-title { display: block; font-size: 16px; }
+.vessels-popup p { margin: 8px 0; }
+.vessels-popup dl { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; margin: 12px 0; }
+.vessels-popup dt { color: #65616d; }
+.vessels-popup dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.vessels-popup .vessels-meta { color: #65616d; font-size: 10px; }
+.vessels-popup a { color: #087e8b; }
+
+
+.vessels-deck { fill: none; stroke: #fff; stroke-width: 1.4; }

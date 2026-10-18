@@ -15,6 +15,7 @@
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
     const aircraft = window.GregleAircraft({ map, notify });
+    const vessels = window.GregleVessels({ map, notify });
     const plugshare = window.GreglePlugShare({ map });
     let applied;
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
@@ -63,6 +64,8 @@
       panel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
+      $('map-vessels').checked = state.vessels;
+      $('vessels-options').hidden = !state.vessels;
       $('map-aircraft').checked = state.aircraft;
       $('aircraft-options').hidden = !state.aircraft;
       $('map-ev').checked = state.ev;
@@ -233,6 +236,7 @@
       if (first || previous.ev !== active.ev || previous.tesla !== active.tesla) ev.setSelection(active.ev, active.tesla);
       if (first || previous.aviation !== active.aviation) aviation.setEnabled(active.aviation);
       if (first || previous.aircraft !== active.aircraft) aircraft.setEnabled(active.aircraft);
+      if (first || previous.vessels !== active.vessels) vessels.setEnabled(active.vessels);
       if (first || previous.future !== active.future) drivebc.setIncludeFuture(active.future);
       if (first || previous.drivebc !== active.drivebc) drivebc.setEnabled(active.drivebc);
       if (first || previous.speed !== active.speed) signs.setEnabled('speed', active.speed);
@@ -257,6 +261,7 @@
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked }, true));
     $('map-ev-tesla').addEventListener('change', () => setState({ ...state, tesla: $('map-ev-tesla').checked }, true));
     $('map-maritime').addEventListener('change', () => setState({ ...state, maritime: $('map-maritime').checked }, true));
+    $('map-vessels').addEventListener('change', () => setState({ ...state, vessels: $('map-vessels').checked }, true));
     $('map-aircraft').addEventListener('change', () => setState({ ...state, aircraft: $('map-aircraft').checked }, true));
     $('map-aviation').addEventListener('change', () => {
       setState({ ...state, aviation: $('map-aviation').checked }, true);

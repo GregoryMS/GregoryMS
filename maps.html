@@ -20,11 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261017-aircraft">
+  <link rel="stylesheet" href="assets/maps.css?v=20261018-vessels">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261017-aircraft" defer></script>
+  <script src="assets/maps-core.js?v=20261018-vessels" defer></script>
   <script src="assets/maps-places-core.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-places.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-signs" defer></script>
@@ -39,10 +39,12 @@
   <script src="assets/maps-ev-core.js?v=20261017-tesla" defer></script>
   <script src="assets/maps-ev.js?v=20261017-ev-icons" defer></script>
   <script src="assets/maps-plugshare.js?v=20261017-plugshare-zoom" defer></script>
-  <script src="assets/maps-aircraft-core.js?v=20261017-aircraft" defer></script>
-  <script src="assets/maps-aircraft.js?v=20261017-aircraft" defer></script>
-  <script src="assets/maps-layers.js?v=20261017-aircraft" defer></script>
-  <script src="assets/maps.js?v=20261017-aircraft" defer></script>
+  <script src="assets/maps-aircraft-core.js?v=20261018-vessels" defer></script>
+  <script src="assets/maps-aircraft.js?v=20261018-vessels" defer></script>
+  <script src="assets/maps-vessels-core.js?v=20261018-vessels" defer></script>
+  <script src="assets/maps-vessels.js?v=20261018-vessels" defer></script>
+  <script src="assets/maps-layers.js?v=20261018-vessels" defer></script>
+  <script src="assets/maps.js?v=20261018-vessels" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
 </head>
 <body class="maps-page">
@@ -110,6 +112,8 @@
       <fieldset class="map-overlay-options"><legend>Overlays</legend>
         <label><span><strong>Maritime</strong><small>OpenSeaMap · buoys, lights &amp; harbour marks</small></span><input id="map-maritime" type="checkbox"></label>
         <p class="layer-status" id="maritime-layer-status" role="status" hidden></p>
+        <label><span><strong>Vessel tracker</strong><small>PocketWorld · recent AIS ship positions</small></span><input id="map-vessels" type="checkbox" aria-describedby="vessels-layer-status"></label>
+        <div id="vessels-options" hidden><p class="layer-status" id="vessels-layer-status" role="status"></p><div class="traffic-options"><button id="vessels-refresh" type="button">Refresh vessels</button></div><details class="aircraft-sources"><summary>Data sources &amp; coverage</summary><p>Vessel reports via <a href="https://pocketworld.org/api" target="_blank" rel="noopener">PocketWorld</a>, from <a href="https://aisstream.io/" target="_blank" rel="noopener">AISStream.io</a>, <a href="https://www.kystverket.no/en/sea-transport-and-ports/ais/access-to-ais-data/" target="_blank" rel="noopener">Kystverket / BarentsWatch</a>, <a href="https://www.digitraffic.fi/en/marine-traffic/" target="_blank" rel="noopener">Fintraffic Digitraffic</a> and Singapore MPA where available. Worldwide receiver coverage varies. Positions are reported observations, with delays and gaps; reports older than ten minutes are hidden. Refreshes each minute while enabled and visible. For information only; not for navigation.</p></details></div>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="ev-options-toggle" type="button" aria-label="EV charging options" aria-expanded="false" aria-controls="ev-sublayers"><span><strong id="ev-layer-label">EV charging</strong><small>OpenStreetMap · all mapped charging stations</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <input id="map-ev" type="checkbox" aria-labelledby="ev-layer-label" aria-describedby="ev-layer-status">

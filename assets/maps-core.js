@@ -31,13 +31,13 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { base: ['street', 'topographic', 'plugshare'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, ev: value?.ev === true, tesla: value?.tesla === true, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { base: ['street', 'topographic', 'plugshare'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     if (!params.has('base') && !params.has('overlays')) return null;
     const overlays = (params.get('overlays') || '').split(',');
-    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), aircraft: overlays.includes('aircraft'), ev: overlays.includes('ev'), tesla: overlays.includes('tesla'), drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
+    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), aircraft: overlays.includes('aircraft'), vessels: overlays.includes('vessels'), ev: overlays.includes('ev'), tesla: overlays.includes('tesla'), drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
@@ -45,7 +45,7 @@
     if (pin?.osm && osmReference(...pin.osm.split('/')) === pin.osm) hash += `&osm=${pin.osm}`;
     if (layers) {
       const state = normalizeLayers(layers);
-      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'aircraft', 'ev', 'tesla', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'ferries', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
+      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'aircraft', 'vessels', 'ev', 'tesla', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'ferries', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
     }
     return hash;
   }
