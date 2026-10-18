@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-18T06:36:51.096046+00:00",
+      "checkedAt": "2026-10-18T11:44:12.209509+00:00",
       "listings": [
-        {
-          "home": "Everton",
-          "away": "Chelsea",
-          "start": "2026-10-17T11:30:00+00:00",
-          "channels": [
-            "TNT Sports Ultimate"
-          ]
-        },
         {
           "home": "Arsenal (W)",
           "away": "Birmingham City (W)",
@@ -226,6 +218,7 @@
           "channels": [
             "NOW",
             "Sky Sports Premier League",
+            "Sky Sports UHD 1",
             "Sky Sports+ app"
           ]
         },
@@ -264,16 +257,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-18T06:36:51.096046+00:00",
+      "checkedAt": "2026-10-18T11:44:12.209509+00:00",
       "listings": [
-        {
-          "home": "Everton",
-          "away": "Chelsea",
-          "start": "2026-10-17T11:30:00+00:00",
-          "channels": [
-            "Fubo Sports CA"
-          ]
-        },
         {
           "home": "Fulham",
           "away": "Hull City",
@@ -496,16 +481,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-18T06:36:51.096046+00:00",
+      "checkedAt": "2026-10-18T11:44:12.209509+00:00",
       "listings": [
-        {
-          "home": "Everton",
-          "away": "Chelsea",
-          "start": "2026-10-17T11:30:00+00:00",
-          "channels": [
-            "Viaplay"
-          ]
-        },
         {
           "home": "Fulham",
           "away": "Hull City",
@@ -725,7 +702,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-18T06:36:51.096046+00:00",
+      "checkedAt": "2026-10-18T11:44:12.209509+00:00",
       "listings": [
         {
           "home": "Austin FC",
@@ -903,7 +880,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-18T06:36:51.096046+00:00",
+      "checkedAt": "2026-10-18T11:44:12.209509+00:00",
       "listings": [
         {
           "home": "Austin FC",
@@ -911,6 +888,14 @@
           "start": "2026-10-18T00:30:00+00:00",
           "channels": [
             "Apple TV (DE)"
+          ]
+        },
+        {
+          "home": "Chelsea (W)",
+          "away": "Tottenham Hotspur (W)",
+          "start": "2026-10-18T11:00:00+00:00",
+          "channels": [
+            "Sportdigital+"
           ]
         },
         {
