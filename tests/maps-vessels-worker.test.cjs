@@ -86,3 +86,29 @@ test('background revalidation is shared across repeated requests for the same pa
  release(new Response(JSON.stringify(payload())));await h.done();assert.equal((await(await h.ask()).json()).cached,false);assert.equal(h.calls.length,2);
  }finally{if(release)release(new Response('{}'));await h.cleanup();}
 });
+
+test('an expired snapshot restarts through a current head and caches the recovered page under its real ID',async()=>{
+ const h=await setup(),newId='bbbbbbbbbbbbbbbbbbbbbbbb';try{
+ await h.ask();h.advance(46000);
+ h.setFetch(async url=>{
+  const params=new URL(url).searchParams;
+  if(params.get('snapshot_id')===sid)return new Response(JSON.stringify({error:{code:'SHIP_SNAPSHOT_CHANGED'}}),{status:409});
+  const data={...payload(),snapshot_id:newId,cursor:params.has('cursor')?'10000':'5000'};
+  return new Response(JSON.stringify(data));
+ });
+ const query='bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot=';
+ const r=await h.ask(query+sid);assert.equal(r.status,200);const d=await r.json();assert.equal(d.snapshotId,newId);assert.equal(d.cached,true);assert.equal(d.limited,true);assert.equal(h.calls.length,4);assert.equal(new URL(h.calls[2].url).searchParams.has('cursor'),false);assert.equal(new URL(h.calls[3].url).searchParams.get('snapshot_id'),newId);
+ assert.equal((await(await h.ask(query+sid)).json()).snapshotId,newId);assert.equal((await(await h.ask(query+newId)).json()).cached,false);assert.equal(h.calls.length,4);
+ }finally{await h.cleanup();}
+});
+test('a recently refreshed head avoids making a request with an obsolete snapshot ID',async()=>{
+ const h=await setup(),newId='cccccccccccccccccccccccc';try{
+ await h.ask();h.advance(46000);h.setFetch(async url=>new Response(JSON.stringify({...payload(),snapshot_id:newId,cursor:new URL(url).searchParams.has('cursor')?'10000':'5000'})));
+ await h.ask();await h.done();const r=await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+sid);assert.equal(r.status,200);assert.equal((await r.json()).snapshotId,newId);assert.equal(new URL(h.calls.at(-1).url).searchParams.get('snapshot_id'),newId);assert.equal(h.calls.length,3);
+ }finally{await h.cleanup();}
+});
+test('snapshot recovery respects an explicit provider Retry-After',async()=>{
+ const h=await setup();try{
+ h.setFetch(async()=>new Response('restart later',{status:409,headers:{'Retry-After':'120'}}));const r=await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+sid);assert.equal(r.status,503);assert.equal(r.headers.get('Retry-After'),'120');assert.equal(h.calls.length,1);
+ }finally{await h.cleanup();}
+});

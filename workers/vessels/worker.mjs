@@ -44,44 +44,69 @@ export default {
       const entry = await readJSON(response, 3 * 1024 * 1024 + 512);
       return validData(entry.data) && typeof entry.savedAt === 'number' && entry.savedAt <= Date.now() + 30000 && Date.now() - entry.savedAt <= maxBackupAge ? entry : null;
     }
-    async function update() {
+    const latestKey = new Request(`${url.origin}/v3/source/ships/latest/0`), latestBackup = new Request(`${url.origin}/v3/last-good/0`);
+    async function requestData(page, id, signal) {
+      const paused = await cache.match(cooldown);
+      if (paused) { const error = new Error('provider_cooldown'); error.status = 429; error.retryAfter = Number(paused.headers.get('Retry-After')) || 60; error.stop = true; error.cooldown = true; throw error; }
       const upstreamURL = new URL('https://pocketworld.org/api/ships');
-      upstreamURL.search = new URLSearchParams({ wire: '1', limit: '5000', ...(cursor ? { cursor, snapshot_id: snapshot } : {}) }).toString();
-      let data, lastError;
-      // One retry for transient failures. Respect explicit provider cooldowns.
+      upstreamURL.search = new URLSearchParams({ wire: '1', limit: '5000', ...(page ? { cursor: page, snapshot_id: id } : {}) }).toString();
+      stage = 'upstream';
+      const upstream = await fetch(upstreamURL.href, { headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' }, redirect: 'manual', signal });
+      if (!upstream.ok) {
+        const value = upstream.headers.get('Retry-After');
+        const wait = Math.min(900, Math.max(60, value && /^\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value || '') - Date.now()) / 1000) || 60));
+        await upstream.body?.cancel();
+        const error = new Error(`upstream_${upstream.status}`); error.status = upstream.status; error.retryAfter = wait; error.cooldown = upstream.status === 429 || !!value;
+        if (error.cooldown && ![400, 404, 409, 410].includes(upstream.status)) await quiet(cache.put(cooldown, new Response('paused', { headers: { 'Cache-Control': `public, max-age=${wait}`, 'Retry-After': String(wait) } })));
+        error.stop = error.cooldown || ![500, 502, 503, 504].includes(upstream.status);
+        throw error;
+      }
+      stage = 'decode';
+      const data = await readJSON(upstream);
+      if (!validData(data) || id && id !== data.snapshot_id) { const error = new Error('invalid_source_data'); error.stop = true; throw error; }
+      return data;
+    }
+    async function save(data, primary, backup, ttl) {
+      const entry = { savedAt: Date.now(), data }, body = JSON.stringify(entry);
+      await Promise.all([
+        quiet(cache.put(primary, new Response(body, { headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${ttl}` } }))),
+        quiet(cache.put(backup, new Response(body, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' } })))
+      ]);
+      return entry;
+    }
+    async function currentHead(signal, oldId, renew = false) {
+      const known = await stored(latestKey);
+      if (known && Date.now() - known.savedAt < 15000 && known.data.snapshot_id !== oldId) return known.data.snapshot_id;
+      if (!renew) return oldId;
+      const data = await requestData('', '', signal);
+      await save(data, latestKey, latestBackup, 45);
+      return data.snapshot_id;
+    }
+    async function update() {
+      let data, lastError, sourceSnapshot = cursor ? await currentHead(null, snapshot) : '', renew = false;
+      // One bounded retry; an expired snapshot is replaced instead of retried forever.
       for (let attempt = 0; attempt < 2; attempt++) {
+        const signal = AbortSignal.timeout(attempt ? 12000 : 8000);
         try {
-          stage = 'upstream';
-          const upstream = await fetch(upstreamURL.href, { headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' }, redirect: 'manual', signal: AbortSignal.timeout(attempt ? 12000 : 8000) });
-          if (!upstream.ok) {
-            const value = upstream.headers.get('Retry-After');
-            const wait = Math.min(900, Math.max(60, value && /^\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value || '') - Date.now()) / 1000) || 60));
-            await upstream.body?.cancel();
-            const error = new Error(`upstream_${upstream.status}`); error.status = upstream.status; error.retryAfter = wait;
-            if (upstream.status === 429 || value && ![400, 404, 409, 410].includes(upstream.status)) {
-              await quiet(cache.put(cooldown, new Response('paused', { headers: { 'Cache-Control': `public, max-age=${wait}`, 'Retry-After': String(wait) } })));
-              error.stop = true;
-            } else error.stop = ![500, 502, 503, 504].includes(upstream.status);
-            throw error;
-          }
-          stage = 'decode';
-          data = await readJSON(upstream);
-          if (!validData(data) || snapshot && snapshot !== data.snapshot_id) { const error = new Error('invalid_source_data'); error.stop = true; throw error; }
+          if (renew) sourceSnapshot = await currentHead(signal, sourceSnapshot, true);
+          data = await requestData(cursor, sourceSnapshot, signal);
           break;
         } catch (error) {
           lastError = error;
+          if (cursor && attempt === 0 && [409, 410].includes(error.status) && !error.cooldown) { renew = true; continue; }
           if (error.stop || stage === 'decode' && !(error instanceof DOMException)) break;
         }
       }
-      if (!data || !validData(data) || snapshot && snapshot !== data.snapshot_id) {
+      if (!data) {
         await quiet(cache.put(pagePause, new Response('paused', { headers: { 'Cache-Control': 'public, max-age=20', 'Retry-After': '20' } })));
         throw lastError || new Error('source_unavailable');
       }
-      const entry = { savedAt: Date.now(), data }, body = JSON.stringify(entry);
-      await Promise.all([
-        quiet(cache.put(key, new Response(body, { headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${cursor ? 300 : 45}` } }))),
-        quiet(cache.put(backupKey, new Response(body, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' } })))
-      ]);
+      const changed = !!snapshot && data.snapshot_id !== snapshot;
+      const entry = await save(data, key, backupKey, cursor && !changed ? 300 : 45);
+      if (changed) {
+        const actualKey = new Request(`${url.origin}/v3/source/ships/${data.snapshot_id}/${cursor}`);
+        await quiet(cache.put(actualKey, new Response(JSON.stringify(entry), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' } })));
+      }
       return entry;
     }
     try {
@@ -105,6 +130,7 @@ export default {
         }
       }
       const data = entry.data;
+      cached ||= !!snapshot && data.snapshot_id !== snapshot;
       const fields = data.fields, index = Object.fromEntries(fields.map((f, i) => [f, i])), ships = [];
       for (const row of data.ship_rows) {
         if (!Array.isArray(row)) continue;
