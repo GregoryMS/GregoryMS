@@ -11,6 +11,14 @@ test('enabling EV charging defaults to Tesla highlighting and explicit opt-outs 
   const off=maps.makeHash(maps.defaultView,null,{ev:true,tesla:false});assert(off.includes('tesla=off'));assert.equal(maps.readLayers(off).tesla,false);
   assert.equal(maps.readLayers(maps.makeHash(maps.defaultView,null,{ev:false,tesla:true})).tesla,true);
 });
+test('EV data source defaults to OCM and OSM choices survive copied links without accepting arbitrary providers',()=>{
+ assert.equal(maps.normalizeLayers(null).evSource,'openchargemap');
+ assert.equal(maps.normalizeLayers({evSource:'https://evil.example'}).evSource,'openchargemap');
+ const state=maps.normalizeLayers({ev:true,tesla:false,evSource:'openstreetmap'}),hash=maps.makeHash(maps.defaultView,null,state);
+ assert(hash.includes('evdata=osm'));assert.deepEqual(maps.readLayers(hash),state);
+ assert.equal(maps.readLayers('#evdata=osm').evSource,'openstreetmap');
+ assert.equal(maps.readLayers('#base=street&evdata=unknown').evSource,'openchargemap');
+});
 
 test('map links preserve the view, pin and names containing URL characters', () => {
   const view = { lat: 48.4284, lng: -123.3656, zoom: 13 };
@@ -128,28 +136,28 @@ test('map uses attributable HTTPS tiles and a search provider configurable indep
 });
 
 test('map links preserve layer choices without serializing credentials or arbitrary providers', () => {
-  const layers = { base: 'topographic', maritime: true, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: true, google: true, apiKey: 'must-not-be-shared', tileURL: 'https://example.org' };
+  const layers = { evSource: 'openchargemap', base: 'topographic', maritime: true, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: true, google: true, apiKey: 'must-not-be-shared', tileURL: 'https://example.org' };
   const pin = { lat: 48.42, lng: -123.37, name: 'Harbour & park' };
   const hash = maps.makeHash(maps.defaultView, pin, layers);
-  assert.deepEqual(maps.readLayers(hash), { base: 'topographic', maritime: true, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: true, google: true });
+  assert.deepEqual(maps.readLayers(hash), { evSource: 'openchargemap', base: 'topographic', maritime: true, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: true, google: true });
   assert.equal(maps.readHash(hash).pin.name, pin.name);
   assert(!hash.includes('must-not-be-shared'));
   assert(!hash.includes('example.org'));
-  assert.deepEqual(maps.readLayers(maps.makeHash(maps.defaultView, null, { base: 'street' })), { base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
+  assert.deepEqual(maps.readLayers(maps.makeHash(maps.defaultView, null, { base: 'street' })), { evSource: 'openchargemap', base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
   assert.equal(maps.readLayers('#map=13/48/-123'), null);
 });
 
 test('saved and linked layer preferences ignore invalid types and unknown overlays', () => {
-  assert.deepEqual(maps.normalizeLayers(null), { base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
-  assert.deepEqual(maps.normalizeLayers({ base: 'javascript:alert(1)', maritime: 'true', traffic: 1, google: 'true' }), { base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
-  assert.deepEqual(maps.readLayers('#base=unknown&overlays=maritime,drivebc,other,traffic'), { base: 'street', maritime: true, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: true, google: false });
-  assert.deepEqual(maps.readLayers('#base=street&overlays='), { base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
+  assert.deepEqual(maps.normalizeLayers(null), { evSource: 'openchargemap', base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
+  assert.deepEqual(maps.normalizeLayers({ base: 'javascript:alert(1)', maritime: 'true', traffic: 1, google: 'true' }), { evSource: 'openchargemap', base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
+  assert.deepEqual(maps.readLayers('#base=unknown&overlays=maritime,drivebc,other,traffic'), { evSource: 'openchargemap', base: 'street', maritime: true, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: true, google: false });
+  assert.deepEqual(maps.readLayers('#base=street&overlays='), { evSource: 'openchargemap', base: 'street', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: false });
 });
 
 test('Google traffic is opt-in and copied Google layer links keep other layers and the pin', () => {
   assert.equal(maps.normalizeLayers({ base: 'street', traffic: true }).google, false);
   const layers = maps.readLayers('#map=13/48.42840/-123.36560&base=topographic&overlays=google,drivebc');
-  assert.deepEqual(layers, { base: 'topographic', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: true });
+  assert.deepEqual(layers, { evSource: 'openchargemap', base: 'topographic', maritime: false, aviation: false, aircraft: false, vessels: false, ev: false, tesla: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, ferries: false, traffic: false, google: true });
   const pin = { lat: 48.42, lng: -123.37, name: 'Harbour & park' };
   const hash = maps.makeHash(maps.defaultView, pin, layers);
   assert.deepEqual(maps.readLayers(hash), layers);
@@ -160,7 +168,7 @@ test('Google traffic is opt-in and copied Google layer links keep other layers a
 test('aviation is opt-in and its chart selection is shared without the OpenAIP key', () => {
   assert.equal(maps.normalizeLayers(null).aviation, false);
   assert.equal(maps.normalizeLayers({ aviation: 'true' }).aviation, false);
-  const layers = { base: 'street', maritime: true, aviation: true, openaipKey: 'private-key-not-for-links' };
+  const layers = { evSource: 'openchargemap', base: 'street', maritime: true, aviation: true, openaipKey: 'private-key-not-for-links' };
   const pin = { lat: 48.42, lng: -123.37, name: 'Victoria', osm: 'node/123' };
   const hash = maps.makeHash(maps.defaultView, pin, layers);
   assert(hash.includes('overlays=maritime,aviation'));

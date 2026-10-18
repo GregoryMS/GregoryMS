@@ -25,7 +25,7 @@ function setup(options={}){
  const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,bindPopup(fn){this.popup=fn;return this;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
  const c={L,localStorage,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleEVCore:core,document:{hidden:false,getElementById:id=>id==='ev-retry'?retry:output,addEventListener:(type,fn)=>listeners[type]=fn},addEventListener:(type,fn)=>listeners[type]=fn,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout(id){timers.delete(id);},fetch(url,options){calls.push({url,...options});return fetchImpl(url,options);}};
- c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-ev.js'),'utf8'),c);const api=c.GregleEVCharging({map,config:{evURL:options.endpoint||'https://overpass-api.de/api/interpreter',evProvider:options.provider},notify(){}});
+ c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-ev.js'),'utf8'),c);const api=c.GregleEVCharging({map,config:{evURL:options.endpoint||'https://overpass-api.de/api/interpreter',evProvider:options.provider,evOSMURL:options.osmEndpoint,evSource:options.source},notify(){}});
  async function advance(ms){const target=now+ms;for(let i=0;i<200;i++){const due=[...timers.entries()].filter(([,t])=>t.due<=target).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=target;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
  return {api,storage,calls,output,retry,advance,listeners,document:c.document,setFetch:fn=>fetchImpl=fn,markers:()=>[...groups[0].children],async move(b,z=zoom){bounds=b;zoom=z;listeners.moveend();await advance(650);}};
 }
@@ -123,4 +123,21 @@ test('OCM browser requests use the relay without credentials or polling, share T
  h.setFetch(async()=>({ok:true,json:async()=>ocmPacket()}));h.api.setSelection(false,true);await flush();assert.equal(h.calls[0].method,'GET');assert.equal(h.calls[0].credentials,'omit');assert(!h.calls[0].body);assert(!h.calls[0].headers);assert.equal(new URL(h.calls[0].url).searchParams.get('scope'),'all');assert.equal(h.markers().length,1);
  h.api.setSelection(true,true);await flush();await h.advance(300000);assert.equal(h.calls.length,1);
  const saved=JSON.parse(h.storage.get('gregle-maps-ev-cache-v1'));assert.equal(saved.entries[0].time,ocmPacket().fetchedAt);assert.equal(saved.entries[0].data.locations[0].DataProvider.License,'CC BY 4.0');
+});
+test('switching EV sources keeps marker data and saved caches separate and reuses earlier coverage',async()=>{
+ const h=setup({provider:'openchargemap',endpoint:'https://gregle-ev.square-rain-5ded.workers.dev/charging',osmEndpoint:'https://gregle-ev.square-rain-5ded.workers.dev/charging?source=osm'});
+ h.document.getElementById=id=>id==='ev-retry'?h.retry:id==='ev-layer-status'?h.output:null;
+ h.setFetch(async url=>({ok:true,json:async()=>new URL(url).searchParams.get('source')==='osm'?{...packet,fetchedAt:ocmPacket().fetchedAt}:ocmPacket()}));
+ h.api.setSelection(true,true);await flush();assert.equal(h.markers().length,1);assert(h.markers()[0].options.title.includes('Tesla Supercharger'));
+ h.api.setSource('openstreetmap');assert.equal(h.markers().length,0);await flush();assert.equal(h.markers().length,2);assert(h.markers().every(m=>!m.options.title.includes('Tesla Supercharger')));assert.equal(new URL(h.calls[1].url).searchParams.get('source'),'osm');
+ assert(h.storage.has('gregle-maps-ev-cache-v1'));assert(h.storage.has('gregle-maps-ev-cache-v1-osm'));assert.notEqual(JSON.parse(h.storage.get('gregle-maps-ev-cache-v1')).endpoint,JSON.parse(h.storage.get('gregle-maps-ev-cache-v1-osm')).endpoint);
+ h.api.setSource('openchargemap');await flush();assert.equal(h.markers().length,1);assert(h.markers()[0].options.title.includes('Tesla Supercharger'));assert.equal(h.calls.length,2);
+ h.api.setSource('openstreetmap');await flush();assert.equal(h.markers().length,2);assert.equal(h.calls.length,2);
+});
+test('switching EV sources aborts pending requests and ignores late results from the previous source',async()=>{
+ const h=setup({provider:'openchargemap',endpoint:'https://gregle-ev.square-rain-5ded.workers.dev/charging',osmEndpoint:'https://gregle-ev.square-rain-5ded.workers.dev/charging?source=osm'});
+ h.document.getElementById=id=>id==='ev-retry'?h.retry:id==='ev-layer-status'?h.output:null;
+ let release;h.setFetch(url=>new URL(url).searchParams.has('source')?Promise.resolve({ok:true,json:async()=>({...packet,fetchedAt:ocmPacket().fetchedAt})}):new Promise(resolve=>release=resolve));
+ h.api.setEnabled(true);h.api.setSource('openstreetmap');assert(h.calls[0].signal.aborted);await flush();assert.equal(h.markers().length,2);
+ release({ok:true,json:async()=>ocmPacket()});await flush();assert.equal(h.markers().length,2);assert(h.markers().every(m=>!m.options.title.includes('Tesla Supercharger')));
 });

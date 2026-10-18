@@ -3,10 +3,11 @@
   window.GregleEVCharging = ({ map, config, notify }) => {
     const core = window.GregleEVCore, maps = window.GregleMaps, places = window.GreglePlaceData;
     const output = document.getElementById('ev-layer-status'), retry = document.getElementById('ev-retry');
-    const group = L.layerGroup(), displayed = new Map(), cache = [];
-    const ocm=config.evProvider==='openchargemap';
-    const credit = ocm ? 'EV charging: <a href="https://openchargemap.org" target="_blank" rel="noopener">Open Charge Map</a> · provider licences in station details' : 'EV charging: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
-    const storageKey = 'gregle-maps-ev-cache-v1';
+    const group = L.layerGroup(), displayed = new Map(), providerStates = new Map();
+    let cache = [], ocm=config.evSource ? config.evSource==='openchargemap' : config.evProvider==='openchargemap';
+    const creditFor = value => value ? 'EV charging: <a href="https://openchargemap.org" target="_blank" rel="noopener">Open Charge Map</a> · provider licences in station details' : 'EV charging: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
+    let endpoint=ocm?config.evURL:config.evOSMURL||config.evURL, credit=creditFor(ocm);
+    let storageKey = 'gregle-maps-ev-cache-v1'+(!ocm&&config.evOSMURL?'-osm':'');
     const cacheAge = 86400000, fallbackAge = 604800000, requestGap = 10000;
     let enabled = false, showAll = false, showTesla = false, active, version = 0, timer, nextRequest = 0, retryAt = 0, failures = 0;
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; };
@@ -136,17 +137,19 @@
       const timeout = setTimeout(() => request.controller.abort(), 45000); nextRequest = now + requestGap;
       render();
       try {
-        const url=ocm?new URL(config.evURL):null;if(url)url.search=new URLSearchParams({bbox:requestArea.join(','),scope:'all'});
-        const response = await fetch(url?.href||config.evURL, { method: ocm?'GET':'POST', ...(ocm?{}:{body:new URLSearchParams({data: core.query(requestArea, scope === 'tesla')})}), signal: request.controller.signal, credentials: 'omit' });
+        const relay=ocm||!!config.evOSMURL, url=relay?new URL(endpoint):null;
+        if(url){url.searchParams.set('bbox',requestArea.join(','));url.searchParams.set('scope',scope);}
+        const response = await fetch(url?.href||endpoint, { method: relay?'GET':'POST', ...(relay?{}:{body:new URLSearchParams({data: core.query(requestArea, scope === 'tesla')})}), signal: request.controller.signal, credentials: 'omit' });
         if (!response.ok) {
           const error = new Error('Charging stations unavailable'), value = response.headers.get('Retry-After');
           error.retryAfter = value === null ? 0 : /^\d+(\.\d+)?$/.test(value.trim()) ? Number(value) * 1000 : Math.max(0, Date.parse(value) - Date.now()) || 0;
           throw error;
         }
+        if (token !== version || !enabled || document.hidden) return;
         const data = await response.json();
-        if(ocm&&data?.source!=='openchargemap')throw new Error('Unexpected charging source');
+        if(ocm&&data?.source!=='openchargemap'||!ocm&&data?.source==='openchargemap')throw new Error('Unexpected charging source');
         const result = core.read(data);
-        if(ocm&&(!Number.isFinite(result.fetchedAt)||result.fetchedAt>Date.now()||Date.now()-result.fetchedAt>=fallbackAge))throw new Error('Charging data out of date');
+        if((ocm||relay)&&(!Number.isFinite(result.fetchedAt)||result.fetchedAt>Date.now()||Date.now()-result.fetchedAt>=fallbackAge))throw new Error('Charging data out of date');
         if (token !== version || !enabled || document.hidden) return;
         cache.push({...result, data, area: requestArea, scope: request.scope, time: result.fetchedAt||Date.now()}); while (cache.length > 12) cache.shift();
         save();
@@ -157,7 +160,7 @@
         notify('EV charging data could not load. PlugShare above opens the area you are viewing.', 'ev');
       } finally {
         clearTimeout(timeout);
-        if (token === version) { active = null; render(); if (!failures && (!ocm || !core.contains(request.area,bounds()))) timer = setTimeout(load, 650); }
+        if (token === version) { active = null; render(); if (!failures && ((!ocm&&!config.evOSMURL) || !core.contains(request.area,bounds()))) timer = setTimeout(load, 650); }
       }
     }
     function setSelection(all, tesla) {
@@ -173,27 +176,42 @@
     function save() {
       try {
         const entries = cache.filter(entry => entry.data && Date.now() - entry.time < fallbackAge).slice(-4).map(entry => ({data: entry.data, area: entry.area, scope: entry.scope, time: entry.time}));
-        const value = JSON.stringify({endpoint: config.evURL, entries});
+        const value = JSON.stringify({endpoint, entries});
         if (value.length <= 500000) localStorage.setItem(storageKey, value);
         else localStorage.removeItem(storageKey);
       } catch {}
     }
-    {
+    function restoreCache() {
       try {
         const value = localStorage.getItem(storageKey);
         if (value && value.length <= 500000) {
           const saved = JSON.parse(value);
-          if (saved.endpoint === config.evURL && Array.isArray(saved.entries)) for (const entry of saved.entries.slice(-4)) {
+          if (saved.endpoint === endpoint && Array.isArray(saved.entries)) for (const entry of saved.entries.slice(-4)) {
             try { cache.push({...core.readCache(entry, Date.now()), restored: true}); } catch {}
           }
         }
       } catch {}
     }
+    function setSource(value) {
+      const next=value!=='openstreetmap';
+      if(next===ocm)return;
+      save();providerStates.set(endpoint,{cache,nextRequest,retryAt,failures});
+      cancel();clear();
+      if(enabled)map.attributionControl.removeAttribution(credit);
+      ocm=next;endpoint=ocm?config.evURL:config.evOSMURL||config.evURL;credit=creditFor(ocm);
+      storageKey='gregle-maps-ev-cache-v1'+(!ocm&&config.evOSMURL?'-osm':'');
+      const previous=providerStates.get(endpoint);
+      cache=previous?.cache||[];nextRequest=previous?.nextRequest||0;retryAt=previous?.retryAt||0;failures=previous?.failures||0;
+      if(!previous)restoreCache();
+      document.getElementById('ev-source-credits')?.replaceChildren?.();
+      if(enabled){group.addTo(map);map.attributionControl.addAttribution(credit);load();}
+    }
+    restoreCache();
     retry.addEventListener('click', () => load(true));
     map.on('moveend', () => { if (enabled && !document.hidden) { render(); clearTimeout(timer); timer = setTimeout(load, 650); } });
     document.addEventListener('visibilitychange', () => { if (!enabled) return; if (document.hidden) cancel(); else load(); });
     window.addEventListener('pagehide', cancel);
     window.addEventListener('pageshow', event => { if (event.persisted && enabled) load(); });
-    return { setSelection, setEnabled: value => setSelection(value, showTesla), setSuperchargers: value => setSelection(showAll, value) };
+    return { setSelection, setSource, setEnabled: value => setSelection(value, showTesla), setSuperchargers: value => setSelection(showAll, value) };
   };
 })();

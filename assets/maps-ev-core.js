@@ -72,7 +72,7 @@
       stations.push({ id, point: [lat, lng], name: clean(tags.name) || clean(tags.operator) || clean(tags.network) || clean(tags.brand) || 'EV charging station', address, tags, connectors, supercharger: isSupercharger(tags), restricted: ['private', 'no', 'customers', 'permit', 'destination'].includes(tags.access) });
     }
     const date = data.osm3s?.timestamp_osm_base;
-    return { stations, truncated: data.truncated === true || data.elements.length > limit, snapshot: typeof date === 'string' && Number.isFinite(Date.parse(date)) ? date : null };
+    return { stations, truncated: data.truncated === true || data.elements.length > limit, snapshot: typeof date === 'string' && Number.isFinite(Date.parse(date)) ? date : null, fetchedAt: Number.isFinite(data.fetchedAt)?data.fetchedAt:undefined };
   }
   function webURL(value) {
     try { const url=new URL(value); return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password ? url.href : ''; } catch { return ''; }
@@ -102,7 +102,7 @@
   function readCache(entry, now = Date.now()) {
     const box = entry?.area, time = entry?.time;
     const records=entry?.data?.source==='openchargemap'?entry.data.locations:entry?.data?.elements;
-    if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || box[0] < -180 || box[0] >= 180 || box[2] <= box[0] || box[2] - box[0] > 2.5 || box[1] < -90 || box[3] > 90 || box[3] <= box[1] || box[3] - box[1] > 1.3 || !['all', 'tesla'].includes(entry.scope) || !Number.isFinite(time) || time > now || now - time >= 604800000 || !Array.isArray(records) || records.length > limit + 1 || entry.data.source==='openchargemap'&&(!Number.isFinite(entry.data.fetchedAt)||entry.data.fetchedAt>time||now-entry.data.fetchedAt>=604800000)) throw new Error('Invalid charging cache');
+    if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || box[0] < -180 || box[0] >= 180 || box[2] <= box[0] || box[2] - box[0] > 2.5 || box[1] < -90 || box[3] > 90 || box[3] <= box[1] || box[3] - box[1] > 1.3 || !['all', 'tesla'].includes(entry.scope) || !Number.isFinite(time) || time > now || now - time >= 604800000 || !Array.isArray(records) || records.length > limit + 1 || (entry.data.source==='openchargemap'||entry.data.fetchedAt!==undefined)&&(!Number.isFinite(entry.data.fetchedAt)||entry.data.fetchedAt>time||now-entry.data.fetchedAt>=604800000)) throw new Error('Invalid charging cache');
     return {...read(entry.data), area: box, scope: entry.scope, time, data: entry.data};
   }
   return { area, contains, query, read, readCache, isSupercharger, limit, webURL };

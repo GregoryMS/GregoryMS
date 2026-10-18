@@ -54,3 +54,12 @@ test('stale cache receipts are retained while one background refresh replaces th
   await h.request();assert.equal(h.calls.length,2);release(new Response(JSON.stringify([poi({ID:200})])));
  }finally{await h.close();}
 });
+test('OSM selection uses only Overpass, never sends the OCM key, and cannot overwrite OCM cache entries',async()=>{
+ const h=await setup();try{
+  const first=await(await h.request()).json();
+  h.setFetch(async()=>new Response(JSON.stringify({elements:[{type:'node',id:1,lat:48.43,lon:-123.36,tags:{amenity:'charging_station',name:'OSM charger'}}],osm3s:{timestamp_osm_base:new Date().toISOString()}})));
+  const second=await(await h.request('/charging?bbox=-123.4,48.4,-123.3,48.5&source=osm')).json();assert.equal(second.elements.length,1);assert(!second.locations);assert(!h.calls[1].headers['X-API-Key']);assert.equal(new URL(h.calls[1].url).hostname,'maps.mail.ru');
+  const again=await(await h.request()).json();assert.equal(again.fetchedAt,first.fetchedAt);assert.equal(again.source,'openchargemap');assert.equal(h.calls.length,2);
+  assert.equal((await h.request('/charging?bbox=-123.4,48.4,-123.3,48.5&source=osm&source=osm')).status,400);
+ }finally{await h.close();}
+});

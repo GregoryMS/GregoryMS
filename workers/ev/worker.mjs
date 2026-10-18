@@ -1,3 +1,4 @@
+import osm from './osm.mjs';
 const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
 const day = 86400000, maxAge = 7 * day, limit = 750;
 const quiet = promise => promise.catch(() => {});
@@ -41,6 +42,11 @@ export function normalize(data, box) {
 }
 export default {
   async fetch(request,env,ctx){
+    const incoming=new URL(request.url);
+    if(incoming.searchParams.get('source')==='osm'&&incoming.searchParams.getAll('source').length===1){
+      incoming.searchParams.delete('source');
+      return osm.fetch(new Request(incoming.href,request),env,ctx);
+    }
     const origin=request.headers.get('Origin')||'';
     const headers={'Content-Type':'application/json','Cache-Control':'no-store','Vary':'Origin','X-Content-Type-Options':'nosniff','Access-Control-Expose-Headers':'Retry-After'};
     if(origins.has(origin))headers['Access-Control-Allow-Origin']=origin;

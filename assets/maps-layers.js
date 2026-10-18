@@ -11,7 +11,7 @@
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
     const signs = window.GregleDriveBCSigns({ map, config, notify });
     const ferries = window.GregleDriveBCFerries({ map, config, notify });
-    const ev = window.GregleEVCharging({ map, config, notify });
+    const ev = window.GregleEVCharging({ map, config: {...config,evSource:state.evSource}, notify });
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
     const aircraft = window.GregleAircraft({ map, notify });
@@ -70,6 +70,13 @@
       $('aircraft-options').hidden = !state.aircraft;
       $('map-ev').checked = state.ev;
       $('map-ev-tesla').checked = state.tesla;
+      const osmEV=state.evSource==='openstreetmap';
+      $('map-ev-osm').checked=osmEV;
+      $('ev-source-description').textContent=osmEV?'Using OpenStreetMap':'Using Open Charge Map';
+      $('ev-layer-description').textContent=osmEV?'OpenStreetMap · mapped charging stations':'Open Charge Map · openly licensed locations';
+      $('ev-source-ocm-info').hidden=osmEV;
+      $('ev-source-osm-info').hidden=!osmEV;
+      $('ev-source-credits').hidden=osmEV;
       $('ev-options').hidden = !state.ev && !state.tesla;
       $('map-drivebc').checked = state.drivebc;
       $('map-drivebc-cameras').checked = state.webcams;
@@ -233,6 +240,7 @@
       applied = active;
       if (first || previous.base !== state.base || (!baseLayer && state.base !== 'plugshare')) changeBase();
       if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();
+      if (first || previous.evSource !== state.evSource) { if(!active.ev&&!active.tesla)ev.setSelection(false,false); ev.setSource(state.evSource); }
       if (first || previous.ev !== active.ev || previous.tesla !== active.tesla) ev.setSelection(active.ev, active.tesla);
       if (first || previous.aviation !== active.aviation) aviation.setEnabled(active.aviation);
       if (first || previous.aircraft !== active.aircraft) aircraft.setEnabled(active.aircraft);
@@ -260,6 +268,7 @@
     panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));
     $('map-ev-tesla').addEventListener('change', () => setState({ ...state, tesla: $('map-ev-tesla').checked }, true));
+    $('map-ev-osm').addEventListener('change', () => setState({ ...state, evSource: $('map-ev-osm').checked?'openstreetmap':'openchargemap' }, true));
     $('map-maritime').addEventListener('change', () => setState({ ...state, maritime: $('map-maritime').checked }, true));
     $('map-vessels').addEventListener('click', () => setState({ ...state, vessels: !state.vessels }, true));
     $('map-aircraft').addEventListener('click', () => setState({ ...state, aircraft: !state.aircraft }, true));

@@ -31,13 +31,13 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { base: ['street', 'topographic', 'plugshare'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true || value?.ev === true && value?.tesla === undefined, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { evSource: value?.evSource === 'openstreetmap' ? 'openstreetmap' : 'openchargemap', base: ['street', 'topographic', 'plugshare'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true || value?.ev === true && value?.tesla === undefined, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
-    if (!params.has('base') && !params.has('overlays')) return null;
+    if (!params.has('base') && !params.has('overlays') && !params.has('evdata')) return null;
     const overlays = (params.get('overlays') || '').split(',');
-    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), aircraft: overlays.includes('aircraft'), vessels: overlays.includes('vessels'), ev: overlays.includes('ev'), tesla: overlays.includes('tesla') ? true : params.get('tesla') === 'off' ? false : overlays.includes('ev') ? undefined : false, drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
+    return normalizeLayers({ evSource: params.get('evdata') === 'osm' ? 'openstreetmap' : 'openchargemap', base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), aircraft: overlays.includes('aircraft'), vessels: overlays.includes('vessels'), ev: overlays.includes('ev'), tesla: overlays.includes('tesla') ? true : params.get('tesla') === 'off' ? false : overlays.includes('ev') ? undefined : false, drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
@@ -47,6 +47,7 @@
       const state = normalizeLayers(layers);
       hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'aircraft', 'vessels', 'ev', 'tesla', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'ferries', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
       if (state.ev && !state.tesla) hash += '&tesla=off';
+      if (state.evSource === 'openstreetmap') hash += '&evdata=osm';
     }
     return hash;
   }

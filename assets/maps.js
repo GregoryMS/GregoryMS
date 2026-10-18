@@ -11,6 +11,7 @@
     trafficURL: 'https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256',
     googleTrafficURL: 'https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3',
     evURL: 'https://gregle-ev.square-rain-5ded.workers.dev/charging', evProvider: 'openchargemap',
+    evOSMURL: 'https://gregle-ev.square-rain-5ded.workers.dev/charging?source=osm',
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
@@ -131,7 +132,7 @@
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261018-ocm', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261018-ev-source', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       if (['openchargemap', 'overpass'].includes(supplied.evProvider)) config.evProvider = supplied.evProvider;
