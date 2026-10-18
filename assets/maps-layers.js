@@ -64,9 +64,9 @@
       panel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
-      $('map-vessels').checked = state.vessels;
+      $('map-vessels').setAttribute('aria-checked', String(state.vessels));
       $('vessels-options').hidden = !state.vessels;
-      $('map-aircraft').checked = state.aircraft;
+      $('map-aircraft').setAttribute('aria-checked', String(state.aircraft));
       $('aircraft-options').hidden = !state.aircraft;
       $('map-ev').checked = state.ev;
       $('map-ev-tesla').checked = state.tesla;
@@ -261,8 +261,8 @@
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));
     $('map-ev-tesla').addEventListener('change', () => setState({ ...state, tesla: $('map-ev-tesla').checked }, true));
     $('map-maritime').addEventListener('change', () => setState({ ...state, maritime: $('map-maritime').checked }, true));
-    $('map-vessels').addEventListener('change', () => setState({ ...state, vessels: $('map-vessels').checked }, true));
-    $('map-aircraft').addEventListener('change', () => setState({ ...state, aircraft: $('map-aircraft').checked }, true));
+    $('map-vessels').addEventListener('click', () => setState({ ...state, vessels: !state.vessels }, true));
+    $('map-aircraft').addEventListener('click', () => setState({ ...state, aircraft: !state.aircraft }, true));
     $('map-aviation').addEventListener('change', () => {
       setState({ ...state, aviation: $('map-aviation').checked }, true);
       if (state.aviation && !aviation.hasKey()) aviation.openKey();
