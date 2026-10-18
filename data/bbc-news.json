@@ -1,11 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-18T21:21:55+00:00",
-  "fetchedAt": "2026-10-18T21:22:06.195233+00:00",
+  "feedUpdatedAt": "2026-10-18T23:22:45+00:00",
+  "fetchedAt": "2026-10-18T23:22:53.173435+00:00",
   "items": [
     {
       "title": "Macron calls for 'calm and order' after riots across France",
       "link": "https://www.bbc.co.uk/news/articles/cw240zl08dm5o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Major fire at Canada military base leaves four dead, dozens injured",
+      "link": "https://www.bbc.co.uk/news/articles/cxj0ly1m3q81o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "What we know so far about deadly fire at Canadian military base",
@@ -24,24 +28,20 @@
       "link": "https://www.bbc.co.uk/news/videos/c84g166kz003o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Home sellers cut asking prices on 3,000 properties a day",
+      "link": "https://www.bbc.co.uk/news/articles/c84g13z6xx4eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Cindy Crawford 'beyond heartbroken' after death of son Presley at 27",
       "link": "https://www.bbc.co.uk/news/articles/cwzrd6123jyyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Oil facilities hit in deadly overnight attack on St Petersburg",
-      "link": "https://www.bbc.co.uk/news/articles/c3eweygrjzd7o?at_medium=RSS&at_campaign=rss"
+      "title": "Trump says suspension of Russia sanctions is to keep peace negotiations going",
+      "link": "https://www.bbc.co.uk/news/articles/c9p8gz7zx4peo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Ending corridor care in hospitals for children a priority, says health secretary",
       "link": "https://www.bbc.co.uk/news/articles/cm2kezgd77qlo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Suspects hunted after police officer injured in shooting",
-      "link": "https://www.bbc.co.uk/news/articles/c63elzvjpgn2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Man, 80, who died in light aircraft crash near Loch Lomond named",
-      "link": "https://www.bbc.co.uk/news/articles/cmx23p5w7123o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
