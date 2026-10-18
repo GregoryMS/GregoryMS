@@ -101,6 +101,7 @@
   #map-query { font-size: 16px; }
   .map-actions { top: 82px; right: 12px; }
   .map-place { bottom: 49px; left: 12px; max-width: calc(100% - 88px); max-height: calc(100% - 175px); padding: 14px 16px; border-radius: 17px; }
+  .map-place:not(.has-pin) { display: none; }
   .map-place h2 { font-size: 20px; }
   .place-bottom { flex-wrap: wrap; gap: 5px; }
   .map-stage .leaflet-top.leaflet-right { right: 2px; bottom: 69px; }
