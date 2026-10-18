@@ -1,27 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-18T00:13:55+00:00",
-  "fetchedAt": "2026-10-18T00:14:03.537952+00:00",
+  "feedUpdatedAt": "2026-10-18T04:39:30+00:00",
+  "fetchedAt": "2026-10-18T04:39:45.445789+00:00",
   "items": [
     {
       "title": "Violent clashes, looting and buildings ablaze in France as over 1,000 arrested after protests",
       "link": "https://www.bbc.co.uk/news/articles/c6d937wedj7jo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "How day of protests unfolded as disorder breaks out across France",
-      "link": "https://www.bbc.co.uk/news/videos/cwz0vy770gpzo?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Moment historic French town hall spire collapses in flames amid protests",
+      "link": "https://www.bbc.co.uk/news/videos/c6e3xjw37wn7o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "More NHS staff sacked over attacks victims' records",
       "link": "https://www.bbc.co.uk/news/articles/cmd7q8ld3dd3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Anti-government protesters battle with police in Albania",
-      "link": "https://www.bbc.co.uk/news/articles/crwydey50xeno?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "European diplomats attacked by Israeli settlers in West Bank",
       "link": "https://www.bbc.co.uk/news/articles/c962ydpmjm3zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Anti-government protesters battle with police in Albania",
+      "link": "https://www.bbc.co.uk/news/articles/crwydey50xeno?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Swinney's emotional explanation for his commitment to independence",
@@ -36,12 +36,12 @@
       "link": "https://www.bbc.co.uk/news/articles/cmy4xnyyg1lyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "The Papers: 'French protests become violent' and SAS men 'arrested for murder'",
-      "link": "https://www.bbc.co.uk/news/articles/cwp9g4ryl4gro?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "There's a crackdown on sports piracy - but is it already out of control?",
       "link": "https://www.bbc.co.uk/news/articles/cmx2375zqwwwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "How day of protests unfolded as disorder breaks out across France",
+      "link": "https://www.bbc.co.uk/news/videos/cwz0vy770gpzo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
