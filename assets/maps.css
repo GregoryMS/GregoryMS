@@ -137,7 +137,7 @@
 .traffic-legend i { flex: 1; height: 6px; border-radius: 6px; background: linear-gradient(90deg, #ad0000, #fb2d09, #ffc105, #2ae57b); }
 .traffic-options, .traffic-key-form > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
 .traffic-options button, .traffic-key-form button { padding: 5px 0; background: transparent; border: 0; color: var(--map-accent); font-size: 11px; }
-.google-traffic-options { margin-bottom: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--map-border); }
+.google-traffic-options { margin: 2px 0 8px 12px; padding-left: 12px; border-left: 2px solid var(--map-border); }
 .google-traffic-options > p:first-child { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
 .google-traffic-opacity label { margin-top: 8px; padding: 0; color: var(--muted); font-size: 10px; }
 .google-traffic-opacity output { font-variant-numeric: tabular-nums; }

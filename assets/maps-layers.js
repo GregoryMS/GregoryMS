@@ -36,6 +36,7 @@
     }
     disclosure('drivebc-options-toggle', 'drivebc-sublayers', 'gregle-maps-drivebc-options');
     disclosure('ev-options-toggle', 'ev-sublayers', 'gregle-maps-ev-options');
+    disclosure('google-options-toggle', 'google-traffic-options', 'gregle-maps-google-options');
     const tomtomMenu = disclosure('tomtom-options-toggle', 'tomtom-options', 'gregle-maps-tomtom-options', () => { $('traffic-key-form').hidden = false; });
     const status = (id, message, error = false) => {
       $(id).textContent = message;

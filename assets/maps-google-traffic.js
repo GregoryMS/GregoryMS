@@ -2,7 +2,7 @@
   'use strict';
   window.GregleGoogleTraffic = ({ map, config, notify }) => {
     const $ = id => document.getElementById(id);
-    const options = $('google-traffic-options'), output = $('google-traffic-status');
+    const output = $('google-traffic-status');
     const slider = $('google-traffic-opacity'), percentage = $('google-traffic-percentage');
     const refreshButton = $('google-traffic-refresh');
     const refreshEvery = 300000, opacityKey = 'gregle-maps-google-opacity';
@@ -69,13 +69,15 @@
     function setEnabled(value) {
       const next = value === true;
       if (next === enabled) return;
-      enabled = next; options.hidden = !enabled;
+      enabled = next; refreshButton.hidden = !enabled;
       if (enabled) {
         paused = false;
         if (document.hidden) report('Traffic will load when this page is visible.');
         load();
       } else {
         remove(); paused = false; schedule();
+        report('Turn on Google traffic to display it.');
+        refreshButton.textContent = 'Refresh Google traffic';
         if ($('map-notice').dataset.kind === 'google-traffic') $('map-notice').hidden = true;
       }
     }
