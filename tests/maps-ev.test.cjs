@@ -21,7 +21,7 @@ function setup(){
  let now=Date.parse('2026-10-18T02:30:00Z'),bounds=[-123.4,48.4,-123.3,48.5],zoom=13,nextTimer=0,fetchImpl=async()=>({ok:true,json:async()=>packet});
  const calls=[],timers=new Map(),listeners={},groups=[],output={dataset:{}},retry={addEventListener:(type,fn)=>listeners.retry=fn};
  const map={getBounds:()=>({getWest:()=>bounds[0],getSouth:()=>bounds[1],getEast:()=>bounds[2],getNorth:()=>bounds[3]}),getZoom:()=>zoom,getSize:()=>({x:1440,y:900}),on:(type,fn)=>listeners[type]=fn,removeLayer(){},attributionControl:{addAttribution(){},removeAttribution(){}}};
- const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,bindPopup(fn){this.popup=fn;return this;},setLatLng(p){this.point=p;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
+ const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,bindPopup(fn){this.popup=fn;return this;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
  const c={L,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleEVCore:core,document:{hidden:false,getElementById:id=>id==='ev-retry'?retry:output,addEventListener:(type,fn)=>listeners[type]=fn},addEventListener:(type,fn)=>listeners[type]=fn,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout(id){timers.delete(id);},fetch(url,options){calls.push({url,...options});return fetchImpl(url,options);}};
  c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-ev.js'),'utf8'),c);const api=c.GregleEVCharging({map,config:{evURL:'https://overpass-api.de/api/interpreter'},notify(){}});
@@ -42,4 +42,35 @@ test('hidden/disabled requests are aborted and late results cannot repopulate ch
 });
 test('zooming into truncated coverage requests a smaller area rather than keeping incomplete data',async()=>{
  const h=setup();h.setFetch(async()=>({ok:true,json:async()=>({elements:Array.from({length:751},(_,i)=>({...packet.elements[0],id:i+1}))})}));h.api.setEnabled(true);await flush();await h.advance(10000);assert.equal(h.calls.length,1);await h.move([-123.37,48.42,-123.36,48.44],16);assert.equal(h.calls.length,2);
+});
+
+test('Tesla classification recognises Superchargers and excludes Destination/third-party NACS chargers',()=>{
+ const positive=[{brand:'Tesla Supercharger'},{network:'Tesla Supercharger'},{name:'Uptown Supercharger',operator:'Tesla'},{'brand:wikidata':'Q17089620'},{'ref:supercharge_info':'1234'},{website:'https://www.tesla.com/en_CA/findus/location/supercharger/victoriabcsupercharger'},{operator:'Tesla','socket:tesla_supercharger':'8'}];
+ positive.forEach(tags=>assert.equal(core.isSupercharger(tags),true,JSON.stringify(tags)));
+ const negative=[{}, {operator:'Tesla'},{brand:'Tesla','socket:nacs':'12'},{operator:'FLO','socket:nacs':'4'},{brand:'Tesla',network:'Tesla Destination','socket:tesla_supercharger':'2'},{brand:'Tesla','socket:tesla_supercharger':'0'},{website:'https://www.tesla.com.evil.example/findus/location/supercharger/fake'}];
+ negative.forEach(tags=>assert.equal(core.isSupercharger(tags),false,JSON.stringify(tags)));
+ const q=core.query([-123.4,48.4,-123.3,48.5],true);assert(q.includes('Q17089620'));assert(q.includes('ref:supercharge_info'));assert(!core.query([-123.4,48.4,-123.3,48.5]).includes('Q17089620'));
+ const layers=maps.normalizeLayers({tesla:true});assert.equal(layers.ev,false);assert.equal(maps.normalizeLayers(null).tesla,false);assert.equal(maps.normalizeLayers({tesla:'true'}).tesla,false);assert.deepEqual(maps.readLayers(maps.makeHash(maps.defaultView,null,layers)),layers);
+});
+const teslaPacket={elements:[...packet.elements,{type:'node',id:3,lat:48.432,lon:-123.367,tags:{amenity:'charging_station',name:'Uptown Supercharger',brand:'Tesla Supercharger','socket:nacs':'16','socket:nacs:output':'72 kW',opening_hours:'24/7'}}]};
+
+test('Tesla can be shown alone, or highlighted among all chargers without duplicates or a second query',async()=>{
+ const h=setup();h.setFetch(async()=>({ok:true,json:async()=>teslaPacket}));h.api.setEnabled(true);await flush();const marker=h.markers().find(m=>m.options.title.includes('Uptown'));assert.equal(h.markers().length,3);assert(!marker.options.icon.className.includes('supercharger'));
+ h.api.setSuperchargers(true);await flush();assert.equal(h.calls.length,1);assert.equal(h.markers().length,3);assert.equal(h.markers().find(m=>m.options.title.includes('Uptown')),marker);assert(marker.options.icon.className.includes('supercharger'));
+ h.api.setEnabled(false);await flush();assert.equal(h.markers().length,1);assert.equal(h.markers()[0],marker);assert.equal(h.calls.length,1);assert.match(h.output.textContent,/1 Tesla Supercharger/);
+ h.api.setSelection(false,false);assert.equal(h.markers().length,0);
+});
+
+test('Tesla-only coverage cannot suppress a later request for all charging stations',async()=>{
+ const h=setup();h.setFetch(async()=>({ok:true,json:async()=>teslaPacket}));h.api.setSuperchargers(true);await flush();assert(h.calls[0].body.get('data').includes('Q17089620'));assert.equal(h.markers().length,1);
+ h.api.setEnabled(true);await flush();assert.equal(h.calls.length,1);await h.advance(10000);assert.equal(h.calls.length,2);assert(!h.calls[1].body.get('data').includes('Q17089620'));assert.equal(h.markers().length,3);
+});
+
+test('switching selection during a Tesla request preserves request scope and loads complete all-station coverage',async()=>{
+ const h=setup();let release;h.setFetch(()=>new Promise(resolve=>release=resolve));h.api.setSuperchargers(true);h.api.setEnabled(true);assert.equal(h.calls.length,1);assert(!h.calls[0].signal.aborted);
+ release({ok:true,json:async()=>teslaPacket});await flush();await h.advance(10000);assert.equal(h.calls.length,2);assert(!h.calls[1].body.get('data').includes('Q17089620'));h.api.setSelection(false,false);assert(h.calls[1].signal.aborted);
+});
+
+test('truncated all-station coverage does not hide Superchargers behind the general result limit',async()=>{
+ const h=setup();h.setFetch(async()=>({ok:true,json:async()=>({elements:Array.from({length:751},(_,i)=>({...packet.elements[0],id:i+1}))})}));h.api.setEnabled(true);await flush();h.setFetch(async()=>({ok:true,json:async()=>teslaPacket}));h.api.setSelection(false,true);await h.advance(10000);assert.equal(h.calls.length,2);assert(h.calls[1].body.get('data').includes('Q17089620'));assert.equal(h.markers().length,1);
 });

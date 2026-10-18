@@ -20,11 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261017-ev">
+  <link rel="stylesheet" href="assets/maps.css?v=20261017-tesla">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261017-ev" defer></script>
+  <script src="assets/maps-core.js?v=20261017-tesla" defer></script>
   <script src="assets/maps-places-core.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-places.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-signs" defer></script>
@@ -36,9 +36,9 @@
   <script src="assets/maps-cameras.js?v=20261017-signs" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-traffic" defer></script>
   <script src="assets/maps-aviation.js?v=20261017-aviation" defer></script>
-  <script src="assets/maps-ev-core.js?v=20261017-ev" defer></script>
-  <script src="assets/maps-ev.js?v=20261017-ev" defer></script>
-  <script src="assets/maps-layers.js?v=20261017-ev" defer></script>
+  <script src="assets/maps-ev-core.js?v=20261017-tesla" defer></script>
+  <script src="assets/maps-ev.js?v=20261017-tesla" defer></script>
+  <script src="assets/maps-layers.js?v=20261017-tesla" defer></script>
   <script src="assets/maps.js?v=20261017-ev" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
 </head>
@@ -102,7 +102,8 @@
       <fieldset class="map-overlay-options"><legend>Overlays</legend>
         <label><span><strong>Maritime</strong><small>OpenSeaMap · buoys, lights &amp; harbour marks</small></span><input id="map-maritime" type="checkbox"></label>
         <p class="layer-status" id="maritime-layer-status" role="status" hidden></p>
-        <label><span><strong>EV charging</strong><small>OpenStreetMap · mapped charging stations</small></span><input id="map-ev" type="checkbox" aria-describedby="ev-layer-status"></label>
+        <label><span><strong>EV charging</strong><small>OpenStreetMap · all mapped charging stations</small></span><input id="map-ev" type="checkbox" aria-describedby="ev-layer-status"></label>
+        <div class="ev-sublayer"><label><span><strong>Tesla Superchargers</strong><small>Red markers · show alone or with all chargers</small></span><input id="map-ev-tesla" type="checkbox" aria-describedby="ev-layer-status"></label></div>
         <div id="ev-options" hidden><p class="layer-status" id="ev-layer-status" role="status"></p><div class="traffic-options"><button id="ev-retry" type="button" hidden>Retry charging stations</button></div></div>
         <label><span><strong>Aviation</strong><small>OpenAIP · airports, airspace &amp; navigation aids</small></span><input id="map-aviation" type="checkbox"></label>
         <p class="layer-status" id="aviation-layer-status" role="status" hidden></p>

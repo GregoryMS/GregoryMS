@@ -20,11 +20,33 @@
     const west = outer[0] + ((inner[0] - outer[0]) % 360 + 360) % 360;
     return west + inner[2] - inner[0] <= outer[2] + .000001;
   }
-  function query(bounds) {
+  function query(bounds, teslaOnly = false) {
     const [west, south, east, north] = bounds;
-    const select = (w, e) => `nwr[amenity=charging_station](${south},${w},${north},${e});`;
-    const body = east > 180 ? `(${select(west, 180)}${select(-180, east - 360)});` : select(west, east);
+    // The broad Tesla selector also admits Destination sites; classification below excludes them.
+    const filter = '[~"^(name|brand|network|operator|brand:wikidata|network:wikidata|operator:wikidata|website|contact:website)$"~"Tesla|Supercharg|Q17089620|Q478214",i]';
+    const boxes = east > 180 ? [[west, 180], [-180, east - 360]] : [[west, east]];
+    const selectors = boxes.flatMap(([w, e]) => {
+      const bbox = `(${south},${w},${north},${e});`;
+      return teslaOnly ? [`nwr[amenity=charging_station]${filter}${bbox}`, `nwr[amenity=charging_station]["ref:supercharge_info"]${bbox}`] : [`nwr[amenity=charging_station]${bbox}`];
+    });
+    const body = selectors.length > 1 ? `(${selectors.join('')});` : selectors[0];
     return `[out:json][timeout:12][maxsize:16777216];${body}out center ${limit + 1};`;
+  }
+  function isSupercharger(tags) {
+    const ids = ['brand:wikidata', 'network:wikidata'].flatMap(key => clean(tags?.[key]).split(';').map(id => id.trim()));
+    if (ids.includes('Q17089620') || /^[1-9]\d*$/.test(clean(tags?.['ref:supercharge_info']))) return true;
+    const names = ['name', 'brand', 'network', 'operator'].map(key => clean(tags?.[key])).join(' ');
+    if (/\btesla\b/i.test(names) && /\bsuperchargers?\b/i.test(names)) return true;
+    for (const key of ['website', 'contact:website']) {
+      try {
+        const url = new URL(tags?.[key]);
+        if (url.protocol === 'https:' && ['tesla.com', 'www.tesla.com', 'tesla.cn', 'www.tesla.cn'].includes(url.hostname) && /\/findus\/location\/supercharger\//i.test(url.pathname)) return true;
+      } catch {}
+    }
+    if (/\bdestination\b/i.test(names)) return false;
+    // Legacy Tesla plugs identify a Supercharger only alongside Tesla branding/operator data.
+    const tesla = /\btesla\b/i.test(names) || clean(tags?.['operator:wikidata']) === 'Q478214';
+    return tesla && /^(yes|[1-9]\d{0,3})$/.test(clean(tags?.['socket:tesla_supercharger']));
   }
   function read(data) {
     if (!Array.isArray(data?.elements) || data.remark) throw new Error('Charging data is incomplete');
@@ -46,10 +68,10 @@
       }
       seen.add(id);
       const address = [tags['addr:housenumber'], tags['addr:street']].filter(Boolean).join(' ');
-      stations.push({ id, point: [lat, lng], name: clean(tags.name) || clean(tags.operator) || clean(tags.network) || clean(tags.brand) || 'EV charging station', address, tags, connectors, restricted: ['private', 'no', 'customers', 'permit', 'destination'].includes(tags.access) });
+      stations.push({ id, point: [lat, lng], name: clean(tags.name) || clean(tags.operator) || clean(tags.network) || clean(tags.brand) || 'EV charging station', address, tags, connectors, supercharger: isSupercharger(tags), restricted: ['private', 'no', 'customers', 'permit', 'destination'].includes(tags.access) });
     }
     const date = data.osm3s?.timestamp_osm_base;
     return { stations, truncated: data.elements.length > limit, snapshot: typeof date === 'string' && Number.isFinite(Date.parse(date)) ? date : null };
   }
-  return { area, contains, query, read, limit };
+  return { area, contains, query, read, isSupercharger, limit };
 });
