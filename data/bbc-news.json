@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-18T16:36:02+00:00",
-  "fetchedAt": "2026-10-18T16:36:11.803841+00:00",
+  "feedUpdatedAt": "2026-10-18T18:52:20+00:00",
+  "fetchedAt": "2026-10-18T18:52:25.044495+00:00",
   "items": [
+    {
+      "title": "What we know so far about deadly fire at Canadian military base",
+      "link": "https://www.bbc.co.uk/news/articles/cmgelrq8x92do?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Burnt out cars and shattered glass on Paris streets after protests turn to riots and looting",
       "link": "https://www.bbc.co.uk/news/articles/c574pdzl0k4no?at_medium=RSS&at_campaign=rss"
@@ -38,10 +42,6 @@
     {
       "title": "Search for Amelia Earhart's plane resumes after stormy weather",
       "link": "https://www.bbc.co.uk/news/articles/cv70pxe5j90eo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Pope thanks well-wishers in first event after cancer surgery",
-      "link": "https://www.bbc.co.uk/news/videos/cq70px6pjkg5o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
