@@ -14,7 +14,7 @@
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, layerControl, placeDetails, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer;
+  let map, layerControl, placeDetails, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -59,7 +59,7 @@
       marker = L.marker([point.lat, point.lng], { icon, title: point.name, alt: 'Map pin', keyboard: true }).addTo(map);
       marker.on('click', () => placeDetails?.select(point, { nearby: !point.osm }));
     }
-    if (lookup) placeDetails?.select(point, { nearby });
+    if (lookup && !usingEmbed) placeDetails?.select(point, { nearby });
   }
   function selectPoint(point, zoom = 16) {
     intent++;
@@ -74,6 +74,15 @@
     renderPin(null);
     updateURL();
     $('gregle-map').focus({ preventScroll: true });
+  }
+  function syncMapMode(restoreDetails = true) {
+    const embedded = layerControl.getState().base === 'plugshare';
+    if (embedded === usingEmbed) return;
+    usingEmbed = embedded; intent++; cancelSearch(); hideSearch();
+    if (embedded) {
+      placeDetails?.clear();
+      if (document.activeElement?.closest('.map-search, .map-place, .map-actions, #gregle-map')) $('plugshare-layers-toggle').focus({ preventScroll: true });
+    } else if (restoreDetails) placeDetails?.select(selected);
   }
   function showScopeAction(worldwide) {
     const button = $('map-search-scope');
@@ -109,7 +118,7 @@
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core || !window.GregleMapLayers || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
+  if (!window.L || !core || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }
@@ -125,14 +134,16 @@
   map = L.map('gregle-map', { zoomControl: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
-  layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: updateURL });
+  layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: () => { syncMapMode(); updateURL(); } });
   placeDetails = window.GregleMapPlaces({ map, config, onPlace: point => { renderPin(point, false); updateURL(); } });
+  syncMapMode(false);
   renderPin(initial.pin); updateURL();
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
   map.on('click', event => {
+    if (usingEmbed) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
     if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point, true, true); updateURL(); }
   });
@@ -141,6 +152,7 @@
     const state = core.readHash(location.hash);
     const layers = core.readLayers(location.hash);
     if (layers) layerControl.setState(layers);
+    syncMapMode(false);
     renderPin(state.pin); map.setView([state.view.lat, state.view.lng], state.view.zoom); updateURL();
   });
   async function search(worldwide = false) {

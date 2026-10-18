@@ -20,11 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261017-google-menu">
+  <link rel="stylesheet" href="assets/maps.css?v=20261017-plugshare-base">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261017-tesla" defer></script>
+  <script src="assets/maps-core.js?v=20261017-plugshare-base" defer></script>
   <script src="assets/maps-places-core.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-places.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-signs" defer></script>
@@ -38,8 +38,9 @@
   <script src="assets/maps-aviation.js?v=20261017-aviation" defer></script>
   <script src="assets/maps-ev-core.js?v=20261017-tesla" defer></script>
   <script src="assets/maps-ev.js?v=20261017-ev-icons" defer></script>
-  <script src="assets/maps-layers.js?v=20261017-google-menu" defer></script>
-  <script src="assets/maps.js?v=20261017-escape-pin" defer></script>
+  <script src="assets/maps-plugshare.js?v=20261017-plugshare-base" defer></script>
+  <script src="assets/maps-layers.js?v=20261017-plugshare-base" defer></script>
+  <script src="assets/maps.js?v=20261017-plugshare-base" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
 </head>
 <body class="maps-page">
@@ -71,6 +72,10 @@
   </header>
   <main class="map-stage" aria-label="Gregle Maps">
     <div id="gregle-map" aria-label="Interactive OpenStreetMap. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
+    <section class="plugshare-map" id="plugshare-map" aria-label="PlugShare charging map" hidden>
+      <div class="plugshare-toolbar"><strong>PlugShare</strong><a id="plugshare-full-map" href="https://www.plugshare.com/" target="_blank" rel="noopener">Open full map ↗</a><button id="plugshare-layers-toggle" type="button" aria-expanded="false" aria-controls="map-layers-panel">Change map</button></div>
+      <div class="plugshare-frame" id="plugshare-frame"><p class="map-glass" id="plugshare-status" role="status" hidden></p></div>
+    </section>
     <section class="map-search map-glass" aria-label="Find a place">
       <form id="map-search-form" role="search" aria-label="Search the map">
         <svg class="map-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
@@ -97,6 +102,7 @@
       <fieldset class="map-base-options"><legend>Base map</legend>
         <label><input type="radio" name="map-base" value="street" checked><span><strong>Street</strong><small>OpenStreetMap</small></span></label>
         <label><input type="radio" name="map-base" value="topographic"><span><strong>Topographic</strong><small>Contours &amp; terrain</small></span></label>
+        <label class="plugshare-base-option"><input type="radio" name="map-base" value="plugshare"><span><strong>PlugShare</strong><small>Embedded EV charging map</small></span></label>
       </fieldset>
       <p class="layer-status" id="base-layer-status" role="status"></p>
       <fieldset class="map-overlay-options"><legend>Overlays</legend>

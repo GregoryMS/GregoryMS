@@ -2,7 +2,7 @@
   'use strict';
   window.GregleMapLayers = ({ map, config, initial, notify, onChange }) => {
     const core = window.GregleMaps, $ = id => document.getElementById(id);
-    const panel = $('map-layers-panel'), toggle = $('map-layers-toggle');
+    const panel = $('map-layers-panel'), toggle = $('map-layers-toggle'), embedToggle = $('plugshare-layers-toggle');
     const preferenceKey = 'gregle-maps-layers', credentialKey = 'gregle-maps-tomtom-key';
     let saved, apiKey = '';
     try { saved = JSON.parse(localStorage.getItem(preferenceKey)); apiKey = localStorage.getItem(credentialKey) || ''; } catch {}
@@ -14,6 +14,8 @@
     const ev = window.GregleEVCharging({ map, config, notify });
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
+    const plugshare = window.GreglePlugShare({ map });
+    let applied;
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const layerOptions = { maxZoom: 19, updateWhenIdle: true, keepBuffer: 1 };
@@ -43,17 +45,20 @@
       $(id).dataset.state = error ? 'error' : 'ready';
     };
     const openPanel = (keyForm = false) => {
-      panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
+      panel.hidden = false; toggle.setAttribute('aria-expanded', 'true'); embedToggle.setAttribute('aria-expanded', 'true');
       if (keyForm) {
         tomtomMenu.setOpen(true, true);
         $('traffic-api-key').focus();
-      } else panel.querySelector('input:checked')?.focus({ preventScroll: true });
+      } else panel.querySelector('input[name="map-base"]:checked')?.focus({ preventScroll: true });
     };
     const closePanel = (restoreFocus = false) => {
-      panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
-      if (restoreFocus) toggle.focus();
+      panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); embedToggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) (state.base === 'plugshare' ? embedToggle : toggle).focus();
     };
     const render = () => {
+      const embedded = state.base === 'plugshare', overlays = panel.querySelector('.map-overlay-options');
+      overlays.hidden = embedded; overlays.disabled = embedded;
+      $('layers-footnote').textContent = embedded ? 'Use PlugShare’s map and station search. Your other layers resume when you switch back.' : 'Only enabled layers load. Your choices are included in copied map links.';
       panel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
@@ -84,7 +89,9 @@
       else if (!state.traffic) status('traffic-layer-status', 'Connected in this browser. Turn on Traffic to display it.');
     };
     function changeBase() {
-      if (baseLayer) map.removeLayer(baseLayer);
+      if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
+      plugshare.setEnabled(state.base === 'plugshare');
+      if (state.base === 'plugshare') { map.closePopup(); status('base-layer-status', 'PlugShare opens at your Gregle view. Switch back to return to this area.'); return; }
       const topographic = state.base === 'topographic';
       const layer = L.tileLayer(topographic ? config.topographicURL : config.tileURL, {
         ...layerOptions, maxNativeZoom: topographic ? 17 : 19,
@@ -103,7 +110,7 @@
         if (failed && topographic && !loaded) {
           setTimeout(() => {
             if (layer !== baseLayer) return;
-            state.base = 'street'; changeBase(); render(); persist(); onChange();
+            setState({ ...state, base: 'street' }, true);
             notify('Topographic tiles are unavailable. Showing the street map instead.', 'layer');
           }, 0);
         } else if (failed) {
@@ -118,7 +125,7 @@
     }
     function changeMaritime() {
       if (maritimeLayer) { map.removeLayer(maritimeLayer); maritimeLayer = null; }
-      if (!state.maritime) return;
+      if (!state.maritime || state.base === 'plugshare') return;
       const layer = L.tileLayer(config.maritimeURL, {
         ...layerOptions, maxNativeZoom: 18, zIndex: 3,
         attribution: '&copy; <a href="https://www.openseamap.org" target="_blank" rel="noopener">OpenSeaMap</a> contributors'
@@ -169,13 +176,13 @@
     }
     function scheduleTraffic() {
       clearInterval(trafficTimer); trafficTimer = null;
-      if (state.traffic && apiKey && !document.hidden && !trafficPaused) {
+      if (state.base !== 'plugshare' && state.traffic && apiKey && !document.hidden && !trafficPaused) {
         trafficTimer = setInterval(() => { if (Date.now() - lastTrafficRequest >= 60000) loadTraffic(); }, 60000);
       }
     }
     function loadTraffic() {
       removeTraffic();
-      if (!state.traffic || !apiKey || document.hidden) { render(); scheduleTraffic(); return; }
+      if (state.base === 'plugshare' || !state.traffic || !apiKey || document.hidden) { render(); scheduleTraffic(); return; }
       const endpoint = new URL(config.trafficURL);
       if (endpoint.protocol !== 'https:' || endpoint.hostname !== 'api.tomtom.com' || !endpoint.pathname.startsWith('/maps/orbis/traffic/flow/raster/tile/')) {
         trafficPaused = true; status('traffic-layer-status', 'Traffic is not configured for a TomTom endpoint.', true); scheduleTraffic(); return;
@@ -213,27 +220,32 @@
       layer.addTo(map); scheduleTraffic(); render();
     }
     function setState(next, changed = false) {
-      const previous = state; state = core.normalizeLayers(next);
-      if (!baseLayer || previous.base !== state.base) changeBase();
-      if (previous.maritime !== state.maritime || (state.maritime && !maritimeLayer)) changeMaritime();
-      if (previous.ev !== state.ev || previous.tesla !== state.tesla) ev.setSelection(state.ev, state.tesla);
-      if (previous.aviation !== state.aviation) aviation.setEnabled(state.aviation);
-      if (previous.drivebc !== state.drivebc) drivebc.setEnabled(state.drivebc);
-      if (previous.future !== state.future) drivebc.setIncludeFuture(state.future);
-      if (previous.speed !== state.speed) signs.setEnabled('speed', state.speed);
-      if (previous.messages !== state.messages) signs.setEnabled('messages', state.messages);
-      if (previous.ferries !== state.ferries) ferries.setEnabled(state.ferries);
-      if (previous.webcams !== state.webcams) cameras.setEnabled(state.webcams);
-      if (previous.google !== state.google) googleTraffic.setEnabled(state.google);
-      if (previous.traffic !== state.traffic || (state.traffic && apiKey && !trafficLayer && !trafficPaused)) {
-        if (state.traffic) loadTraffic(); else { removeTraffic(); trafficPaused = false; scheduleTraffic(); }
+      const first = !applied, previous = applied || core.normalizeLayers(null);
+      state = core.normalizeLayers(next);
+      // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
+      const active = state.base === 'plugshare' ? core.normalizeLayers({ base: 'plugshare' }) : state;
+      applied = active;
+      if (first || previous.base !== state.base || (!baseLayer && state.base !== 'plugshare')) changeBase();
+      if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();
+      if (first || previous.ev !== active.ev || previous.tesla !== active.tesla) ev.setSelection(active.ev, active.tesla);
+      if (first || previous.aviation !== active.aviation) aviation.setEnabled(active.aviation);
+      if (first || previous.future !== active.future) drivebc.setIncludeFuture(active.future);
+      if (first || previous.drivebc !== active.drivebc) drivebc.setEnabled(active.drivebc);
+      if (first || previous.speed !== active.speed) signs.setEnabled('speed', active.speed);
+      if (first || previous.messages !== active.messages) signs.setEnabled('messages', active.messages);
+      if (first || previous.ferries !== active.ferries) ferries.setEnabled(active.ferries);
+      if (first || previous.webcams !== active.webcams) cameras.setEnabled(active.webcams);
+      if (first || previous.google !== active.google) googleTraffic.setEnabled(active.google);
+      if (first || previous.traffic !== active.traffic || (active.traffic && apiKey && !trafficLayer && !trafficPaused)) {
+        if (active.traffic) loadTraffic(); else { removeTraffic(); trafficPaused = false; scheduleTraffic(); }
       }
       render();
       if (changed) { persist(); onChange(); }
     }
     toggle.addEventListener('click', () => { if (panel.hidden) openPanel(); else closePanel(); });
+    embedToggle.addEventListener('click', () => { if (panel.hidden) openPanel(); else closePanel(); });
     $('close-map-layers').addEventListener('click', () => closePanel(true));
-    document.addEventListener('click', event => { if (!panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closePanel(); });
+    document.addEventListener('click', event => { if (!panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target) && !embedToggle.contains(event.target)) closePanel(); });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
@@ -278,21 +290,15 @@
       if (document.hidden) {
         if (!trafficGood) removeTraffic();
         scheduleTraffic(); render();
-      } else if (state.traffic && apiKey && !trafficPaused) {
+      } else if (state.base !== 'plugshare' && state.traffic && apiKey && !trafficPaused) {
         if (!trafficLayer || Date.now() - lastTrafficRequest >= 60000) loadTraffic();
         else scheduleTraffic();
       }
     });
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
-    window.addEventListener('pageshow', event => { if (event.persisted && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
-    drivebc.setIncludeFuture(state.future);
-    changeBase(); changeMaritime(); aviation.setEnabled(state.aviation); drivebc.setEnabled(state.drivebc); googleTraffic.setEnabled(state.google);
-    cameras.setEnabled(state.webcams);
-    signs.setEnabled('speed', state.speed); signs.setEnabled('messages', state.messages);
-    ferries.setEnabled(state.ferries); ev.setSelection(state.ev, state.tesla);
-    if (state.traffic && apiKey) loadTraffic();
-    render();
-    if (state.aviation && !aviation.hasKey()) { openPanel(); aviation.openKey(); }
+    window.addEventListener('pageshow', event => { if (event.persisted && state.base !== 'plugshare' && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
+    setState(state);
+    if (state.base !== 'plugshare' && state.aviation && !aviation.hasKey()) { openPanel(); aviation.openKey(); }
     return { getState: () => ({ ...state }), setState: next => setState(next, false) };
   };
 })();

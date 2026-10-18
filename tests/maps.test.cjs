@@ -161,6 +161,35 @@ test('aviation is opt-in and its chart selection is shared without the OpenAIP k
   assert.equal(maps.readHash(hash).pin.osm, 'node/123');
 });
 
+test('PlugShare base links retain native overlay preferences and pins without sharing credentials', () => {
+  const layers = maps.normalizeLayers({ base: 'plugshare', ev: true, tesla: true, drivebc: true, google: true, traffic: true, apiKey: 'private' });
+  const pin = { lat: 48.42, lng: -123.37, name: 'A saved place', osm: 'node/123' };
+  const hash = maps.makeHash(maps.defaultView, pin, layers);
+  assert.equal(layers.base, 'plugshare');
+  assert.deepEqual(maps.readLayers(hash), layers);
+  assert.deepEqual(maps.readHash(hash).pin, { ...pin, detail: '' });
+  assert(!hash.includes('private'));
+  for (const base of ['https://example.com/', true, {}, 'PLUGSHARE']) assert.equal(maps.normalizeLayers({ base }).base, 'street');
+});
+
+test('PlugShare embeds use the official widget with the current centre and bounded view spans', () => {
+  const url = new URL(maps.plugshareEmbedURL(maps.defaultView, [-123.5, 48.3, -123.2, 48.5]));
+  assert.equal(url.origin, 'https://www.plugshare.com');
+  assert.equal(url.pathname, '/widget2.html');
+  assert.equal(+url.searchParams.get('latitude'), maps.defaultView.lat);
+  assert.equal(+url.searchParams.get('longitude'), maps.defaultView.lng);
+  assert.equal(+url.searchParams.get('spanLat'), .2);
+  assert.equal(+url.searchParams.get('spanLng'), .3);
+  const world = new URL(maps.plugshareEmbedURL({ lat: 89, lng: 541 }, [-540, -90, 540, 90]));
+  assert.equal(+world.searchParams.get('longitude'), -179);
+  assert.equal(+world.searchParams.get('latitude'), 85.051129);
+  assert.equal(+world.searchParams.get('spanLat'), 180);
+  assert.equal(+world.searchParams.get('spanLng'), 360);
+  const dateline = new URL(maps.plugshareEmbedURL({ lat: 0, lng: 179.9 }, [179, -.1, 181, .1]));
+  assert.equal(+dateline.searchParams.get('spanLng'), 2);
+  assert.equal(+dateline.searchParams.get('spanLat'), .2);
+});
+
 test('DriveBC events validate geometry, deduplicate IDs and keep report text separate from markup', () => {
   const event = { id: 'drivebc.ca/test', status: 'ACTIVE', headline: '<img onerror=alert(1)>', description: '<script>not markup</script>', event_type: 'CONSTRUCTION', severity: 'MAJOR', roads: [{ state: 'CLOSED' }], updated: '2026-10-17T12:00:00-07:00', geography: { type: 'Point', coordinates: [-123.36, 48.43] } };
   const results = maps.readRoadEvents({ events: [null, {}, { ...event, id: '' }, { ...event, id: 'archived', status: 'ARCHIVED' }, { ...event, id: 'invalid', geography: { type: 'Point', coordinates: [null, null] } }, event, event] });

@@ -31,7 +31,7 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, ev: value?.ev === true, tesla: value?.tesla === true, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { base: ['street', 'topographic', 'plugshare'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, ev: value?.ev === true, tesla: value?.tesla === true, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
@@ -65,6 +65,11 @@
     url.searchParams.set('longitude', wrapLongitude(view.lng).toFixed(6));
     url.searchParams.set('spanLat', (Number.isFinite(height) && height > 0 ? Math.min(180, height) : .05).toFixed(6));
     url.searchParams.set('spanLng', (Number.isFinite(width) && width > 0 ? Math.min(360, width) : .05).toFixed(6));
+    return url.href;
+  }
+  function plugshareEmbedURL(view, bounds = []) {
+    const url = new URL(plugshareURL(view, bounds));
+    url.pathname = '/widget2.html';
     return url.href;
   }
   function searchArea(current, bounds = []) {
@@ -164,5 +169,5 @@
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, plugshareURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
+  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, plugshareURL, plugshareEmbedURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
 });
