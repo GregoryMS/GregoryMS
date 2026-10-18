@@ -320,6 +320,9 @@
 .fuel-card-reading span, .map-fuel-card p { color: var(--muted); font-size: 11px; line-height: 1.5; }
 .map-fuel-card p { margin: 6px 0; }
 .map-fuel-card a { color: var(--map-accent); font-size: 10px; text-underline-offset: 3px; }
+.map-fuel-card #fuel-card-stations { border-top: 1px solid var(--map-border); padding-top: 8px; }
+#fuel-pin-action { display: block; margin: 6px 0 10px; border: 0; padding: 0; color: var(--map-accent); background: transparent; font: inherit; font-size: 11px; text-align: left; cursor: pointer; }
+#fuel-pin-action:disabled { color: var(--muted); cursor: default; }
 .fuel-sublayer select { max-width: 155px; padding: 7px; color: var(--text); background: var(--map-surface); border: 1px solid var(--map-border); border-radius: 8px; font: inherit; font-size: 12px; }
 .fuel-station-marker { display: grid; place-items: center; color: #fff; background: #865521; border: 2px solid #fff; border-radius: 10px; box-shadow: 0 2px 5px #0005; }
 .fuel-station-marker svg { width: 23px; height: 25px; }

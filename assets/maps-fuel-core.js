@@ -58,5 +58,24 @@
     }
     return result;
   }
-  return {fuels, sourceURL, today, age, read, distance, contains, select, stations, format: cents => price(cents) === null ? 'Unavailable' : `$${(cents / 100).toFixed(3)}`};
+  function stationArea(box, zoom) {
+    if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || zoom < 10) return null;
+    const [w, s, e, n] = box, west = wrap(w), width = e - w;
+    if (width <= 0 || width > 2.3 || s < -90 || n > 90 || n <= s || n - s > 1.1) return null;
+    return [west, s, west + width, n];
+  }
+  function covers(outer, inner) {
+    const offset = ((inner[0] - outer[0]) % 360 + 360) % 360;
+    return inner[1] >= outer[1] && inner[3] <= outer[3] && offset + inner[2] - inner[0] <= outer[2] - outer[0] + 1e-7;
+  }
+  function stationCache(data, now = Date.now()) {
+    const area = data?.area;
+    if (!Array.isArray(area) || area.length !== 4 || !area.every(Number.isFinite) || area[0] < -180 || area[0] >= 180 || area[2] <= area[0] || area[2] - area[0] > 2.4 || area[1] < -90 || area[3] > 90 || area[3] <= area[1] || area[3] - area[1] > 1.2 || !Number.isFinite(data.fetchedAt) || data.fetchedAt > now || now - data.fetchedAt >= 7 * 86400000) throw Error('Invalid station cache');
+    const items = stations(data, area);
+    if (data.elements.length && !items.length) throw Error('Invalid cached station locations');
+    // Keep only the public location fields used by the map, bounding saved browser data.
+    const elements = items.map(point => { const [type, id] = point.id.split('/'); return {type, id: Number(id), ...(type === 'node' ? {lat: point.lat, lon: point.lng} : {center: {lat: point.lat, lon: point.lng}}), tags: {amenity: 'fuel', name: point.name, 'addr:street': point.address, opening_hours: point.hours, access: point.access}}; });
+    return {area, elements, fetchedAt: data.fetchedAt, truncated: data.truncated === true, gregle: {stale: data.gregle?.stale === true}};
+  }
+  return {fuels, sourceURL, today, age, read, distance, contains, select, stations, stationArea, covers, stationCache, format: cents => price(cents) === null ? 'Unavailable' : `$${(cents / 100).toFixed(3)}`};
 });

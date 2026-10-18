@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261018-daily-fuel">
+  <link rel="stylesheet" href="assets/maps.css?v=20261018-fuel-pins">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -43,8 +43,8 @@
   <script src="assets/maps-aircraft.js?v=20261018-aircraft-icons" defer></script>
   <script src="assets/maps-vessels-core.js?v=20261018-vessel-types" defer></script>
   <script src="assets/maps-vessels.js?v=20261018-vessel-types" defer></script>
-  <script src="assets/maps-fuel-core.js?v=20261018-daily-fuel" defer></script>
-  <script src="assets/maps-fuel.js?v=20261018-daily-fuel" defer></script>
+  <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
+  <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-layers.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/maps.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
@@ -210,6 +210,8 @@
       <div class="fuel-card-reading"><strong id="fuel-card-price">—</strong><span id="fuel-card-grade">Regular · CAD / litre</span></div>
       <p id="fuel-card-area">Loading the latest daily survey…</p>
       <p id="fuel-card-date"></p>
+      <p id="fuel-card-stations" role="status"></p>
+      <button id="fuel-pin-action" type="button" hidden>Retry stations</button>
       <a href="https://charting.kalibrate.com/WPPS_Public/DPPS_Public.htm" target="_blank" rel="noopener">Kalibrate Canada · daily survey ↗</a>
     </section>
     <section class="map-place map-glass" id="map-place" aria-labelledby="place-name">

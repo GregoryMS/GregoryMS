@@ -21,7 +21,7 @@ export function query(box, scope, kind = 'charging_station') {
     const bounds = `(${s},${west},${n},${east});`;
     return kind === 'fuel' ? [`nwr[amenity=fuel]${bounds}`] : scope === 'tesla' ? [`nwr[amenity=charging_station]${filter}${bounds}`, `nwr[amenity=charging_station]["ref:supercharge_info"]${bounds}`] : [`nwr[amenity=charging_station]${bounds}`];
   });
-  return `[out:json][timeout:8][maxsize:16777216];${selectors.length > 1 ? `(${selectors.join('')});` : selectors[0]}out center ${limit + 1};`;
+  return `[out:json][timeout:${kind === 'fuel' ? 20 : 8}][maxsize:16777216];${selectors.length > 1 ? `(${selectors.join('')});` : selectors[0]}out center ${limit + 1};`;
 }
 async function readJSON(response, maxBytes = 2 * 1024 * 1024) {
   if (!response.body) throw new Error('empty_response');
@@ -77,7 +77,11 @@ async function serve(request, env, ctx, kind = 'charging_station') {
           const paused = await cache.match(cooldown);
           if (paused) { const error = new Error('provider_cooldown'); error.stop = true; error.retryAfter = Number(paused.headers.get('Retry-After')) || 60; throw error; }
           const sourceURL = new URL(endpoint);
-          const response = await fetch(sourceURL.href, {headers: {Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)'}, redirect: 'manual', method: 'POST', body: new URLSearchParams({data: query(box, scope, kind)}), signal: AbortSignal.timeout(20000)});
+          // Short, stable GET queries let public Overpass mirrors reuse their response caches.
+          // Keep the existing charging query protocol unchanged.
+          const body = new URLSearchParams({data: query(box, scope, kind)});
+          if (kind === 'fuel') sourceURL.search = body;
+          const response = await fetch(sourceURL.href, {headers: {Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)'}, redirect: 'manual', method: kind === 'fuel' ? 'GET' : 'POST', ...(kind === 'fuel' ? {} : {body}), signal: AbortSignal.timeout(kind === 'fuel' ? 30000 : 20000)});
           if (!response.ok) {
             const retry = response.headers.get('Retry-After'), seconds = retry && /^\d+$/.test(retry) ? Number(retry) : Math.ceil((Date.parse(retry || '') - Date.now()) / 1000);
             await response.body?.cancel();

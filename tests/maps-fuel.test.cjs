@@ -41,6 +41,15 @@ test('fuel layer and grade survive copied links and invalid grades are ignored',
   assert.equal(maps.normalizeLayers(null).fuel, false);
   assert.equal(maps.readLayers('#base=street&overlays=fuel&fueltype=unknown').fuelType, 'regular');
 });
+test('station coverage includes city views at zoom 10 and saved areas validate their age, location and fields', () => {
+  assert(core.stationArea(box, 10)); assert.equal(core.stationArea(box, 9), null);
+  assert.equal(core.stationArea([-180, -80, 180, 80], 10), null);
+  const data = {area: box, fetchedAt: now, elements: [{type: 'node', id: 1, lat: 48.43, lon: -123.36, tags: {amenity: 'fuel', name: 'Shell', private: 'omit'}}]};
+  const saved = core.stationCache(data, now);
+  assert.equal(saved.elements[0].tags.name, 'Shell'); assert(!Object.hasOwn(saved.elements[0].tags, 'private'));
+  assert(core.covers(saved.area, [-123.39,48.41,-123.31,48.49])); assert(!core.covers(saved.area, [-123.5,48.41,-123.31,48.49]));
+  for (const bad of [{...data, fetchedAt: now + 1}, {...data, fetchedAt: now - 7 * 86400000}, {...data, area: [-180,-80,180,80]}, {...data, elements: [{type: 'node', id: 1, lat: 0, lon: 0, tags: {amenity: 'fuel'}}]}]) assert.throws(() => core.stationCache(bad, now));
+});
 test('fuel gateway shares one dated daily report, uses no OCM credentials, and refuses arbitrary queries and origins', async () => {
   const worker = (await import('../workers/ev/worker.mjs')).default;
   const saved = {fetch: global.fetch, caches: global.caches, now: Date.now}, store = new Map(), calls = [];
@@ -68,7 +77,7 @@ test('petrol relay reuses bounded Overpass fetching with distinct caches and fil
   try {
     const data = await (await request('/fuel-stations?bbox=' + box.join(','))).json();
     assert.equal(data.elements.length, 1); assert.equal(data.elements[0].tags['fuel:diesel'], 'yes');
-    assert(calls[0].body.get('data').includes('amenity=fuel')); assert(!JSON.stringify(calls).includes('private-secret'));
+    assert.equal(calls[0].method, 'GET'); assert(!calls[0].body); assert(new URL(calls[0].url).searchParams.get('data').includes('amenity=fuel')); assert(new URL(calls[0].url).searchParams.get('data').includes('[timeout:20]')); assert(!JSON.stringify(calls).includes('private-secret'));
     assert([...store.keys()].some(key => key.includes('/fuel-v1/'))); assert(![...store.keys()].some(key => key.includes('/ev-v1/')));
     assert.equal((await request('/fuel-stations?bbox=' + box.join(',') + '&scope=tesla')).status, 400);
   } finally { Object.assign(global, saved); }

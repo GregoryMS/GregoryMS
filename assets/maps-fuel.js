@@ -5,7 +5,23 @@
     const card = $('map-fuel-card'), cities = L.layerGroup(), stations = L.layerGroup(), cache = new Map();
     const credit = 'Fuel locations: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · Daily city averages: <a href="https://charting.kalibrate.com/" target="_blank" rel="noopener">Kalibrate Canada</a>';
     let enabled = false, fuel = 'regular', report, priceRequest, stationRequest, version = 0, moveTimer, refreshTimer, lastPriceFetch = 0, retryAfter = 0;
-    let stationMessage = '', priceError = '';
+    let stationMessage = '', priceError = '', stationAction = '', stationTimer, stationAttempts = 0;
+    const storageKey = 'gregle-maps-fuel-stations-v1';
+    try {
+      const raw = localStorage.getItem(storageKey);
+      const saved = raw && raw.length < 1500000 ? JSON.parse(raw) : null;
+      if (saved?.endpoint === config.fuelStationsURL && Array.isArray(saved.entries)) for (const value of saved.entries.slice(-6)) {
+        try { const entry = core.stationCache(value); cache.set(entry.area.join(','), entry); } catch {}
+      }
+    } catch {}
+    function persistStations() {
+      try {
+        const entries = [...cache.values()].slice(-6);
+        let raw = JSON.stringify({endpoint: config.fuelStationsURL, entries});
+        while (raw.length >= 1500000 && entries.length) { entries.shift(); raw = JSON.stringify({endpoint: config.fuelStationsURL, entries}); }
+        localStorage.setItem(storageKey, raw);
+      } catch {}
+    }
     const bounds = () => { const b = map.getBounds(); return [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]; };
     const dateLabel = date => new Date(date + 'T12:00:00Z').toLocaleDateString(undefined, {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
     const element = (tag, content, className) => { const node = document.createElement(tag); node.textContent = content; if (className) node.className = className; return node; };
@@ -20,6 +36,10 @@
       $('fuel-card-area').textContent = selected ? `City survey average${!core.contains(box, selected) ? ` · ${Math.round(selected.distance)} km from map centre` : ''}` : usable ? 'No surveyed city in or within 50 km of this view. Zoom out to see coverage.' : priceError || 'Loading the latest daily survey…';
       const dated = usable ? `${core.age(report.date) === 0 ? 'Today’s survey' : 'Latest survey'}: ${dateLabel(report.date)}${core.age(report.date) > 0 ? ' · Today’s report is not available yet.' : ''}${report.delayed ? ' · Refresh delayed.' : ''}` : report ? 'Daily survey is out of date. Prices are hidden until a new report is available.' : priceError;
       $('fuel-card-date').textContent = dated;
+      $('fuel-card-stations').textContent = stationMessage;
+      const action = $('fuel-pin-action');
+      action.hidden = !stationAction; action.disabled = stationAction === 'retry' && Date.now() < retryAfter;
+      action.textContent = stationAction === 'zoom' ? 'Zoom in for petrol stations' : action.disabled ? 'Waiting to retry stations…' : 'Retry petrol stations';
       $('fuel-layer-status').textContent = [dated, stationMessage].filter(Boolean).join(' ');
       $('fuel-retry').hidden = !priceError && !stationMessage.includes('unavailable');
       if (!usable) return;
@@ -31,7 +51,7 @@
         marker.bindPopup(popup).addTo(cities);
       }
     }
-    function drawStations(entry, box) {
+    function drawStations(entry, box, saved = false) {
       stations.clearLayers();
       const items = core.stations(entry, box);
       for (const point of items) {
@@ -45,32 +65,52 @@
         const link = element('a', 'View OpenStreetMap record ↗'); link.href = `https://www.openstreetmap.org/${point.id}`; link.target = '_blank'; link.rel = 'noopener'; popup.append(link);
         marker.bindPopup(popup).addTo(stations);
       }
-      stationMessage = `${items.length} mapped petrol stations in this view.${entry.truncated ? ' Zoom in to see more.' : ''}${entry.gregle?.stale ? ' Locations are cached while the source refreshes.' : ''}`;
+      stationAction = '';
+      stationMessage = `${items.length} ${saved ? 'saved' : 'mapped'} petrol stations in this view.${entry.truncated ? ' Zoom in to see more.' : ''}${entry.gregle?.stale ? ' Locations are cached while the source refreshes.' : ''}`;
       draw();
     }
+    function retryStations(delay) {
+      clearTimeout(stationTimer);
+      if (enabled && !document.hidden) stationTimer = setTimeout(() => {
+        if (stationAttempts < 3) loadStations(); else draw();
+      }, delay);
+    }
     async function loadStations() {
-      clearTimeout(moveTimer); stationRequest?.abort(); stations.clearLayers();
+      clearTimeout(moveTimer); clearTimeout(stationTimer); stationRequest?.abort();
       if (!enabled || document.hidden) return;
-      const raw = bounds(), west = ((raw[0] + 180) % 360 + 360) % 360 - 180;
-      const box = [west, raw[1], west + raw[2] - raw[0], raw[3]];
-      if (map.getZoom() < 11 || box[2] - box[0] > 2.3 || box[3] - box[1] > 1.1) { stationMessage = 'Zoom in to see petrol station locations.'; draw(); return; }
+      const box = core.stationArea(bounds(), map.getZoom());
+      if (!box) { stations.clearLayers(); stationAction = 'zoom'; stationMessage = 'Zoom in to show petrol station pins.'; draw(); return; }
       const snapped = [Math.floor(box[0] * 20) / 20, Math.floor(box[1] * 20) / 20, Math.ceil(box[2] * 20) / 20, Math.ceil(box[3] * 20) / 20], key = snapped.join(',');
-      const entry = cache.get(key);
-      if (entry && Date.now() - entry.fetchedAt < 86400000) { drawStations(entry, box); return; }
-      if (Date.now() < retryAfter) { stationMessage = 'Petrol station source is temporarily unavailable. Retry shortly.'; draw(); return; }
+      const entries = [...cache.values()].filter(entry => Date.now() - entry.fetchedAt < 7 * 86400000).sort((a, b) => b.fetchedAt - a.fetchedAt);
+      const covering = entries.find(entry => core.covers(entry.area, box));
+      const entry = covering || entries.find(item => core.stations(item, box).length);
+      if (entry) drawStations(entry, box, true); else stations.clearLayers();
+      if (covering && Date.now() - covering.fetchedAt < 86400000) { stationAttempts = 0; return; }
+      const retained = entry ? core.stations(entry, box).length : 0;
+      const failed = () => {
+        stationAttempts++; retryAfter = Math.max(retryAfter, Date.now() + 60000); stationAction = 'retry';
+        stationMessage = `${retained ? `${retained} saved petrol stations shown. ` : 'Petrol station service is unavailable. '}${stationAttempts < 3 ? 'Retrying shortly.' : 'Please retry shortly.'}`;
+        draw(); retryStations(retryAfter - Date.now());
+      };
+      if (Date.now() < retryAfter) {
+        stationAction = 'retry'; stationMessage = `${retained ? `${retained} saved petrol stations shown. ` : ''}Waiting to retry the petrol station service.`;
+        draw(); retryStations(retryAfter - Date.now()); return;
+      }
       const current = version, controller = new AbortController(); stationRequest = controller;
-      stationMessage = 'Loading petrol station locations…'; draw();
+      stationAction = ''; stationMessage = retained ? `${retained} saved petrol stations shown. Updating locations…` : 'Loading petrol station pins…'; draw();
+      let timedOut = false;
+      const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 65000);
       try {
         const url = new URL(config.fuelStationsURL); url.searchParams.set('bbox', key);
         const response = await fetch(url, {signal: controller.signal});
         if (!response.ok) { retryAfter = Date.now() + Math.min(3600, Math.max(60, Number(response.headers.get('Retry-After')) || 60)) * 1000; throw Error('unavailable'); }
         const data = await response.json();
         if (!enabled || current !== version || controller.signal.aborted) return;
-        if (!Number.isFinite(data.fetchedAt) || data.fetchedAt > Date.now() || Date.now() - data.fetchedAt > 7 * 86400000) throw Error('outdated');
-        core.stations(data, box); cache.set(key, data); if (cache.size > 20) cache.delete(cache.keys().next().value);
-        drawStations(data, box);
-      } catch (error) { if (enabled && current === version && !controller.signal.aborted) { stationMessage = 'Petrol station locations are unavailable. Retry shortly.'; draw(); } }
-      finally { if (stationRequest === controller) stationRequest = null; }
+        const received = core.stationCache(data);
+        cache.set(received.area.join(','), received); if (cache.size > 20) cache.delete(cache.keys().next().value);
+        persistStations(); stationAttempts = 0; retryAfter = 0; drawStations(received, box);
+      } catch { if (enabled && current === version && (timedOut || !controller.signal.aborted)) failed(); }
+      finally { clearTimeout(timeout); if (stationRequest === controller) stationRequest = null; }
     }
     function schedule() {
       clearTimeout(refreshTimer);
@@ -90,11 +130,16 @@
     }
     function cancel() {
       version++; priceRequest?.abort(); stationRequest?.abort(); priceRequest = stationRequest = null;
-      clearTimeout(moveTimer); clearTimeout(refreshTimer);
+      clearTimeout(moveTimer); clearTimeout(refreshTimer); clearTimeout(stationTimer);
     }
-    map.on('movestart', () => { if (enabled) { stationRequest?.abort(); stations.clearLayers(); clearTimeout(moveTimer); } });
-    map.on('moveend', () => { if (enabled) { draw(); clearTimeout(moveTimer); moveTimer = setTimeout(loadStations, 650); } });
-    $('fuel-retry').addEventListener('click', () => { loadPrices(); loadStations(); });
+    map.on('movestart', () => { if (enabled) { stationRequest?.abort(); clearTimeout(moveTimer); clearTimeout(stationTimer); } });
+    map.on('moveend', () => { if (enabled) { stationAttempts = 0; draw(); clearTimeout(moveTimer); moveTimer = setTimeout(loadStations, 650); } });
+    const retry = () => { stationAttempts = 0; loadPrices(); loadStations(); };
+    $('fuel-retry').addEventListener('click', retry);
+    $('fuel-pin-action').addEventListener('click', () => {
+      if (stationAction === 'zoom') map.setView(map.getCenter(), Math.max(12, map.getZoom() + 1));
+      else retry();
+    });
     document.addEventListener('visibilitychange', () => { if (document.hidden) cancel(); else if (enabled) { draw(); if (Date.now() - lastPriceFetch >= 1800000) loadPrices(); else schedule(); loadStations(); } });
     window.addEventListener('pagehide', cancel);
     window.addEventListener('pageshow', event => { if (event.persisted && enabled) { draw(); loadPrices(); loadStations(); } });
@@ -104,7 +149,7 @@
       if (!wasEnabled) { cities.addTo(map); stations.addTo(map); map.attributionControl?.addAttribution(credit); }
       draw();
       if (!report || Date.now() - lastPriceFetch >= 1800000) loadPrices(); else schedule();
-      if (!wasEnabled) loadStations();
+      if (!wasEnabled) { stationAttempts = 0; loadStations(); }
     }};
   };
 })();
