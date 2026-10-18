@@ -213,10 +213,10 @@
 .ferry-routes { margin: 8px 0; padding-left: 17px; }
 .ferry-routes li { margin: 7px 0; overflow-wrap: anywhere; }
 @media(max-width:600px) { .drivebc-camera-popup select { font-size: 16px; } }
-.plugshare-source { display: inline-flex; align-items: center; gap: 5px; }
-.plugshare-symbol { flex-shrink: 0; width: 18px; height: 18px; color: var(--map-accent); }
-.map-source.plugshare-source span { margin: 0; }
-.map-source .plugshare-label { color: inherit; font-size: 12px; }
+.osm-source, .plugshare-source { display: inline-flex; align-items: center; gap: 5px; }
+.osm-symbol, .plugshare-symbol { flex-shrink: 0; width: 18px; height: 18px; color: var(--map-accent); }
+.map-source.osm-source span, .map-source.plugshare-source span { margin: 0; }
+.map-source .osm-label, .map-source .plugshare-label { color: inherit; font-size: 12px; }
 .ev-charge-marker { display: grid; place-items: center; border: 3px solid #fff; border-radius: 10px; background: #008752; color: #fff; box-shadow: 0 0 0 1px #164b3699, 0 2px 8px #0005; }
 .ev-charge-restricted { background: #685a7d; }
 .ev-charge-marker svg { width: 23px; height: 23px; }
@@ -238,8 +238,8 @@
 .ev-connectors li { margin: 4px 0; }
 .ev-links { display: grid; gap: 9px; margin-top: 12px; }
 @media(max-width:600px) {
-  .plugshare-source .plugshare-arrow { display: none; }
-  .plugshare-symbol { width: 20px; height: 20px; }
+  .osm-source .osm-arrow, .osm-source .osm-label, .plugshare-source .plugshare-arrow { display: none; }
+  .osm-symbol, .plugshare-symbol { width: 20px; height: 20px; }
   .maps-page .top-actions { gap: 10px; }
 }
 @media(max-width:360px) { .map-source .plugshare-label { display: none; } }

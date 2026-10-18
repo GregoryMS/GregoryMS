@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261018-fuel-pins">
+  <link rel="stylesheet" href="assets/maps.css?v=20261018-osm-icon">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -52,7 +52,7 @@
 <body class="maps-page">
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="index.html" aria-label="Gregle home">Gregle</a><h1 class="breadcrumb">Maps</h1></div>
-    <div class="top-actions"><a class="map-source" id="osm-link" href="https://www.openstreetmap.org/#map=13/48.42840/-123.36560" target="_blank" rel="noopener">OpenStreetMap <span aria-hidden="true">↗</span></a>
+    <div class="top-actions"><a class="map-source osm-source" id="osm-link" href="https://www.openstreetmap.org/#map=13/48.42840/-123.36560" target="_blank" rel="noopener" aria-label="Open this area on OpenStreetMap" title="Open this area on OpenStreetMap"><svg class="osm-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-4 2-6-2v16l6 2 6-2 6 2v-8M9 5v16m6-8v6"/><circle cx="17" cy="6" r="4"/><path d="m20 9 2 2"/></svg><span class="osm-label">OpenStreetMap</span><span class="osm-arrow" aria-hidden="true">↗</span></a>
 <a class="map-source plugshare-source" id="plugshare-link" href="https://www.plugshare.com/?latitude=48.428400&amp;longitude=-123.365600&amp;spanLat=0.1&amp;spanLng=0.1" target="_blank" rel="noopener" aria-label="Open this area on PlugShare" title="Open this area on PlugShare"><svg class="plugshare-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v5m8-5v5M6 8h12v3a6 6 0 0 1-6 6v4M9 12h6"/></svg><span class="plugshare-label">PlugShare</span><span class="plugshare-arrow" aria-hidden="true">↗</span></a>
       <!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
