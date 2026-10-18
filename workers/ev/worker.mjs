@@ -1,4 +1,5 @@
-import osm from './osm.mjs';
+import osm, {fuelStations} from './osm.mjs';
+import fuelPrices from './fuel-prices.mjs';
 const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
 const day = 86400000, maxAge = 7 * day, limit = 750;
 const quiet = promise => promise.catch(() => {});
@@ -43,6 +44,8 @@ export function normalize(data, box) {
 export default {
   async fetch(request,env,ctx){
     const incoming=new URL(request.url);
+    if(incoming.pathname==='/fuel-prices')return fuelPrices.fetch(request,env,ctx);
+    if(incoming.pathname==='/fuel-stations')return fuelStations.fetch(request,env,ctx);
     if(incoming.searchParams.get('source')==='osm'&&incoming.searchParams.getAll('source').length===1){
       incoming.searchParams.delete('source');
       return osm.fetch(new Request(incoming.href,request),env,ctx);

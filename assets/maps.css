@@ -311,3 +311,19 @@
   .vessels-legend { top: 82px; right: 68px; width: 300px; max-width: calc(100% - 80px); max-height: calc(100% - 100px); padding: 14px; border-radius: 17px; }
   .vessels-legend-list { grid-template-columns: 1fr; gap: 9px; }
 }
+
+/* Daily city averages and petrol station locations. */
+.map-fuel-card { position: absolute; z-index: 410; top: 94px; left: 20px; width: 330px; max-width: calc(100% - 100px); padding: 15px 18px; border-radius: 18px; }
+.map-fuel-card h2 { margin: 7px 0; font: 500 17px/1.35 Montserrat, sans-serif; letter-spacing: -.3px; }
+.fuel-card-reading { display: flex; flex-wrap: wrap; gap: 5px 12px; align-items: baseline; }
+.fuel-card-reading strong { font-size: 29px; font-weight: 500; letter-spacing: -.8px; font-variant-numeric: tabular-nums; }
+.fuel-card-reading span, .map-fuel-card p { color: var(--muted); font-size: 11px; line-height: 1.5; }
+.map-fuel-card p { margin: 6px 0; }
+.map-fuel-card a { color: var(--map-accent); font-size: 10px; text-underline-offset: 3px; }
+.fuel-sublayer select { max-width: 155px; padding: 7px; color: var(--text); background: var(--map-surface); border: 1px solid var(--map-border); border-radius: 8px; font: inherit; font-size: 12px; }
+.fuel-station-marker { display: grid; place-items: center; color: #fff; background: #865521; border: 2px solid #fff; border-radius: 10px; box-shadow: 0 2px 5px #0005; }
+.fuel-station-marker svg { width: 23px; height: 25px; }
+.fuel-average-marker { display: grid; place-items: center; width: max-content; color: #fff; background: #6840a0; border: 2px solid #fff; border-radius: 9px; box-shadow: 0 2px 5px #0005; font: 600 12px/1 system-ui, sans-serif; }
+.fuel-popup { min-width: 180px; max-width: 260px; }
+.fuel-popup p { margin: 8px 0; }
+@media(max-width:600px) { .map-fuel-card { left: 12px; top: 82px; max-width: calc(100% - 80px); padding: 12px 14px; } .fuel-card-reading strong { font-size: 25px; } }

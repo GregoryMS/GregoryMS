@@ -12,6 +12,7 @@
     googleTrafficURL: 'https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3',
     evURL: 'https://gregle-ev.square-rain-5ded.workers.dev/charging', evProvider: 'openchargemap',
     evOSMURL: 'https://gregle-ev.square-rain-5ded.workers.dev/charging?source=osm',
+    fuelPricesURL: 'https://gregle-ev.square-rain-5ded.workers.dev/fuel-prices', fuelStationsURL: 'https://gregle-ev.square-rain-5ded.workers.dev/fuel-stations',
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
@@ -126,13 +127,13 @@
     $('gregle-map').focus({ preventScroll: true });
   });
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
+  if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261018-ev-source', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261018-daily-fuel', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       if (['openchargemap', 'overpass'].includes(supplied.evProvider)) config.evProvider = supplied.evProvider;

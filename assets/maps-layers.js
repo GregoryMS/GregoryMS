@@ -11,6 +11,7 @@
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
     const signs = window.GregleDriveBCSigns({ map, config, notify });
     const ferries = window.GregleDriveBCFerries({ map, config, notify });
+    const fuel = window.GregleFuel({map, config});
     const ev = window.GregleEVCharging({ map, config: {...config,evSource:state.evSource}, notify });
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
@@ -39,6 +40,7 @@
       return { setOpen };
     }
     disclosure('drivebc-options-toggle', 'drivebc-sublayers', 'gregle-maps-drivebc-options');
+    disclosure('fuel-options-toggle', 'fuel-sublayers', 'gregle-maps-fuel-options');
     disclosure('ev-options-toggle', 'ev-sublayers', 'gregle-maps-ev-options');
     disclosure('google-options-toggle', 'google-traffic-options', 'gregle-maps-google-options');
     const tomtomMenu = disclosure('tomtom-options-toggle', 'tomtom-options', 'gregle-maps-tomtom-options', () => { $('traffic-key-form').hidden = false; });
@@ -68,6 +70,8 @@
       $('vessels-options').hidden = !state.vessels;
       $('map-aircraft').setAttribute('aria-checked', String(state.aircraft));
       $('aircraft-options').hidden = !state.aircraft;
+      $('map-fuel').checked = state.fuel;
+      $('fuel-type').value = state.fuelType;
       $('map-ev').checked = state.ev;
       $('map-ev-tesla').checked = state.tesla;
       const osmEV=state.evSource==='openstreetmap';
@@ -240,6 +244,7 @@
       applied = active;
       if (first || previous.base !== state.base || (!baseLayer && state.base !== 'plugshare')) changeBase();
       if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();
+      if (first || previous.fuel !== active.fuel || previous.fuelType !== active.fuelType) fuel.setSelection(active.fuel, active.fuelType);
       if (first || previous.evSource !== state.evSource) { if(!active.ev&&!active.tesla)ev.setSelection(false,false); ev.setSource(state.evSource); }
       if (first || previous.ev !== active.ev || previous.tesla !== active.tesla) ev.setSelection(active.ev, active.tesla);
       if (first || previous.aviation !== active.aviation) aviation.setEnabled(active.aviation);
@@ -266,6 +271,8 @@
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
     panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
+    $('map-fuel').addEventListener('change', () => setState({...state, fuel: $('map-fuel').checked}, true));
+    $('fuel-type').addEventListener('change', () => setState({...state, fuelType: $('fuel-type').value}, true));
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));
     $('map-ev-tesla').addEventListener('change', () => setState({ ...state, tesla: $('map-ev-tesla').checked }, true));
     $('map-ev-osm').addEventListener('change', () => setState({ ...state, evSource: $('map-ev-osm').checked?'openstreetmap':'openchargemap' }, true));
