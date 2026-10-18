@@ -234,3 +234,9 @@
 @media(max-width:360px) { .map-source .plugshare-label { display: none; } }
 .ev-sublayer { margin: 2px 0 8px 12px; padding-left: 12px; border-left: 2px solid var(--map-border); }
 .ev-charge-supercharger { background: #d2192f; box-shadow: 0 0 0 1px #90112599, 0 2px 8px #0005; }
+.drivebc-layer-heading { display: flex; align-items: center; gap: 14px; padding: 8px 0; }
+.drivebc-options-toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: 1; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.drivebc-options-toggle > span { min-width: 0; }
+.drivebc-options-toggle > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--map-accent); }
+.drivebc-options-toggle[aria-expanded="true"] > svg { transform: rotate(180deg); }
+.drivebc-options-toggle:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 4px; border-radius: 3px; }

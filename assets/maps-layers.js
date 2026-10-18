@@ -18,6 +18,20 @@
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const layerOptions = { maxZoom: 19, updateWhenIdle: true, keepBuffer: 1 };
     const persist = () => { try { localStorage.setItem(preferenceKey, JSON.stringify(state)); } catch {} };
+    const drivebcOptionsKey = 'gregle-maps-drivebc-options';
+    const drivebcOptionsToggle = $('drivebc-options-toggle'), drivebcSublayers = $('drivebc-sublayers');
+    const expandDriveBC = open => {
+      drivebcSublayers.hidden = !open;
+      drivebcOptionsToggle.setAttribute('aria-expanded', String(open));
+    };
+    let drivebcOpen = false;
+    try { drivebcOpen = localStorage.getItem(drivebcOptionsKey) === 'open'; } catch {}
+    expandDriveBC(drivebcOpen);
+    drivebcOptionsToggle.addEventListener('click', () => {
+      const open = drivebcSublayers.hidden;
+      expandDriveBC(open);
+      try { localStorage.setItem(drivebcOptionsKey, open ? 'open' : 'closed'); } catch {}
+    });
     const status = (id, message, error = false) => {
       $(id).textContent = message;
       $(id).dataset.state = error ? 'error' : 'ready';
