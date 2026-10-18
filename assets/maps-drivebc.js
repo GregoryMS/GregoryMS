@@ -7,7 +7,7 @@
     const attribution = 'Road events: <a href="https://www.drivebc.ca/" target="_blank" rel="noopener">DriveBC</a> (<a href="https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc" target="_blank" rel="noopener">OGL-BC</a>)';
     const group = L.layerGroup(), displayed = new Map();
     const refreshEvery = 180000, maxCacheAge = 900000, pageGap = 2000;
-    let enabled = false, controller, version = 0, debounce, refresh, lastRequest = 0;
+    let enabled = false, includeFuture = false, controller, version = 0, debounce, refresh, lastRequest = 0;
     let snapshot, pending, failure, retryAt = 0, failures = 0;
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; };
     const time = value => new Date(value).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
@@ -29,42 +29,48 @@
       const type = document.createElement('p');
       type.className = 'drivebc-meta';
       const label = event.type.toLowerCase().replaceAll('_',' ');
-      type.textContent = `${event.closed ? 'Closure report · ' : ''}${label} · ${event.severity.toLowerCase()}`;
+      type.textContent = `${event.starts && Date.parse(event.starts) > Date.now() ? 'Future event · ' : ''}${event.closed ? 'Closure report · ' : ''}${label} · ${event.severity.toLowerCase()}`;
+      const start = document.createElement('p'); start.className = 'drivebc-meta';
+      start.textContent = event.starts ? 'Scheduled start ' + new Date(event.starts).toLocaleString(undefined, { timeZone: 'America/Vancouver', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZoneName: 'short' }) : 'Scheduled start not supplied';
       const description = document.createElement('p'); description.textContent = event.description || 'See DriveBC for the event details.';
       const updated = document.createElement('p'); updated.className = 'drivebc-meta';
       updated.textContent = event.updated ? 'Event updated ' + new Date(event.updated).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Event update time not supplied';
       const link = document.createElement('a'); link.href = 'https://www.drivebc.ca/'; link.target = '_blank'; link.rel = 'noopener'; link.textContent = 'Open DriveBC ↗';
-      box.append(name, type, description, updated, link); return box;
+      box.append(name, type, start, description, updated, link); return box;
     }
     function clearEvents() { group.clearLayers(); displayed.clear(); }
     function render() {
       const bounds = viewBounds();
       if (!bounds) { clearEvents(); report('DriveBC covers British Columbia. Move the map to BC to see road events.'); return; }
       const data = snapshot && Date.now() - snapshot.checked <= maxCacheAge ? snapshot : null;
-      const events = data ? data.events.filter(event => event.bounds[0] <= bounds[2] && event.bounds[2] >= bounds[0] && event.bounds[1] <= bounds[3] && event.bounds[3] >= bounds[1]) : [];
+      const now = Date.now(), isFuture = event => event.starts && Date.parse(event.starts) > now;
+      const inView = data ? data.events.filter(event => event.bounds[0] <= bounds[2] && event.bounds[2] >= bounds[0] && event.bounds[1] <= bounds[3] && event.bounds[3] >= bounds[1]) : [];
+      const futureCount = inView.filter(isFuture).length;
+      const events = inView.filter(event => includeFuture || !isFuture(event));
       const visible = new Map(events.map(event => [event.id, event]));
       for (const [id, entry] of displayed) {
-        if (visible.get(id) === entry.event) continue;
+        if (visible.get(id) === entry.event && entry.future === !!isFuture(entry.event)) continue;
         entry.layers.forEach(layer => group.removeLayer(layer)); displayed.delete(id);
       }
       for (const event of events) {
         if (displayed.has(event.id)) continue;
         const layers = [];
-        const kind = event.closed ? 'closed' : event.type === 'CONSTRUCTION' ? 'work' : event.type === 'WEATHER_CONDITION' || event.type === 'ROAD_CONDITION' ? 'condition' : 'incident';
-        const color = ({ closed: '#ff315b', work: '#ffc400', condition: '#008cff', incident: '#ff7a00' })[kind];
+        const future = !!isFuture(event);
+        const kind = future ? 'future' : event.closed ? 'closed' : event.type === 'CONSTRUCTION' ? 'work' : event.type === 'WEATHER_CONDITION' || event.type === 'ROAD_CONDITION' ? 'condition' : 'incident';
+        const color = ({ future: '#a152ee', closed: '#ff315b', work: '#ffc400', condition: '#008cff', incident: '#ff7a00' })[kind];
         if (event.coordinates.length > 1) {
           layers.push(L.polyline(event.coordinates, { color: '#fff', weight: 11, opacity: 1, interactive: false, className: 'drivebc-road-casing' }).addTo(group));
-          layers.push(L.polyline(event.coordinates, { color, weight: 7, opacity: 1, bubblingMouseEvents: false }).bindPopup(() => popup(event), { maxWidth: 300 }).addTo(group));
+          layers.push(L.polyline(event.coordinates, { color, weight: 7, opacity: 1, ...(future ? { dashArray: '9 7' } : {}), bubblingMouseEvents: false }).bindPopup(() => popup(event), { maxWidth: 300 }).addTo(group));
         }
-        const symbol = ({ closed: '×', work: '↔', condition: '!', incident: '!' })[kind];
+        const symbol = ({ future: '◷', closed: '×', work: '↔', condition: '!', incident: '!' })[kind];
         const icon = L.divIcon({ className: `drivebc-marker drivebc-marker-${kind}`, html: `<span aria-hidden="true">${symbol}</span>`, iconSize: [30,30], iconAnchor: [15,15] });
-        layers.push(L.marker(event.point, { icon, title: `DriveBC: ${event.name}`, alt: 'DriveBC road event', keyboard: true }).bindPopup(() => popup(event), { maxWidth: 300 }).addTo(group));
-        displayed.set(event.id, { event, layers });
+        layers.push(L.marker(event.point, { icon, title: `DriveBC${future ? ' future event' : ''}: ${event.name}`, alt: future ? 'Future DriveBC road event' : 'DriveBC road event', keyboard: true }).bindPopup(() => popup(event), { maxWidth: 300 }).addTo(group));
+        displayed.set(event.id, { event, layers, future });
       }
       const count = events.length;
       const retry = failure ? `${failure.limited ? 'DriveBC is limiting requests' : 'DriveBC is temporarily unavailable'}; retrying after ${time(retryAt)}.` : '';
       if (!data) { report(retry || 'Checking DriveBC road events…', !!failure); return; }
-      report(`${count}${data.partial ? '+' : ''} road ${count === 1 ? 'event' : 'events'} in this view · ${failure ? 'cached reports ' : ''}checked ${time(data.checked)}. Includes planned work.${data.partial ? ' Coverage is incomplete.' : ''}${retry ? ' ' + retry : controller ? ' Checking for updates…' : ''}`, !!failure);
+      report(`${count}${data.partial ? '+' : ''} road ${count === 1 ? 'event' : 'events'} in this view · ${failure ? 'cached reports ' : ''}checked ${time(data.checked)}. ${includeFuture ? `${futureCount} future events included.` : `${futureCount} future events hidden.`}${data.partial ? ' Coverage is incomplete.' : ''}${retry ? ' ' + retry : controller ? ' Checking for updates…' : ''}`, !!failure);
     }
     function cacheReports(raw, partial) {
       const events = core.readRoadEvents({ events: raw });
@@ -161,6 +167,6 @@
     });
     window.addEventListener('pagehide', cancel);
     window.addEventListener('pageshow', event => { if (event.persisted && enabled) load(); });
-    return { setEnabled };
+    return { setEnabled, setIncludeFuture(value) { includeFuture = value === true; if (enabled && !document.hidden) render(); } };
   };
 })();

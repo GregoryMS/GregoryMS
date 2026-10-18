@@ -120,28 +120,28 @@ test('map uses attributable HTTPS tiles and a search provider configurable indep
 });
 
 test('map links preserve layer choices without serializing credentials or arbitrary providers', () => {
-  const layers = { base: 'topographic', maritime: true, aviation: false, drivebc: true, webcams: false, traffic: true, google: true, apiKey: 'must-not-be-shared', tileURL: 'https://example.org' };
+  const layers = { base: 'topographic', maritime: true, aviation: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, traffic: true, google: true, apiKey: 'must-not-be-shared', tileURL: 'https://example.org' };
   const pin = { lat: 48.42, lng: -123.37, name: 'Harbour & park' };
   const hash = maps.makeHash(maps.defaultView, pin, layers);
-  assert.deepEqual(maps.readLayers(hash), { base: 'topographic', maritime: true, aviation: false, drivebc: true, webcams: false, traffic: true, google: true });
+  assert.deepEqual(maps.readLayers(hash), { base: 'topographic', maritime: true, aviation: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, traffic: true, google: true });
   assert.equal(maps.readHash(hash).pin.name, pin.name);
   assert(!hash.includes('must-not-be-shared'));
   assert(!hash.includes('example.org'));
-  assert.deepEqual(maps.readLayers(maps.makeHash(maps.defaultView, null, { base: 'street' })), { base: 'street', maritime: false, aviation: false, drivebc: false, webcams: false, traffic: false, google: false });
+  assert.deepEqual(maps.readLayers(maps.makeHash(maps.defaultView, null, { base: 'street' })), { base: 'street', maritime: false, aviation: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, traffic: false, google: false });
   assert.equal(maps.readLayers('#map=13/48/-123'), null);
 });
 
 test('saved and linked layer preferences ignore invalid types and unknown overlays', () => {
-  assert.deepEqual(maps.normalizeLayers(null), { base: 'street', maritime: false, aviation: false, drivebc: false, webcams: false, traffic: false, google: false });
-  assert.deepEqual(maps.normalizeLayers({ base: 'javascript:alert(1)', maritime: 'true', traffic: 1, google: 'true' }), { base: 'street', maritime: false, aviation: false, drivebc: false, webcams: false, traffic: false, google: false });
-  assert.deepEqual(maps.readLayers('#base=unknown&overlays=maritime,drivebc,other,traffic'), { base: 'street', maritime: true, aviation: false, drivebc: true, webcams: false, traffic: true, google: false });
-  assert.deepEqual(maps.readLayers('#base=street&overlays='), { base: 'street', maritime: false, aviation: false, drivebc: false, webcams: false, traffic: false, google: false });
+  assert.deepEqual(maps.normalizeLayers(null), { base: 'street', maritime: false, aviation: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, traffic: false, google: false });
+  assert.deepEqual(maps.normalizeLayers({ base: 'javascript:alert(1)', maritime: 'true', traffic: 1, google: 'true' }), { base: 'street', maritime: false, aviation: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, traffic: false, google: false });
+  assert.deepEqual(maps.readLayers('#base=unknown&overlays=maritime,drivebc,other,traffic'), { base: 'street', maritime: true, aviation: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, traffic: true, google: false });
+  assert.deepEqual(maps.readLayers('#base=street&overlays='), { base: 'street', maritime: false, aviation: false, drivebc: false, future: false, webcams: false, speed: false, messages: false, traffic: false, google: false });
 });
 
 test('Google traffic is opt-in and copied Google layer links keep other layers and the pin', () => {
   assert.equal(maps.normalizeLayers({ base: 'street', traffic: true }).google, false);
   const layers = maps.readLayers('#map=13/48.42840/-123.36560&base=topographic&overlays=google,drivebc');
-  assert.deepEqual(layers, { base: 'topographic', maritime: false, aviation: false, drivebc: true, webcams: false, traffic: false, google: true });
+  assert.deepEqual(layers, { base: 'topographic', maritime: false, aviation: false, drivebc: true, future: false, webcams: false, speed: false, messages: false, traffic: false, google: true });
   const pin = { lat: 48.42, lng: -123.37, name: 'Harbour & park' };
   const hash = maps.makeHash(maps.defaultView, pin, layers);
   assert.deepEqual(maps.readLayers(hash), layers);

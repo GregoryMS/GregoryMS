@@ -9,6 +9,7 @@
     let state = core.normalizeLayers(initial || saved);
     const drivebc = window.GregleDriveBC({ map, notify });
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
+    const signs = window.GregleDriveBCSigns({ map, config, notify });
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
@@ -36,11 +37,17 @@
       $('map-aviation').checked = state.aviation;
       $('map-drivebc').checked = state.drivebc;
       $('map-drivebc-cameras').checked = state.webcams;
+      $('map-drivebc-future').checked = state.future;
+      $('map-drivebc-future').disabled = !state.drivebc;
+      $('map-drivebc-speed').checked = state.speed;
+      $('map-drivebc-messages').checked = state.messages;
       $('map-traffic').checked = state.traffic;
       $('map-google-traffic').checked = state.google;
       $('maritime-layer-status').hidden = !state.maritime;
       $('drivebc-layer-status').hidden = !state.drivebc;
       $('drivebc-cameras-status').hidden = !state.webcams;
+      $('drivebc-speed-status').hidden = !state.speed;
+      $('drivebc-messages-status').hidden = !state.messages;
       $('traffic-connect').textContent = apiKey ? 'Manage key' : 'Connect TomTom';
       $('traffic-forget').hidden = !apiKey;
       $('traffic-refresh').hidden = !state.traffic || !apiKey;
@@ -183,6 +190,9 @@
       if (previous.maritime !== state.maritime || (state.maritime && !maritimeLayer)) changeMaritime();
       if (previous.aviation !== state.aviation) aviation.setEnabled(state.aviation);
       if (previous.drivebc !== state.drivebc) drivebc.setEnabled(state.drivebc);
+      if (previous.future !== state.future) drivebc.setIncludeFuture(state.future);
+      if (previous.speed !== state.speed) signs.setEnabled('speed', state.speed);
+      if (previous.messages !== state.messages) signs.setEnabled('messages', state.messages);
       if (previous.webcams !== state.webcams) cameras.setEnabled(state.webcams);
       if (previous.google !== state.google) googleTraffic.setEnabled(state.google);
       if (previous.traffic !== state.traffic || (state.traffic && apiKey && !trafficLayer && !trafficPaused)) {
@@ -205,6 +215,9 @@
     });
     $('map-drivebc').addEventListener('change', () => setState({ ...state, drivebc: $('map-drivebc').checked }, true));
     $('map-drivebc-cameras').addEventListener('change', () => setState({ ...state, webcams: $('map-drivebc-cameras').checked }, true));
+    $('map-drivebc-future').addEventListener('change', () => setState({ ...state, future: $('map-drivebc-future').checked }, true));
+    $('map-drivebc-speed').addEventListener('change', () => setState({ ...state, speed: $('map-drivebc-speed').checked }, true));
+    $('map-drivebc-messages').addEventListener('change', () => setState({ ...state, messages: $('map-drivebc-messages').checked }, true));
     $('map-google-traffic').addEventListener('change', () => setState({ ...state, google: $('map-google-traffic').checked }, true));
     $('map-traffic').addEventListener('change', () => {
       setState({ ...state, traffic: $('map-traffic').checked }, true);
@@ -239,8 +252,10 @@
     });
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
     window.addEventListener('pageshow', event => { if (event.persisted && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
+    drivebc.setIncludeFuture(state.future);
     changeBase(); changeMaritime(); aviation.setEnabled(state.aviation); drivebc.setEnabled(state.drivebc); googleTraffic.setEnabled(state.google);
     cameras.setEnabled(state.webcams);
+    signs.setEnabled('speed', state.speed); signs.setEnabled('messages', state.messages);
     if (state.traffic && apiKey) loadTraffic();
     render();
     if (state.traffic && !apiKey) openPanel(true);

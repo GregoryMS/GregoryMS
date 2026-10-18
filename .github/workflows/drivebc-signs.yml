@@ -1,0 +1,44 @@
+name: Refresh DriveBC message signs
+
+on:
+  schedule:
+    - cron: '4,19,34,49 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update_drivebc_signs.py
+      - .github/workflows/drivebc-signs.yml
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: drivebc-signs
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_drivebc_signs.py'
+      - run: python scripts/update_drivebc_signs.py
+      - name: Save message signs and rebuild Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/drivebc-signs.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/drivebc-signs.json
+          git commit -m "Refresh DriveBC message signs"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"

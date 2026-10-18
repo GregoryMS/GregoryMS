@@ -170,6 +170,15 @@
 .drivebc-marker-closed { background: #ff315b; }
 .drivebc-marker-work { background: #ffc400; }
 .drivebc-marker-condition { background: #008cff; }
+.drivebc-marker-future { background: #a152ee; color: #fff; }
+.drivebc-sublayer label:has(input:disabled) { opacity: .55; cursor: default; }
+.drivebc-sign-marker { display: grid; place-items: center; border: 3px solid #fff; border-radius: 8px; box-shadow: 0 0 0 1px #17213a99, 0 2px 8px #0005; }
+.drivebc-sign-speed { background: #faf9f6; color: #141414; font: 700 17px/1 Arial, sans-serif; }
+.drivebc-sign-messages { background: #242424; color: #ffc400; }
+.drivebc-sign-messages svg { width: 26px; height: 24px; }
+.drivebc-sign-unavailable { opacity: .65; }
+.drivebc-speed-reading { display: inline-block; padding: 10px 16px; border: 2px solid #252525; border-radius: 7px; font-size: 26px; font-weight: 700; }
+.drivebc-message-display { margin: 5px 0 12px; padding: 12px; border-radius: 8px; background: #242424; color: #ffd65a; font: 700 13px/1.6 ui-monospace, monospace; text-align: center; white-space: pre-wrap; overflow-wrap: anywhere; }
 .drivebc-popup { color: #252525; font: 12px/1.5 Arial, sans-serif; }
 .drivebc-popup strong { display: block; font-size: 14px; }
 .drivebc-popup p { margin: 8px 0; }

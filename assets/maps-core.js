@@ -31,13 +31,13 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, drivebc: value?.drivebc === true, webcams: value?.webcams === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     if (!params.has('base') && !params.has('overlays')) return null;
     const overlays = (params.get('overlays') || '').split(',');
-    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), drivebc: overlays.includes('drivebc'), webcams: overlays.includes('webcams'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
+    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
@@ -45,7 +45,7 @@
     if (pin?.osm && osmReference(...pin.osm.split('/')) === pin.osm) hash += `&osm=${pin.osm}`;
     if (layers) {
       const state = normalizeLayers(layers);
-      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'drivebc', 'webcams', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
+      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
     }
     return hash;
   }
@@ -108,6 +108,23 @@
     }
     return results;
   }
+  function roadStart(schedule) {
+    if (!Array.isArray(schedule?.intervals) || !schedule.intervals.length || schedule.intervals.length > 500) return null;
+    const starts = [];
+    for (const interval of schedule.intervals) {
+      if (typeof interval !== 'string') return null;
+      const value = interval.split('/')[0];
+      const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})?$/.exec(value);
+      if (!match) return null;
+      const [, year, month, day, hour, minute, second] = match, date = new Date(Date.UTC(+year, +month - 1, +day));
+      if (date.getUTCFullYear() !== +year || date.getUTCMonth() !== +month - 1 || date.getUTCDate() !== +day || +hour > 23 || +minute > 59 || +(second || 0) > 59) return null;
+      // This DriveBC feed publishes offsetless interval timestamps in UTC.
+      const start = Date.parse(value + (match[7] ? '' : 'Z'));
+      if (!Number.isFinite(start)) return null;
+      starts.push(start);
+    }
+    return new Date(Math.min(...starts)).toISOString();
+  }
   function readRoadEvents(data) {
     if (!Array.isArray(data?.events)) throw new Error('Invalid DriveBC response');
     const seen = new Set(), results = [];
@@ -134,9 +151,9 @@
       const closed = Array.isArray(item.roads) && item.roads.some(road => road?.state === 'CLOSED');
       const description = typeof item.description === 'string' ? item.description.trim().slice(0, 4000) : '';
       const updated = typeof item.updated === 'string' && Number.isFinite(Date.parse(item.updated)) ? item.updated : null;
-      results.push({ id: item.id.slice(0, 160), name: text(item.headline) || type.replaceAll('_', ' '), description, type, severity, closed, coordinates, point: coordinates[Math.floor(coordinates.length / 2)], updated });
+      results.push({ id: item.id.slice(0, 160), name: text(item.headline) || type.replaceAll('_', ' '), description, type, severity, closed, coordinates, point: coordinates[Math.floor(coordinates.length / 2)], updated, starts: roadStart(item.schedule) });
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents };
+  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
 });

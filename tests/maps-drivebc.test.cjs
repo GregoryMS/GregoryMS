@@ -106,3 +106,16 @@ test('hidden-page cancellation and late responses cannot restore disabled report
   h.api.setEnabled(false);release(response());await flush();assert.equal(h.markers().length,0);
   await h.advance(600000);assert.equal(h.calls.length,1);
 });
+
+test('future toggle filters the same cached feed and retains unknown schedules',async()=>{
+  const h=setup();
+  h.setFetch(async()=>response([
+    {...reports[0],id:'Current',schedule:{intervals:['2026-10-17T00:00/']}},
+    {...reports[0],id:'Future',schedule:{intervals:['2026-10-19T12:00/']}},
+    {...reports[0],id:'Unknown',schedule:{intervals:['not-a-date/']}}
+  ]));
+  h.api.setEnabled(true);await flush();assert.equal(h.markers().length,2);assert.match(h.output.textContent,/1 future events hidden/);
+  const current=h.markers()[0];h.api.setIncludeFuture(true);assert.equal(h.markers().length,3);assert.equal(h.markers()[0],current);
+  assert(h.markers().some(m=>m.options.icon.className.includes('future')));assert.equal(h.calls.length,1);
+  h.api.setIncludeFuture(false);assert.equal(h.markers().length,2);assert.equal(h.calls.length,1);
+});
