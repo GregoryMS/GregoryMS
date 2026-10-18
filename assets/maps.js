@@ -14,7 +14,7 @@
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, layerControl, placeDetails, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false;
+  let map, layerControl, placeDetails, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, exploreDismissed = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -47,6 +47,8 @@
     if (marker) { map.removeLayer(marker); marker = null; }
     if (accuracy) { map.removeLayer(accuracy); accuracy = null; }
     $('clear-pin').hidden = !point;
+    $('close-explore').hidden = !!point;
+    $('map-place').hidden = !point && exploreDismissed;
     $('place-bottom').hidden = !point;
     $('place-kicker').textContent = point ? 'On the map' : 'A world to explore';
     $('place-name').textContent = point?.name || 'Explore from here.';
@@ -117,6 +119,11 @@
     }
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
+  $('close-explore').addEventListener('click', () => {
+    exploreDismissed = true;
+    $('map-place').hidden = true;
+    $('gregle-map').focus({ preventScroll: true });
+  });
   controls.forEach(control => { control.disabled = true; });
   if (!window.L || !core || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
