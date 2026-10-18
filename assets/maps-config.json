@@ -4,5 +4,7 @@
   "topographicURL": "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
   "maritimeURL": "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png",
   "trafficURL": "https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256",
-  "googleTrafficURL": "https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3"
+  "googleTrafficURL": "https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3",
+  "placesURL": "https://overpass.kumi.systems/api/interpreter",
+  "placeLookupURL": "https://nominatim.openstreetmap.org/"
 }

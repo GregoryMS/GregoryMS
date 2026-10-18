@@ -111,7 +111,8 @@ test('map uses attributable HTTPS tiles and a search provider configurable indep
   assert.equal(new URL(config.searchURL).protocol, 'https:');
   const script = fs.readFileSync(path.join(root, 'assets/maps.js'), 'utf8') + fs.readFileSync(path.join(root, 'assets/maps-layers.js'), 'utf8');
   assert(script.includes('https://www.openstreetmap.org/copyright'));
-  assert(!script.includes('nominatim.openstreetmap.org'));
+  assert.equal(new URL(config.searchURL).hostname, 'photon.komoot.io');
+  assert(script.includes('core.searchURL(config.searchURL, term, area)'));
   const page = fs.readFileSync(path.join(root, 'maps.html'), 'utf8');
   assert(page.includes('strict-origin-when-cross-origin'));
   assert(page.includes('https://www.openstreetmap.org/fixthemap'));

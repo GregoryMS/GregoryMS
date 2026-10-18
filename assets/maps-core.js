@@ -8,6 +8,10 @@
   const validPoint = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
   const wrapLongitude = lng => ((lng + 180) % 360 + 360) % 360 - 180;
   const text = value => typeof value === 'string' ? value.trim().slice(0, 180) : '';
+  function osmReference(type, id) {
+    type = ({ N: 'node', W: 'way', R: 'relation' })[type] || type;
+    return ['node', 'way', 'relation'].includes(type) && /^[1-9]\d{0,15}$/.test(String(id)) && Number.isSafeInteger(Number(id)) ? `${type}/${id}` : null;
+  }
   function readHash(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     const parts = (params.get('map') || '').split('/');
@@ -19,6 +23,8 @@
     const coords = (params.get('pin') || '').split(',');
     const [lat, lng] = coords.map(Number);
     const pin = coords.length === 2 && coords.every(part => part.trim() !== '') && validPoint(lat, lng) ? { lat, lng, name: text(params.get('name')) || 'Dropped pin', detail: '' } : null;
+    const [type, id] = (params.get('osm') || '').split('/');
+    if (pin && osmReference(type, id)) pin.osm = osmReference(type, id);
     return { view, pin };
   }
   function viewHash(view) {
@@ -36,6 +42,7 @@
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
     if (pin && validPoint(pin.lat, pin.lng)) hash += `&pin=${pin.lat.toFixed(5)},${pin.lng.toFixed(5)}&name=${encodeURIComponent(text(pin.name) || 'Dropped pin')}`;
+    if (pin?.osm && osmReference(...pin.osm.split('/')) === pin.osm) hash += `&osm=${pin.osm}`;
     if (layers) {
       const state = normalizeLayers(layers);
       hash += `&base=${state.base}&overlays=${['maritime', 'drivebc', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
@@ -95,7 +102,8 @@
       seen.add(key);
       const type = text(p.osm_value);
       const zoom = ({ country: 5, state: 7, city: 12, town: 13, village: 14, hamlet: 15 })[type] || 16;
-      results.push({ name, detail, lat: coords[1], lng: coords[0], zoom });
+      const osm = osmReference(p.osm_type, p.osm_id);
+      results.push({ name, detail, lat: coords[1], lng: coords[0], zoom, ...(osm ? { osm } : {}) });
       if (results.length === 6) break;
     }
     return results;
@@ -130,5 +138,5 @@
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, readHash, makeHash, osmURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents };
+  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents };
 });

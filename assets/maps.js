@@ -6,10 +6,11 @@
     tileURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', searchURL: 'https://photon.komoot.io/api/',
     topographicURL: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png', maritimeURL: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
     trafficURL: 'https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256',
-    googleTrafficURL: 'https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3'
+    googleTrafficURL: 'https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3',
+    placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, layerControl, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer;
+  let map, layerControl, placeDetails, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -35,7 +36,7 @@
     resultsList.replaceChildren();
     $('map-search-form').removeAttribute('aria-busy');
   };
-  function renderPin(point) {
+  function renderPin(point, lookup = true, nearby = false) {
     selected = point;
     if (marker) { map.removeLayer(marker); marker = null; }
     if (accuracy) { map.removeLayer(accuracy); accuracy = null; }
@@ -43,12 +44,16 @@
     $('place-bottom').hidden = !point;
     $('place-kicker').textContent = point ? 'On the map' : 'A world to explore';
     $('place-name').textContent = point?.name || 'Explore from here.';
-    $('place-detail').textContent = point?.detail || (point ? 'Copy the link to save or share this place.' : 'Find a favourite place, or tap the map to drop a pin.');
+    $('place-detail').textContent = point?.detail || (point ? 'Copy the link to save or share this place.' : 'Search or click a place to see its details, or tap elsewhere to drop a pin.');
     $('place-coordinates').textContent = point ? `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}` : '';
+    $('map-place').classList.toggle('has-pin', !!point);
+    if (point?.osm) $('place-kicker').textContent = 'OpenStreetMap place';
     if (point) {
       const icon = L.divIcon({ className: 'gregle-map-pin', iconSize: [38, 46], iconAnchor: [19, 44], html: '<svg viewBox="0 0 38 46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19 2C9.6 2 2 9.6 2 19c0 11 17 25 17 25s17-14 17-25C36 9.6 28.4 2 19 2Z" fill="#7637cc" stroke="#fff" stroke-width="2.5"/><circle cx="19" cy="18" r="6" fill="#fff"/></svg>' });
       marker = L.marker([point.lat, point.lng], { icon, title: point.name, alt: 'Map pin', keyboard: true }).addTo(map);
+      marker.on('click', () => placeDetails?.select(point, { nearby: !point.osm }));
     }
+    if (lookup) placeDetails?.select(point, { nearby });
   }
   function selectPoint(point, zoom = 16) {
     intent++;
@@ -92,13 +97,13 @@
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core || !window.GregleMapLayers || !window.GregleDriveBC || !window.GregleGoogleTraffic) {
+  if (!window.L || !core || !window.GregleMapLayers || !window.GregleDriveBC || !window.GregleGoogleTraffic || !window.GreglePlaceData || !window.GregleMapPlaces) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261017-google-traffic', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261017-place-tags', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       for (const key of Object.keys(defaults)) if (typeof supplied[key] === 'string' && supplied[key].startsWith('https://')) config[key] = supplied[key];
@@ -109,6 +114,7 @@
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
   layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: updateURL });
+  placeDetails = window.GregleMapPlaces({ map, config, onPlace: point => { renderPin(point, false); updateURL(); } });
   renderPin(initial.pin); updateURL();
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
@@ -116,7 +122,7 @@
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
   map.on('click', event => {
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
-    if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point); updateURL(); }
+    if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point, true, true); updateURL(); }
   });
   window.addEventListener('hashchange', () => {
     intent++; cancelSearch(); hideSearch();

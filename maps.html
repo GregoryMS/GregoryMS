@@ -11,15 +11,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261017-local-search">
+  <link rel="stylesheet" href="assets/maps.css?v=20261017-place-tags">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261017-local-search" defer></script>
+  <script src="assets/maps-core.js?v=20261017-place-tags" defer></script>
+  <script src="assets/maps-places-core.js?v=20261017-place-tags" defer></script>
+  <script src="assets/maps-places.js?v=20261017-place-tags" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-drivebc-pan" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-traffic" defer></script>
   <script src="assets/maps-layers.js?v=20261017-google-traffic" defer></script>
-  <script src="assets/maps.js?v=20261017-local-search" defer></script>
+  <script src="assets/maps.js?v=20261017-place-tags" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
 </head>
 <body class="maps-page">
@@ -107,7 +109,8 @@
     <section class="map-place map-glass" id="map-place" aria-labelledby="place-name">
       <div class="place-heading"><span class="place-kicker" id="place-kicker">A world to explore</span><button class="map-dismiss" id="clear-pin" type="button" aria-label="Remove pin" title="Remove pin" hidden>×</button></div>
       <h2 id="place-name">Explore from here.</h2>
-      <p id="place-detail">Find a favourite place, or tap the map to drop a pin.</p>
+      <p id="place-detail">Search or click a place to see its details, or tap elsewhere to drop a pin.</p>
+      <div id="place-tags" hidden></div>
       <div class="place-bottom" id="place-bottom" hidden><span id="place-coordinates"></span><button id="share-pin" type="button">Copy link <span aria-hidden="true">↗</span></button></div>
     </section>
     <div class="map-notice map-glass" id="map-notice" role="status" hidden></div>
