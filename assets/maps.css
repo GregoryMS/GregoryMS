@@ -284,6 +284,8 @@
 .aircraft-sources { margin-top: 10px; font-size: 10px; line-height: 1.6; color: var(--muted); }
 .aircraft-sources summary { cursor: pointer; color: var(--map-accent); }
 .aircraft-sources a { color: var(--map-accent); }
+.ev-provider-credit { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--map-border); overflow-wrap: anywhere; font-size: 10px; line-height: 1.6; }
+.ev-provider-credit p { margin: 5px 0; }
 
 .vessels-marker { background: transparent; border: 0; }
 .vessels-marker svg { width: 26px; height: 32px; overflow: visible; fill: var(--vessel-color, #7b8494); stroke: #fff; stroke-width: 1.7; stroke-linejoin: round; filter: drop-shadow(0 1px 2px #0008); }

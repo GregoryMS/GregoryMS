@@ -10,7 +10,7 @@
     cameraCatalogueURL: 'https://catalogue.data.gov.bc.ca/dataset/6b39a910-6c77-476f-ac96-7b4f18849b1c/resource/a9d52d85-8402-4ce7-b2ac-a2779837c48a/download/webcams.csv',
     trafficURL: 'https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256',
     googleTrafficURL: 'https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3',
-    evURL: 'https://overpass-api.de/api/interpreter',
+    evURL: 'https://gregle-ev.square-rain-5ded.workers.dev/charging', evProvider: 'openchargemap',
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
@@ -131,9 +131,10 @@
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261018-ev-cache', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261018-ocm', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
+      if (['openchargemap', 'overpass'].includes(supplied.evProvider)) config.evProvider = supplied.evProvider;
       for (const key of Object.keys(defaults)) if (typeof supplied[key] === 'string' && (supplied[key].startsWith('https://') || (['messageSignsURL', 'ferriesURL'].includes(key) && supplied[key].startsWith('/') && !supplied[key].startsWith('//')))) config[key] = supplied[key];
     }
   } catch {}

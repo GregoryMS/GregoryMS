@@ -4,13 +4,26 @@
     const core = window.GregleEVCore, maps = window.GregleMaps, places = window.GreglePlaceData;
     const output = document.getElementById('ev-layer-status'), retry = document.getElementById('ev-retry');
     const group = L.layerGroup(), displayed = new Map(), cache = [];
-    const credit = 'EV charging: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
+    const ocm=config.evProvider==='openchargemap';
+    const credit = ocm ? 'EV charging: <a href="https://openchargemap.org" target="_blank" rel="noopener">Open Charge Map</a> · provider licences in station details' : 'EV charging: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const storageKey = 'gregle-maps-ev-cache-v1';
     const cacheAge = 86400000, fallbackAge = 604800000, requestGap = 10000;
     let enabled = false, showAll = false, showTesla = false, active, version = 0, timer, nextRequest = 0, retryAt = 0, failures = 0;
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; };
     const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
     const link = (text, href) => { const el = make('a', text); el.href = href; if (href.startsWith('https:') || href.startsWith('http:')) { el.target = '_blank'; el.rel = 'noopener noreferrer'; } return el; };
+    function providerCredit(provider){
+      const box=make('div',null,'ev-provider-credit');
+      box.append(provider.url?link(provider.name,provider.url):make('strong',provider.name));
+      box.append(make('p',provider.license));
+      if(provider.licenseURL)box.append(link('Licence terms ↗',provider.licenseURL));
+      return box;
+    }
+    function renderCredits(records){
+      const target=document.getElementById('ev-source-credits');if(!target||!ocm)return;
+      const providers=new Map([...records.values()].filter(s=>s.provider).map(s=>[s.provider.name+'\n'+s.provider.license,s.provider]));
+      target.replaceChildren(...[...providers.values()].map(providerCredit));
+    }
     function bounds() {
       const b = map.getBounds(), west = maps.wrapLongitude(b.getWest());
       return [west, b.getSouth(), west + b.getEast() - b.getWest(), b.getNorth()];
@@ -37,13 +50,15 @@
       const box = make('div', null, 'ev-popup'), size = map.getSize(), width = Math.max(150, Math.min(320, size.x - 120));
       box.style.width = `${width}px`;
       Object.assign(marker.getPopup().options, { minWidth: width, maxWidth: width, maxHeight: Math.max(80, size.y - 220) });
-      box.append(make('strong', station.name, 'ev-title'), make('p', `${station.supercharger ? 'Tesla Supercharger' : 'EV charging station'} · OpenStreetMap`, 'ev-meta'));
+      box.append(make('strong', station.name, 'ev-title'), make('p', `${station.supercharger ? 'Tesla Supercharger' : 'EV charging station'} · ${station.source==='openchargemap'?'Open Charge Map':'OpenStreetMap'}`, 'ev-meta'));
       if (station.address) box.append(make('p', station.address));
       const tags = station.tags, facts = make('dl', null, 'ev-facts');
       const add = (label, value) => { if (value) facts.append(make('dt', label), make('dd', value)); };
       add('Network', tags.network); add('Operator', tags.operator);
       add('Access', ({ yes: 'Public', permissive: 'Public', private: 'Private', no: 'No public access', customers: 'Customers only', permit: 'Permit required', destination: 'Destination users' })[tags.access] || tags.access || 'Not recorded');
       add('Fee', ({ yes: 'A fee applies', no: 'No charging fee recorded' })[tags.fee] || tags.fee);
+      add('Charging cost',station.usageCost);add('Access notes',station.accessComments);add('Reported status',station.reportedStatus);
+      if(station.verified&&Number.isFinite(Date.parse(station.verified)))add('Last verified',new Date(station.verified).toLocaleDateString());
       add('Charging spaces', tags.capacity); add('Maximum output', tags['charging_station:output']);
       box.append(facts, make('strong', 'Connectors', 'ev-subheading'));
       if (station.connectors.length) {
@@ -61,7 +76,8 @@
       }
       box.append(contacts, make('p', 'Mapped information; live charger availability is not included.', 'ev-meta'));
       const actions = make('div', null, 'ev-links'), [lat, lng] = station.point;
-      actions.append(link('Check this area on PlugShare ↗', maps.plugshareURL({ lat, lng }, [lng - .01, lat - .01, lng + .01, lat + .01])), link('View OpenStreetMap details ↗', `https://www.openstreetmap.org/${station.id}`));
+      actions.append(link('Check this area on PlugShare ↗', maps.plugshareURL({ lat, lng }, [lng - .01, lat - .01, lng + .01, lat + .01])), station.source==='openchargemap'?link('Open Charge Map details / corrections ↗',`https://openchargemap.org/site/poi/details/${station.id.split('/')[1]}`):link('View OpenStreetMap details ↗', `https://www.openstreetmap.org/${station.id}`));
+      if(station.provider)box.append(make('strong','Data attribution','ev-subheading'),providerCredit(station.provider));
       box.append(actions); return box;
     }
     function covered(entry, view, requestArea, scope) {
@@ -81,7 +97,9 @@
       const now = Date.now(), records = new Map();
       // Keep locations through short outages, but use only fresh, complete coverage to skip a request.
       for (const entry of cache) if (now - entry.time <= fallbackAge) for (const station of entry.stations) if (visible(station.point, view) && (showAll || station.supercharger)) records.set(station.id, station);
+      renderCredits(records);
       const coverage = cache.findLast(entry => covered(entry, view, requestArea, showAll ? 'all' : 'tesla'));
+      const retained = cache.findLast(entry => now-entry.time< fallbackAge && core.contains(entry.area,view) && (showAll?entry.scope==='all':true));
       for (const [id, entry] of displayed) if (!records.has(id)) { group.removeLayer(entry.marker); displayed.delete(id); }
       for (const station of records.values()) {
         const previous = displayed.get(station.id), highlighted = showTesla && station.supercharger;
@@ -100,6 +118,7 @@
       if (active) report(`${text} ${count ? 'Updating charging stations…' : 'Loading charging stations…'}`);
       else if (failures) report(`${count ? text + ' Cached locations shown. ' : ''}Charging data is unavailable. Retry later or open PlugShare above.`, true);
       else if (coverage) report(`${text}${coverage.truncated ? ' Results are limited; zoom in for more stations.' : ''}${coverage.restored ? ' Recent saved locations.' : ''} No live availability.`);
+      else if(retained) report(`${text} Saved locations last refreshed ${new Date(retained.time).toLocaleDateString()}. No live availability.`);
       else report(`${text} Loading this area…`);
     }
     function cancel() { version++; active?.controller.abort(); active = null; clearTimeout(timer); }
@@ -109,7 +128,7 @@
       const view = bounds(), requestArea = core.area(view, map.getZoom()), now = Date.now();
       render();
       if (!requestArea || active) return;
-      const scope = showAll ? 'all' : 'tesla';
+      const scope = ocm || showAll ? 'all' : 'tesla';
       if (!force && cache.some(entry => covered(entry, view, requestArea, scope))) return;
       if (now < retryAt) { report(`Please wait ${Math.ceil((retryAt - now) / 1000)} seconds before retrying charging stations. Cached locations may be shown.`, true); return; }
       if (now < nextRequest) { timer = setTimeout(() => load(force), nextRequest - now); return; }
@@ -117,15 +136,19 @@
       const timeout = setTimeout(() => request.controller.abort(), 45000); nextRequest = now + requestGap;
       render();
       try {
-        const response = await fetch(config.evURL, { method: 'POST', body: new URLSearchParams({data: core.query(requestArea, scope === 'tesla')}), signal: request.controller.signal, credentials: 'omit' });
+        const url=ocm?new URL(config.evURL):null;if(url)url.search=new URLSearchParams({bbox:requestArea.join(','),scope:'all'});
+        const response = await fetch(url?.href||config.evURL, { method: ocm?'GET':'POST', ...(ocm?{}:{body:new URLSearchParams({data: core.query(requestArea, scope === 'tesla')})}), signal: request.controller.signal, credentials: 'omit' });
         if (!response.ok) {
           const error = new Error('Charging stations unavailable'), value = response.headers.get('Retry-After');
           error.retryAfter = value === null ? 0 : /^\d+(\.\d+)?$/.test(value.trim()) ? Number(value) * 1000 : Math.max(0, Date.parse(value) - Date.now()) || 0;
           throw error;
         }
-        const data = await response.json(), result = core.read(data);
+        const data = await response.json();
+        if(ocm&&data?.source!=='openchargemap')throw new Error('Unexpected charging source');
+        const result = core.read(data);
+        if(ocm&&(!Number.isFinite(result.fetchedAt)||result.fetchedAt>Date.now()||Date.now()-result.fetchedAt>=fallbackAge))throw new Error('Charging data out of date');
         if (token !== version || !enabled || document.hidden) return;
-        cache.push({...result, data, area: requestArea, scope: request.scope, time: Date.now()}); while (cache.length > 12) cache.shift();
+        cache.push({...result, data, area: requestArea, scope: request.scope, time: result.fetchedAt||Date.now()}); while (cache.length > 12) cache.shift();
         save();
         failures = 0; retryAt = 0;
       } catch (error) {
@@ -134,7 +157,7 @@
         notify('EV charging data could not load. PlugShare above opens the area you are viewing.', 'ev');
       } finally {
         clearTimeout(timeout);
-        if (token === version) { active = null; render(); if (!failures) timer = setTimeout(load, 650); }
+        if (token === version) { active = null; render(); if (!failures && (!ocm || !core.contains(request.area,bounds()))) timer = setTimeout(load, 650); }
       }
     }
     function setSelection(all, tesla) {

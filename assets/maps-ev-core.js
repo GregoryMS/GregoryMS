@@ -49,6 +49,7 @@
     return tesla && /^(yes|[1-9]\d{0,3})$/.test(clean(tags?.['socket:tesla_supercharger']));
   }
   function read(data) {
+    if (data?.source === 'openchargemap') return readOCM(data);
     if (!Array.isArray(data?.elements) || data.remark) throw new Error('Charging data is incomplete');
     const seen = new Set(), stations = [];
     for (const item of data.elements.slice(0, limit)) {
@@ -73,10 +74,36 @@
     const date = data.osm3s?.timestamp_osm_base;
     return { stations, truncated: data.truncated === true || data.elements.length > limit, snapshot: typeof date === 'string' && Number.isFinite(Date.parse(date)) ? date : null };
   }
+  function webURL(value) {
+    try { const url=new URL(value); return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password ? url.href : ''; } catch { return ''; }
+  }
+  function licenseURL(license) {
+    if (/CC BY-SA 4\.0|Attribution.ShareAlike 4\.0/i.test(license)) return 'https://creativecommons.org/licenses/by-sa/4.0/';
+    if (/CC BY 4\.0|Attribution 4\.0/i.test(license)) return 'https://creativecommons.org/licenses/by/4.0/';
+    if (/CC0|public domain dedication/i.test(license)) return 'https://creativecommons.org/publicdomain/zero/1.0/';
+    if (/ODbL|Open Database Licen[cs]e/i.test(license)) return 'https://opendatacommons.org/licenses/odbl/1-0/';
+    return webURL(/https?:\/\/[^\s<>"']+/.exec(license)?.[0]);
+  }
+  function readOCM(data) {
+    if(!Array.isArray(data.locations)||data.locations.length>limit||!Number.isFinite(data.fetchedAt)||data.fetchedAt<=0)throw new Error('Invalid Open Charge Map data');
+    const stations=[],seen=new Set();
+    for(const item of data.locations){
+      const a=item?.AddressInfo,p=item?.DataProvider,id=`ocm/${item?.ID}`;
+      if(!Number.isSafeInteger(item?.ID)||item.ID<1||!point(a?.Latitude,a?.Longitude)||seen.has(id)||p?.IsOpenDataLicensed!==true||!clean(p.Title)||!clean(p.License,20000)||p.License.length>20000)continue;
+      const connectors=(Array.isArray(item.Connections)?item.Connections:[]).slice(0,50).map(c=>({name:clean(c.ConnectionType?.Title)||'Type not reported',count:Number.isInteger(c.Quantity)&&c.Quantity>0&&c.Quantity<=10000?c.Quantity:null,output:typeof c.PowerKW==='number'&&Number.isFinite(c.PowerKW)&&c.PowerKW>0&&c.PowerKW<=5000?`${c.PowerKW} kW`:''}));
+      const powers=connectors.map(c=>parseFloat(c.output)).filter(Number.isFinite);
+      const tags={operator:clean(item.OperatorInfo?.Title),network:clean(item.OperatorInfo?.Title),access:clean(item.UsageType?.Title)||'Not reported',capacity:Number.isInteger(item.NumberOfPoints)&&item.NumberOfPoints>0?String(item.NumberOfPoints):'',website:webURL(a.RelatedURL)||webURL(item.OperatorInfo?.WebsiteURL),phone:clean(a.ContactTelephone1),'charging_station:output':powers.length?`${Math.max(...powers)} kW`:''};
+      const name=clean(a.Title)||tags.operator||'EV charging station',supercharger=isSupercharger({...tags,name});
+      stations.push({id,source:'openchargemap',point:[a.Latitude,a.Longitude],name,address:[a.AddressLine1,a.AddressLine2,a.Town,a.StateOrProvince,a.Postcode].map(x=>clean(x)).filter(Boolean).join(', '),tags,connectors,supercharger,restricted:/private|customers|restricted|permit|residents/i.test(tags.access),usageCost:clean(item.UsageCost,2000),accessComments:clean(a.AccessComments,2000),reportedStatus:clean(item.StatusType?.Title),verified:clean(item.DateLastVerified),provider:{name:clean(p.Title),url:webURL(p.WebsiteURL),license:clean(p.License,20000),licenseURL:licenseURL(p.License)}});
+      seen.add(id);
+    }
+    return {stations,truncated:data.truncated===true,snapshot:new Date(data.fetchedAt).toISOString(),fetchedAt:data.fetchedAt,stale:data.stale===true};
+  }
   function readCache(entry, now = Date.now()) {
     const box = entry?.area, time = entry?.time;
-    if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || box[0] < -180 || box[0] >= 180 || box[2] <= box[0] || box[2] - box[0] > 2.5 || box[1] < -90 || box[3] > 90 || box[3] <= box[1] || box[3] - box[1] > 1.3 || !['all', 'tesla'].includes(entry.scope) || !Number.isFinite(time) || time > now || now - time >= 604800000 || !Array.isArray(entry.data?.elements) || entry.data.elements.length > limit + 1) throw new Error('Invalid charging cache');
+    const records=entry?.data?.source==='openchargemap'?entry.data.locations:entry?.data?.elements;
+    if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || box[0] < -180 || box[0] >= 180 || box[2] <= box[0] || box[2] - box[0] > 2.5 || box[1] < -90 || box[3] > 90 || box[3] <= box[1] || box[3] - box[1] > 1.3 || !['all', 'tesla'].includes(entry.scope) || !Number.isFinite(time) || time > now || now - time >= 604800000 || !Array.isArray(records) || records.length > limit + 1 || entry.data.source==='openchargemap'&&(!Number.isFinite(entry.data.fetchedAt)||entry.data.fetchedAt>time||now-entry.data.fetchedAt>=604800000)) throw new Error('Invalid charging cache');
     return {...read(entry.data), area: box, scope: entry.scope, time, data: entry.data};
   }
-  return { area, contains, query, read, readCache, isSupercharger, limit };
+  return { area, contains, query, read, readCache, isSupercharger, limit, webURL };
 });

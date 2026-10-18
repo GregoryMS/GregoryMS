@@ -25,7 +25,7 @@ function setup(options={}){
  const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,bindPopup(fn){this.popup=fn;return this;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
  const c={L,localStorage,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleEVCore:core,document:{hidden:false,getElementById:id=>id==='ev-retry'?retry:output,addEventListener:(type,fn)=>listeners[type]=fn},addEventListener:(type,fn)=>listeners[type]=fn,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout(id){timers.delete(id);},fetch(url,options){calls.push({url,...options});return fetchImpl(url,options);}};
- c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-ev.js'),'utf8'),c);const api=c.GregleEVCharging({map,config:{evURL:options.endpoint||'https://overpass-api.de/api/interpreter'},notify(){}});
+ c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-ev.js'),'utf8'),c);const api=c.GregleEVCharging({map,config:{evURL:options.endpoint||'https://overpass-api.de/api/interpreter',evProvider:options.provider},notify(){}});
  async function advance(ms){const target=now+ms;for(let i=0;i<200;i++){const due=[...timers.entries()].filter(([,t])=>t.due<=target).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=target;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
  return {api,storage,calls,output,retry,advance,listeners,document:c.document,setFetch:fn=>fetchImpl=fn,markers:()=>[...groups[0].children],async move(b,z=zoom){bounds=b;zoom=z;listeners.moveend();await advance(650);}};
 }
@@ -107,4 +107,20 @@ test('saved cache validation rejects future times, expired data and invalid scop
  for(const bad of [{...entry,time:now+1},{...entry,time:now-604800000},{...entry,scope:'anything'},{...entry,area:['-123.5',48.3,-123.2,48.6]},{...entry,data:{elements:[],remark:'incomplete'}}])assert.throws(()=>core.readCache(bad,now));
  const a=core.area([-123.399,48.401,-123.301,48.499],13),b=core.area([-123.398,48.402,-123.302,48.498],13);assert.deepEqual(a,b);assert(core.contains(a,[-123.399,48.401,-123.301,48.499]));
  const close=core.area([-123.366,48.429,-123.364,48.431],18);assert(close[2]-close[0]<.01);assert(close[3]-close[1]<.01);
+});
+const ocmPacket=(time=Date.parse('2026-10-18T02:30:00Z'))=>({source:'openchargemap',fetchedAt:time,locations:[{ID:123,AddressInfo:{Title:'Tesla Supercharger',Latitude:48.43,Longitude:-123.36,RelatedURL:'javascript:alert(1)'},DataProvider:{Title:'Open Charge Map Contributors',WebsiteURL:'https://openchargemap.org',License:'CC BY 4.0',IsOpenDataLicensed:true},OperatorInfo:{Title:'Tesla (Supercharger)'},UsageType:{Title:'Public - Membership Required'},Connections:[{Quantity:12,PowerKW:250,ConnectionType:{Title:'NACS'}}]}]});
+test('OCM station parsing retains licences, rejects unsafe URLs and distinguishes Superchargers from Destination sites',()=>{
+ const data=ocmPacket(),s=core.read(data).stations[0];assert.equal(s.id,'ocm/123');assert(s.supercharger);assert.equal(s.connectors[0].output,'250 kW');assert.equal(s.provider.licenseURL,'https://creativecommons.org/licenses/by/4.0/');assert.equal(s.tags.website,'');assert.equal(s.provider.name,'Open Charge Map Contributors');
+ const destination=structuredClone(data);destination.locations[0].AddressInfo.Title='Tesla Destination';destination.locations[0].OperatorInfo.Title='Tesla (Destination)';assert(!core.read(destination).stations[0].supercharger);
+ const restricted=structuredClone(data);restricted.locations[0].UsageType.Title='Private - For Staff, Visitors or Customers';assert(core.read(restricted).stations[0].restricted);
+ const noLicense=structuredClone(data);delete noLicense.locations[0].DataProvider.License;assert.equal(core.read(noLicense).stations.length,0);
+ const entry={area:[-123.4,48.4,-123.3,48.5],time:data.fetchedAt,scope:'all',data};assert.equal(core.readCache(entry,data.fetchedAt).stations.length,1);assert.throws(()=>core.readCache({...entry,time:data.fetchedAt-1},data.fetchedAt));
+});
+test('OCM browser requests use the relay without credentials or polling, share Tesla coverage and retain fetch times',async()=>{
+ const h=setup({provider:'openchargemap',endpoint:'https://gregle-ev.square-rain-5ded.workers.dev/charging'});
+ // The source-credit panel is absent from this focused map harness.
+ h.document.getElementById=id=>id==='ev-retry'?h.retry:id==='ev-layer-status'?h.output:null;
+ h.setFetch(async()=>({ok:true,json:async()=>ocmPacket()}));h.api.setSelection(false,true);await flush();assert.equal(h.calls[0].method,'GET');assert.equal(h.calls[0].credentials,'omit');assert(!h.calls[0].body);assert(!h.calls[0].headers);assert.equal(new URL(h.calls[0].url).searchParams.get('scope'),'all');assert.equal(h.markers().length,1);
+ h.api.setSelection(true,true);await flush();await h.advance(300000);assert.equal(h.calls.length,1);
+ const saved=JSON.parse(h.storage.get('gregle-maps-ev-cache-v1'));assert.equal(saved.entries[0].time,ocmPacket().fetchedAt);assert.equal(saved.entries[0].data.locations[0].DataProvider.License,'CC BY 4.0');
 });
