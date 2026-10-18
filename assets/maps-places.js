@@ -44,13 +44,38 @@
       }
       details.append(list); box.append(details);
     }
+    function showHours(schedule, target) {
+      target.className = 'place-hours';
+      if (!schedule.weekly) {
+        target.append(make('p', 'Special schedule — see the recorded hours:', 'place-hours-note'), make('div', schedule.raw, 'place-hours-recorded'));
+        return;
+      }
+      const table = make('table'); table.setAttribute('aria-label', 'Weekly opening hours');
+      const body = make('tbody');
+      for (const day of schedule.days) {
+        const row = make('tr'), label = make('th', day.day), times = make('td');
+        label.scope = 'row';
+        if (day.closed) row.className = 'place-hours-closed';
+        for (const time of day.times) times.append(make('div', time));
+        row.append(label, times); body.append(row);
+      }
+      table.append(body); target.append(table);
+      if (schedule.notes.length) {
+        const exceptions = make('div', null, 'place-hours-exceptions');
+        for (const note of schedule.notes) {
+          const line = make('div'); line.append(make('strong', note.label), make('span', note.times.join('\n'))); exceptions.append(line);
+        }
+        target.append(exceptions);
+      }
+    }
     function show(place, places) {
       box.replaceChildren(); box.hidden = false; card.scrollTop = 0;
       onPlace(place);
       const list = make('dl', null, 'place-facts');
       for (const fact of data.facts(place.tags)) {
         const value = make('dd');
-        if (fact.href) value.append(link(fact.value, fact.href)); else value.textContent = fact.value;
+        if (fact.schedule) showHours(fact.schedule, value);
+        else if (fact.href) value.append(link(fact.value, fact.href)); else value.textContent = fact.value;
         list.append(make('dt', fact.label), value);
       }
       box.append(list);

@@ -73,6 +73,50 @@ test('fallback lookups keep exact identities and reject distant reverse-geocodin
   assert.deepEqual(places.readFallback({ error: 'Unable to geocode' }, point), []);
 });
 
+test('weekly hours list every day using 24-hour times and keep Sunday separate', () => {
+  const schedule = places.readHours('Mo-Sa 09:00-21:00; Su 10:00-19:00');
+  assert.equal(schedule.weekly, true);
+  assert.deepEqual(schedule.days.map(day => day.day), ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+  assert.deepEqual(schedule.days[0].times, ['09:00 – 21:00']);
+  assert.deepEqual(schedule.days[5].times, ['09:00 – 21:00']);
+  assert.deepEqual(schedule.days[6].times, ['10:00 – 19:00']);
+  assert.equal(schedule.raw, 'Mo-Sa 09:00-21:00; Su 10:00-19:00');
+});
+
+test('split shifts, closed days, weekday lists and later overrides stay clear', () => {
+  const schedule = places.readHours('Mo-Fr 08:00-12:00,13:30-17:00; We off; Sa,Su 10:00-14:00');
+  assert.deepEqual(schedule.days[0].times, ['08:00 – 12:00', '13:30 – 17:00']);
+  assert.deepEqual(schedule.days[2].times, ['Closed']);
+  assert.equal(schedule.days[2].closed, true);
+  assert.deepEqual(schedule.days[5].times, ['10:00 – 14:00']);
+  assert.deepEqual(places.readHours('Mo-Fr 09:00-17:00').days[6].times, ['Closed']);
+  assert.deepEqual(places.readHours('08:00-22:00').days[4].times, ['08:00 – 22:00']);
+});
+
+test('holidays and quoted instructions remain visible alongside daily hours', () => {
+  const schedule = places.readHours('Mo-Fr 09:00-17:00 "Call first; appointments preferred"; PH off; SH 10:00-14:00');
+  assert.equal(schedule.weekly, true);
+  assert.deepEqual(schedule.days[0].times, ['09:00 – 17:00', 'Call first; appointments preferred']);
+  assert.deepEqual(schedule.notes, [{label:'Public holidays',times:['Closed']},{label:'School holidays',times:['10:00 – 14:00']}]);
+});
+
+test('24-hour businesses, midnight and overnight shifts avoid ambiguous AM/PM labels', () => {
+  for (const raw of ['24/7', '00:00-24:00']) assert(places.readHours(raw).days.every(day => day.times[0] === 'Open 24 hours'));
+  assert.deepEqual(places.readHours('09:00-24:00').days[0].times, ['09:00 – 24:00']);
+  const schedule = places.readHours('Fr-Mo 20:00-02:00');
+  assert.deepEqual(schedule.days[4].times, ['20:00 – 02:00 (next day)']);
+  assert.deepEqual(schedule.days[0].times, ['20:00 – 02:00 (next day)']);
+  assert.deepEqual(schedule.days[2].times, ['Closed']);
+  assert.deepEqual(places.readHours('Mo 20:00-26:00').days[0].times, ['20:00 – 02:00 (next day)']);
+});
+
+test('seasonal, solar and complex overnight schedules preserve their original conditions', () => {
+  for (const raw of ['Jun-Aug Mo-Fr 09:00-17:00', 'Mo-Fr 09:00-17:00; Dec 25 off', 'sunrise-sunset', 'Mo[1] 10:00-14:00', 'Mo 20:00-26:00; Tu 20:00-24:00', 'Mo-Fr 09:00-17:00 || "By appointment"', 'Mo 99:00-12:00', 'Mo 09:90-12:00', 'Mo 00:00-48:00']) {
+    const schedule = places.readHours(raw);
+    assert.equal(schedule.weekly, false, raw); assert.equal(schedule.raw, raw); assert.deepEqual(schedule.days, []);
+  }
+});
+
 test('unsafe external tag values cannot become executable or header-injecting links', () => {
   for (const value of ['javascript:alert(1)', 'data:text/html,hello', 'https://user:pass@example.com', 'https://example.com\\evil']) {
     assert.equal(places.safeLink('website', value), null, value);

@@ -102,11 +102,86 @@
       return ['https:', 'http:'].includes(url.protocol) && url.hostname.includes('.') && !url.username && !url.password ? url.href : null;
     } catch { return null; }
   }
+  function readHours(value) {
+    const raw = clean(value);
+    const names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const codes = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+    const special = () => ({ days: [], notes: [], raw, weekly: false });
+    if (!raw || raw.includes('||')) return special();
+    // Semicolons inside quoted instructions are part of that instruction.
+    const rules = []; let start = 0, quoted = false;
+    for (let i = 0; i < raw.length; i++) {
+      if (raw[i] === '"') quoted = !quoted;
+      if (raw[i] === ';' && !quoted) { rules.push(raw.slice(start, i).trim()); start = i + 1; }
+    }
+    if (quoted) return special();
+    rules.push(raw.slice(start).trim());
+    const days = names.map(day => ({ day, times: ['Closed'], closed: true })), notes = [];
+    let weeklyRules = 0, hasOvernight = false;
+    function clock(minutes, end = false) {
+      if (minutes === 1440 && end) return '24:00';
+      minutes %= 1440;
+      const hour = Math.floor(minutes / 60), minute = minutes % 60;
+      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    }
+    function timesFor(body) {
+      const match = body.match(/^(.*?)(?:\s*"([^"\n]+)")?$/);
+      if (!match) return null;
+      body = match[1].trim(); const comment = match[2];
+      let times, closed = false;
+      if (['off', 'closed'].includes(body)) { times = ['Closed']; closed = true; }
+      else if (['24/7', 'open'].includes(body)) times = ['Open 24 hours'];
+      else if (!body && comment) times = [];
+      else {
+        times = [];
+        for (const part of body.split(',')) {
+          const range = part.trim().match(/^(\d{1,2}):([0-5]\d)\s*-\s*(\d{1,2}):([0-5]\d)$/);
+          if (!range) return null;
+          const from = Number(range[1]) * 60 + Number(range[2]), to = Number(range[3]) * 60 + Number(range[4]);
+          if (from >= 1440 || to > 2880 || from === to) return null;
+          const end = to < from ? to + 1440 : to;
+          if (end - from > 1440) return null;
+          if (end > 1440) hasOvernight = true;
+          if (from === 0 && end === 1440) times.push('Open 24 hours');
+          else times.push(`${clock(from)} – ${clock(to, true)}${end > 1440 ? ' (next day)' : ''}`);
+        }
+      }
+      if (comment) times.push(comment);
+      return { times, closed };
+    }
+    for (const rule of rules) {
+      if (!rule) return special();
+      const holiday = rule.match(/^(PH|SH)\s+(.+)$/);
+      if (holiday) {
+        const hours = timesFor(holiday[2]); if (!hours) return special();
+        const label = holiday[1] === 'PH' ? 'Public holidays' : 'School holidays';
+        const existing = notes.findIndex(note => note.label === label);
+        const note = { label, times: hours.times };
+        if (existing >= 0) notes[existing] = note; else notes.push(note);
+        continue;
+      }
+      const match = rule.match(/^((?:Mo|Tu|We|Th|Fr|Sa|Su)(?:\s*-\s*(?:Mo|Tu|We|Th|Fr|Sa|Su))?(?:\s*,\s*(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:\s*-\s*(?:Mo|Tu|We|Th|Fr|Sa|Su))?)*)\s+(.+)$/);
+      const hours = timesFor(match ? match[2] : rule);
+      if (!hours) return special();
+      const selected = new Set();
+      if (!match) codes.forEach((_, i) => selected.add(i));
+      else for (const part of match[1].split(',')) {
+        const [first, last = first] = part.trim().split(/\s*-\s*/);
+        const from = codes.indexOf(first), to = codes.indexOf(last);
+        for (let offset = 0; offset <= (to - from + 7) % 7; offset++) selected.add((from + offset) % 7);
+      }
+      for (const i of selected) days[i] = { day: names[i], times: [...hours.times], closed: hours.closed };
+      weeklyRules++;
+    }
+    // Separate overnight rules can overwrite the previous day's spillover at midnight.
+    // Preserve their original meaning rather than flattening those cases incorrectly.
+    return weeklyRules && !(hasOvernight && weeklyRules > 1) ? { days, notes, raw, weekly: true } : special();
+  }
   function facts(tags) {
     const rows = [];
     const add = (label, value, kind) => { if (value) rows.push({ label, value, href: kind ? safeLink(kind, value) : null }); };
     add('Phone', tags.phone || tags['contact:phone'], 'phone');
-    add('Hours', tags.opening_hours === '24/7' ? 'Open 24 hours' : tags.opening_hours);
+    if (tags.opening_hours) rows.push({ label: 'Hours', value: tags.opening_hours === '24/7' ? 'Open 24 hours' : tags.opening_hours, href: null, schedule: readHours(tags.opening_hours) });
     add('Hours note', tags['opening_hours:description']);
     add('Website', tags.website || tags['contact:website'] || tags.url, 'website');
     add('Email', tags.email || tags['contact:email'], 'email');
@@ -115,5 +190,5 @@
     add('Operator', tags.operator);
     return rows;
   }
-  return { query, readPlaces, fallbackURL, readFallback, facts, safeLink };
+  return { query, readPlaces, fallbackURL, readFallback, facts, safeLink, readHours };
 });

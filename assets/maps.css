@@ -45,6 +45,19 @@
 .place-facts, .place-raw-tags { margin: 0; }
 .place-facts dt { color: var(--muted); font-size: 10px; margin-top: 10px; }
 .place-facts dd, .place-raw-tags dd { margin: 1px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.place-hours { white-space: normal !important; }
+.place-hours table { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.6; }
+.place-hours th, .place-hours td { padding: 5px 0; vertical-align: top; border-bottom: 1px solid var(--map-border); }
+.place-hours tr:last-child :is(th, td) { border-bottom: 0; }
+.place-hours th { width: 38%; padding-right: 12px; text-align: left; font-weight: 400; }
+.place-hours td { text-align: right; font-variant-numeric: tabular-nums; }
+.place-hours-closed td { color: var(--muted); }
+.place-hours-exceptions { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--map-border); font-size: 11px; }
+.place-hours-exceptions > div { display: flex; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.place-hours-exceptions strong { font-weight: 400; color: var(--muted); }
+.place-hours-exceptions span { text-align: right; white-space: pre-wrap; }
+.map-place .place-hours-note { margin: 4px 0; max-height: none; overflow: visible; font-size: 11px; }
+.place-hours-recorded { white-space: pre-wrap; overflow-wrap: anywhere; }
 #place-tags a { color: var(--map-accent); text-underline-offset: 3px; }
 .map-place .place-tags-status { margin: 10px 0; max-height: none; overflow: visible; font-size: 11px; }
 .place-all-tags, .place-choices { border-top: 1px solid var(--map-border); margin-top: 14px; padding-top: 10px; }
