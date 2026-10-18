@@ -61,7 +61,7 @@
         }
       }
       const count = records.size, message = `${count} vessels in this view.`;
-      if (failures) report(`${message} Vessel feed unavailable; retrying after a short pause. Reports older than ten minutes are hidden.`, true);
+      if (failures) report(`${count ? `${count} recently reported vessels in this view. Partial update; ` : 'Vessel feed temporarily unavailable; '}retrying after a short pause. Reports older than ten minutes are hidden.`, true);
       else if (active || !snapshot || !core.covers(snapshot.area, view)) report(`${count ? message + ' ' : ''}Loading vessels for this area…`);
       else report(`${message} Updated ${clock(snapshot.time)} · refreshes each minute. AIS coverage varies; an empty view does not confirm no vessels.${snapshot.limited || records.size >= 1500 ? ' Results limited; zoom in for more.' : ''}${snapshot.degraded ? ' Source coverage is currently reduced.' : ''}`);
     }
@@ -82,30 +82,57 @@
       const now = Date.now(), wait = Math.max(nextRequest, retryAt) - now;
       if (wait > 0) { schedule(wait); return; }
       const token = version, request = { controller: new AbortController() }; active = request; nextRequest = now + interval;
-      const timeout = setTimeout(() => request.controller.abort(), 45000);
+      const timeout = setTimeout(() => request.controller.abort(), 65000);
       render();
+      const vessels = new Map(); let received = 0, limited = false, degraded = false;
       try {
-        const vessels = new Map(); let cursor = '', snapshotId = '', limited = false, degraded = false;
-        for (let page = 0; page < 12; page++) {
+        async function page(cursor = '', snapshotId = '') {
           const url = new URL(endpoint); url.search = new URLSearchParams({ bbox: area.join(','), ...(cursor ? { cursor, snapshot: snapshotId } : {}) });
           const response = await fetch(url.href, { signal: request.controller.signal, credentials: 'omit' });
           if (!response.ok) {
             const error = new Error('Vessels unavailable'), value = response.headers.get('Retry-After');
+            error.status = response.status;
             error.retryAfter = value && /^\d+$/.test(value) ? Number(value) * 1000 : Math.max(0, Date.parse(value || '') - Date.now()) || 0;
             throw error;
           }
           const result = core.read(await response.json(), Date.now());
-          if (token !== version) return;
+          if (token !== version) throw new Error('Cancelled vessel update');
           if (!/^[a-f0-9]{24}$/.test(result.snapshotId) || snapshotId && result.snapshotId !== snapshotId || result.cursor && (!/^[1-9]\d{3,4}$/.test(result.cursor) || +result.cursor <= +(cursor || 0) || +result.cursor % 5000)) throw new Error('Invalid vessel page');
-          snapshotId = result.snapshotId; cursor = result.cursor; limited ||= result.limited; degraded ||= result.degraded;
+          received++; limited ||= result.limited; degraded ||= result.degraded;
           for (const vessel of result.vessels) if (!vessels.has(vessel.id) || vessels.get(vessel.id).updated < vessel.updated) vessels.set(vessel.id, vessel);
           request.preview = { vessels: [...vessels.values()] }; render();
-          if (!cursor) break;
-          if (page === 11) limited = true;
+          return result;
+        }
+        const first = await page();
+        if (first.pages && first.cursor) {
+          const queue = Array.from({ length: first.pages - 1 }, (_, i) => String((i + 1) * 5000));
+          let offset = 0, failure, paused = false;
+          // Three bounded requests avoid a slow page delaying every other region.
+          async function consume() {
+            while (offset < queue.length && !paused && token === version && !request.controller.signal.aborted) {
+              const cursor = queue[offset++];
+              try { await page(cursor, first.snapshotId); }
+              catch (error) { failure ||= error; if (error.status === 429) paused = true; }
+            }
+          }
+          await Promise.all(Array.from({ length: Math.min(3, queue.length) }, consume));
+          if (failure) throw failure;
+          if (received !== first.pages) throw new Error('Incomplete vessel update');
+        } else {
+          // Continue to work with a relay version that has no page count yet.
+          let next = first;
+          for (let i = 1; next.cursor && i < 12; i++) next = await page(next.cursor, first.snapshotId);
+          if (next.cursor) limited = true;
         }
         snapshot = { vessels: [...vessels.values()], area, time: Date.now(), limited, degraded }; failures = 0; retryAt = 0;
       } catch (error) {
         if (token !== version) return;
+        if (received) {
+          // Keep valid observations even when a later snapshot page fails.
+          const merged = new Map((snapshot?.vessels || []).map(v => [v.id, v]));
+          for (const vessel of vessels.values()) if (!merged.has(vessel.id) || merged.get(vessel.id).updated < vessel.updated) merged.set(vessel.id, vessel);
+          snapshot = { vessels: [...merged.values()], area, time: Date.now(), limited: true, degraded: true };
+        }
         failures++;
         retryAt = Date.now() + Math.max(Math.min(900000, Number(error.retryAfter) || 0), Math.min(300000, 60000 * 2 ** Math.min(failures - 1, 4)));
         if (failures === 1) notify('Live vessels are temporarily unavailable. Open Layers to retry.', 'vessels');

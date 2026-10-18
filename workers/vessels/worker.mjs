@@ -35,37 +35,39 @@ export default {
     try {
       const paused = await cache.match(cooldown);
       if (paused) return reply({ error: 'Vessel source temporarily unavailable' }, 503, { 'Retry-After': paused.headers.get('Retry-After') || '60' });
-      let cached = await cache.match(key);
+      let cached = await cache.match(key), data;
       if (!cached) {
         const upstreamURL = new URL('https://pocketworld.org/api/ships');
         upstreamURL.search = new URLSearchParams({ wire: '1', limit: '5000', ...(cursor ? { cursor, snapshot_id: snapshot } : {}) }).toString();
-        const upstream = await fetch(upstreamURL.href, { headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' }, redirect: 'manual', signal: AbortSignal.timeout(12000) });
+        const upstream = await fetch(upstreamURL.href, { headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' }, redirect: 'manual', signal: AbortSignal.timeout(20000) });
         if (!upstream.ok) {
           const value = upstream.headers.get('Retry-After');
           const wait = Math.min(900, Math.max(60, value && /^\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value || '') - Date.now()) / 1000) || 60));
           await upstream.body?.cancel();
           // A snapshot that expired between pages is retried on the next visible refresh.
-          if (![400, 404, 409, 410].includes(upstream.status)) ctx.waitUntil(cache.put(cooldown, new Response('paused', { headers: { 'Cache-Control': `public, max-age=${wait}`, 'Retry-After': String(wait) } })).catch(() => {}));
+          if (upstream.status === 429 || value && ![400, 404, 409, 410].includes(upstream.status)) ctx.waitUntil(cache.put(cooldown, new Response('paused', { headers: { 'Cache-Control': `public, max-age=${wait}`, 'Retry-After': String(wait) } })).catch(() => {}));
           return reply({ error: 'Vessel source temporarily unavailable' }, upstream.status === 429 ? 429 : 503, { 'Retry-After': String(wait) });
         }
-        const data = await readJSON(upstream);
+        data = await readJSON(upstream);
         if (data.payload !== 'ship_map_wire_v1' || !Array.isArray(data.fields) || !Array.isArray(data.ship_rows) || data.ship_rows.length > 5000 || !['mmsi', 'lat', 'lng', 'observed_at'].every(f => data.fields.includes(f)) || !/^[a-f0-9]{24}$/.test(data.snapshot_id || '') || snapshot && snapshot !== data.snapshot_id) throw new Error('Invalid vessel data');
-        cached = new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' } });
+        cached = new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=30' } });
         ctx.waitUntil(cache.put(key, cached.clone()).catch(() => {}));
       }
-      const data = await readJSON(cached), fields = data.fields, index = Object.fromEntries(fields.map((f, i) => [f, i])), ships = [];
+      if (!data) data = await readJSON(cached);
+      const fields = data.fields, index = Object.fromEntries(fields.map((f, i) => [f, i])), ships = [];
       for (const row of data.ship_rows) {
         if (!Array.isArray(row)) continue;
         const lat = row[index.lat], lng = row[index.lng];
         if (typeof lat !== 'number' || typeof lng !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lng) > 180 || lat < south || lat > north || wrap(lng - west) < 0 || ((lng - west) % 360 + 360) % 360 > east - west) continue;
         ships.push({ mmsi: row[index.mmsi], lat, lng, name: row[index.name], type: row[index.type_name], country: row[index.country], destination: row[index.destination],
-          heading: row[index.heading], course: row[index.cog], speed: row[index.sog], source: row[index.source], observed: row[index.observed_at] });
+          heading: row[index.heading], course: row[index.cog], speed: row[index.sog], source: row[index.source], observed: row[index.position_observed_at] ?? row[index.observed_at] });
       }
       const next = typeof data.cursor === 'string' && /^[1-9]\d{3,5}$/.test(data.cursor) && +data.cursor > +(cursor || 0) && +data.cursor % 5000 === 0 ? data.cursor : '';
       const limited = data.truncated === true && !next || +next > 55000;
-      return reply({ now: Date.now(), ships, snapshotId: data.snapshot_id, cursor: +next <= 55000 ? next : '', limited, degraded: data.connected !== true || data.freshness?.stale === true });
-    } catch {
-      console.warn('vessel_source_unavailable');
+      const pages = Number.isSafeInteger(data.total_available) && data.total_available >= 0 ? Math.min(12, Math.max(1, Math.ceil(data.total_available / 5000))) : null;
+      return reply({ now: Date.now(), ships, pages, snapshotId: data.snapshot_id, cursor: +next <= 55000 ? next : '', limited, degraded: data.connected !== true || data.freshness?.stale === true });
+    } catch (error) {
+      console.warn(JSON.stringify({ event: 'vessel_source_unavailable', cause: error instanceof Error ? error.name : 'UnknownError', page: cursor || '0' }));
       return reply({ error: 'Vessel source temporarily unavailable' }, 503, { 'Retry-After': '60' });
     }
   }

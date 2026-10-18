@@ -35,3 +35,11 @@ test('upstream throttling is shared across areas and malformed JSON fails closed
  }finally{h.cleanup();}
  const broken=await setup();try{broken.setFetch(async()=>new Response('{}'));assert.equal((await broken.ask()).status,503);}finally{broken.cleanup();}
 });
+
+test('a transient page error does not pause unrelated pages and observation age uses the position report',async()=>{
+ const h=await setup();try{
+ h.setFetch(async()=>new Response('temporary',{status:503}));assert.equal((await h.ask()).status,503);await h.done();
+ const data=payload();data.fields.push('position_observed_at');data.ship_rows[0].push('2026-10-18T18:00:00Z');data.total_available=35815;
+ h.setFetch(async()=>new Response(JSON.stringify(data)));const r=await h.ask();assert.equal(r.status,200);const d=await r.json();assert.equal(d.pages,8);assert.equal(d.ships[0].observed,'2026-10-18T18:00:00Z');assert.equal(h.calls.length,2);
+ }finally{h.cleanup();}
+});
