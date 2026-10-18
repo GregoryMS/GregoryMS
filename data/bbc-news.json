@@ -1,23 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-18T13:20:36+00:00",
-  "fetchedAt": "2026-10-18T13:20:42.628920+00:00",
+  "feedUpdatedAt": "2026-10-18T16:36:02+00:00",
+  "fetchedAt": "2026-10-18T16:36:11.803841+00:00",
   "items": [
     {
       "title": "Burnt out cars and shattered glass on Paris streets after protests turn to riots and looting",
       "link": "https://www.bbc.co.uk/news/articles/c574pdzl0k4no?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: Parisians wake up to protest damage and looted shops",
-      "link": "https://www.bbc.co.uk/news/videos/cmn5vey19q3go?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Polanski says he will not overturn Green Party's 'Zionism is racism' motion",
       "link": "https://www.bbc.co.uk/news/articles/cmn8w5v8yne4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Ending corridor care in hospitals for children a priority, says health secretary",
-      "link": "https://www.bbc.co.uk/news/articles/cm2kezgd77qlo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "A wave of homemade, synthetic drugs sweeps US and deepens crisis",
@@ -28,20 +20,28 @@
       "link": "https://www.bbc.co.uk/news/videos/cq8ez4jz1z04o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Oil facilities hit in deadly overnight attack on St Petersburg",
+      "link": "https://www.bbc.co.uk/news/articles/c3eweygrjzd7o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Ending corridor care in hospitals for children a priority, says health secretary",
+      "link": "https://www.bbc.co.uk/news/articles/cm2kezgd77qlo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Suspects hunted after police officer injured in shooting",
       "link": "https://www.bbc.co.uk/news/articles/c63elzvjpgn2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Photos show luxury boat with 50m pool and water slides near Kim Jong Un's summer retreat",
-      "link": "https://www.bbc.co.uk/news/articles/cmy4xnyyg1lyo?at_medium=RSS&at_campaign=rss"
+      "title": "Man, 80, who died in light aircraft crash near Loch Lomond named",
+      "link": "https://www.bbc.co.uk/news/articles/cmx23p5w7123o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "There's a crackdown on sports piracy but is it already out of control?",
-      "link": "https://www.bbc.co.uk/news/articles/cmx2375zqwwwo?at_medium=RSS&at_campaign=rss"
+      "title": "Search for Amelia Earhart's plane resumes after stormy weather",
+      "link": "https://www.bbc.co.uk/news/articles/cv70pxe5j90eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Braam! How the music in The Traitors plays with your emotions",
-      "link": "https://www.bbc.co.uk/news/articles/crwyq75117z4o?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Pope thanks well-wishers in first event after cancer surgery",
+      "link": "https://www.bbc.co.uk/news/videos/cq70px6pjkg5o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
