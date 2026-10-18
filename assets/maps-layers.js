@@ -8,6 +8,7 @@
     try { saved = JSON.parse(localStorage.getItem(preferenceKey)); apiKey = localStorage.getItem(credentialKey) || ''; } catch {}
     let state = core.normalizeLayers(initial || saved);
     const drivebc = window.GregleDriveBC({ map, notify });
+    const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const layerOptions = { maxZoom: 19, updateWhenIdle: true, keepBuffer: 1 };
@@ -32,6 +33,7 @@
       $('map-maritime').checked = state.maritime;
       $('map-drivebc').checked = state.drivebc;
       $('map-traffic').checked = state.traffic;
+      $('map-google-traffic').checked = state.google;
       $('maritime-layer-status').hidden = !state.maritime;
       $('drivebc-layer-status').hidden = !state.drivebc;
       $('traffic-connect').textContent = apiKey ? 'Manage key' : 'Connect TomTom';
@@ -175,6 +177,7 @@
       if (!baseLayer || previous.base !== state.base) changeBase();
       if (previous.maritime !== state.maritime || (state.maritime && !maritimeLayer)) changeMaritime();
       if (previous.drivebc !== state.drivebc) drivebc.setEnabled(state.drivebc);
+      if (previous.google !== state.google) googleTraffic.setEnabled(state.google);
       if (previous.traffic !== state.traffic || (state.traffic && apiKey && !trafficLayer && !trafficPaused)) {
         if (state.traffic) loadTraffic(); else { removeTraffic(); trafficPaused = false; scheduleTraffic(); }
       }
@@ -190,6 +193,7 @@
     panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
     $('map-maritime').addEventListener('change', () => setState({ ...state, maritime: $('map-maritime').checked }, true));
     $('map-drivebc').addEventListener('change', () => setState({ ...state, drivebc: $('map-drivebc').checked }, true));
+    $('map-google-traffic').addEventListener('change', () => setState({ ...state, google: $('map-google-traffic').checked }, true));
     $('map-traffic').addEventListener('change', () => {
       setState({ ...state, traffic: $('map-traffic').checked }, true);
       if (state.traffic && !apiKey) openPanel(true);
@@ -223,7 +227,7 @@
     });
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
     window.addEventListener('pageshow', event => { if (event.persisted && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
-    changeBase(); changeMaritime(); drivebc.setEnabled(state.drivebc);
+    changeBase(); changeMaritime(); drivebc.setEnabled(state.drivebc); googleTraffic.setEnabled(state.google);
     if (state.traffic && apiKey) loadTraffic();
     render();
     if (state.traffic && !apiKey) openPanel(true);

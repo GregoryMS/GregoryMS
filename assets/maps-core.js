@@ -25,20 +25,20 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, drivebc: value?.drivebc === true, traffic: value?.traffic === true };
+    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, drivebc: value?.drivebc === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     if (!params.has('base') && !params.has('overlays')) return null;
     const overlays = (params.get('overlays') || '').split(',');
-    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), drivebc: overlays.includes('drivebc'), traffic: overlays.includes('traffic') });
+    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), drivebc: overlays.includes('drivebc'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
     if (pin && validPoint(pin.lat, pin.lng)) hash += `&pin=${pin.lat.toFixed(5)},${pin.lng.toFixed(5)}&name=${encodeURIComponent(text(pin.name) || 'Dropped pin')}`;
     if (layers) {
       const state = normalizeLayers(layers);
-      hash += `&base=${state.base}&overlays=${['maritime', 'drivebc', 'traffic'].filter(key => state[key]).join(',')}`;
+      hash += `&base=${state.base}&overlays=${['maritime', 'drivebc', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
     }
     return hash;
   }
