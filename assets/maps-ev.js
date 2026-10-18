@@ -5,7 +5,8 @@
     const output = document.getElementById('ev-layer-status'), retry = document.getElementById('ev-retry');
     const group = L.layerGroup(), displayed = new Map(), cache = [];
     const credit = 'EV charging: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
-    const cacheAge = 600000, fallbackAge = 3600000, requestGap = 10000;
+    const storageKey = 'gregle-maps-ev-cache-v1';
+    const cacheAge = 86400000, fallbackAge = 604800000, requestGap = 10000;
     let enabled = false, showAll = false, showTesla = false, active, version = 0, timer, nextRequest = 0, retryAt = 0, failures = 0;
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; };
     const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
@@ -96,9 +97,9 @@
       }
       const count = records.size, teslas = [...records.values()].filter(station => station.supercharger).length;
       const text = showAll ? `${count} mapped charging ${count === 1 ? 'station' : 'stations'} in this view.${showTesla ? ` ${teslas} Tesla ${teslas === 1 ? 'Supercharger' : 'Superchargers'} highlighted.` : ''}` : `${count} Tesla ${count === 1 ? 'Supercharger' : 'Superchargers'} in this view.`;
-      if (active) report(`${text} Loading charging stations… The public data service can be slow.`);
+      if (active) report(`${text} ${count ? 'Updating charging stations…' : 'Loading charging stations…'}`);
       else if (failures) report(`${count ? text + ' Cached locations shown. ' : ''}Charging data is unavailable. Retry later or open PlugShare above.`, true);
-      else if (coverage) report(`${text}${coverage.truncated ? ' Results are limited; zoom in for more stations.' : ''} No live availability.`);
+      else if (coverage) report(`${text}${coverage.truncated ? ' Results are limited; zoom in for more stations.' : ''}${coverage.restored ? ' Recent saved locations.' : ''} No live availability.`);
       else report(`${text} Loading this area…`);
     }
     function cancel() { version++; active?.controller.abort(); active = null; clearTimeout(timer); }
@@ -116,15 +117,16 @@
       const timeout = setTimeout(() => request.controller.abort(), 45000); nextRequest = now + requestGap;
       render();
       try {
-        const response = await fetch(config.evURL, { method: 'POST', body: new URLSearchParams({ data: core.query(requestArea, scope === 'tesla') }), signal: request.controller.signal, credentials: 'omit' });
+        const response = await fetch(config.evURL, { method: 'POST', body: new URLSearchParams({data: core.query(requestArea, scope === 'tesla')}), signal: request.controller.signal, credentials: 'omit' });
         if (!response.ok) {
           const error = new Error('Charging stations unavailable'), value = response.headers.get('Retry-After');
           error.retryAfter = value === null ? 0 : /^\d+(\.\d+)?$/.test(value.trim()) ? Number(value) * 1000 : Math.max(0, Date.parse(value) - Date.now()) || 0;
           throw error;
         }
-        const result = core.read(await response.json());
+        const data = await response.json(), result = core.read(data);
         if (token !== version || !enabled || document.hidden) return;
-        cache.push({ ...result, area: requestArea, scope: request.scope, time: Date.now() }); while (cache.length > 12) cache.shift();
+        cache.push({...result, data, area: requestArea, scope: request.scope, time: Date.now()}); while (cache.length > 12) cache.shift();
+        save();
         failures = 0; retryAt = 0;
       } catch (error) {
         if (token !== version || !enabled || document.hidden) return;
@@ -144,6 +146,25 @@
       enabled = next; cancel();
       if (enabled) { group.addTo(map); map.attributionControl.addAttribution(credit); load(); }
       else { clear(); map.removeLayer(group); map.attributionControl.removeAttribution(credit); }
+    }
+    function save() {
+      try {
+        const entries = cache.filter(entry => entry.data && Date.now() - entry.time < fallbackAge).slice(-4).map(entry => ({data: entry.data, area: entry.area, scope: entry.scope, time: entry.time}));
+        const value = JSON.stringify({endpoint: config.evURL, entries});
+        if (value.length <= 500000) localStorage.setItem(storageKey, value);
+        else localStorage.removeItem(storageKey);
+      } catch {}
+    }
+    {
+      try {
+        const value = localStorage.getItem(storageKey);
+        if (value && value.length <= 500000) {
+          const saved = JSON.parse(value);
+          if (saved.endpoint === config.evURL && Array.isArray(saved.entries)) for (const entry of saved.entries.slice(-4)) {
+            try { cache.push({...core.readCache(entry, Date.now()), restored: true}); } catch {}
+          }
+        }
+      } catch {}
     }
     retry.addEventListener('click', () => load(true));
     map.on('moveend', () => { if (enabled && !document.hidden) { render(); clearTimeout(timer); timer = setTimeout(load, 650); } });

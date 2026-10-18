@@ -12,8 +12,8 @@
     if (zoom < 12 || !Array.isArray(bounds) || bounds.length !== 4 || !bounds.every(Number.isFinite)) return null;
     const [west, south, east, north] = bounds, width = east - west, height = north - south;
     if (width <= 0 || width > 1.5 || height <= 0 || height > .7 || south < -90 || north > 90) return null;
-    const padX = width * .25, padY = height * .25, w = wrap(west - padX);
-    return [w, Math.max(-90, south - padY), w + width + padX * 2, Math.min(90, north + padY)].map(n => Number(n.toFixed(6)));
+    const padX = width * .25, padY = height * .25, w = wrap(west - padX), step = .05 / 2 ** Math.max(0, zoom - 12);
+    return [Math.floor((w + 1e-8) / step) * step, Math.max(-90, Math.floor((south - padY + 1e-8) / step) * step), Math.ceil((w + width + padX * 2 - 1e-8) / step) * step, Math.min(90, Math.ceil((north + padY - 1e-8) / step) * step)].map(n => Number(n.toFixed(6)));
   }
   function contains(outer, inner) {
     if (!outer || !inner || inner[1] < outer[1] || inner[3] > outer[3]) return false;
@@ -71,7 +71,12 @@
       stations.push({ id, point: [lat, lng], name: clean(tags.name) || clean(tags.operator) || clean(tags.network) || clean(tags.brand) || 'EV charging station', address, tags, connectors, supercharger: isSupercharger(tags), restricted: ['private', 'no', 'customers', 'permit', 'destination'].includes(tags.access) });
     }
     const date = data.osm3s?.timestamp_osm_base;
-    return { stations, truncated: data.elements.length > limit, snapshot: typeof date === 'string' && Number.isFinite(Date.parse(date)) ? date : null };
+    return { stations, truncated: data.truncated === true || data.elements.length > limit, snapshot: typeof date === 'string' && Number.isFinite(Date.parse(date)) ? date : null };
   }
-  return { area, contains, query, read, isSupercharger, limit };
+  function readCache(entry, now = Date.now()) {
+    const box = entry?.area, time = entry?.time;
+    if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isFinite) || box[0] < -180 || box[0] >= 180 || box[2] <= box[0] || box[2] - box[0] > 2.5 || box[1] < -90 || box[3] > 90 || box[3] <= box[1] || box[3] - box[1] > 1.3 || !['all', 'tesla'].includes(entry.scope) || !Number.isFinite(time) || time > now || now - time >= 604800000 || !Array.isArray(entry.data?.elements) || entry.data.elements.length > limit + 1) throw new Error('Invalid charging cache');
+    return {...read(entry.data), area: box, scope: entry.scope, time, data: entry.data};
+  }
+  return { area, contains, query, read, readCache, isSupercharger, limit };
 });

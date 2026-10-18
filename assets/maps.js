@@ -131,7 +131,7 @@
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261017-ev', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261018-ev-cache', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       for (const key of Object.keys(defaults)) if (typeof supplied[key] === 'string' && (supplied[key].startsWith('https://') || (['messageSignsURL', 'ferriesURL'].includes(key) && supplied[key].startsWith('/') && !supplied[key].startsWith('//')))) config[key] = supplied[key];

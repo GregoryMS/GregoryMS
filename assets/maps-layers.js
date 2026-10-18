@@ -6,7 +6,7 @@
     const preferenceKey = 'gregle-maps-layers', credentialKey = 'gregle-maps-tomtom-key';
     let saved, apiKey = '';
     try { saved = JSON.parse(localStorage.getItem(preferenceKey)); apiKey = localStorage.getItem(credentialKey) || ''; } catch {}
-    let state = core.normalizeLayers(initial || saved);
+    let state = core.normalizeLayers(initial || (saved?.ev === true && saved.teslaDefault !== true ? {...saved, tesla: true} : saved));
     const drivebc = window.GregleDriveBC({ map, notify });
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
     const signs = window.GregleDriveBCSigns({ map, config, notify });
@@ -21,7 +21,7 @@
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const layerOptions = { maxZoom: 19, updateWhenIdle: true, keepBuffer: 1 };
-    const persist = () => { try { localStorage.setItem(preferenceKey, JSON.stringify(state)); } catch {} };
+    const persist = () => { try { localStorage.setItem(preferenceKey, JSON.stringify({...state, teslaDefault: true})); } catch {} };
     function disclosure(buttonId, contentId, preference, onOpen = () => {}) {
       const button = $(buttonId), content = $(contentId);
       const setOpen = (open, remember = false) => {
@@ -258,7 +258,7 @@
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
     panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
-    $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked }, true));
+    $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));
     $('map-ev-tesla').addEventListener('change', () => setState({ ...state, tesla: $('map-ev-tesla').checked }, true));
     $('map-maritime').addEventListener('change', () => setState({ ...state, maritime: $('map-maritime').checked }, true));
     $('map-vessels').addEventListener('change', () => setState({ ...state, vessels: $('map-vessels').checked }, true));

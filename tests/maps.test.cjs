@@ -4,6 +4,14 @@ const maps = require('../assets/maps-core.js');
 const fs = require('node:fs');
 const path = require('node:path');
 
+test('enabling EV charging defaults to Tesla highlighting and explicit opt-outs survive copied links',()=>{
+  assert.equal(maps.normalizeLayers({ev:true}).tesla,true);
+  assert.equal(maps.normalizeLayers({ev:true,tesla:false}).tesla,false);
+  assert.equal(maps.readLayers('#base=street&overlays=ev').tesla,true);
+  const off=maps.makeHash(maps.defaultView,null,{ev:true,tesla:false});assert(off.includes('tesla=off'));assert.equal(maps.readLayers(off).tesla,false);
+  assert.equal(maps.readLayers(maps.makeHash(maps.defaultView,null,{ev:false,tesla:true})).tesla,true);
+});
+
 test('map links preserve the view, pin and names containing URL characters', () => {
   const view = { lat: 48.4284, lng: -123.3656, zoom: 13 };
   const pin = { lat: 48.42, lng: -123.37, name: 'Harbour & park / café #1', detail: '' };
