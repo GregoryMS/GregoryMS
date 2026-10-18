@@ -125,10 +125,11 @@
   .map-stage .leaflet-top.leaflet-right { bottom: 88px; }
   .map-report { bottom: 46px; }
 }
-.drivebc-marker { display: grid; place-items: center; border: 2px solid #fff; border-radius: 50%; color: #fff; background: #c14c1d; box-shadow: 0 2px 6px #0004; font: 600 18px/1 Arial, sans-serif; }
-.drivebc-marker-closed { background: #ac3046; }
-.drivebc-marker-work { background: #a56c13; }
-.drivebc-marker-condition { background: #326da5; }
+.drivebc-road-casing { filter: drop-shadow(0 0 1px #17213acc); }
+.drivebc-marker { display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; color: #18212f; background: #ff7a00; box-shadow: 0 0 0 1px #17213a99, 0 2px 8px #0006; font: 700 20px/1 Arial, sans-serif; }
+.drivebc-marker-closed { background: #ff315b; }
+.drivebc-marker-work { background: #ffc400; }
+.drivebc-marker-condition { background: #008cff; }
 .drivebc-popup { color: #252525; font: 12px/1.5 Arial, sans-serif; }
 .drivebc-popup strong { display: block; font-size: 14px; }
 .drivebc-popup p { margin: 8px 0; }

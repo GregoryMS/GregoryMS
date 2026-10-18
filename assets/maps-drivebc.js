@@ -38,10 +38,13 @@
       group.clearLayers();
       for (const event of data.events) {
         const kind = event.closed ? 'closed' : event.type === 'CONSTRUCTION' ? 'work' : event.type === 'WEATHER_CONDITION' || event.type === 'ROAD_CONDITION' ? 'condition' : 'incident';
-        const color = ({ closed: '#ac3046', work: '#a56c13', condition: '#326da5', incident: '#c14c1d' })[kind];
-        if (event.coordinates.length > 1) L.polyline(event.coordinates, { color, weight: 5, opacity: .85, bubblingMouseEvents: false }).bindPopup(() => popup(event), { maxWidth: 300 }).addTo(group);
+        const color = ({ closed: '#ff315b', work: '#ffc400', condition: '#008cff', incident: '#ff7a00' })[kind];
+        if (event.coordinates.length > 1) {
+          L.polyline(event.coordinates, { color: '#fff', weight: 11, opacity: 1, interactive: false, className: 'drivebc-road-casing' }).addTo(group);
+          L.polyline(event.coordinates, { color, weight: 7, opacity: 1, bubblingMouseEvents: false }).bindPopup(() => popup(event), { maxWidth: 300 }).addTo(group);
+        }
         const symbol = ({ closed: '×', work: '↔', condition: '!', incident: '!' })[kind];
-        const icon = L.divIcon({ className: `drivebc-marker drivebc-marker-${kind}`, html: `<span aria-hidden="true">${symbol}</span>`, iconSize: [26,26], iconAnchor: [13,13] });
+        const icon = L.divIcon({ className: `drivebc-marker drivebc-marker-${kind}`, html: `<span aria-hidden="true">${symbol}</span>`, iconSize: [30,30], iconAnchor: [15,15] });
         L.marker(event.point, { icon, title: `DriveBC: ${event.name}`, alt: 'DriveBC road event', keyboard: true }).bindPopup(() => popup(event), { maxWidth: 300 }).addTo(group);
       }
       const count = data.events.length;
