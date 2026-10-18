@@ -3,15 +3,13 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-17T23:26:54.940892+00:00",
+      "checkedAt": "2026-10-18T01:33:06.556306+00:00",
       "listings": [
         {
           "home": "Everton",
           "away": "Chelsea",
           "start": "2026-10-17T11:30:00+00:00",
           "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 1",
             "TNT Sports Ultimate"
           ]
         },
@@ -20,22 +18,7 @@
           "away": "Birmingham City (W)",
           "start": "2026-10-17T11:45:00+00:00",
           "channels": [
-            "NOW",
-            "Sky Mix",
-            "Sky Sports Mix",
-            "Sky Sports Premier League",
-            "Sky Sports UHD 1",
-            "Sky Sports+ app"
-          ]
-        },
-        {
-          "home": "Bayern München",
-          "away": "RB Leipzig",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports Football",
-            "Sky Sports+ app"
+            "Sky Sports UHD 1"
           ]
         },
         {
@@ -211,6 +194,7 @@
           "start": "2026-10-25T12:00:00+00:00",
           "channels": [
             "NOW",
+            "Sky Mix",
             "Sky Sports Mix",
             "Sky Sports+ app"
           ]
@@ -280,24 +264,14 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-17T23:26:54.940892+00:00",
+      "checkedAt": "2026-10-18T01:33:06.556306+00:00",
       "listings": [
         {
           "home": "Everton",
           "away": "Chelsea",
           "start": "2026-10-17T11:30:00+00:00",
           "channels": [
-            "DAZN Canada",
             "Fubo Sports CA"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "Birmingham City (W)",
-          "start": "2026-10-17T11:45:00+00:00",
-          "channels": [
-            "Sportsnet NOW",
-            "Sportsnet One"
           ]
         },
         {
@@ -305,7 +279,6 @@
           "away": "Hull City",
           "start": "2026-10-17T14:00:00+00:00",
           "channels": [
-            "DAZN Canada",
             "Fubo Sports CA"
           ]
         },
@@ -314,16 +287,7 @@
           "away": "Ipswich Town",
           "start": "2026-10-17T14:00:00+00:00",
           "channels": [
-            "DAZN Canada",
             "Fubo Sports CA"
-          ]
-        },
-        {
-          "home": "Bayern München",
-          "away": "RB Leipzig",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "DAZN Canada"
           ]
         },
         {
@@ -331,7 +295,6 @@
           "away": "Aston Villa",
           "start": "2026-10-17T16:30:00+00:00",
           "channels": [
-            "DAZN Canada",
             "Fubo Sports CA"
           ]
         },
@@ -465,10 +428,32 @@
           ]
         },
         {
+          "home": "Colorado Rapids",
+          "away": "Vancouver Whitecaps",
+          "start": "2026-10-25T01:30:00+00:00",
+          "channels": [
+            "Apple TV (US)",
+            "TSN",
+            "TSN+",
+            "TSN1",
+            "TSN5"
+          ]
+        },
+        {
+          "home": "Crystal Palace (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-10-25T12:00:00+00:00",
+          "channels": [
+            "Sportsnet NOW",
+            "Sportsnet One"
+          ]
+        },
+        {
           "home": "Crystal Palace",
           "away": "Newcastle United",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
+            "DAZN Canada",
             "Fubo Sports CA"
           ]
         },
@@ -477,6 +462,7 @@
           "away": "Brentford",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
+            "DAZN Canada",
             "Fubo Sports CA"
           ]
         },
@@ -485,30 +471,39 @@
           "away": "Brighton & Hove Albion",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
+            "DAZN Canada",
             "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Freiburg",
+          "away": "Bayern München",
+          "start": "2026-10-25T16:30:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
+        },
+        {
+          "home": "Manchester United (W)",
+          "away": "Manchester City (W)",
+          "start": "2026-10-25T18:00:00+00:00",
+          "channels": [
+            "Sportsnet NOW",
+            "Sportsnet One"
           ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-17T23:26:54.940892+00:00",
+      "checkedAt": "2026-10-18T01:33:06.556306+00:00",
       "listings": [
         {
           "home": "Everton",
           "away": "Chelsea",
           "start": "2026-10-17T11:30:00+00:00",
           "channels": [
-            "V sport Premier League NO",
-            "Viaplay NO"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "Birmingham City (W)",
-          "start": "2026-10-17T11:45:00+00:00",
-          "channels": [
-            "VG TV"
+            "Viaplay"
           ]
         },
         {
@@ -516,8 +511,7 @@
           "away": "Hull City",
           "start": "2026-10-17T14:00:00+00:00",
           "channels": [
-            "V sport Premier League 2 NO",
-            "Viaplay NO"
+            "Viaplay"
           ]
         },
         {
@@ -525,18 +519,7 @@
           "away": "Ipswich Town",
           "start": "2026-10-17T14:00:00+00:00",
           "channels": [
-            "V sport Premier League 1 NO",
-            "Viaplay NO"
-          ]
-        },
-        {
-          "home": "Bayern München",
-          "away": "RB Leipzig",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "V sport 1 NO",
-            "Viaplay NO"
+            "Viaplay"
           ]
         },
         {
@@ -544,8 +527,7 @@
           "away": "Aston Villa",
           "start": "2026-10-17T16:30:00+00:00",
           "channels": [
-            "V sport Premier League NO",
-            "Viaplay NO"
+            "Viaplay"
           ]
         },
         {
@@ -679,11 +661,28 @@
           ]
         },
         {
+          "home": "Colorado Rapids",
+          "away": "Vancouver Whitecaps",
+          "start": "2026-10-25T01:30:00+00:00",
+          "channels": [
+            "Apple TV (NO)"
+          ]
+        },
+        {
+          "home": "Crystal Palace (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-10-25T12:00:00+00:00",
+          "channels": [
+            "VG TV"
+          ]
+        },
+        {
           "home": "Crystal Palace",
           "away": "Newcastle United",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
-            "Viaplay"
+            "V sport Premier League 2 NO",
+            "Viaplay NO"
           ]
         },
         {
@@ -691,7 +690,8 @@
           "away": "Brentford",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
-            "Viaplay"
+            "V sport Premier League 3 NO",
+            "Viaplay NO"
           ]
         },
         {
@@ -699,70 +699,34 @@
           "away": "Brighton & Hove Albion",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
-            "Viaplay"
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Freiburg",
+          "away": "Bayern München",
+          "start": "2026-10-25T16:30:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)",
+            "V sport 1 NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Manchester United (W)",
+          "away": "Manchester City (W)",
+          "start": "2026-10-25T18:00:00+00:00",
+          "channels": [
+            "VG TV"
           ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-17T23:26:54.940892+00:00",
+      "checkedAt": "2026-10-18T01:33:06.556306+00:00",
       "listings": [
-        {
-          "home": "Everton",
-          "away": "Chelsea",
-          "start": "2026-10-17T11:30:00+00:00",
-          "channels": [
-            "Prime Video (SE)"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "Birmingham City (W)",
-          "start": "2026-10-17T11:45:00+00:00",
-          "channels": [
-            "SVT Play",
-            "TV4 Fotboll",
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Fulham",
-          "away": "Hull City",
-          "start": "2026-10-17T14:00:00+00:00",
-          "channels": [
-            "V Sport Extra",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Ipswich Town",
-          "start": "2026-10-17T14:00:00+00:00",
-          "channels": [
-            "V Sport Football",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Bayern München",
-          "away": "RB Leipzig",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "Viaplay SE",
-            "Viaplay Sport"
-          ]
-        },
-        {
-          "home": "Newcastle United",
-          "away": "Aston Villa",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "V Sport Premium",
-            "V Ultra HD",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Austin FC",
           "away": "Vancouver Whitecaps",
@@ -882,69 +846,65 @@
             "V Ultra HD",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Colorado Rapids",
+          "away": "Vancouver Whitecaps",
+          "start": "2026-10-25T01:30:00+00:00",
+          "channels": [
+            "Apple TV (SE)"
+          ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Newcastle United",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "V Sport 1",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Hull City",
+          "away": "Brentford",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "V Sport Extra",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Liverpool",
+          "away": "Brighton & Hove Albion",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Freiburg",
+          "away": "Bayern München",
+          "start": "2026-10-25T16:30:00+00:00",
+          "channels": [
+            "Viaplay SE",
+            "Viaplay Sport"
+          ]
+        },
+        {
+          "home": "Manchester United (W)",
+          "away": "Manchester City (W)",
+          "start": "2026-10-25T18:00:00+00:00",
+          "channels": [
+            "TV4 Sportkanalen"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-17T23:26:54.940892+00:00",
+      "checkedAt": "2026-10-18T01:33:06.556306+00:00",
       "listings": [
-        {
-          "home": "Everton",
-          "away": "Chelsea",
-          "start": "2026-10-17T11:30:00+00:00",
-          "channels": [
-            "Sky Sport Premier League",
-            "WOW"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "Birmingham City (W)",
-          "start": "2026-10-17T11:45:00+00:00",
-          "channels": [
-            "Sportdigital+",
-            "Sportdigital1+"
-          ]
-        },
-        {
-          "home": "Fulham",
-          "away": "Hull City",
-          "start": "2026-10-17T14:00:00+00:00",
-          "channels": [
-            "WOW"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Ipswich Town",
-          "start": "2026-10-17T14:00:00+00:00",
-          "channels": [
-            "Sky Sport Mix",
-            "WOW"
-          ]
-        },
-        {
-          "home": "Bayern München",
-          "away": "RB Leipzig",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "Sky Bundesliga",
-            "Sky Bundesliga 1",
-            "Sky Bundesliga UHD",
-            "Sky Top Event",
-            "WOW"
-          ]
-        },
-        {
-          "home": "Newcastle United",
-          "away": "Aston Villa",
-          "start": "2026-10-17T16:30:00+00:00",
-          "channels": [
-            "Sky Sport Premier League",
-            "WOW"
-          ]
-        },
         {
           "home": "Austin FC",
           "away": "Vancouver Whitecaps",
@@ -1054,6 +1014,59 @@
           "channels": [
             "Sky Sport Premier League",
             "WOW"
+          ]
+        },
+        {
+          "home": "Colorado Rapids",
+          "away": "Vancouver Whitecaps",
+          "start": "2026-10-25T01:30:00+00:00",
+          "channels": [
+            "Apple TV (DE)"
+          ]
+        },
+        {
+          "home": "Crystal Palace (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-10-25T12:00:00+00:00",
+          "channels": [
+            "Sportdigital+",
+            "Sportdigital1+"
+          ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Newcastle United",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "Sky Sport 6",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Hull City",
+          "away": "Brentford",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "Sky Sport 7",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Liverpool",
+          "away": "Brighton & Hove Albion",
+          "start": "2026-10-25T14:00:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
+            "Sky Ultra HD",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Freiburg",
+          "away": "Bayern München",
+          "start": "2026-10-25T16:30:00+00:00",
+          "channels": [
+            "DAZN Deutschland"
           ]
         }
       ],
