@@ -31,13 +31,13 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, ev: value?.ev === true, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     if (!params.has('base') && !params.has('overlays')) return null;
     const overlays = (params.get('overlays') || '').split(',');
-    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
+    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), ev: overlays.includes('ev'), drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
@@ -45,7 +45,7 @@
     if (pin?.osm && osmReference(...pin.osm.split('/')) === pin.osm) hash += `&osm=${pin.osm}`;
     if (layers) {
       const state = normalizeLayers(layers);
-      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'ferries', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
+      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'ev', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'ferries', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
     }
     return hash;
   }
@@ -56,6 +56,15 @@
       url.searchParams.set('mlon', pin.lng.toFixed(5));
     }
     url.hash = viewHash(view);
+    return url.href;
+  }
+  function plugshareURL(view, bounds = []) {
+    const url = new URL('https://www.plugshare.com/');
+    const width = bounds[2] - bounds[0], height = bounds[3] - bounds[1];
+    url.searchParams.set('latitude', Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(6));
+    url.searchParams.set('longitude', wrapLongitude(view.lng).toFixed(6));
+    url.searchParams.set('spanLat', (Number.isFinite(height) && height > 0 ? Math.min(180, height) : .05).toFixed(6));
+    url.searchParams.set('spanLng', (Number.isFinite(width) && width > 0 ? Math.min(360, width) : .05).toFixed(6));
     return url.href;
   }
   function searchArea(current, bounds = []) {
@@ -155,5 +164,5 @@
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
+  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, plugshareURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
 });

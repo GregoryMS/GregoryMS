@@ -202,3 +202,33 @@
 .ferry-routes { margin: 8px 0; padding-left: 17px; }
 .ferry-routes li { margin: 7px 0; overflow-wrap: anywhere; }
 @media(max-width:600px) { .drivebc-camera-popup select { font-size: 16px; } }
+.plugshare-source { display: inline-flex; align-items: center; gap: 5px; }
+.plugshare-symbol { flex-shrink: 0; width: 18px; height: 18px; color: var(--map-accent); }
+.map-source.plugshare-source span { margin: 0; }
+.map-source .plugshare-label { color: inherit; font-size: 12px; }
+.ev-charge-marker { display: grid; place-items: center; border: 3px solid #fff; border-radius: 10px; background: #008752; color: #fff; box-shadow: 0 0 0 1px #164b3699, 0 2px 8px #0005; }
+.ev-charge-restricted { background: #685a7d; }
+.ev-charge-marker svg { width: 23px; height: 23px; }
+.ev-popup { color: #252525; font: 12px/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
+.ev-popup .ev-title { display: block; font-size: 15px; }
+.ev-popup p { margin: 8px 0; }
+.ev-popup .ev-meta { color: #65616d; font-size: 10px; }
+.ev-popup a { color: #7637cc; }
+.ev-facts { margin: 10px 0; }
+.ev-facts dt { margin-top: 8px; color: #65616d; font-size: 10px; }
+.ev-facts dd { margin: 1px 0 0; white-space: pre-wrap; }
+.ev-facts .place-hours { white-space: normal; }
+.ev-popup .place-hours th { color: #252525; }
+.ev-popup .place-hours td { color: #252525; }
+.ev-popup .place-hours-closed td { color: #65616d; }
+.ev-popup .place-hours :is(th, td) { border-color: #e6e2eb; }
+.ev-subheading { display: block; margin-top: 12px; font-size: 12px; }
+.ev-connectors { padding-left: 17px; margin: 8px 0; }
+.ev-connectors li { margin: 4px 0; }
+.ev-links { display: grid; gap: 9px; margin-top: 12px; }
+@media(max-width:600px) {
+  .plugshare-source .plugshare-arrow { display: none; }
+  .plugshare-symbol { width: 20px; height: 20px; }
+  .maps-page .top-actions { gap: 10px; }
+}
+@media(max-width:360px) { .map-source .plugshare-label { display: none; } }

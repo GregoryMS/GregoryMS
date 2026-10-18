@@ -11,6 +11,7 @@
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
     const signs = window.GregleDriveBCSigns({ map, config, notify });
     const ferries = window.GregleDriveBCFerries({ map, config, notify });
+    const ev = window.GregleEVCharging({ map, config, notify });
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
@@ -36,6 +37,8 @@
       panel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
+      $('map-ev').checked = state.ev;
+      $('ev-options').hidden = !state.ev;
       $('map-drivebc').checked = state.drivebc;
       $('map-drivebc-cameras').checked = state.webcams;
       $('map-drivebc-future').checked = state.future;
@@ -191,6 +194,7 @@
       const previous = state; state = core.normalizeLayers(next);
       if (!baseLayer || previous.base !== state.base) changeBase();
       if (previous.maritime !== state.maritime || (state.maritime && !maritimeLayer)) changeMaritime();
+      if (previous.ev !== state.ev) ev.setEnabled(state.ev);
       if (previous.aviation !== state.aviation) aviation.setEnabled(state.aviation);
       if (previous.drivebc !== state.drivebc) drivebc.setEnabled(state.drivebc);
       if (previous.future !== state.future) drivebc.setIncludeFuture(state.future);
@@ -212,6 +216,7 @@
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
     panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
+    $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked }, true));
     $('map-maritime').addEventListener('change', () => setState({ ...state, maritime: $('map-maritime').checked }, true));
     $('map-aviation').addEventListener('change', () => {
       setState({ ...state, aviation: $('map-aviation').checked }, true);
@@ -261,7 +266,7 @@
     changeBase(); changeMaritime(); aviation.setEnabled(state.aviation); drivebc.setEnabled(state.drivebc); googleTraffic.setEnabled(state.google);
     cameras.setEnabled(state.webcams);
     signs.setEnabled('speed', state.speed); signs.setEnabled('messages', state.messages);
-    ferries.setEnabled(state.ferries);
+    ferries.setEnabled(state.ferries); ev.setEnabled(state.ev);
     if (state.traffic && apiKey) loadTraffic();
     render();
     if (state.traffic && !apiKey) openPanel(true);

@@ -10,6 +10,7 @@
     cameraCatalogueURL: 'https://catalogue.data.gov.bc.ca/dataset/6b39a910-6c77-476f-ac96-7b4f18849b1c/resource/a9d52d85-8402-4ce7-b2ac-a2779837c48a/download/webcams.csv',
     trafficURL: 'https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256',
     googleTrafficURL: 'https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3',
+    evURL: 'https://overpass-api.de/api/interpreter',
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
@@ -30,6 +31,8 @@
     const current = view();
     try { history.replaceState(null, '', core.makeHash(current, selected, layerControl?.getState())); } catch {}
     $('osm-link').href = core.osmURL(current, selected);
+    const bounds = map.getBounds();
+    $('plugshare-link').href = core.plugshareURL(current, [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
   };
   const hideSearch = () => { searchContent.hidden = true; };
   const cancelSearch = () => {
@@ -100,13 +103,13 @@
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core || !window.GregleMapLayers || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
+  if (!window.L || !core || !window.GregleMapLayers || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261017-ferries', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261017-ev', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       for (const key of Object.keys(defaults)) if (typeof supplied[key] === 'string' && (supplied[key].startsWith('https://') || (['messageSignsURL', 'ferriesURL'].includes(key) && supplied[key].startsWith('/') && !supplied[key].startsWith('//')))) config[key] = supplied[key];
