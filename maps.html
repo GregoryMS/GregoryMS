@@ -11,17 +11,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261017-daily-hours">
+  <link rel="stylesheet" href="assets/maps.css?v=20261017-aviation">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261017-place-tags" defer></script>
+  <script src="assets/maps-core.js?v=20261017-aviation" defer></script>
   <script src="assets/maps-places-core.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-places.js?v=20261017-daily-hours" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-drivebc-pan" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-traffic" defer></script>
-  <script src="assets/maps-layers.js?v=20261017-google-traffic" defer></script>
-  <script src="assets/maps.js?v=20261017-place-tags" defer></script>
+  <script src="assets/maps-aviation.js?v=20261017-aviation" defer></script>
+  <script src="assets/maps-layers.js?v=20261017-aviation" defer></script>
+  <script src="assets/maps.js?v=20261017-aviation" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
 </head>
 <body class="maps-page">
@@ -83,6 +84,19 @@
       <fieldset class="map-overlay-options"><legend>Overlays</legend>
         <label><span><strong>Maritime</strong><small>OpenSeaMap · buoys, lights &amp; harbour marks</small></span><input id="map-maritime" type="checkbox"></label>
         <p class="layer-status" id="maritime-layer-status" role="status" hidden></p>
+        <label><span><strong>Aviation</strong><small>OpenAIP · airports, airspace &amp; navigation aids</small></span><input id="map-aviation" type="checkbox"></label>
+        <p class="layer-status" id="aviation-layer-status" role="status" hidden></p>
+        <div id="aviation-options" hidden>
+          <p class="aviation-reference">Chart overlay · coverage varies. For reference, not for navigation.</p>
+          <div class="traffic-options"><button id="aviation-connect" type="button">Connect OpenAIP</button><button id="aviation-retry" type="button" hidden>Retry charts</button></div>
+          <form class="traffic-key-form" id="aviation-key-form" hidden>
+            <label for="aviation-api-key">OpenAIP API key</label>
+            <input id="aviation-api-key" type="password" autocomplete="off" spellcheck="false" minlength="16" maxlength="2048" required placeholder="Enter your API key" aria-describedby="aviation-key-help">
+            <p id="aviation-key-help">Saved only in this browser and sent directly to OpenAIP. Create an API client in your OpenAIP profile, with Tiles API access.</p>
+            <div><button class="traffic-save" type="submit">Connect charts</button><button id="aviation-forget" type="button" hidden>Forget key</button></div>
+            <a href="https://www.openaip.net/docs" target="_blank" rel="noopener">OpenAIP documentation &amp; API key setup ↗</a>
+          </form>
+        </div>
         <label><span><strong>DriveBC</strong><small>BC closures, incidents &amp; road conditions · no key</small></span><input id="map-drivebc" type="checkbox"></label>
         <p class="layer-status" id="drivebc-layer-status" role="status" hidden></p>
         <label><span><strong>Google traffic</strong><small>Experimental · no key</small></span><input id="map-google-traffic" type="checkbox" aria-describedby="google-traffic-help"></label>

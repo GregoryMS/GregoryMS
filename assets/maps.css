@@ -143,7 +143,9 @@
 .google-traffic-opacity input[type="range"] { width: 100%; height: 20px; margin: 5px 0 0; }
 .traffic-key-form { margin-top: 12px; border-top: 1px solid var(--map-border); padding-top: 14px; }
 .traffic-key-form label { display: block; color: var(--text); font-size: 11px; }
-#traffic-api-key { width: 100%; margin-top: 8px; padding: 9px 10px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--bg); color: var(--text); font-size: 14px; }
+#traffic-api-key, #aviation-api-key { width: 100%; margin-top: 8px; padding: 9px 10px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--bg); color: var(--text); font-size: 14px; }
+.aviation-reference { margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+#aviation-options { margin-bottom: 10px; }
 .traffic-key-form p { margin: 8px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .traffic-key-form .traffic-save { padding: 8px 12px; border-radius: 9px; background: var(--map-accent-soft); }
 .traffic-key-form > a { display: inline-block; margin-top: 12px; color: var(--map-accent); font-size: 10px; }
@@ -157,7 +159,7 @@
   .map-base-options small { display: inline; margin: 0 0 0 5px; }
   .map-base-options strong { display: inline; }
   .map-base-options input { margin: 0; }
-  #traffic-api-key { font-size: 16px; }
+  #traffic-api-key, #aviation-api-key { font-size: 16px; }
   .map-place { bottom: 78px; }
   .map-stage .leaflet-top.leaflet-right { bottom: 88px; }
   .map-report { bottom: 46px; }
