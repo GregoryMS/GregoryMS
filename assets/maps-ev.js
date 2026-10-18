@@ -69,7 +69,7 @@
         (!entry.truncated || (entry.scope === scope && entry.area.every((value, i) => value === requestArea[i])));
     }
     function icon(station, highlighted) {
-      return L.divIcon({ className: `ev-charge-marker${highlighted ? ' ev-charge-supercharger' : station.restricted ? ' ev-charge-restricted' : ''}`, iconSize: [32, 32], iconAnchor: [16, 16], html: highlighted ? '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m13 2-8 11h6l-1 9L20 9h-7Z"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v5m8-5v5M5 8h12v3a6 6 0 0 1-6 6v4m7-9h2v6a3 3 0 0 1-3 3"/><path d="m12 9-3 4h4l-2 3"/></svg>' });
+      return L.divIcon({ className: `ev-charge-marker${highlighted ? ' ev-charge-supercharger' : station.restricted ? ' ev-charge-restricted' : ''}`, iconSize: [32, 32], iconAnchor: [16, 16], html: highlighted ? '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m13 2-8 11h6l-1 9L20 9h-7Z"/></svg>' : '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h3v5h4V3h3v5h2v4a7 7 0 0 1-6 6.93V22h-2v-3.07A7 7 0 0 1 5 12V8h2V3Z"/></svg>' });
     }
     function clear() { group.clearLayers(); displayed.clear(); }
     function render() {
