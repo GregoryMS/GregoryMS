@@ -78,3 +78,7 @@ test('refresh progress and returning to the page retain recent vessels without r
  await h.advance(60000);assert.equal(h.markers().length,2);release({ok:false,status:503,headers:{get:()=> '900'}});await flush();assert.equal(h.markers().length,2);assert.equal(h.output.dataset.state,'ready');
  await h.advance(605000);assert.equal(h.markers().length,0);assert.equal(h.output.dataset.state,'error');
 });
+
+test('Open Waters source labels and credits stay text and broad views respect the anonymous area cap',()=>{
+ const result=core.read(packet(start,[ship({source:'openwaters',sourceLabel:'Open Waters / AISHub'})],{credits:['<img src=x>']}),start);assert.equal(result.vessels[0].source,'Open Waters / AISHub');assert.equal(result.credits[0],'<img src=x>');assert.equal(core.area([-6,40,6,48],7),null);
+});

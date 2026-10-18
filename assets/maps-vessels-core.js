@@ -18,7 +18,8 @@
     // Buffer the view so small pans reuse the same vessel snapshot.
     const lat = (south + north) / 2, lng = wrap((west + east) / 2);
     const halfLat = Math.min(5, Math.max(.1, (north - south) * .75)), halfLng = Math.min(9, Math.max(.1, width * .75));
-    return [lng - halfLng, Math.max(-85.05113, lat - halfLat), lng + halfLng, Math.min(85.05113, lat + halfLat)].map(x => Number(x.toFixed(4)));
+    const result = [lng - halfLng, Math.max(-85.05113, lat - halfLat), lng + halfLng, Math.min(85.05113, lat + halfLat)].map(x => Number(x.toFixed(4)));
+    return (result[2] - result[0]) * (result[3] - result[1]) <= 100 ? result : null;
   }
   function covers(area, bounds) {
     return !!area && bounds[2] - bounds[0] <= area[2] - area[0] && [[bounds[1], bounds[0]], [bounds[1], bounds[2]], [bounds[3], bounds[0]], [bounds[3], bounds[2]]].every(p => visible(p, area));
@@ -33,9 +34,9 @@
       const heading = number(s.heading, 0, 359) ? s.heading : number(s.course, 0, 359.9) ? s.course : null;
       ships.set(id, { id, point: [s.lat, s.lng], name: text(s.name), type: text(s.type), country: text(s.country), destination: text(s.destination),
         heading, course: number(s.course, 0, 359.9) ? s.course : null, speed: number(s.speed, 0, 102.2) ? s.speed : null,
-        source: ({ aisstream: 'AISStream.io', barentswatch: 'Kystverket / BarentsWatch', fintraffic: 'Fintraffic Digitraffic', singapore_mpa: 'Singapore MPA' })[s.source] || 'AIS receiver network', updated: Math.min(now, updated) });
+        source: s.source === 'openwaters' ? text(s.sourceLabel) || 'Open Waters AIS' : ({ aisstream: 'AISStream.io', barentswatch: 'Kystverket / BarentsWatch', fintraffic: 'Fintraffic Digitraffic', singapore_mpa: 'Singapore MPA' })[s.source] || 'AIS receiver network', updated: Math.min(now, updated) });
     }
-    return { vessels: [...ships.values()], cursor: data.cursor || '', snapshotId: data.snapshotId || '', cached: data.cached === true && number(data.cacheAgeSeconds, 0, 300), pages: Number.isInteger(data.pages) && data.pages >= 1 && data.pages <= 12 ? data.pages : null, limited: data.limited === true, degraded: data.degraded === true };
+    return { credits: Array.isArray(data.credits) ? data.credits.filter(x => typeof x === 'string').slice(0, 20).map(x => x.slice(0, 600)) : [], vessels: [...ships.values()], cursor: data.cursor || '', snapshotId: data.snapshotId || '', cached: data.cached === true && number(data.cacheAgeSeconds, 0, 300), pages: Number.isInteger(data.pages) && data.pages >= 1 && data.pages <= 12 ? data.pages : null, limited: data.limited === true, degraded: data.degraded === true };
   }
   return { maxAge, visible, area, covers, read };
 });

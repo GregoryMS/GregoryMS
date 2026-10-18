@@ -4,7 +4,7 @@
     const core = window.GregleVesselsCore;
     const output = document.getElementById('vessels-layer-status'), refresh = document.getElementById('vessels-refresh');
     const group = L.layerGroup(), displayed = new Map();
-    const credit = 'Vessels: <a href="https://pocketworld.org/api" target="_blank" rel="noopener">PocketWorld</a> / <a href="https://aisstream.io/" target="_blank" rel="noopener">AISStream</a> / <a href="https://www.kystverket.no/en/sea-transport-and-ports/ais/access-to-ais-data/" target="_blank" rel="noopener">Kystverket</a> / <a href="https://www.digitraffic.fi/en/marine-traffic/" target="_blank" rel="noopener">Fintraffic</a>';
+    const credit = 'Vessels: <a href="https://openwaters.io/ais/" target="_blank" rel="noopener">Open Waters AIS</a> / <a href="https://www.aishub.net/" target="_blank" rel="noopener">AISHub</a> / <a href="https://aisstream.io/" target="_blank" rel="noopener">AISStream</a> / <a href="https://www.kystverket.no/en/sea-transport-and-ports/ais/access-to-ais-data/" target="_blank" rel="noopener">Kystverket</a> / <a href="https://www.digitraffic.fi/en/marine-traffic/" target="_blank" rel="noopener">Fintraffic</a>';
     const endpoint = 'https://gregle-vessels.square-rain-5ded.workers.dev/vessels', interval = 60000;
     let enabled = false, suspended = false, active, snapshot, timer, expiryTimer, version = 0, nextRequest = 0, retryAt = 0, failures = 0;
     const bounds = () => { const b = map.getBounds(); return [b.getWest(), Math.max(-85.05113, b.getSouth()), b.getEast(), Math.min(85.05113, b.getNorth())]; };
@@ -26,7 +26,7 @@
       const age = Math.max(0, Math.floor((Date.now() - vessel.updated) / 60000));
       box.append(facts, make('p', `${vessel.source} · position reported ${clock(vessel.updated)} · ${age < 1 ? 'less than a minute ago' : `${age} min ago`}`, 'vessels-meta'));
       box.append(make('p', 'AIS coverage and reporting delays vary. For information only; not for navigation.', 'vessels-meta'));
-      const link = make('a', 'Open vessel map ↗'); link.href = `https://pocketworld.org/?mode=ships&lat=${vessel.point[0]}&lng=${vessel.point[1]}&zoom=12`; link.target = '_blank'; link.rel = 'noopener noreferrer'; box.append(link);
+      const link = make('a', 'Open vessel map ↗'); link.href = 'https://openwaters.io/ais/vessels'; link.target = '_blank'; link.rel = 'noopener noreferrer'; box.append(link);
       return box;
     }
     function icon(vessel) {
@@ -106,6 +106,8 @@
           const result = core.read(await response.json(), Date.now());
           if (token !== version) throw new Error('Cancelled vessel update');
           if (!/^[a-f0-9]{24}$/.test(result.snapshotId) || snapshotId && result.snapshotId !== snapshotId && !result.cached || result.cursor && (!/^[1-9]\d{3,4}$/.test(result.cursor) || +result.cursor <= +(cursor || 0) || +result.cursor % 5000)) throw new Error('Invalid vessel page');
+          const credits = document.getElementById('vessels-source-credits');
+          if (credits && result.credits.length) credits.replaceChildren(...result.credits.map(value => make('p', value)));
           received++; limited ||= result.limited; degraded ||= result.degraded; cached ||= result.cached;
           for (const vessel of result.vessels) if (!vessels.has(vessel.id) || vessels.get(vessel.id).updated < vessel.updated) vessels.set(vessel.id, vessel);
           request.preview = { vessels: mergeReports(snapshot?.vessels || [], [...vessels.values()], area) }; render();

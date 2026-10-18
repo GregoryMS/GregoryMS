@@ -1,8 +1,8 @@
-const { test } = require('node:test'), assert = require('node:assert/strict');
-const sid='1234567890abcdef12345678';
-const fields=['mmsi','lat','lng','name','heading','cog','sog','type_name','country','destination','source','observed_at'];
-function payload(){return {payload:'ship_map_wire_v1',snapshot_id:sid,fields,ship_rows:[[316001234,48.43,-123.36,'Test',511,90,0,'Tug','Canada','VICTORIA','aisstream',new Date().toISOString()],[257123456,60,5,'Outside']],cursor:'5000',connected:true};}
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const feature=(props={},point=[-123.36,48.43])=>({type:'Feature',geometry:{type:'Point',coordinates:point},properties:{mmsi:316001234,kind:'vessel',msg_type:'PositionReport',name:'Test',type:52,flag:'CA',heading:511,cog:90,sog:0,seen:new Date().toISOString(),source:'aishub',destination:'VICTORIA',...props}});
+const payload=(features=[feature()])=>({type:'FeatureCollection',features,attribution:{aishub:'Open Waters AIS (https://openwaters.io/ais/). AISHub (https://www.aishub.net)'}});
 async function setup(){
+ if (!global.crypto) global.crypto=require('node:crypto').webcrypto;
  const {default:worker}=await import('../workers/vessels/worker.mjs');
  const store=new Map(),calls=[],pending=[];let impl=async()=>new Response(JSON.stringify(payload())), now=Date.now();
  const oldFetch=global.fetch,oldCaches=global.caches,OldDate=global.Date;
@@ -18,97 +18,56 @@ async function setup(){
  const done=async()=>{for(let i=0;i<pending.length;i++)await pending[i];};
  return {ask,calls,setFetch:f=>impl=f,advance:ms=>now+=ms,done,async cleanup(){await done();global.fetch=oldFetch;global.caches=oldCaches;global.Date=OldDate;}};
 }
-test('vessel relay validates requests, fixes upstream, filters regions and reuses source pages',async()=>{
+test('regional relay rejects invalid origins, methods, parameters and oversized anonymous areas',async()=>{
  const h=await setup();try{
- assert.equal((await h.ask(undefined,'https://elsewhere.test')).status,403);
- assert.equal((await h.ask('bbox=0,0,360,90')).status,400);assert.equal((await h.ask('bbox=-123.5,48.3,-123.2,48.5&mock=true')).status,400);
- assert.equal((await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot=evil')).status,400);
- assert.equal((await h.ask(undefined,undefined,'POST')).status,405);assert.equal(h.calls.length,0);
- const r=await h.ask();assert.equal(r.status,200);assert.equal(r.headers.get('Access-Control-Allow-Origin'),'https://gregle.uk');const d=await r.json();assert.equal(d.ships.length,1);assert.equal(d.ships[0].speed,0);assert.equal(d.cursor,'5000');assert.equal(d.snapshotId,sid);await h.done();
- await h.ask('bbox=-123.6,48.2,-123.1,48.6');assert.equal(h.calls.length,1);assert.equal(new URL(h.calls[0].url).hostname,'pocketworld.org');assert.equal(new URL(h.calls[0].url).searchParams.get('limit'),'5000');assert.equal(h.calls[0].redirect,'manual');
+ assert.equal((await h.ask(undefined,'https://elsewhere.test')).status,403);assert.equal((await h.ask(undefined,undefined,'POST')).status,405);
+ for(const q of ['bbox=0,0,360,90','bbox=-9,0,9,10','bbox=-123.5,48.3,-123.2,48.5&url=https://evil.test','bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot=bad'])assert.equal((await h.ask(q)).status,400);
+ assert.equal(h.calls.length,0);
  }finally{await h.cleanup();}
 });
-test('relay handles dateline views and rejects a mismatched snapshot',async()=>{
+test('one regional request replaces global pagination and keeps provider attribution',async()=>{
  const h=await setup();try{
- h.setFetch(async()=>new Response(JSON.stringify({...payload(),ship_rows:[[316001234,0,-179.95,'Dateline']],cursor:null,truncated:false})));
- const d=await(await h.ask('bbox=179.8,-1,180.2,1')).json();assert.equal(d.ships.length,1);assert.equal(d.cursor,'');
- h.setFetch(async()=>new Response(JSON.stringify({...payload(),snapshot_id:'aaaaaaaaaaaaaaaaaaaaaaaa'})));
- assert.equal((await h.ask('bbox=179.8,-1,180.2,1&cursor=5000&snapshot='+sid)).status,503);
+ const r=await h.ask();assert.equal(r.status,200);assert.equal(r.headers.get('Access-Control-Allow-Origin'),'https://gregle.uk');const d=await r.json();assert.equal(d.pages,1);assert.equal(d.cursor,'');assert.match(d.snapshotId,/^[a-f0-9]{24}$/);assert.equal(d.ships.length,1);assert.equal(d.ships[0].source,'openwaters');assert.equal(d.ships[0].sourceLabel,'Open Waters / AISHub');assert.equal(d.ships[0].type,'Tug');assert.equal(d.ships[0].speed,0);assert(d.credits[0].includes('AISHub'));
+ const url=new URL(h.calls[0].url);assert.equal(url.hostname,'ais.openwaters.io');assert.equal(url.pathname,'/v1/vessels');assert.equal(url.searchParams.get('bbox'),'48.3,-123.5,48.5,-123.2');assert.equal(url.searchParams.get('kind'),'vessel');assert.equal(url.searchParams.get('max_age'),'600');assert.equal(url.searchParams.get('max_age_moving'),'600');assert.equal(h.calls[0].redirect,'manual');
+ await h.ask('bbox=-123.5000,48.3000,-123.2000,48.5000');assert.equal(h.calls.length,1);
+ await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+d.snapshotId);assert.equal(h.calls.length,1);
  }finally{await h.cleanup();}
 });
-test('upstream throttling is shared across areas and malformed JSON fails closed',async()=>{
+test('timestamps only advance on actual position reports, not static messages, invalid fixes or other AIS objects',async()=>{
  const h=await setup();try{
- h.setFetch(async()=>new Response('slow',{status:429,headers:{'Retry-After':'120'}}));const r=await h.ask();assert.equal(r.status,429);assert.equal(r.headers.get('Retry-After'),'120');await h.done();assert.equal((await h.ask('bbox=0,0,1,1')).status,503);assert.equal(h.calls.length,1);
+ const now=Date.now();h.setFetch(async()=>new Response(JSON.stringify(payload([feature(),feature({mmsi:316001235,msg_type:'StaticDataReport'}),feature({mmsi:316001236,kind:'aton'}),feature({mmsi:316001237,seen:new Date(now-600000).toISOString()}),feature({mmsi:316001238,seen:new Date(now+31000).toISOString()}),feature({mmsi:316001239},[null,48.43]),feature({mmsi:316001240},[0,0]),feature({name:'OLDER',seen:new Date(now-1000).toISOString()})]))));
+ const d=await(await h.ask()).json();assert.equal(d.ships.length,1);assert.equal(d.ships[0].name,'Test');assert.equal(d.ships[0].observed,new Date(now).toISOString());
  }finally{await h.cleanup();}
- const broken=await setup();try{broken.setFetch(async()=>new Response('{}'));assert.equal((await broken.ask()).status,503);}finally{await broken.cleanup();}
 });
-
-test('a transient page error does not pause unrelated pages and observation age uses the position report',async()=>{
+test('dateline views use two ORed boxes in one source request',async()=>{
  const h=await setup();try{
- h.setFetch(async()=>new Response('temporary',{status:503}));assert.equal((await h.ask()).status,503);await h.done();h.advance(21000);
- const data=payload();data.fields.push('position_observed_at');data.ship_rows[0].push('2026-10-18T18:00:00Z');data.total_available=35815;
- h.setFetch(async()=>new Response(JSON.stringify(data)));const r=await h.ask();assert.equal(r.status,200);const d=await r.json();assert.equal(d.pages,8);assert.equal(d.ships[0].observed,'2026-10-18T18:00:00Z');assert.equal(h.calls.length,3);
+ h.setFetch(async()=>new Response(JSON.stringify(payload([feature({},[-179.95,0])]))));const d=await(await h.ask('bbox=179.8,-1,180.2,1')).json();assert.equal(d.ships.length,1);const p=new URL(h.calls[0].url).searchParams;assert.deepEqual(p.getAll('bbox'),['-1,179.8,1,180','-1,-180,1,-179.8']);assert.equal(h.calls.length,1);
  }finally{await h.cleanup();}
 });
-
-test('a transient cold miss is retried once without retrying provider rate limits',async()=>{
+test('a transient cold miss retries once',async()=>{
+ const h=await setup();try{let attempts=0;h.setFetch(async()=>++attempts===1?new Response('temporary',{status:503}):new Response(JSON.stringify(payload())));assert.equal((await h.ask()).status,200);assert.equal(h.calls.length,2);}finally{await h.cleanup();}
+});
+test('provider throttling honours Retry-After without retrying',async()=>{
+ const h=await setup();try{h.setFetch(async()=>new Response('slow',{status:429,headers:{'Retry-After':'120'}}));const r=await h.ask();assert.equal(r.status,429);assert.equal(r.headers.get('Retry-After'),'120');assert.equal((await h.ask('bbox=0,0,1,1')).status,503);assert.equal(h.calls.length,1);}finally{await h.cleanup();}
+});
+test('provider cooldowns allow cached reports while preventing new source requests',async()=>{
+ const h=await setup();try{await h.ask();h.setFetch(async()=>new Response('slow',{status:429,headers:{'Retry-After':'120'}}));assert.equal((await h.ask('bbox=0,0,1,1')).status,429);assert.equal((await h.ask()).status,200);h.advance(46000);assert.equal((await(await h.ask()).json()).cached,true);await h.done();assert.equal(h.calls.length,2);}finally{await h.cleanup();}
+});
+test('a failed background refresh keeps original report times and does not extend the backup',async()=>{
  const h=await setup();try{
- let attempt=0;h.setFetch(async()=>++attempt===1?new Response('temporary',{status:503}):new Response(JSON.stringify(payload())));
- const r=await h.ask();assert.equal(r.status,200);assert.equal(h.calls.length,2);assert.equal((await r.json()).cached,false);
+ const first=await(await h.ask()).json();h.advance(46000);h.setFetch(async()=>new Response('unavailable',{status:503}));const saved=await(await h.ask()).json();assert.equal(saved.cached,true);assert.equal(saved.cacheAgeSeconds,46);assert.equal(saved.ships[0].observed,first.ships[0].observed);await h.done();assert.equal(h.calls.length,3);
+ h.advance(260000);assert.equal((await h.ask()).status,503);assert.equal(h.calls.length,5);
  }finally{await h.cleanup();}
 });
-test('recent backup reports return immediately during an outage and refresh without resetting report times',async()=>{
- const h=await setup();try{
- const initial=await(await h.ask()).json(),observed=initial.ships[0].observed;h.advance(46000);
- h.setFetch(async()=>new Response('unavailable',{status:503}));
- const saved=await(await h.ask()).json();assert.equal(saved.cached,true);assert.equal(saved.cacheAgeSeconds,46);assert.equal(saved.ships[0].observed,observed);assert.equal(saved.snapshotId,sid);await h.done();assert.equal(h.calls.length,3);
- h.advance(21000);const nextId='aaaaaaaaaaaaaaaaaaaaaaaa';h.setFetch(async()=>new Response(JSON.stringify({...payload(),snapshot_id:nextId})));
- assert.equal((await(await h.ask()).json()).cached,true);await h.done();const fresh=await(await h.ask()).json();assert.equal(fresh.cached,false);assert.equal(fresh.snapshotId,nextId);assert.notEqual(fresh.ships[0].observed,observed);
- }finally{await h.cleanup();}
+test('a successful background refresh replaces old observations',async()=>{
+ const h=await setup();try{const first=await(await h.ask()).json();h.advance(46000);assert.equal((await(await h.ask()).json()).cached,true);await h.done();const fresh=await(await h.ask()).json();assert.equal(fresh.cached,false);assert.notEqual(fresh.snapshotId,first.snapshotId);assert.notEqual(fresh.ships[0].observed,first.ships[0].observed);assert.equal(h.calls.length,2);}finally{await h.cleanup();}
 });
-test('cached fallback keeps its actual snapshot ID and expires after five minutes',async()=>{
- const h=await setup();try{
- await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+sid);const different='aaaaaaaaaaaaaaaaaaaaaaaa';h.advance(1000);
- const fallback=await(await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+different)).json();assert.equal(fallback.snapshotId,sid);assert.equal(fallback.cached,true);assert.equal(fallback.limited,true);assert.equal(fallback.cacheAgeSeconds,1);await h.done();
- h.advance(300000);h.setFetch(async()=>new Response('unavailable',{status:503}));assert.equal((await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+different)).status,503);
- }finally{await h.cleanup();}
+test('a pending refresh is reused by repeated requests to the same area',async()=>{
+ const h=await setup();let release;try{await h.ask();h.advance(46000);h.setFetch(()=>new Promise(resolve=>release=resolve));assert.equal((await h.ask()).status,200);assert.equal((await h.ask()).status,200);assert.equal(h.calls.length,2);release(new Response(JSON.stringify(payload())));await h.done();assert.equal((await(await h.ask()).json()).cached,false);assert.equal(h.calls.length,2);}finally{if(release)release(new Response('{}'));await h.cleanup();}
 });
-test('cooldowns still allow good cached reports while preventing new upstream requests',async()=>{
- const h=await setup();try{
- await h.ask();h.setFetch(async()=>new Response('limit',{status:429,headers:{'Retry-After':'120'}}));assert.equal((await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+sid)).status,429);assert.equal(h.calls.length,2);
- assert.equal((await h.ask()).status,200);h.advance(46000);const backup=await(await h.ask()).json();assert.equal(backup.cached,true);await h.done();assert.equal(h.calls.length,2);
- }finally{await h.cleanup();}
+test('malformed source responses fail without caching fabricated vessels',async()=>{
+ const h=await setup();try{h.setFetch(async()=>new Response('{}'));assert.equal((await h.ask()).status,503);assert.equal(h.calls.length,1);}finally{await h.cleanup();}
 });
-test('background revalidation is shared across repeated requests for the same page',async()=>{
- const h=await setup();let release;try{
- await h.ask();h.advance(46000);h.setFetch(()=>new Promise(resolve=>release=resolve));
- assert.equal((await h.ask()).status,200);assert.equal((await h.ask()).status,200);assert.equal(h.calls.length,2);
- release(new Response(JSON.stringify(payload())));await h.done();assert.equal((await(await h.ask()).json()).cached,false);assert.equal(h.calls.length,2);
- }finally{if(release)release(new Response('{}'));await h.cleanup();}
-});
-
-test('an expired snapshot restarts through a current head and caches the recovered page under its real ID',async()=>{
- const h=await setup(),newId='bbbbbbbbbbbbbbbbbbbbbbbb';try{
- await h.ask();h.advance(46000);
- h.setFetch(async url=>{
-  const params=new URL(url).searchParams;
-  if(params.get('snapshot_id')===sid)return new Response(JSON.stringify({error:{code:'SHIP_SNAPSHOT_CHANGED'}}),{status:409});
-  const data={...payload(),snapshot_id:newId,cursor:params.has('cursor')?'10000':'5000'};
-  return new Response(JSON.stringify(data));
- });
- const query='bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot=';
- const r=await h.ask(query+sid);assert.equal(r.status,200);const d=await r.json();assert.equal(d.snapshotId,newId);assert.equal(d.cached,true);assert.equal(d.limited,true);assert.equal(h.calls.length,4);assert.equal(new URL(h.calls[2].url).searchParams.has('cursor'),false);assert.equal(new URL(h.calls[3].url).searchParams.get('snapshot_id'),newId);
- assert.equal((await(await h.ask(query+sid)).json()).snapshotId,newId);assert.equal((await(await h.ask(query+newId)).json()).cached,false);assert.equal(h.calls.length,4);
- }finally{await h.cleanup();}
-});
-test('a recently refreshed head avoids making a request with an obsolete snapshot ID',async()=>{
- const h=await setup(),newId='cccccccccccccccccccccccc';try{
- await h.ask();h.advance(46000);h.setFetch(async url=>new Response(JSON.stringify({...payload(),snapshot_id:newId,cursor:new URL(url).searchParams.has('cursor')?'10000':'5000'})));
- await h.ask();await h.done();const r=await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+sid);assert.equal(r.status,200);assert.equal((await r.json()).snapshotId,newId);assert.equal(new URL(h.calls.at(-1).url).searchParams.get('snapshot_id'),newId);assert.equal(h.calls.length,3);
- }finally{await h.cleanup();}
-});
-test('snapshot recovery respects an explicit provider Retry-After',async()=>{
- const h=await setup();try{
- h.setFetch(async()=>new Response('restart later',{status:409,headers:{'Retry-After':'120'}}));const r=await h.ask('bbox=-123.5,48.3,-123.2,48.5&cursor=5000&snapshot='+sid);assert.equal(r.status,503);assert.equal(r.headers.get('Retry-After'),'120');assert.equal(h.calls.length,1);
- }finally{await h.cleanup();}
+test('large views return a bounded newest-first result with a limit notice',async()=>{
+ const h=await setup();try{const now=Date.now(),features=Array.from({length:5001},(_,i)=>feature({mmsi:316000000+i,seen:new Date(now-i).toISOString()}));h.setFetch(async()=>new Response(JSON.stringify(payload(features))));const d=await(await h.ask()).json();assert.equal(d.ships.length,5000);assert.equal(d.limited,true);assert.equal(d.ships[0].mmsi,'316000000');}finally{await h.cleanup();}
 });
