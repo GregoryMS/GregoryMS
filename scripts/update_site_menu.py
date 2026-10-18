@@ -31,9 +31,9 @@ MAP_EXTRAS = [
     ('OpenStreetMap', 'https://www.openstreetmap.org/'),
     ('Google Maps', 'https://www.google.com/maps'),
     ('Apple Maps', 'https://maps.apple.com'),
-    ('ADS-B Exchange', 'https://globe.adsbexchange.com/'),
-    ('MarineTraffic', 'https://www.marinetraffic.com/'),
     ('TomTom Planner', 'https://plan.tomtom.com/en/'),
+    ('MarineTraffic', 'https://www.marinetraffic.com/'),
+    ('ADS-B Exchange', 'https://globe.adsbexchange.com/'),
 ]
 PATTERN = r'<!-- Gregle app menu -->.*?<!-- /Gregle app menu -->'
 
