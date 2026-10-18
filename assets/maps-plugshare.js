@@ -3,8 +3,21 @@
   window.GreglePlugShare = ({ map }) => {
     const core = window.GregleMaps, $ = id => document.getElementById(id);
     const stage = document.querySelector('.map-stage'), host = $('plugshare-frame'), status = $('plugshare-status');
-    let enabled = false, frame, timer, viewKey;
-    function remove() { clearTimeout(timer); frame?.remove(); frame = null; viewKey = null; status.hidden = true; }
+    const zoomHelp = $('plugshare-zoom-help');
+    let enabled = false, frame, timer, helpTimer, viewKey;
+    function remove() { clearTimeout(timer); clearTimeout(helpTimer); frame?.remove(); frame = null; viewKey = null; status.hidden = true; zoomHelp.hidden = true; }
+    function preventPageZoom(event) {
+      // Chromium routes trackpad pinches to the iframe element as Ctrl+wheel.
+      // Only cancel gestures delivered to Gregle; ordinary scrolling and gestures
+      // handled inside PlugShare remain with the provider.
+      if (!enabled || !frame || event.target !== frame || (event.type === 'wheel' && !event.ctrlKey)) return;
+      if (!event.cancelable) return;
+      event.preventDefault();
+      zoomHelp.hidden = false; clearTimeout(helpTimer);
+      helpTimer = setTimeout(() => { zoomHelp.hidden = true; }, 6500);
+    }
+    host.addEventListener('wheel', preventPageZoom, { passive: false });
+    for (const type of ['gesturestart', 'gesturechange', 'gestureend']) host.addEventListener(type, preventPageZoom, { passive: false });
     function load() {
       if (!enabled) return;
       const center = map.getCenter(), bounds = map.getBounds();
