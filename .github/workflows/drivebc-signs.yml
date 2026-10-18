@@ -1,4 +1,4 @@
-name: Refresh DriveBC message signs
+name: Refresh DriveBC feeds
 
 on:
   schedule:
@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - scripts/update_drivebc_signs.py
+      - scripts/update_drivebc_ferries.py
       - .github/workflows/drivebc-signs.yml
 
 permissions:
@@ -26,19 +27,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m unittest discover -s tests -p 'test_drivebc_signs.py'
-      - run: python scripts/update_drivebc_signs.py
-      - name: Save message signs and rebuild Pages
+      - run: python -m unittest discover -s tests -p 'test_drivebc_*.py'
+      - id: signs
+        run: python scripts/update_drivebc_signs.py
+        continue-on-error: true
+      - id: ferries
+        run: python scripts/update_drivebc_ferries.py
+        continue-on-error: true
+      - name: Save DriveBC feeds and rebuild Pages
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if git diff --quiet -- data/drivebc-signs.json; then
+          if git diff --quiet -- data/drivebc-signs.json data/drivebc-ferries.json; then
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/drivebc-signs.json
-          git commit -m "Refresh DriveBC message signs"
+          git add data/drivebc-signs.json data/drivebc-ferries.json
+          git commit -m "Refresh DriveBC feeds"
           git pull --rebase origin main
           git push origin HEAD:main
           gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
+      - name: Report feed failures
+        if: steps.signs.outcome != 'success' || steps.ferries.outcome != 'success'
+        run: exit 1

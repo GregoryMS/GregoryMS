@@ -10,6 +10,7 @@
     const drivebc = window.GregleDriveBC({ map, notify });
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
     const signs = window.GregleDriveBCSigns({ map, config, notify });
+    const ferries = window.GregleDriveBCFerries({ map, config, notify });
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
     const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
@@ -41,6 +42,7 @@
       $('map-drivebc-future').disabled = !state.drivebc;
       $('map-drivebc-speed').checked = state.speed;
       $('map-drivebc-messages').checked = state.messages;
+      $('map-drivebc-ferries').checked = state.ferries;
       $('map-traffic').checked = state.traffic;
       $('map-google-traffic').checked = state.google;
       $('maritime-layer-status').hidden = !state.maritime;
@@ -48,6 +50,7 @@
       $('drivebc-cameras-status').hidden = !state.webcams;
       $('drivebc-speed-status').hidden = !state.speed;
       $('drivebc-messages-status').hidden = !state.messages;
+      $('drivebc-ferries-status').hidden = !state.ferries;
       $('traffic-connect').textContent = apiKey ? 'Manage key' : 'Connect TomTom';
       $('traffic-forget').hidden = !apiKey;
       $('traffic-refresh').hidden = !state.traffic || !apiKey;
@@ -193,6 +196,7 @@
       if (previous.future !== state.future) drivebc.setIncludeFuture(state.future);
       if (previous.speed !== state.speed) signs.setEnabled('speed', state.speed);
       if (previous.messages !== state.messages) signs.setEnabled('messages', state.messages);
+      if (previous.ferries !== state.ferries) ferries.setEnabled(state.ferries);
       if (previous.webcams !== state.webcams) cameras.setEnabled(state.webcams);
       if (previous.google !== state.google) googleTraffic.setEnabled(state.google);
       if (previous.traffic !== state.traffic || (state.traffic && apiKey && !trafficLayer && !trafficPaused)) {
@@ -218,6 +222,7 @@
     $('map-drivebc-future').addEventListener('change', () => setState({ ...state, future: $('map-drivebc-future').checked }, true));
     $('map-drivebc-speed').addEventListener('change', () => setState({ ...state, speed: $('map-drivebc-speed').checked }, true));
     $('map-drivebc-messages').addEventListener('change', () => setState({ ...state, messages: $('map-drivebc-messages').checked }, true));
+    $('map-drivebc-ferries').addEventListener('change', () => setState({ ...state, ferries: $('map-drivebc-ferries').checked }, true));
     $('map-google-traffic').addEventListener('change', () => setState({ ...state, google: $('map-google-traffic').checked }, true));
     $('map-traffic').addEventListener('change', () => {
       setState({ ...state, traffic: $('map-traffic').checked }, true);
@@ -256,6 +261,7 @@
     changeBase(); changeMaritime(); aviation.setEnabled(state.aviation); drivebc.setEnabled(state.drivebc); googleTraffic.setEnabled(state.google);
     cameras.setEnabled(state.webcams);
     signs.setEnabled('speed', state.speed); signs.setEnabled('messages', state.messages);
+    ferries.setEnabled(state.ferries);
     if (state.traffic && apiKey) loadTraffic();
     render();
     if (state.traffic && !apiKey) openPanel(true);

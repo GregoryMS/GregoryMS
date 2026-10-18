@@ -194,4 +194,11 @@
 .drivebc-camera-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
 .drivebc-camera-actions button { border: 0; border-radius: 8px; background: #eee5fa; color: #7637cc; padding: 8px 10px; font-size: 11px; }
 .drivebc-camera-actions button:disabled { opacity: .5; cursor: default; }
+.drivebc-ferry-marker { display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; background: #007eaa; color: #fff; box-shadow: 0 0 0 1px #173d5099, 0 2px 8px #0005; }
+.drivebc-ferry-inland { background: #7637cc; }
+.drivebc-ferry-marker svg { width: 23px; height: 23px; }
+.drivebc-ferry-popup .ferry-subheading { margin-top: 12px; font-size: 12px; }
+.drivebc-ferry-popup .ferry-schedule { white-space: pre-wrap; }
+.ferry-routes { margin: 8px 0; padding-left: 17px; }
+.ferry-routes li { margin: 7px 0; overflow-wrap: anywhere; }
 @media(max-width:600px) { .drivebc-camera-popup select { font-size: 16px; } }
