@@ -1,15 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-18T18:52:20+00:00",
-  "fetchedAt": "2026-10-18T18:52:25.044495+00:00",
+  "feedUpdatedAt": "2026-10-18T21:21:55+00:00",
+  "fetchedAt": "2026-10-18T21:22:06.195233+00:00",
   "items": [
+    {
+      "title": "Macron calls for 'calm and order' after riots across France",
+      "link": "https://www.bbc.co.uk/news/articles/cw240zl08dm5o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "What we know so far about deadly fire at Canadian military base",
       "link": "https://www.bbc.co.uk/news/articles/cmgelrq8x92do?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Burnt out cars and shattered glass on Paris streets after protests turn to riots and looting",
-      "link": "https://www.bbc.co.uk/news/articles/c574pdzl0k4no?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Polanski says he will not overturn Green Party's 'Zionism is racism' motion",
@@ -20,8 +20,12 @@
       "link": "https://www.bbc.co.uk/news/articles/cmx2wvyv5j17o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: Police hunt for synthetic drugs in Chicago jail",
-      "link": "https://www.bbc.co.uk/news/videos/cq8ez4jz1z04o?at_medium=RSS&at_campaign=rss"
+      "title": "Inside Chicago's battle against the synthetic drugs flooding the US",
+      "link": "https://www.bbc.co.uk/news/videos/c84g166kz003o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Cindy Crawford 'beyond heartbroken' after death of son Presley at 27",
+      "link": "https://www.bbc.co.uk/news/articles/cwzrd6123jyyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Oil facilities hit in deadly overnight attack on St Petersburg",
@@ -38,10 +42,6 @@
     {
       "title": "Man, 80, who died in light aircraft crash near Loch Lomond named",
       "link": "https://www.bbc.co.uk/news/articles/cmx23p5w7123o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Search for Amelia Earhart's plane resumes after stormy weather",
-      "link": "https://www.bbc.co.uk/news/articles/cv70pxe5j90eo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
