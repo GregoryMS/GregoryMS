@@ -33,6 +33,14 @@
       return L.divIcon({ className: `vessels-marker${vessel.heading === null ? ' vessels-no-heading' : ''}`, iconSize: [26, 32], iconAnchor: [13, 16], html: `<svg viewBox="0 0 26 32" style="transform:rotate(${vessel.heading ?? 0}deg)" aria-hidden="true">${vessel.heading === null ? '<circle cx="13" cy="16" r="7"/>' : '<path d="M13 2 22 15v14H4V15Z"/><path d="M13 11v12" class="vessels-deck"/>'}</svg>` });
     }
     function clear() { group.clearLayers(); displayed.clear(); }
+    function mergeReports(previous, incoming, area) {
+      const records = new Map(), now = Date.now();
+      for (const vessel of [...previous, ...incoming]) {
+        if (now - vessel.updated >= core.maxAge || !core.visible(vessel.point, area)) continue;
+        if (!records.has(vessel.id) || records.get(vessel.id).updated < vessel.updated) records.set(vessel.id, vessel);
+      }
+      return [...records.values()].slice(0, 60000);
+    }
     function render() {
       if (!enabled || suspended || document.hidden) return;
       const view = bounds(), area = core.area(view, map.getZoom()), now = Date.now();
@@ -61,9 +69,9 @@
         }
       }
       const count = records.size, message = `${count} vessels in this view.`;
-      if (failures) report(`${count ? `${count} recently reported vessels in this view. Partial update; ` : 'Vessel feed temporarily unavailable; '}retrying after a short pause. Reports older than ten minutes are hidden.`, true);
+      if (failures) report(`${count ? `${count} recently reported vessels in this view. Updates delayed; ` : 'Vessel feed temporarily unavailable; '}retrying automatically. Reports older than ten minutes are hidden.`, count === 0);
       else if (active || !snapshot || !core.covers(snapshot.area, view)) report(`${count ? message + ' ' : ''}Loading vessels for this area…`);
-      else report(`${message} Updated ${clock(snapshot.time)} · refreshes each minute. AIS coverage varies; an empty view does not confirm no vessels.${snapshot.limited || records.size >= 1500 ? ' Results limited; zoom in for more.' : ''}${snapshot.degraded ? ' Source coverage is currently reduced.' : ''}`);
+      else report(`${message} ${snapshot.cached ? 'Showing recent reports while the feed refreshes in the background.' : `Updated ${clock(snapshot.time)} · refreshes each minute.`} AIS coverage varies; an empty view does not confirm no vessels.${records.size >= 1500 ? ' Results limited; zoom in for more.' : snapshot.limited ? snapshot.cached ? ' Some reports may be delayed.' : ' Results limited; zoom in for more.' : ''}${snapshot.degraded ? ' Source coverage is currently reduced.' : ''}`);
     }
     function scheduleExpiry() {
       clearTimeout(expiryTimer);
@@ -84,7 +92,7 @@
       const token = version, request = { controller: new AbortController() }; active = request; nextRequest = now + interval;
       const timeout = setTimeout(() => request.controller.abort(), 65000);
       render();
-      const vessels = new Map(); let received = 0, limited = false, degraded = false;
+      const vessels = new Map(); let received = 0, limited = false, degraded = false, cached = false;
       try {
         async function page(cursor = '', snapshotId = '') {
           const url = new URL(endpoint); url.search = new URLSearchParams({ bbox: area.join(','), ...(cursor ? { cursor, snapshot: snapshotId } : {}) });
@@ -97,10 +105,10 @@
           }
           const result = core.read(await response.json(), Date.now());
           if (token !== version) throw new Error('Cancelled vessel update');
-          if (!/^[a-f0-9]{24}$/.test(result.snapshotId) || snapshotId && result.snapshotId !== snapshotId || result.cursor && (!/^[1-9]\d{3,4}$/.test(result.cursor) || +result.cursor <= +(cursor || 0) || +result.cursor % 5000)) throw new Error('Invalid vessel page');
-          received++; limited ||= result.limited; degraded ||= result.degraded;
+          if (!/^[a-f0-9]{24}$/.test(result.snapshotId) || snapshotId && result.snapshotId !== snapshotId && !result.cached || result.cursor && (!/^[1-9]\d{3,4}$/.test(result.cursor) || +result.cursor <= +(cursor || 0) || +result.cursor % 5000)) throw new Error('Invalid vessel page');
+          received++; limited ||= result.limited; degraded ||= result.degraded; cached ||= result.cached;
           for (const vessel of result.vessels) if (!vessels.has(vessel.id) || vessels.get(vessel.id).updated < vessel.updated) vessels.set(vessel.id, vessel);
-          request.preview = { vessels: [...vessels.values()] }; render();
+          request.preview = { vessels: mergeReports(snapshot?.vessels || [], [...vessels.values()], area) }; render();
           return result;
         }
         const first = await page();
@@ -124,18 +132,16 @@
           for (let i = 1; next.cursor && i < 12; i++) next = await page(next.cursor, first.snapshotId);
           if (next.cursor) limited = true;
         }
-        snapshot = { vessels: [...vessels.values()], area, time: Date.now(), limited, degraded }; failures = 0; retryAt = 0;
+        snapshot = { vessels: mergeReports(snapshot?.vessels || [], [...vessels.values()], area), area, time: Date.now(), limited, degraded, cached }; failures = 0; retryAt = 0;
       } catch (error) {
         if (token !== version) return;
         if (received) {
           // Keep valid observations even when a later snapshot page fails.
-          const merged = new Map((snapshot?.vessels || []).map(v => [v.id, v]));
-          for (const vessel of vessels.values()) if (!merged.has(vessel.id) || merged.get(vessel.id).updated < vessel.updated) merged.set(vessel.id, vessel);
-          snapshot = { vessels: [...merged.values()], area, time: Date.now(), limited: true, degraded: true };
+          snapshot = { vessels: mergeReports(snapshot?.vessels || [], [...vessels.values()], area), area, time: Date.now(), limited: true, degraded: true, cached };
         }
         failures++;
         retryAt = Date.now() + Math.max(Math.min(900000, Number(error.retryAfter) || 0), Math.min(300000, 60000 * 2 ** Math.min(failures - 1, 4)));
-        if (failures === 1) notify('Live vessels are temporarily unavailable. Open Layers to retry.', 'vessels');
+        if (failures === 1 && !snapshot?.vessels.some(v => Date.now() - v.updated < core.maxAge && core.visible(v.point, bounds()))) notify('Live vessels are temporarily unavailable. Open Layers to retry.', 'vessels');
       } finally {
         clearTimeout(timeout);
         if (token === version) { active = null; render(); schedule(); }
@@ -151,10 +157,10 @@
     map.on('moveend', () => { if (enabled && !suspended && !document.hidden) { render(); if (!snapshot || !core.covers(snapshot.area, bounds())) schedule(650); } });
     document.addEventListener('visibilitychange', () => {
       if (!enabled) return;
-      if (document.hidden) { cancel(); snapshot = null; clear(); }
+      if (document.hidden) { cancel(); clear(); }
       else { load(); scheduleExpiry(); }
     });
-    window.addEventListener('pagehide', () => { suspended = true; cancel(); snapshot = null; clear(); });
+    window.addEventListener('pagehide', () => { suspended = true; cancel(); clear(); });
     window.addEventListener('pageshow', event => { if (event.persisted) { suspended = false; if (enabled) { load(); scheduleExpiry(); } } });
     return { setEnabled };
   };

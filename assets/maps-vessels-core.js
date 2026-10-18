@@ -35,7 +35,7 @@
         heading, course: number(s.course, 0, 359.9) ? s.course : null, speed: number(s.speed, 0, 102.2) ? s.speed : null,
         source: ({ aisstream: 'AISStream.io', barentswatch: 'Kystverket / BarentsWatch', fintraffic: 'Fintraffic Digitraffic', singapore_mpa: 'Singapore MPA' })[s.source] || 'AIS receiver network', updated: Math.min(now, updated) });
     }
-    return { vessels: [...ships.values()], cursor: data.cursor || '', snapshotId: data.snapshotId || '', pages: Number.isInteger(data.pages) && data.pages >= 1 && data.pages <= 12 ? data.pages : null, limited: data.limited === true, degraded: data.degraded === true };
+    return { vessels: [...ships.values()], cursor: data.cursor || '', snapshotId: data.snapshotId || '', cached: data.cached === true && number(data.cacheAgeSeconds, 0, 300), pages: Number.isInteger(data.pages) && data.pages >= 1 && data.pages <= 12 ? data.pages : null, limited: data.limited === true, degraded: data.degraded === true };
   }
   return { maxAge, visible, area, covers, read };
 });

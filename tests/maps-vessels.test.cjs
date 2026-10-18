@@ -34,7 +34,7 @@ test('vessels stay opt-in, paginate consistently, retain markers during small pa
  h.api.setEnabled(false);assert.equal(h.markers().length,0);assert.equal(h.credits.size,0);await h.advance(60000);assert.equal(h.calls.length,2);
 });
 test('rate limits survive toggles and stale positions disappear during outages',async()=>{
- const h=setup();h.api.setEnabled(true);await flush();h.setFetch(async()=>({ok:false,status:429,headers:{get:()=> '900'}}));await h.advance(60000);assert.equal(h.calls.length,2);assert.match(h.output.textContent,/Partial update/);assert.equal(h.markers().length,1);
+ const h=setup();h.api.setEnabled(true);await flush();h.setFetch(async()=>({ok:false,status:429,headers:{get:()=> '900'}}));await h.advance(60000);assert.equal(h.calls.length,2);assert.match(h.output.textContent,/Updates delayed/);assert.equal(h.markers().length,1);
  h.api.setEnabled(false);h.api.setEnabled(true);h.refresh.events.click();await flush();assert.equal(h.calls.length,2);
  const stale=setup();stale.api.setEnabled(true);await flush();stale.setFetch(async()=>({ok:false,status:429,headers:{get:()=> '900'}}));await stale.advance(605000);assert.equal(stale.markers().length,0);assert.equal(stale.calls.length,2);
 });
@@ -44,14 +44,14 @@ test('hidden, disabled and bfcache pages cancel pending vessel pages and ignore 
 });
 test('invalid pagination preserves previous snapshot and vessel popups treat names as text',async()=>{
  const h=setup();h.setFetch(async()=>({ok:true,json:async()=>packet(start,[ship({name:'<img src=x onerror=alert(1)>'})])}));h.api.setEnabled(true);await flush();const marker=h.markers()[0],box=marker.popup(),text=e=>e.textContent+' '+e.children.map(text).join(' ');assert(text(box).includes('<img src=x onerror=alert(1)>'));assert(text(box).includes('0.0 kn'));assert(text(box).includes('0°'));assert.equal(marker.options.bubblingMouseEvents,false);
- h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000,undefined,{cursor:'5000',snapshotId:'bad'})}));await h.advance(60000);assert.equal(h.markers()[0],marker);assert.match(h.output.textContent,/Partial update/);
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000,undefined,{cursor:'5000',snapshotId:'bad'})}));await h.advance(60000);assert.equal(h.markers()[0],marker);assert.match(h.output.textContent,/Updates delayed/);
 });
 
 test('a failed later page preserves freshly received vessels and a subsequent update recovers',async()=>{
  const h=setup();
  h.setFetch(async url=>new URL(url).searchParams.has('cursor')?{ok:false,status:503,headers:{get:()=> '60'}}:{ok:true,json:async()=>packet(start,undefined,{cursor:'5000',pages:3})});
- h.api.setEnabled(true);await flush();assert.equal(h.calls.length,3);assert.equal(h.markers().length,1);assert.match(h.output.textContent,/Partial update/);assert(!h.output.textContent.startsWith('0 vessels'));
- const marker=h.markers()[0];h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000)}));await h.advance(60000);assert.equal(h.markers()[0],marker);assert.match(h.output.textContent,/Updated/);assert(!h.output.textContent.includes('Partial update'));
+ h.api.setEnabled(true);await flush();assert.equal(h.calls.length,3);assert.equal(h.markers().length,1);assert.match(h.output.textContent,/Updates delayed/);assert(!h.output.textContent.startsWith('0 vessels'));
+ const marker=h.markers()[0];h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000)}));await h.advance(60000);assert.equal(h.markers()[0],marker);assert.match(h.output.textContent,/Updated/);assert(!h.output.textContent.includes('Updates delayed'));
 });
 test('page scans use at most three concurrent requests and one failed page does not hide other regions',async()=>{
  const h=setup(),pending=[];let active=0,max=0;
@@ -62,5 +62,19 @@ test('page scans use at most three concurrent requests and one failed page does 
  });
  h.api.setEnabled(true);await flush();assert.equal(active,3);assert.equal(h.calls.length,4);
  while(pending.length){pending.shift()();await flush();}
- assert.equal(max,3);assert.equal(h.calls.length,6);assert.equal(h.markers().length,5);assert.match(h.output.textContent,/Partial update/);
+ assert.equal(max,3);assert.equal(h.calls.length,6);assert.equal(h.markers().length,5);assert.match(h.output.textContent,/Updates delayed/);
+});
+
+test('cached pages may use an older source snapshot only with a bounded cache age',async()=>{
+ const h=setup();h.setFetch(async url=>({ok:true,json:async()=>new URL(url).searchParams.has('cursor')?packet(start,[ship({mmsi:316001235})],{snapshotId:'aaaaaaaaaaaaaaaaaaaaaaaa',cached:true,cacheAgeSeconds:90,limited:true}):packet(start,undefined,{cursor:'5000',pages:2})}));
+ h.api.setEnabled(true);await flush();assert.equal(h.markers().length,2);assert.match(h.output.textContent,/recent reports/);assert.equal(h.output.dataset.state,'ready');
+ const expired=setup();expired.setFetch(async url=>({ok:true,json:async()=>new URL(url).searchParams.has('cursor')?packet(start,[ship({mmsi:316001235})],{snapshotId:'aaaaaaaaaaaaaaaaaaaaaaaa',cached:true,cacheAgeSeconds:301}):packet(start,undefined,{cursor:'5000',pages:2})}));
+ expired.api.setEnabled(true);await flush();assert.equal(expired.markers().length,1);assert.match(expired.output.textContent,/Updates delayed/);
+});
+test('refresh progress and returning to the page retain recent vessels without reviving expired reports',async()=>{
+ const h=setup();h.setFetch(async()=>({ok:true,json:async()=>packet(start,[ship(),ship({mmsi:316001235})])}));h.api.setEnabled(true);await flush();assert.equal(h.markers().length,2);
+ h.document.hidden=true;h.events.visibilitychange();assert.equal(h.markers().length,0);h.document.hidden=false;h.events.visibilitychange();await flush();assert.equal(h.markers().length,2);assert.equal(h.calls.length,1);
+ let release;h.setFetch(async url=>new URL(url).searchParams.has('cursor')?new Promise(resolve=>release=resolve):{ok:true,json:async()=>packet(start+60000,undefined,{cursor:'5000',pages:2})});
+ await h.advance(60000);assert.equal(h.markers().length,2);release({ok:false,status:503,headers:{get:()=> '900'}});await flush();assert.equal(h.markers().length,2);assert.equal(h.output.dataset.state,'ready');
+ await h.advance(605000);assert.equal(h.markers().length,0);assert.equal(h.output.dataset.state,'error');
 });
