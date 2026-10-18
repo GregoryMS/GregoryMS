@@ -69,6 +69,12 @@
     updateURL();
     $('gregle-map').focus({ preventScroll: true });
   }
+  function clearPin() {
+    intent++;
+    renderPin(null);
+    updateURL();
+    $('gregle-map').focus({ preventScroll: true });
+  }
   function showScopeAction(worldwide) {
     const button = $('map-search-scope');
     button.dataset.worldwide = String(worldwide);
@@ -192,13 +198,16 @@
     if (event.key === 'ArrowUp') { event.preventDefault(); if (index === 0) query.focus(); else buttons[index - 1].focus(); }
   });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !searchContent.hidden) { cancelSearch(); hideSearch(); query.focus(); }
+    if (event.key === 'Escape') {
+      if (selected) clearPin();
+      if (!searchContent.hidden) { cancelSearch(); hideSearch(); query.focus(); }
+    }
     if (event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.target.closest('input, textarea, [contenteditable="true"]')) {
       event.preventDefault(); query.focus();
     }
   });
   document.addEventListener('click', event => { if (!event.target.closest('.map-search')) hideSearch(); });
-  $('clear-pin').addEventListener('click', () => { intent++; renderPin(null); updateURL(); $('gregle-map').focus(); });
+  $('clear-pin').addEventListener('click', clearPin);
   $('map-locate').addEventListener('click', () => {
     if (!navigator.geolocation) { notify('Your browser does not support location sharing. Search for a place instead.'); return; }
     const token = ++intent, button = $('map-locate');
