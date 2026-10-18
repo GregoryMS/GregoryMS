@@ -34,6 +34,8 @@ MAP_EXTRAS = [
     ('TomTom Planner', 'https://plan.tomtom.com/en/'),
     ('MarineTraffic', 'https://www.marinetraffic.com/'),
     ('ADS-B Exchange', 'https://globe.adsbexchange.com/'),
+    ('Zoom Earth', 'https://zoom.earth/'),
+    ('Google Earth Web', 'https://earth.google.com/web/'),
 ]
 PATTERN = r'<!-- Gregle app menu -->.*?<!-- /Gregle app menu -->'
 
