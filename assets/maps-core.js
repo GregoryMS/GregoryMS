@@ -51,12 +51,42 @@
     url.hash = viewHash(view);
     return url.href;
   }
-  function readResults(data) {
+  function searchArea(current, bounds = []) {
+    const lng = wrapLongitude(current.lng);
+    if (!validPoint(current.lat, lng)) throw new Error('Invalid search centre');
+    const lat = current.lat;
+    const width = Number.isFinite(bounds[2] - bounds[0]) ? Math.max(0, bounds[2] - bounds[0]) : 0;
+    const height = Number.isFinite(bounds[3] - bounds[1]) ? Math.max(0, bounds[3] - bounds[1]) : 0;
+    // Include nearby suburbs and keep a useful search area when zoomed in to one street.
+    const minHalfLat = 15 / 111.32;
+    const halfLng = Math.min(180, Math.max(15 / (111.32 * Math.max(.01, Math.cos(lat * Math.PI / 180))), width * .75));
+    const round = value => Number(value.toFixed(4));
+    return { lat: round(lat), lng: round(lng), zoom: Math.max(2, Math.min(19, Math.round(current.zoom) || 13)),
+      west: round(lng - halfLng), south: round(Math.max(-90, Math.min(lat - minHalfLat, height > 0 ? bounds[1] - height * .25 : lat))),
+      east: round(lng + halfLng), north: round(Math.min(90, Math.max(lat + minHalfLat, height > 0 ? bounds[3] + height * .25 : lat))) };
+  }
+  function searchURL(endpoint, term, area = null) {
+    const url = new URL(endpoint);
+    for (const key of ['lat', 'lon', 'zoom', 'bbox', 'location_bias_scale']) url.searchParams.delete(key);
+    url.searchParams.set('q', term); url.searchParams.set('limit', area ? '20' : '6'); url.searchParams.set('lang', 'en');
+    if (area) {
+      url.searchParams.set('lat', String(area.lat)); url.searchParams.set('lon', String(area.lng));
+      url.searchParams.set('zoom', String(area.zoom)); url.searchParams.set('location_bias_scale', '0.2');
+      // Photon needs an ordinary min/max box. Dateline searches use focus plus the client-side area filter.
+      if (area.west >= -180 && area.east <= 180) url.searchParams.set('bbox', [area.west, area.south, area.east, area.north].join(','));
+    }
+    return url.href;
+  }
+  function readResults(data, area = null) {
     if (!data || !Array.isArray(data.features)) throw new Error('Invalid search response');
     const seen = new Set(), results = [];
     for (const feature of data.features.slice(0, 30)) {
       const coords = feature?.geometry?.coordinates, p = feature?.properties;
       if (feature?.geometry?.type !== 'Point' || !Array.isArray(coords) || !p || !validPoint(coords[1], coords[0])) continue;
+      if (area) {
+        const lng = area.lng + wrapLongitude(coords[0] - area.lng);
+        if (lng < area.west || lng > area.east || coords[1] < area.south || coords[1] > area.north) continue;
+      }
       const street = [text(p.housenumber), text(p.street)].filter(Boolean).join(' ');
       const name = text(p.name) || street || text(p.city) || text(p.state) || text(p.country) || 'Map location';
       const detail = [...new Set([street, text(p.postcode), text(p.city), text(p.state), text(p.country)].filter(value => value && value !== name))].join(', ');
@@ -100,5 +130,5 @@
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, readHash, makeHash, osmURL, readResults, normalizeLayers, readLayers, readRoadEvents };
+  return { defaultView, validPoint, wrapLongitude, readHash, makeHash, osmURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents };
 });

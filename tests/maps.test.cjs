@@ -59,6 +59,51 @@ test('results are bounded and external names remain plain text', () => {
   assert(maps.makeHash(maps.defaultView, results[0]).includes('%3Cimg'));
 });
 
+test('nearby searches include Victoria suburbs while excluding distant same-name places', () => {
+  const area = maps.searchArea(maps.defaultView, [-123.49, 48.38, -123.24, 48.48]);
+  const results = maps.readResults({ features: [
+    feature({ name: 'Walmart', city: 'Sequim' }, [-123.1344, 48.0788]),
+    feature({ name: 'Walmart', city: 'Victoria' }, [-123.3363, 48.4472]),
+    feature({ name: 'Walmart', city: 'Langford' }, [-123.5055, 48.444]),
+    feature({ name: 'Walmart', city: 'Florida' }, [-80.2, 25.8])
+  ] }, area);
+  assert.deepEqual(results.map(result => result.detail), ['Victoria', 'Langford']);
+  const tiny = maps.searchArea({ ...maps.defaultView, zoom: 19 }, [-123.366,48.428,-123.365,48.429]);
+  assert(tiny.east - tiny.west > .3); assert(tiny.north - tiny.south > .25);
+});
+
+test('search URLs carry the current area and separate region caches from worldwide results', () => {
+  const endpoint = 'https://photon.komoot.io/api/';
+  const victoria = maps.searchArea(maps.defaultView, [-123.49,48.38,-123.24,48.48]);
+  const vancouver = maps.searchArea({ lat: 49.28, lng: -123.12, zoom: 13 }, [-123.25,49.23,-123,49.33]);
+  const local = new URL(maps.searchURL(endpoint, 'Walmart & groceries', victoria));
+  assert.equal(local.searchParams.get('q'), 'Walmart & groceries');
+  assert.equal(local.searchParams.get('lat'), String(victoria.lat));
+  assert.equal(local.searchParams.get('lon'), String(victoria.lng));
+  assert.equal(local.searchParams.get('zoom'), '13');
+  assert.equal(local.searchParams.get('bbox'), [victoria.west,victoria.south,victoria.east,victoria.north].join(','));
+  assert.notEqual(local.href, maps.searchURL(endpoint, 'Walmart & groceries', vancouver));
+  const worldwide = new URL(maps.searchURL(local.href, 'Paris'));
+  for (const key of ['lat','lon','zoom','bbox','location_bias_scale']) assert.equal(worldwide.searchParams.has(key), false, key);
+  assert.equal(worldwide.searchParams.get('limit'), '6');
+});
+
+test('area filtering checks all candidates before capping the results and handles the dateline', () => {
+  const area = maps.searchArea({ lat: 0, lng: 179.8, zoom: 13 }, [179.5,-.1,180.1,.1]);
+  const data = { features: [
+    ...Array.from({ length: 8 }, (_, i) => feature({ name: 'Far away ' + i }, [i,0])),
+    feature({ name: 'Across the dateline' }, [-179.99,0]),
+    feature({ name: 'Same side' }, [179.9,0])
+  ] };
+  assert.deepEqual(maps.readResults(data, area).map(result => result.name), ['Across the dateline', 'Same side']);
+  const url = new URL(maps.searchURL('https://photon.komoot.io/api/', 'shop', area));
+  assert.equal(url.searchParams.has('bbox'), false); assert.equal(url.searchParams.get('lon'), '179.8');
+  assert.deepEqual(maps.searchArea({ lat: 0, lng: 539.8, zoom: 13 }, [539.5,-.1,540.1,.1]), area);
+  const polar = maps.searchArea({ lat: 85, lng: 0, zoom: 2 }, [-200,-85,200,90]);
+  assert(polar.west >= -180 && polar.east <= 180 && polar.south >= -90 && polar.north <= 90);
+  assert.throws(() => maps.searchArea({ lat: NaN, lng: 0 }));
+});
+
 test('map uses attributable HTTPS tiles and a search provider configurable independently of the page', () => {
   const root = path.join(__dirname, '..');
   const config = JSON.parse(fs.readFileSync(path.join(root, 'assets/maps-config.json')));

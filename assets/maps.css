@@ -25,6 +25,7 @@
 #map-results strong { display: block; font-size: 14px; font-weight: 500; }
 #map-results span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
 .map-search-fallback { display: inline-block; margin: 8px 18px; color: var(--map-accent); font-size: 13px; }
+.map-search-scope { display: block; margin: 8px 18px; padding: 0; border: 0; background: transparent; color: var(--map-accent); font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
 .map-search-credit { margin: 12px 18px; color: var(--muted); font-size: 10px; }
 .map-actions { position: absolute; top: 20px; right: 20px; z-index: 450; display: grid; gap: 9px; }
 .map-icon-button { display: grid; place-items: center; width: 46px; height: 46px; padding: 11px; border-radius: 15px; }

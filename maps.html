@@ -11,15 +11,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261017-google-traffic">
+  <link rel="stylesheet" href="assets/maps.css?v=20261017-local-search">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261017-google-traffic" defer></script>
+  <script src="assets/maps-core.js?v=20261017-local-search" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-drivebc-pan" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-traffic" defer></script>
   <script src="assets/maps-layers.js?v=20261017-google-traffic" defer></script>
-  <script src="assets/maps.js?v=20261017-google-traffic" defer></script>
+  <script src="assets/maps.js?v=20261017-local-search" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
 </head>
 <body class="maps-page">
@@ -53,13 +53,14 @@
     <section class="map-search map-glass" aria-label="Find a place">
       <form id="map-search-form" role="search" aria-label="Search the map">
         <svg class="map-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
-        <label class="sr-only" for="map-query">Search places and addresses</label>
-        <input id="map-query" type="search" placeholder="Search places and addresses" autocomplete="off" minlength="2" maxlength="180" required aria-controls="map-results">
+        <label class="sr-only" for="map-query">Search places and addresses near this map area</label>
+        <input id="map-query" type="search" placeholder="Search this area" autocomplete="off" minlength="2" maxlength="180" required aria-controls="map-results">
         <button class="map-search-submit" type="submit" aria-label="Search map" title="Search map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
       </form>
       <div class="map-search-content" id="map-search-content" hidden>
         <p id="map-search-status" role="status"></p>
         <ol id="map-results" aria-label="Search results"></ol>
+        <button class="map-search-scope" id="map-search-scope" type="button" hidden>Search worldwide</button>
         <a class="map-search-fallback" id="osm-search" href="https://www.openstreetmap.org/" target="_blank" rel="noopener" hidden>Search on OpenStreetMap ↗</a>
         <div class="map-search-credit">Place search by <a href="https://github.com/komoot/photon" target="_blank" rel="noopener">Photon</a></div>
       </div>

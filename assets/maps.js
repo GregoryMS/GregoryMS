@@ -58,9 +58,16 @@
     updateURL();
     $('gregle-map').focus({ preventScroll: true });
   }
-  function showResults(results) {
+  function showScopeAction(worldwide) {
+    const button = $('map-search-scope');
+    button.dataset.worldwide = String(worldwide);
+    button.textContent = worldwide ? 'Search worldwide' : 'Search this area';
+    button.hidden = false;
+  }
+  function showResults(results, worldwide) {
     resultsList.replaceChildren();
-    $('map-search-status').textContent = results.length ? `${results.length} ${results.length === 1 ? 'place' : 'places'} found` : 'No places found. Try a town, postcode or a more complete address.';
+    $('map-search-status').textContent = results.length ? `${results.length} ${results.length === 1 ? 'place' : 'places'} found ${worldwide ? 'worldwide' : 'near this map area'}` : worldwide ? 'No places found. Try a town, postcode or a more complete address.' : 'No places found near this map area. Try a fuller name or search worldwide.';
+    showScopeAction(!worldwide);
     $('osm-search').hidden = results.length > 0;
     for (const point of results) {
       const li = document.createElement('li'), button = document.createElement('button');
@@ -106,6 +113,7 @@
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
+  map.on('movestart', () => { cancelSearch(); hideSearch(); });
   map.on('click', event => {
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
     if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point); updateURL(); }
@@ -117,32 +125,36 @@
     if (layers) layerControl.setState(layers);
     renderPin(state.pin); map.setView([state.view.lat, state.view.lng], state.view.zoom); updateURL();
   });
-  $('map-search-form').addEventListener('submit', async event => {
-    event.preventDefault();
+  async function search(worldwide = false) {
     const term = query.value.trim();
     if (term.length < 2) { query.focus(); return; }
     intent++; cancelSearch();
     const version = searchVersion;
-    const fallback = new URL('https://www.openstreetmap.org/search'); fallback.searchParams.set('query', term);
+    const fallback = new URL(core.osmURL(view())); fallback.pathname = '/search'; fallback.searchParams.set('query', term);
     $('osm-search').href = fallback.href; $('osm-search').hidden = true;
+    $('map-search-scope').hidden = true;
     searchContent.hidden = false;
-    const key = term.toLocaleLowerCase();
-    if (cache.has(key)) { showResults(cache.get(key)); return; }
-    if (Date.now() < nextSearch) { $('map-search-status').textContent = 'Please wait a moment, then search again.'; return; }
-    nextSearch = Date.now() + 1000;
-    searchController = new AbortController();
-    const controller = searchController;
-    const timer = setTimeout(() => controller.abort(), 10000);
-    $('map-search-form').setAttribute('aria-busy', 'true');
-    $('map-search-status').textContent = 'Finding places…';
+    let timer;
     try {
-      const url = new URL(config.searchURL); url.searchParams.set('q', term); url.searchParams.set('limit', '6'); url.searchParams.set('lang', 'en');
+      const bounds = map.getBounds();
+      const area = worldwide ? null : core.searchArea(view(), [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
+      const url = new URL(core.searchURL(config.searchURL, term, area));
+      const cacheURL = new URL(url); cacheURL.searchParams.set('q', term.toLocaleLowerCase());
+      const key = cacheURL.href;
+      if (cache.has(key)) { showResults(cache.get(key), worldwide); return; }
+      if (Date.now() < nextSearch) { $('map-search-status').textContent = 'Please wait a moment, then search again.'; showScopeAction(worldwide); return; }
+      nextSearch = Date.now() + 1000;
+      searchController = new AbortController();
+      const controller = searchController;
+      timer = setTimeout(() => controller.abort(), 10000);
+      $('map-search-form').setAttribute('aria-busy', 'true');
+      $('map-search-status').textContent = worldwide ? 'Finding places worldwide…' : 'Finding places near this map area…';
       const response = await fetch(url, { signal: controller.signal });
       if (!response.ok) throw new Error('Search unavailable');
-      const results = core.readResults(await response.json());
+      const results = core.readResults(await response.json(), area);
       if (version !== searchVersion) return;
       if (cache.size >= 30) cache.delete(cache.keys().next().value);
-      cache.set(key, results); showResults(results);
+      cache.set(key, results); showResults(results, worldwide);
     } catch {
       if (version !== searchVersion) return;
       $('map-search-status').textContent = 'Place search is unavailable right now. Try again or search on OpenStreetMap.';
@@ -151,7 +163,9 @@
       clearTimeout(timer);
       if (version === searchVersion) { searchController = null; $('map-search-form').removeAttribute('aria-busy'); }
     }
-  });
+  }
+  $('map-search-form').addEventListener('submit', event => { event.preventDefault(); search(); });
+  $('map-search-scope').addEventListener('click', () => search($('map-search-scope').dataset.worldwide === 'true'));
   query.addEventListener('input', () => { intent++; cancelSearch(); hideSearch(); });
   query.addEventListener('keydown', event => {
     if (event.key === 'ArrowDown' && !searchContent.hidden) {
