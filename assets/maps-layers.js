@@ -18,20 +18,25 @@
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const layerOptions = { maxZoom: 19, updateWhenIdle: true, keepBuffer: 1 };
     const persist = () => { try { localStorage.setItem(preferenceKey, JSON.stringify(state)); } catch {} };
-    const drivebcOptionsKey = 'gregle-maps-drivebc-options';
-    const drivebcOptionsToggle = $('drivebc-options-toggle'), drivebcSublayers = $('drivebc-sublayers');
-    const expandDriveBC = open => {
-      drivebcSublayers.hidden = !open;
-      drivebcOptionsToggle.setAttribute('aria-expanded', String(open));
-    };
-    let drivebcOpen = false;
-    try { drivebcOpen = localStorage.getItem(drivebcOptionsKey) === 'open'; } catch {}
-    expandDriveBC(drivebcOpen);
-    drivebcOptionsToggle.addEventListener('click', () => {
-      const open = drivebcSublayers.hidden;
-      expandDriveBC(open);
-      try { localStorage.setItem(drivebcOptionsKey, open ? 'open' : 'closed'); } catch {}
-    });
+    function disclosure(buttonId, contentId, preference, onOpen = () => {}) {
+      const button = $(buttonId), content = $(contentId);
+      const setOpen = (open, remember = false) => {
+        const restoreFocus = !open && content.contains(document.activeElement);
+        content.hidden = !open;
+        button.setAttribute('aria-expanded', String(open));
+        if (open) onOpen();
+        if (restoreFocus) button.focus();
+        if (remember) { try { localStorage.setItem(preference, open ? 'open' : 'closed'); } catch {} }
+      };
+      let open = false;
+      try { open = localStorage.getItem(preference) === 'open'; } catch {}
+      setOpen(open);
+      button.addEventListener('click', () => setOpen(content.hidden, true));
+      return { setOpen };
+    }
+    disclosure('drivebc-options-toggle', 'drivebc-sublayers', 'gregle-maps-drivebc-options');
+    disclosure('ev-options-toggle', 'ev-sublayers', 'gregle-maps-ev-options');
+    const tomtomMenu = disclosure('tomtom-options-toggle', 'tomtom-options', 'gregle-maps-tomtom-options', () => { $('traffic-key-form').hidden = false; });
     const status = (id, message, error = false) => {
       $(id).textContent = message;
       $(id).dataset.state = error ? 'error' : 'ready';
@@ -39,8 +44,8 @@
     const openPanel = (keyForm = false) => {
       panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
       if (keyForm) {
-        $('traffic-key-form').hidden = false;
-        $('traffic-api-key').focus({ preventScroll: true });
+        tomtomMenu.setOpen(true, true);
+        $('traffic-api-key').focus();
       } else panel.querySelector('input:checked')?.focus({ preventScroll: true });
     };
     const closePanel = (restoreFocus = false) => {
@@ -70,6 +75,7 @@
       $('drivebc-messages-status').hidden = !state.messages;
       $('drivebc-ferries-status').hidden = !state.ferries;
       $('traffic-connect').textContent = apiKey ? 'Manage key' : 'Connect TomTom';
+      $('traffic-layer-description').textContent = apiKey ? 'Current traffic flow · key saved' : 'API key required for traffic';
       $('traffic-forget').hidden = !apiKey;
       $('traffic-refresh').hidden = !state.traffic || !apiKey;
       $('traffic-legend').hidden = !state.traffic || !trafficGood;
@@ -255,7 +261,7 @@
       const key = $('traffic-api-key').value.trim();
       if (key.length < 16 || key.length > 256 || /\s/.test(key)) { status('traffic-layer-status', 'Enter a valid TomTom API key without spaces.', true); return; }
       apiKey = key; try { localStorage.setItem(credentialKey, key); } catch {}
-      $('traffic-api-key').value = ''; $('traffic-key-form').hidden = true;
+      $('traffic-api-key').value = ''; $('traffic-key-form').hidden = true; tomtomMenu.setOpen(false, true);
       state.traffic = true; trafficPaused = false; loadTraffic(); render(); persist(); onChange();
     });
     $('traffic-forget').addEventListener('click', () => {
@@ -285,8 +291,7 @@
     ferries.setEnabled(state.ferries); ev.setSelection(state.ev, state.tesla);
     if (state.traffic && apiKey) loadTraffic();
     render();
-    if (state.traffic && !apiKey) openPanel(true);
-    else if (state.aviation && !aviation.hasKey()) { openPanel(); aviation.openKey(); }
+    if (state.aviation && !aviation.hasKey()) { openPanel(); aviation.openKey(); }
     return { getState: () => ({ ...state }), setState: next => setState(next, false) };
   };
 })();
