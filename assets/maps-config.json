@@ -3,6 +3,7 @@
   "searchURL": "https://photon.komoot.io/api/",
   "topographicURL": "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
   "maritimeURL": "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png",
+  "cameraCatalogueURL": "https://catalogue.data.gov.bc.ca/dataset/6b39a910-6c77-476f-ac96-7b4f18849b1c/resource/a9d52d85-8402-4ce7-b2ac-a2779837c48a/download/webcams.csv",
   "aviationURL": "https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png",
   "trafficURL": "https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256",
   "googleTrafficURL": "https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3",

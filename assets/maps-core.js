@@ -31,13 +31,13 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, drivebc: value?.drivebc === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { base: value?.base === 'topographic' ? 'topographic' : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, drivebc: value?.drivebc === true, webcams: value?.webcams === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     if (!params.has('base') && !params.has('overlays')) return null;
     const overlays = (params.get('overlays') || '').split(',');
-    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), drivebc: overlays.includes('drivebc'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
+    return normalizeLayers({ base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), drivebc: overlays.includes('drivebc'), webcams: overlays.includes('webcams'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
@@ -45,7 +45,7 @@
     if (pin?.osm && osmReference(...pin.osm.split('/')) === pin.osm) hash += `&osm=${pin.osm}`;
     if (layers) {
       const state = normalizeLayers(layers);
-      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'drivebc', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
+      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'drivebc', 'webcams', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
     }
     return hash;
   }

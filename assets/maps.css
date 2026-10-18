@@ -175,3 +175,14 @@
 .drivebc-popup p { margin: 8px 0; }
 .drivebc-popup .drivebc-meta { color: #65616d; font-size: 10px; }
 .drivebc-popup a { color: #7637cc; }
+.drivebc-sublayer { margin: 2px 0 8px 12px; padding-left: 12px; border-left: 2px solid var(--map-border); }
+.drivebc-camera-marker { display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; background: #7637cc; color: #fff; box-shadow: 0 0 0 1px #38205099, 0 2px 8px #0005; }
+.drivebc-camera-marker svg { width: 22px; height: 22px; }
+.drivebc-camera-popup { max-width: 360px; }
+.drivebc-camera-popup label { display: block; margin: 10px 0; font-size: 11px; }
+.drivebc-camera-popup select { display: block; width: 100%; margin-top: 5px; padding: 7px; border: 1px solid #ccc; border-radius: 8px; background: #faf9f6; color: #252525; font-size: 13px; }
+.drivebc-camera-image { display: block; width: 100%; height: auto; border-radius: 8px; background: #eee; }
+.drivebc-camera-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.drivebc-camera-actions button { border: 0; border-radius: 8px; background: #eee5fa; color: #7637cc; padding: 8px 10px; font-size: 11px; }
+.drivebc-camera-actions button:disabled { opacity: .5; cursor: default; }
+@media(max-width:600px) { .drivebc-camera-popup select { font-size: 16px; } }
