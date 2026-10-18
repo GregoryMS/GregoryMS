@@ -33,7 +33,7 @@ test('every content page has the same twelve valid app destinations and working 
 
 test('homepage retains the additional menu links', () => {
   const source = fs.readFileSync(path.join(root,'index.html'),'utf8');
-  for (const href of ['https://portal.gregle.de','https://42.gsuth.uk','/maps.html','https://music.apple.com','https://gregle.uk/radio.html','https://spaceweather.com','https://news.ycombinator.com','https://xkcd.com','https://gsuth.uk']) assert(source.includes('href="'+href+'"'),href);
+  for (const href of ['https://portal.gregle.de','https://42.gsuth.uk','https://maps.apple.com','https://music.apple.com','https://gregle.uk/radio.html','https://spaceweather.com','https://news.ycombinator.com','https://xkcd.com','https://gsuth.uk']) assert(source.includes('href="'+href+'"'),href);
 });
 
 test('generated menu markup stays in sync with the shared configuration', () => {
