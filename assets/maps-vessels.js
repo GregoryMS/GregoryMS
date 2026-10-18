@@ -11,13 +11,40 @@
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; refresh.textContent = failures ? 'Retry vessels' : 'Refresh vessels'; };
     const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
     const clock = time => new Date(time).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const legendToggle = document.getElementById('vessels-legend-toggle'), legend = document.getElementById('vessels-legend');
+    const legendList = document.getElementById('vessels-legend-list');
+    for (const type of core.vesselTypes) {
+      const item = make('li'), swatch = make('span', null, 'vessels-type-swatch');
+      swatch.style.backgroundColor = type.color; swatch.setAttribute('aria-hidden', 'true');
+      item.append(swatch, make('span', type.label)); legendList.append(item);
+    }
+    function closeLegend(restoreFocus = false) {
+      legend.hidden = true; legendToggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus && !legendToggle.hidden) legendToggle.focus();
+    }
+    legendToggle.addEventListener('click', () => {
+      if (!enabled) return;
+      if (!legend.hidden) { closeLegend(); return; }
+      legend.hidden = false; legendToggle.setAttribute('aria-expanded', 'true');
+      document.getElementById('close-vessels-legend').focus({ preventScroll: true });
+    });
+    document.getElementById('close-vessels-legend').addEventListener('click', () => closeLegend(true));
+    document.addEventListener('click', event => {
+      if (!legend.hidden && !legend.contains(event.target) && !legendToggle.contains(event.target)) closeLegend();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !legend.hidden) { event.preventDefault(); closeLegend(true); }
+    });
     function popup(vessel, marker) {
       const box = make('div', null, 'vessels-popup'), facts = make('dl');
       const width = Math.max(140, Math.min(270, map.getSize().x - 120));
       box.style.width = `${width}px`;
       Object.assign(marker.getPopup().options, { minWidth: width, maxWidth: width, maxHeight: Math.max(100, map.getSize().y - 220) });
       box.append(make('strong', vessel.name || `MMSI ${vessel.id}`, 'vessels-title'));
-      if (vessel.type) box.append(make('p', vessel.type));
+      const type = core.vesselStyle(vessel.type), typeLine = make('p', null, 'vessels-popup-type');
+      const swatch = make('span', null, 'vessels-type-swatch');
+      swatch.style.backgroundColor = type.color; swatch.setAttribute('aria-hidden', 'true');
+      typeLine.append(swatch, make('span', vessel.type || type.label)); box.append(typeLine);
       const add = (label, value) => { if (value !== '' && value != null) facts.append(make('dt', label), make('dd', String(value))); };
       add('MMSI', vessel.id); add('Flag', vessel.country);
       add('Speed', vessel.speed === null ? 'Not reported' : `${vessel.speed.toFixed(1)} kn`);
@@ -30,7 +57,8 @@
       return box;
     }
     function icon(vessel) {
-      return L.divIcon({ className: `vessels-marker${vessel.heading === null ? ' vessels-no-heading' : ''}`, iconSize: [26, 32], iconAnchor: [13, 16], html: `<svg viewBox="0 0 26 32" style="transform:rotate(${vessel.heading ?? 0}deg)" aria-hidden="true">${vessel.heading === null ? '<circle cx="13" cy="16" r="7"/>' : '<path d="M13 2 22 15v14H4V15Z"/><path d="M13 11v12" class="vessels-deck"/>'}</svg>` });
+      const type = core.vesselStyle(vessel.type);
+      return L.divIcon({ className: `vessels-marker${vessel.heading === null ? ' vessels-no-heading' : ''}`, iconSize: [26, 32], iconAnchor: [13, 16], html: `<svg viewBox="0 0 26 32" style="--vessel-color:${type.color};transform:rotate(${vessel.heading ?? 0}deg)" aria-hidden="true">${vessel.heading === null ? '<circle cx="13" cy="16" r="7"/>' : '<path d="M13 2 22 15v14H4V15Z"/><path d="M13 11v12" class="vessels-deck"/>'}</svg>` });
     }
     function clear() { group.clearLayers(); displayed.clear(); }
     function mergeReports(previous, incoming, area) {
@@ -49,7 +77,7 @@
       const records = new Map((current?.vessels || []).filter(p => now - p.updated < core.maxAge && core.visible(p.point, view)).slice(0, 1500).map(p => [p.id, p]));
       for (const [id, entry] of displayed) if (!records.has(id)) { group.removeLayer(entry.marker); displayed.delete(id); }
       for (const vessel of records.values()) {
-        const title = `Vessel: ${vessel.name || vessel.id}`;
+        const title = `Vessel: ${vessel.name || vessel.id} · ${vessel.type || core.vesselStyle(vessel.type).label}`;
         const point = [vessel.point[0], vessel.point[1] + 360 * Math.round((map.getCenter().lng - vessel.point[1]) / 360)];
         const previous = displayed.get(vessel.id);
         if (previous) {
@@ -152,6 +180,12 @@
     function setEnabled(value) {
       if (enabled === (value === true)) return;
       enabled = value === true; cancel();
+      legendToggle.hidden = !enabled;
+      if (!enabled) {
+        const restoreFocus = legend.contains(document.activeElement) || document.activeElement === legendToggle;
+        closeLegend();
+        if (restoreFocus) document.getElementById('map-vessels')?.focus({ preventScroll: true });
+      }
       if (enabled) { group.addTo(map); map.attributionControl.addAttribution(credit); load(); scheduleExpiry(); }
       else { snapshot = null; clear(); map.removeLayer(group); map.attributionControl.removeAttribution(credit); }
     }

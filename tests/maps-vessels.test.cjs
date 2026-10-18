@@ -7,15 +7,17 @@ const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
 function setup(){
  let now=start,box=[-123.5,48.3,-123.2,48.5],zoom=13,nextTimer=0,impl=async()=>({ok:true,json:async()=>packet(now)});
  const calls=[],timers=new Map(),events={},groups=[],credits=new Set(),nodes={};
- const element=()=>({style:{},children:[],events:{},dataset:{},textContent:'',append(...items){this.children.push(...items);},addEventListener(k,f){this.events[k]=f;}});
+ const element=()=>({style:{},children:[],events:{},dataset:{},attributes:{},textContent:'',hidden:true,append(...items){this.children.push(...items);},addEventListener(k,f){this.events[k]=f;},setAttribute(k,v){this.attributes[k]=v;},contains(node){return this===node||this.children.some(child=>child.contains(node));},focus(){c.document.activeElement=this;}});
  const output=nodes['vessels-layer-status']=element(),refresh=nodes['vessels-refresh']=element();
+ for(const id of ['vessels-legend-toggle','vessels-legend','vessels-legend-list','close-vessels-legend','map-vessels'])nodes[id]=element();
+ nodes['vessels-legend'].append(nodes['vessels-legend-list'],nodes['close-vessels-legend']);
  const map={getBounds:()=>({getWest:()=>box[0],getSouth:()=>box[1],getEast:()=>box[2],getNorth:()=>box[3]}),getCenter:()=>({lng:(box[0]+box[2])/2}),getZoom:()=>zoom,getSize:()=>({x:390,y:700}),on:(k,f)=>events[k]=f,removeLayer(){},attributionControl:{addAttribution:c=>credits.add(c),removeAttribution:c=>credits.delete(c)}};
  const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,pop:{options:{}},bindPopup(fn){this.popup=fn;return this;},getPopup(){return this.pop;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
  const c={L,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleVesselsCore:core,document:{hidden:false,getElementById:id=>nodes[id],createElement:element,addEventListener:(k,f)=>events[k]=f},addEventListener:(k,f)=>events[k]=f,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout:id=>timers.delete(id),fetch(url,opts){calls.push({url,...opts,time:now});return impl(url,opts);}};
  c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-vessels.js'),'utf8'),c);const api=c.GregleVessels({map,notify(){}});
  async function advance(ms){const end=now+ms;for(let i=0;i<1000;i++){const due=[...timers].filter(([,t])=>t.due<=end).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=end;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
- return {api,calls,output,refresh,events,credits,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
+ return {api,calls,output,refresh,events,credits,nodes,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
 }
 
 test('vessel validation handles AIS sentinels, timestamps, duplicate MMSIs and wrapped views',()=>{
@@ -81,4 +83,31 @@ test('refresh progress and returning to the page retain recent vessels without r
 
 test('Open Waters source labels and credits stay text and broad views respect the anonymous area cap',()=>{
  const result=core.read(packet(start,[ship({source:'openwaters',sourceLabel:'Open Waters / AISHub'})],{credits:['<img src=x>']}),start);assert.equal(result.vessels[0].source,'Open Waters / AISHub');assert.equal(result.credits[0],'<img src=x>');assert.equal(core.area([-6,40,6,48],7),null);
+});
+
+test('vessel markers use reported types, retain colours without headings and recolour on live updates',async()=>{
+ const h=setup();
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start,[ship({type:'Cargo'}),ship({mmsi:316001235,type:'Tanker',heading:511,course:360}),ship({mmsi:316001236,type:'<script>bad</script>'})])}));
+ h.api.setEnabled(true);await flush();const [cargo,tanker,unknown]=h.markers();
+ assert.notEqual(core.vesselStyle('Cargo').color,core.vesselStyle('Tanker').color);
+ assert(cargo.options.icon.html.includes(core.vesselStyle('Cargo').color));
+ assert(tanker.options.icon.html.includes(core.vesselStyle('Tanker').color));assert(tanker.options.icon.html.includes('<circle'));
+ assert(unknown.options.icon.html.includes(core.vesselStyle('').color));assert(!unknown.options.icon.html.includes('<script>'));
+ assert.match(cargo.options.title,/Cargo/);
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000,[ship({type:'Passenger',observed:new Date(start+60000).toISOString()})])}));
+ await h.advance(60000);assert.equal(h.markers()[0],cargo);assert(cargo.options.icon.html.includes(core.vesselStyle('Passenger').color));assert.match(cargo.options.title,/Passenger/);
+ const box=cargo.popup(),typeLine=box.children.find(child=>child.className==='vessels-popup-type');assert.equal(typeLine.children[0].style.backgroundColor,core.vesselStyle('Passenger').color);
+});
+
+test('vessel key appears only when enabled and closes with Escape, outside clicks and disabling',async()=>{
+ const h=setup(),toggle=h.nodes['vessels-legend-toggle'],legend=h.nodes['vessels-legend'],list=h.nodes['vessels-legend-list'];
+ assert(toggle.hidden);assert(legend.hidden);assert.equal(h.calls.length,0);
+ h.api.setEnabled(true);assert(!toggle.hidden);assert(legend.hidden);
+ toggle.events.click();assert(!legend.hidden);assert.equal(toggle.attributes['aria-expanded'],'true');assert.equal(h.document.activeElement,h.nodes['close-vessels-legend']);
+ assert.equal(list.children.length,core.vesselTypes.length);assert.equal(new Set(list.children.map(row=>row.children[0].style.backgroundColor)).size,core.vesselTypes.length);
+ h.events.click({target:list.children[0]});assert(!legend.hidden);
+ let prevented=false;h.events.keydown({key:'Escape',preventDefault(){prevented=true;}});assert(prevented);assert(legend.hidden);assert.equal(h.document.activeElement,toggle);
+ toggle.events.click();h.events.click({target:h.refresh});assert(legend.hidden);
+ toggle.events.click();h.api.setEnabled(false);assert(toggle.hidden);assert(legend.hidden);assert.equal(toggle.attributes['aria-expanded'],'false');assert.equal(h.document.activeElement,h.nodes['map-vessels']);
+ await flush();assert.equal(h.markers().length,0);
 });

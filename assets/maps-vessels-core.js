@@ -5,6 +5,30 @@
 })(typeof window === 'object' ? window : globalThis, () => {
   'use strict';
   const maxAge = 600000;
+  // Markers, popups and the key share one palette for the relay's AIS type labels.
+  const vesselTypes = [
+    { label: 'Cargo', color: '#27934b' },
+    { label: 'Tanker', color: '#d94141' },
+    { label: 'Passenger', color: '#2d6cdf' },
+    { label: 'High-speed craft', color: '#00a6b2' },
+    { label: 'Fishing', color: '#e58516' },
+    { label: 'Tug', color: '#9b5a2e' },
+    { label: 'Towing', color: '#b79822' },
+    { label: 'Sailing', color: '#8b5cf6' },
+    { label: 'Pleasure craft', color: '#df5baf' },
+    { label: 'Pilot vessel', color: '#f06c45' },
+    { label: 'Search and rescue', color: '#e8be24' },
+    { label: 'Law enforcement', color: '#394f9a' },
+    { label: 'Military', color: '#5a7042' },
+    { label: 'Dredging', color: '#9b702b' },
+    { label: 'Diving', color: '#28a294' },
+    { label: 'Port tender', color: '#9571bf' },
+    { label: 'Anti-pollution', color: '#79a72c' },
+    { label: 'Medical transport', color: '#c72a71' },
+    { label: 'Other / unknown', color: '#7b8494' }
+  ];
+  const typeStyles = new Map(vesselTypes.map(style => [style.label.toLowerCase(), style]));
+  const vesselStyle = type => typeStyles.get(typeof type === 'string' ? type.trim().toLowerCase() : '') || vesselTypes[vesselTypes.length - 1];
   const wrap = x => ((x + 180) % 360 + 360) % 360 - 180;
   const number = (x, min, max) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
   const text = x => typeof x === 'string' ? x.trim().slice(0, 120) : '';
@@ -38,5 +62,5 @@
     }
     return { credits: Array.isArray(data.credits) ? data.credits.filter(x => typeof x === 'string').slice(0, 20).map(x => x.slice(0, 600)) : [], vessels: [...ships.values()], cursor: data.cursor || '', snapshotId: data.snapshotId || '', cached: data.cached === true && number(data.cacheAgeSeconds, 0, 300), pages: Number.isInteger(data.pages) && data.pages >= 1 && data.pages <= 12 ? data.pages : null, limited: data.limited === true, degraded: data.degraded === true };
   }
-  return { maxAge, visible, area, covers, read };
+  return { maxAge, vesselTypes, vesselStyle, visible, area, covers, read };
 });

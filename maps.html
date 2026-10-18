@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261018-layer-compact">
+  <link rel="stylesheet" href="assets/maps.css?v=20261018-vessel-types">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -41,8 +41,8 @@
   <script src="assets/maps-plugshare.js?v=20261017-plugshare-zoom" defer></script>
   <script src="assets/maps-aircraft-core.js?v=20261018-ev-cache" defer></script>
   <script src="assets/maps-aircraft.js?v=20261018-ev-cache" defer></script>
-  <script src="assets/maps-vessels-core.js?v=20261018-ev-cache" defer></script>
-  <script src="assets/maps-vessels.js?v=20261018-ev-cache" defer></script>
+  <script src="assets/maps-vessels-core.js?v=20261018-vessel-types" defer></script>
+  <script src="assets/maps-vessels.js?v=20261018-vessel-types" defer></script>
   <script src="assets/maps-layers.js?v=20261018-layer-switches" defer></script>
   <script src="assets/maps.js?v=20261018-ev-cache" defer></script>
   <script src="assets/site-menu.js?v=20261017-scroll-reorder" defer></script>
@@ -96,11 +96,17 @@
       </div>
     </section>
     <div class="map-actions" role="group" aria-label="Map tools">
+      <button class="map-icon-button map-glass" id="vessels-legend-toggle" type="button" aria-label="Vessel type key" aria-expanded="false" aria-controls="vessels-legend" title="Vessel type key" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="5" height="4" rx="1" fill="#27934b" stroke="none"/><rect x="3" y="10" width="5" height="4" rx="1" fill="#d94141" stroke="none"/><rect x="3" y="16" width="5" height="4" rx="1" fill="#2d6cdf" stroke="none"/><path d="M12 6h9M12 12h9M12 18h9"/></svg></button>
       <button class="map-icon-button map-glass" id="map-layers-toggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="map-layers-panel" title="Map layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
       <button class="map-icon-button map-glass" id="map-locate" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button>
       <button class="map-icon-button map-glass" id="map-share" type="button" aria-label="Copy map link" title="Copy map link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 1)"/></svg></button>
       <button class="map-icon-button map-glass" id="map-fullscreen" type="button" aria-label="Enter full screen" title="Full screen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/></svg></button>
     </div>
+    <section class="vessels-legend map-glass" id="vessels-legend" aria-labelledby="vessels-legend-heading" hidden>
+      <div class="layers-heading"><h2 id="vessels-legend-heading">Vessel types</h2><button class="map-dismiss" id="close-vessels-legend" type="button" aria-label="Close vessel type key">×</button></div>
+      <ul class="vessels-legend-list" id="vessels-legend-list"></ul>
+      <p>Colours show the reported AIS vessel type. Ferries use Passenger. Grey means other or unreported. A circle means the heading is unknown.</p>
+    </section>
     <section class="map-layers-panel map-glass" id="map-layers-panel" aria-labelledby="map-layers-heading" hidden>
       <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
       <fieldset class="map-base-options"><legend>Base map</legend>
