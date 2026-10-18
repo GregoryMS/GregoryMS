@@ -11,6 +11,11 @@
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; refresh.textContent = failures ? 'Retry aircraft' : 'Refresh aircraft'; };
     const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
     const clock = time => new Date(time).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const symbols = {
+      airliner: { label: 'Aircraft', shape: '<path d="M14 2h4l1 11 10 6v3l-10-4v8l4 3v2l-7-2-7 2v-2l4-3v-8L3 22v-3l10-6Z"/>' },
+      'small-plane': { label: 'Small plane', shape: '<path d="M14.5 6Q16 2 17.5 6L18 12l12 1v4l-12-.5-.5 9.5 5 2v2L16 29l-6.5 1v-2l5-2-.5-9.5L2 17v-4l12-1Z"/><path d="M11 5h10" class="aircraft-detail"/>' },
+      helicopter: { label: 'Helicopter', shape: '<path d="M5 1 28 22l-2 2L3 3Z"/><path d="m27 1 2 2L6 24l-2-2Z"/><path d="M14.5 18h3l1 10h3v3h-11v-3h3Z"/><ellipse cx="16" cy="12" rx="4.5" ry="7.5"/><path d="M13 9q3-2 6 0" class="aircraft-detail"/>' }
+    };
     function popup(plane, marker) {
       const box = make('div', null, 'aircraft-popup'), facts = make('dl');
       const width = Math.max(140, Math.min(270, map.getSize().x - 120));
@@ -30,7 +35,8 @@
       return box;
     }
     function icon(plane) {
-      return L.divIcon({ className: 'aircraft-marker', iconSize: [34, 34], iconAnchor: [17, 17], html: `<svg viewBox="0 0 32 32" style="transform:rotate(${plane.heading ?? 0}deg)" aria-hidden="true"><path d="M14 2h4l1 11 10 6v3l-10-4v8l4 3v2l-7-2-7 2v-2l4-3v-8L3 22v-3l10-6Z"/></svg>` });
+      const kind = Object.hasOwn(symbols, plane.kind) ? plane.kind : 'airliner';
+      return L.divIcon({ className: `aircraft-marker aircraft-${kind}`, iconSize: [34, 34], iconAnchor: [17, 17], html: `<svg viewBox="0 0 32 32" style="transform:rotate(${plane.heading ?? 0}deg)" aria-hidden="true">${symbols[kind].shape}</svg>` });
     }
     function clear() { group.clearLayers(); displayed.clear(); }
     function render() {
@@ -40,7 +46,7 @@
       const records = new Map((snapshot?.aircraft || []).filter(p => now - p.updated < core.maxAge && core.visible(p.point, view)).map(p => [p.id, p]));
       for (const [id, entry] of displayed) if (!records.has(id)) { group.removeLayer(entry.marker); displayed.delete(id); }
       for (const plane of records.values()) {
-        const title = `Aircraft: ${plane.callsign || plane.registration || plane.id.toUpperCase()}`;
+        const title = `${symbols[plane.kind]?.label || 'Aircraft'}: ${plane.callsign || plane.registration || plane.id.toUpperCase()}`;
         const point = [plane.point[0], plane.point[1] + 360 * Math.round((map.getCenter().lng - plane.point[1]) / 360)];
         const previous = displayed.get(plane.id);
         if (previous) {

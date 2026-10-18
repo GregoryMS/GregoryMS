@@ -270,6 +270,8 @@
 .aircraft-marker { background: transparent; border: 0; }
 .aircraft-marker svg { width: 34px; height: 34px; overflow: visible; fill: #7637cc; stroke: #fff; stroke-width: 1.7; stroke-linejoin: round; filter: drop-shadow(0 1px 2px #0008); }
 .aircraft-marker:focus-visible { outline: 3px solid #7637cc; outline-offset: 4px; border-radius: 50%; }
+.aircraft-small-plane svg { width: 30px; height: 30px; margin: 2px; }
+.aircraft-detail { fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: round; }
 .aircraft-popup { color: #252525; font: 12px/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
 .aircraft-popup .aircraft-title { display: block; font-size: 16px; }
 .aircraft-popup p { margin: 8px 0; }

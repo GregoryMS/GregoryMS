@@ -8,6 +8,25 @@
   const wrap = x => ((x + 180) % 360 + 360) % 360 - 180;
   const number = (x, min, max) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
   const text = x => typeof x === 'string' ? x.trim().slice(0, 120) : '';
+  // Common ICAO designators supplement feeds that report a model but no emitter category.
+  const helicopters = new Set(('R22 R44 R66 B06 B06T B47 B105 B205 B206 B212 B214 B222 B230 B407 B412 B427 B429 B430 B505 B525 ' +
+    'EC20 EC25 EC30 EC35 EC45 EC55 EC75 AS32 AS50 AS55 AS65 A109 A119 A139 A149 A169 A189 AW09 ' +
+    'H120 H125 H130 H135 H145 H155 H160 H175 H215 H225 H269 H369 H500 H530 H60 H64 ' +
+    'S55 S58 S61 S64 S70 S76 S92 S300 S333 UH1 UH60 AH64 CH47 CH53 MD52 MD60 EN28 G2CA').toUpperCase().split(' '));
+  const smallPlanes = new Set(('C120 C140 C150 C152 C162 C170 C172 C175 C177 C180 C182 C185 C188 C190 C195 C205 C206 C207 C208 C210 ' +
+    'C303 C310 C320 C335 C336 C337 C340 C401 C402 C404 C411 C414 C421 C425 C441 T182 T206 T210 ' +
+    'P28A P28B P28R P28T P32R P32T PA18 PA20 PA22 PA23 PA24 PA27 PA30 PA31 PA32 PA34 PA38 PA39 PA44 PA46 P46T M600 M700 ' +
+    'BE19 BE23 BE24 BE33 BE35 BE36 BE50 BE55 BE58 BE60 BE76 BE9L BE9T BE10 BE20 BE30 ' +
+    'SR20 SR22 S22T DA20 DA40 DA42 DA50 DA62 DV20 DHC1 DHC2 DH2T DHC3 DHC6 PC6T PC12 ' +
+    'AC11 AC50 AC56 AC68 AC69 AA1 AA5 AEST AE50 BN2P BN2T TB9 TB10 TB20 TB21 TB30 TRIN ' +
+    'DR10 DR22 DR25 DR30 DR40 D140 D150 D250 CAP1 CAP2 CAP3 CUB2 CC11 CC18 CC19 CC21 EXCC ' +
+    'RV3 RV4 RV6 RV7 RV8 RV9 RV10 RV12 RV14 LNC2 LNC4 COL3 COL4 VL3 WT9 P208 P200 P201 P06T P212 P92 BR23 PS28').split(' '));
+  function aircraftKind(type, description = '', category = '') {
+    const code = text(type).toUpperCase(), model = text(description).toUpperCase(), emitter = text(category).toUpperCase();
+    if (emitter === 'A7' || helicopters.has(code) || /^H[1-4][PTJ]$/.test(model) || /\b(?:HELICOPTERS?|ROTORCRAFT|ROBINSON R[- ]?(?:22|44|66))\b/.test(model)) return 'helicopter';
+    if (smallPlanes.has(code) || /^[LAS]1P$/.test(model) || /\bCESSNA (?:1[2578][02578]|20[5678]|210)\b/.test(model)) return 'small-plane';
+    return 'airliner';
+  }
   function distance(a, b) {
     const rad = Math.PI / 180, dlat = (b[0] - a[0]) * rad, dlng = wrap(b[1] - a[1]) * rad;
     const h = Math.sin(dlat / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(dlng / 2) ** 2;
@@ -37,7 +56,7 @@
       if (age === null) continue;
       const updated = Math.min(now, stamp - age * 1000), id = a.hex.toLowerCase();
       if (now - updated >= maxAge || records.has(id) && records.get(id).updated >= updated) continue;
-      records.set(id, { id, point: [a.lat, a.lon], callsign: text(a.flight), registration: text(a.r), type: text(a.t), description: text(a.desc),
+      records.set(id, { id, point: [a.lat, a.lon], callsign: text(a.flight), registration: text(a.r), type: text(a.t), description: text(a.desc), kind: aircraftKind(a.t, a.desc, a.category),
         ground: a.alt_baro === 'ground', altitude: number(a.alt_baro, -2000, 100000) ? a.alt_baro : null,
         speed: number(a.gs, 0, 2000) ? a.gs : null, heading: number(a.track, 0, 360) ? a.track % 360 : null,
         verticalRate: number(a.baro_rate, -20000, 20000) ? a.baro_rate : null, squawk: /^[0-7]{4}$/.test(a.squawk) ? a.squawk : '',
@@ -45,5 +64,5 @@
     }
     return { aircraft: [...records.values()].slice(0, 1500), limited: data.limited === true || records.size > 1500 || data.ac.length > 10000 };
   }
-  return { maxAge, distance, area, covers, visible, read };
+  return { maxAge, aircraftKind, distance, area, covers, visible, read };
 });

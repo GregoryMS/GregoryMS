@@ -22,6 +22,17 @@ test('live aircraft preferences stay independent of aviation charts and round-tr
  assert.deepEqual(maps.readLayers(maps.makeHash(maps.defaultView,null,state)),state);
  assert(maps.readLayers('#base=plugshare&overlays=aircraft,aviation').aircraft);
 });
+test('aircraft symbols use model codes rather than flight names, speed or altitude',()=>{
+ const cases=[
+  [{t:'R44',desc:'ROBINSON R-44 Raven'},'helicopter'],[{t:'B407',desc:'BELL 407'},'helicopter'],[{t:'EC35'},'helicopter'],
+  [{t:'',desc:'AIRBUS HELICOPTERS H145'},'helicopter'],[{t:'',desc:'H2T'},'helicopter'],[{t:'',category:'A7'},'helicopter'],
+  [{t:'C172',desc:''},'small-plane'],[{t:'P28A'},'small-plane'],[{t:'DHC2'},'small-plane'],[{t:'C208'},'small-plane'],[{t:'PC12'},'small-plane'],
+  [{t:'',desc:'CESSNA 182 Skylane'},'small-plane'],[{t:'',desc:'L1P'},'small-plane'],[{t:' c152 '},'small-plane'],
+  [{t:'B738',desc:'BOEING 737-800',gs:65,alt_baro:500},'airliner'],[{t:'C700',desc:'CESSNA 700 Citation Longitude'},'airliner'],
+  [{t:'PC24'},'airliner'],[{t:'',desc:'',flight:'HELICOPTER C172',gs:50,alt_baro:1000},'airliner'],[{t:'<script>bad</script>',desc:''},'airliner']
+ ];
+ for(const [values,kind] of cases)assert.equal(core.read(packet(start,[aircraft(values)]),start).aircraft[0].kind,kind,JSON.stringify(values));
+});
 const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
 function setup(){
  let now=start,box=[-123.5,48.3,-123.2,48.5],zoom=13,nextTimer=0,impl=async()=>({ok:true,json:async()=>packet(now)});
@@ -60,4 +71,13 @@ test('zoomed-out maps pause queries and position details use safe text and repor
  const h=setup();await h.move([-180,-80,180,80],3);h.api.setEnabled(true);await flush();assert.equal(h.calls.length,0);assert.match(h.output.textContent,/Zoom in/);
  h.setFetch(async()=>({ok:true,json:async()=>packet(start,[aircraft({flight:'<img src=x onerror=alert(1)>',baro_rate:500,squawk:'1200'})])}));await h.move([-123.5,48.3,-123.2,48.5],13);assert.equal(h.calls.length,1);
  const marker=h.markers()[0],box=marker.popup();const text=e=>e.textContent+' '+e.children.map(text).join(' ');const content=text(box);assert(content.includes('<img src=x onerror=alert(1)>'));assert(content.includes('30,000 ft'));assert(content.includes('400 kn'));assert(content.includes('90°'));assert.equal(box.children.filter(x=>x.tagName==='IMG').length,0);assert.equal(marker.options.bubblingMouseEvents,false);
+});
+test('live markers show distinct helicopter and small-plane shapes and update type and heading in place',async()=>{
+ const h=setup();h.setFetch(async()=>({ok:true,json:async()=>packet(start,[aircraft({t:'R44',track:0}),aircraft({hex:'a12346',t:'C172',track:180}),aircraft({hex:'a12347',t:'B738',track:null})])}));
+ h.api.setEnabled(true);await flush();const [helicopter,small,jet]=h.markers();
+ assert.match(helicopter.options.icon.className,/aircraft-helicopter/);assert.match(helicopter.options.title,/^Helicopter:/);assert.match(helicopter.options.icon.html,/rotate\(0deg\)/);
+ assert.match(small.options.icon.className,/aircraft-small-plane/);assert.match(small.options.title,/^Small plane:/);assert.match(small.options.icon.html,/rotate\(180deg\)/);
+ assert.match(jet.options.icon.className,/aircraft-airliner/);assert.match(jet.options.icon.html,/rotate\(0deg\)/);assert.notEqual(helicopter.options.icon.html,small.options.icon.html);
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start+15000,[aircraft({t:'C172',track:270})])}));await h.advance(15000);
+ assert.equal(h.markers()[0],helicopter);assert.match(helicopter.options.icon.className,/aircraft-small-plane/);assert.match(helicopter.options.title,/^Small plane:/);assert.match(helicopter.options.icon.html,/rotate\(270deg\)/);
 });
