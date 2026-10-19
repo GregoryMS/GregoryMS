@@ -1,31 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-18T23:22:45+00:00",
-  "fetchedAt": "2026-10-18T23:22:53.173435+00:00",
+  "feedUpdatedAt": "2026-10-19T01:33:38+00:00",
+  "fetchedAt": "2026-10-19T01:33:44.485109+00:00",
   "items": [
     {
       "title": "Macron calls for 'calm and order' after riots across France",
       "link": "https://www.bbc.co.uk/news/articles/cw240zl08dm5o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Inside the shadowy world of anti-Putin sabotage from within Russia",
+      "link": "https://www.bbc.co.uk/news/articles/c6pwgzkj8zzgo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Watch: Russian saboteur working for Ukraine shares reconnaissance videos",
+      "link": "https://www.bbc.co.uk/news/videos/cwd09vlv78rvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Major fire at Canada military base leaves four dead, dozens injured",
       "link": "https://www.bbc.co.uk/news/articles/cxj0ly1m3q81o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "What we know so far about deadly fire at Canadian military base",
-      "link": "https://www.bbc.co.uk/news/articles/cmgelrq8x92do?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Polanski says he will not overturn Green Party's 'Zionism is racism' motion",
-      "link": "https://www.bbc.co.uk/news/articles/cmn8w5v8yne4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "A wave of homemade, synthetic drugs sweeps US and deepens crisis",
-      "link": "https://www.bbc.co.uk/news/articles/cmx2wvyv5j17o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Inside Chicago's battle against the synthetic drugs flooding the US",
-      "link": "https://www.bbc.co.uk/news/videos/c84g166kz003o?at_medium=RSS&at_campaign=rss"
+      "title": "People playing loud music on buses could face £100 fine",
+      "link": "https://www.bbc.co.uk/news/articles/cm89z008x7xdo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Home sellers cut asking prices on 3,000 properties a day",
@@ -36,12 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/cwzrd6123jyyo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "EU tariffs aimed at China hitting Ukraine, steel boss says",
+      "link": "https://www.bbc.co.uk/news/articles/cwdd8z6gyy96o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Trump says suspension of Russia sanctions is to keep peace negotiations going",
       "link": "https://www.bbc.co.uk/news/articles/c9p8gz7zx4peo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Ending corridor care in hospitals for children a priority, says health secretary",
-      "link": "https://www.bbc.co.uk/news/articles/cm2kezgd77qlo?at_medium=RSS&at_campaign=rss"
+      "title": "Suspects hunted after police officer injured in shooting",
+      "link": "https://www.bbc.co.uk/news/articles/c63elzvjpgn2o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
