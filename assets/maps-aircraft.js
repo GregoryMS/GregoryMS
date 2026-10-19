@@ -3,6 +3,8 @@
   window.GregleAircraft = ({ map, notify }) => {
     const core = window.GregleAircraftCore;
     const output = document.getElementById('aircraft-layer-status'), refresh = document.getElementById('aircraft-refresh');
+    document.getElementById('aircraft-altitude-gradient').style.background = core.altitudeGradient;
+    document.getElementById('aircraft-altitude-neutral').style.background = core.neutralColour;
     const group = L.layerGroup(), displayed = new Map();
     const credit = 'Aircraft: <a href="https://pocketworld.org/api" target="_blank" rel="noopener">PocketWorld</a> / <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> / <a href="https://opensky-network.org" target="_blank" rel="noopener">OpenSky</a> / <a href="https://adsb.lol" target="_blank" rel="noopener">ADSB.lol</a>';
     const endpoint = 'https://gregle-aircraft.square-rain-5ded.workers.dev/aircraft', interval = 15000;
@@ -36,7 +38,7 @@
     }
     function icon(plane) {
       const kind = Object.hasOwn(symbols, plane.kind) ? plane.kind : 'airliner';
-      return L.divIcon({ className: `aircraft-marker aircraft-${kind}`, iconSize: [34, 34], iconAnchor: [17, 17], html: `<svg viewBox="0 0 32 32" style="transform:rotate(${plane.heading ?? 0}deg)" aria-hidden="true">${symbols[kind].shape}</svg>` });
+      return L.divIcon({ className: `aircraft-marker aircraft-${kind}`, iconSize: [34, 34], iconAnchor: [17, 17], html: `<svg viewBox="0 0 32 32" style="fill:${core.altitudeColour(plane.altitude, plane.ground)};transform:rotate(${plane.heading ?? 0}deg)" aria-hidden="true">${symbols[kind].shape}</svg>` });
     }
     function clear() { group.clearLayers(); displayed.clear(); }
     function render() {
@@ -46,7 +48,8 @@
       const records = new Map((snapshot?.aircraft || []).filter(p => now - p.updated < core.maxAge && core.visible(p.point, view)).map(p => [p.id, p]));
       for (const [id, entry] of displayed) if (!records.has(id)) { group.removeLayer(entry.marker); displayed.delete(id); }
       for (const plane of records.values()) {
-        const title = `${symbols[plane.kind]?.label || 'Aircraft'}: ${plane.callsign || plane.registration || plane.id.toUpperCase()}`;
+        const altitudeLabel = plane.ground ? 'On the ground' : plane.altitude === null ? 'Altitude not reported' : `${Math.round(plane.altitude).toLocaleString()} ft`;
+        const title = `${symbols[plane.kind]?.label || 'Aircraft'}: ${plane.callsign || plane.registration || plane.id.toUpperCase()} · ${altitudeLabel}`;
         const point = [plane.point[0], plane.point[1] + 360 * Math.round((map.getCenter().lng - plane.point[1]) / 360)];
         const previous = displayed.get(plane.id);
         if (previous) {

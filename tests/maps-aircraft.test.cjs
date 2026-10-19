@@ -39,6 +39,7 @@ function setup(){
  const calls=[],timers=new Map(),events={},groups=[],credits=new Set(),nodes={};
  const element=()=>({style:{},children:[],events:{},dataset:{},textContent:'',append(...items){this.children.push(...items);},addEventListener(k,f){this.events[k]=f;}});
  const output=nodes['aircraft-layer-status']=element(),refresh=nodes['aircraft-refresh']=element();
+ nodes['aircraft-altitude-gradient']=element();nodes['aircraft-altitude-neutral']=element();
  const map={getBounds:()=>({getWest:()=>box[0],getSouth:()=>box[1],getEast:()=>box[2],getNorth:()=>box[3]}),getCenter:()=>({lng:(box[0]+box[2])/2}),getZoom:()=>zoom,getSize:()=>({x:390,y:700}),on:(k,f)=>events[k]=f,removeLayer(){},attributionControl:{addAttribution:c=>credits.add(c),removeAttribution:c=>credits.delete(c)}};
  const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,pop:{options:{}},bindPopup(fn){this.popup=fn;return this;},getPopup(){return this.pop;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
@@ -81,4 +82,24 @@ test('live markers show distinct helicopter and small-plane shapes and update ty
  assert.match(jet.options.icon.className,/aircraft-airliner/);assert.match(jet.options.icon.html,/rotate\(0deg\)/);assert.notEqual(helicopter.options.icon.html,small.options.icon.html);
  h.setFetch(async()=>({ok:true,json:async()=>packet(start+15000,[aircraft({t:'C172',track:270})])}));await h.advance(15000);
  assert.equal(h.markers()[0],helicopter);assert.match(helicopter.options.icon.className,/aircraft-small-plane/);assert.match(helicopter.options.title,/^Small plane:/);assert.match(helicopter.options.icon.html,/rotate\(270deg\)/);
+});
+test('altitude colours blend continuously, clamp extremes and keep missing or ground readings neutral',()=>{
+ assert.equal(core.altitudeColour(0),'rgb(228, 173, 32)');
+ assert.equal(core.altitudeColour(5000),'rgb(150, 173, 60)');
+ assert.equal(core.altitudeColour(10000),'rgb(72, 173, 88)');
+ assert.equal(core.altitudeColour(40000),'rgb(160, 75, 216)');
+ assert.equal(core.altitudeColour(-2000),core.altitudeColour(0));
+ assert.equal(core.altitudeColour(100000),core.altitudeColour(40000));
+ for(const value of [null,undefined,NaN,Infinity,'10000'])assert.equal(core.altitudeColour(value),core.neutralColour);
+ assert.equal(core.altitudeColour(30000,true),core.neutralColour);
+ assert.notEqual(core.altitudeColour(0),core.neutralColour);
+ for(const feet of [0,10000,20000,30000,40000])assert(core.altitudeGradient.includes(core.altitudeColour(feet)));
+});
+test('live aircraft recolour in place when altitude changes, with altitude available without colour',async()=>{
+ const h=setup();h.api.setEnabled(true);await flush();const marker=h.markers()[0];
+ assert(marker.options.icon.html.includes(`fill:${core.altitudeColour(30000)}`));assert.match(marker.options.title,/30,000 ft/);
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start+15000,[aircraft({alt_baro:5000})])}));await h.advance(15000);
+ assert.equal(h.markers()[0],marker);assert(marker.options.icon.html.includes(`fill:${core.altitudeColour(5000)}`));assert.match(marker.options.title,/5,000 ft/);
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start+30000,[aircraft({alt_baro:'ground'})])}));await h.advance(15000);
+ assert(marker.options.icon.html.includes(`fill:${core.neutralColour}`));assert.match(marker.options.title,/On the ground/);
 });

@@ -5,6 +5,17 @@
 })(typeof window === 'object' ? window : globalThis, () => {
   'use strict';
   const maxAge = 120000;
+  const altitudeStops = [[0, [228, 173, 32]], [10000, [72, 173, 88]], [20000, [23, 166, 181]], [30000, [56, 121, 220]], [40000, [160, 75, 216]]];
+  const neutralColour = '#788391';
+  const rgb = channels => `rgb(${channels.join(', ')})`;
+  const altitudeGradient = `linear-gradient(90deg, ${altitudeStops.map(([feet, colour]) => `${rgb(colour)} ${feet / 400}%`).join(', ')})`;
+  function altitudeColour(altitude, ground = false) {
+    if (ground || !Number.isFinite(altitude)) return neutralColour;
+    const feet = Math.max(0, Math.min(40000, altitude));
+    const index = Math.min(3, Math.floor(feet / 10000));
+    const [low, from] = altitudeStops[index], [high, to] = altitudeStops[index + 1];
+    return rgb(from.map((channel, i) => Math.round(channel + (to[i] - channel) * (feet - low) / (high - low))));
+  }
   const wrap = x => ((x + 180) % 360 + 360) % 360 - 180;
   const number = (x, min, max) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
   const text = x => typeof x === 'string' ? x.trim().slice(0, 120) : '';
@@ -64,5 +75,5 @@
     }
     return { aircraft: [...records.values()].slice(0, 1500), limited: data.limited === true || records.size > 1500 || data.ac.length > 10000 };
   }
-  return { maxAge, aircraftKind, distance, area, covers, visible, read };
+  return { maxAge, altitudeColour, altitudeGradient, neutralColour, aircraftKind, distance, area, covers, visible, read };
 });
