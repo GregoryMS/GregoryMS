@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-18T22:37:55.765893+00:00",
+      "checkedAt": "2026-10-19T00:31:06.310698+00:00",
       "listings": [
-        {
-          "home": "Austin FC",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-18T00:30:00+00:00",
-          "channels": [
-            "Apple TV (UK)"
-          ]
-        },
         {
           "home": "Chelsea (W)",
           "away": "Tottenham Hotspur (W)",
@@ -237,16 +229,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-18T22:37:55.765893+00:00",
+      "checkedAt": "2026-10-19T00:31:06.310698+00:00",
       "listings": [
-        {
-          "home": "Austin FC",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-18T00:30:00+00:00",
-          "channels": [
-            "Apple TV (US)"
-          ]
-        },
         {
           "home": "Chelsea (W)",
           "away": "Tottenham Hotspur (W)",
@@ -437,16 +421,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-18T22:37:55.765893+00:00",
+      "checkedAt": "2026-10-19T00:31:06.310698+00:00",
       "listings": [
-        {
-          "home": "Austin FC",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-18T00:30:00+00:00",
-          "channels": [
-            "Apple TV (NO)"
-          ]
-        },
         {
           "home": "Chelsea (W)",
           "away": "Tottenham Hotspur (W)",
@@ -634,50 +610,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-18T22:37:55.765893+00:00",
+      "checkedAt": "2026-10-19T00:31:06.310698+00:00",
       "listings": [
-        {
-          "home": "Austin FC",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-18T00:30:00+00:00",
-          "channels": [
-            "Apple TV (SE)"
-          ]
-        },
-        {
-          "home": "Chelsea (W)",
-          "away": "Tottenham Hotspur (W)",
-          "start": "2026-10-18T11:00:00+00:00",
-          "channels": [
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Crystal Palace",
-          "start": "2026-10-18T13:00:00+00:00",
-          "channels": [
-            "V Sport Football",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Manchester City (W)",
-          "away": "Brighton (W)",
-          "start": "2026-10-18T13:30:00+00:00",
-          "channels": [
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Nottingham Forest",
-          "away": "Arsenal",
-          "start": "2026-10-18T15:30:00+00:00",
-          "channels": [
-            "V Sport Football",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Bayern München (W)",
           "away": "VfB Stuttgart (W)",
@@ -734,7 +668,8 @@
           "away": "Arsenal (W)",
           "start": "2026-10-24T11:45:00+00:00",
           "channels": [
-            "SVT Play"
+            "SVT Play",
+            "TV4 Play Sport"
           ]
         },
         {
@@ -744,6 +679,14 @@
           "channels": [
             "V Sport Premium",
             "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Brighton (W)",
+          "away": "West Ham United (W)",
+          "start": "2026-10-24T16:15:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
           ]
         },
         {
@@ -812,16 +755,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-18T22:37:55.765893+00:00",
+      "checkedAt": "2026-10-19T00:31:06.310698+00:00",
       "listings": [
-        {
-          "home": "Austin FC",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-18T00:30:00+00:00",
-          "channels": [
-            "Apple TV (DE)"
-          ]
-        },
         {
           "home": "Chelsea (W)",
           "away": "Tottenham Hotspur (W)",
