@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-19T05:21:29.106113+00:00",
+      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
       "listings": [
-        {
-          "home": "Chelsea (W)",
-          "away": "Tottenham Hotspur (W)",
-          "start": "2026-10-18T11:00:00+00:00",
-          "channels": [
-            "Sky Sports UHD 2"
-          ]
-        },
         {
           "home": "Brighton & Hove Albion",
           "away": "Crystal Palace",
@@ -205,7 +197,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-19T05:21:29.106113+00:00",
+      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
@@ -377,7 +369,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-19T05:21:29.106113+00:00",
+      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
@@ -548,7 +540,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-19T05:21:29.106113+00:00",
+      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -693,7 +685,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-19T05:21:29.106113+00:00",
+      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -728,6 +720,7 @@
           "start": "2026-10-23T16:30:00+00:00",
           "channels": [
             "DAZN Deutschland",
+            "DF1",
             "Magenta Sport",
             "OneFootball Deutschland"
           ]
@@ -757,6 +750,14 @@
           "channels": [
             "Sky Sport Premier League",
             "WOW"
+          ]
+        },
+        {
+          "home": "Brighton (W)",
+          "away": "West Ham United (W)",
+          "start": "2026-10-24T16:15:00+00:00",
+          "channels": [
+            "Sportdigital+"
           ]
         },
         {
@@ -819,6 +820,14 @@
           "start": "2026-10-25T16:30:00+00:00",
           "channels": [
             "DAZN Deutschland"
+          ]
+        },
+        {
+          "home": "Manchester United (W)",
+          "away": "Manchester City (W)",
+          "start": "2026-10-25T18:00:00+00:00",
+          "channels": [
+            "Sportdigital+"
           ]
         }
       ],
