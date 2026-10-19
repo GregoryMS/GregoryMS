@@ -3,7 +3,7 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const KEY = 'gregle-news-v1';
-  const defaults = {feeds:[],articles:[],read:[],saved:[],updated:null};
+  const defaults = {feeds:[],articles:[],read:[],saved:[],updated:null,defaultFeedsVersion:0};
   let state = {...defaults}, view = 'all', selected = '', limit = 40, refreshing = false, opened = null;
   let storageOK = true, notice = '', failures = new Map(), pendingFeeds = [];
   const safeURL = value => { try { const u = new URL(value); return ['http:','https:'].includes(u.protocol) && !u.username && !u.password ? u.href : ''; } catch { return ''; } };
@@ -74,6 +74,7 @@
     try {
       const data=JSON.parse(localStorage.getItem(KEY)||'null'); if(!data) return;
       state={feeds:Array.isArray(data.feeds)?data.feeds.filter(f=>publicFeedURL(f.url)).slice(0,500).map(f=>({url:publicFeedURL(f.url),name:String(f.name||new URL(f.url).hostname).slice(0,160),folder:String(f.folder||'').slice(0,320)})):[],articles:[],read:Array.isArray(data.read)?data.read.filter(s=>typeof s==='string'):[],saved:Array.isArray(data.saved)?data.saved.filter(s=>typeof s==='string'):[],updated:data.updated||null};
+      state.defaultFeedsVersion=Number.isSafeInteger(data.defaultFeedsVersion)?data.defaultFeedsVersion:0;
       state.articles=Array.isArray(data.articles)?data.articles.filter(a=>a&&typeof a.id==='string'&&safeURL(a.link)&&typeof a.title==='string'&&typeof a.body==='string'&&typeof a.feed==='string').slice(0,10000):[];
     } catch { storageOK=false; }
   }
@@ -126,7 +127,7 @@
       const empty=element('div','empty-state');empty.append(element('div','empty-symbol','◔'));
       const title=!state.feeds.length?'Make room for what matters.':$('search').value?'No matching articles':refreshing?'Gathering your stories…':view==='saved'?'A place for the good reads.':view==='unread'?'You’re all caught up.':'No articles yet';
       empty.append(element('h3','',title),element('p','',!state.feeds.length?'Bring your subscriptions from another reader, or add your first feed.':view==='saved'?'Tap the star beside any story to keep it here.':$('search').value?'Try another search, or choose All articles.':view==='unread'?'Fresh stories will appear here when your feeds update.':'Refresh your feeds to check for stories.'));
-      if(!state.feeds.length){empty.append(button('Import OPML','pill primary',()=>$('opmlFile').click()),button('Start with BBC News','pill',()=>addFeeds([{url:'https://feeds.bbci.co.uk/news/rss.xml',name:'BBC News',folder:''}])));}
+      if(!state.feeds.length){empty.append(button('Import OPML','pill primary',()=>$('opmlFile').click()),button('Restore default feeds','pill',()=>addFeeds(GregleNewsDefaults.feeds.map(f=>({...f})))));}
       container.append(empty);
     }
     for(const a of items.slice(0,limit)) {
@@ -152,7 +153,9 @@
     const c=new AbortController(),timer=setTimeout(()=>c.abort(),10000);
     try {const res=await fetch(url,{signal:c.signal,credentials:'omit',referrerPolicy:'no-referrer'});if(!res.ok)throw Error('HTTP '+res.status);const raw=await res.text();if(raw.length>5000000)throw Error('Feed is too large.');return json?JSON.parse(raw):raw;}finally{clearTimeout(timer);}
   }
-  async function loadFeed(f) {
+  async function loadFeed(f,bundled) {
+    const snapshot=bundled.get(f.url);
+    if(snapshot)try{return parseFeed(snapshot.xml,f.url);}catch{}
     try{return parseFeed(await request(f.url),f.url);}catch{}
     try{
       const d=await request('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url),true);
@@ -164,9 +167,13 @@
   async function refresh(only) {
     if(refreshing){if(only)pendingFeeds.push(...only);return;}const jobs=only||[...state.feeds];if(!jobs.length)return;
     refreshing=true;notice='Checking your feeds…';let index=0,done=0,success=0;render();
+    let bundled=new Map();
+    if(jobs.some(f=>GregleNewsDefaults.feeds.some(d=>d.url===f.url)))try{
+      bundled=GregleNewsDefaults.snapshots(await request('data/news-feeds.json',true));
+    }catch{}
     await Promise.all(Array.from({length:Math.min(4,jobs.length)},async()=>{
       while(index<jobs.length){const f=jobs[index++];try{
-        const data=await loadFeed(f);
+        const data=await loadFeed(f,bundled);
         if(state.feeds.some(x=>x.url===f.url)){
           if(f.name===new URL(f.url).hostname&&data.title)f.name=data.title.slice(0,160);
           const fresh=data.items.slice(0,100).map(i=>normalizeArticle(i,f)).filter(Boolean);
@@ -216,7 +223,7 @@
   $('exportButton').addEventListener('click',exportOPML);$('manageExport').addEventListener('click',exportOPML);$('manageButton').addEventListener('click',manage);$('refreshButton').addEventListener('click',()=>refresh());
   $('search').addEventListener('input',()=>{limit=40;render();});$('sort').addEventListener('change',()=>{limit=40;render();});$('moreButton').addEventListener('click',()=>{limit+=40;render();});
   $('markAll').addEventListener('click',()=>{state.read=[...new Set([...state.read,...filtered().map(a=>a.id)])];persist();render();});$('articleSave').addEventListener('click',()=>{if(opened)toggleSave(opened.id);});
-  restore();render();persist();if(state.feeds.length)refresh();
+  restore();state=GregleNewsDefaults.apply(state);render();persist();if(state.feeds.length)refresh();
   setInterval(()=>{if(!document.hidden&&state.feeds.length)refresh();},15*60*1000);
   window.addEventListener('storage',e=>{if(e.key===KEY){restore();notice='Reader updated from another tab';render();}});
 })();

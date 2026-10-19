@@ -1,0 +1,49 @@
+name: Refresh News reader feeds
+
+on:
+  schedule:
+    - cron: '11,26,41,56 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update_news_feeds.py
+      - .github/workflows/news-feeds.yml
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: news-reader-feeds
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_news_feeds.py'
+      - id: feeds
+        run: python scripts/update_news_feeds.py
+        continue-on-error: true
+      - name: Save feeds and rebuild Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/news-feeds.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/news-feeds.json
+          git commit -m "Refresh News reader feeds"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
+      - name: Report feed failures
+        if: steps.feeds.outcome != 'success'
+        run: exit 1
