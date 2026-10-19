@@ -549,7 +549,7 @@
       border-radius: inherit;
       background:
         linear-gradient(var(--panel-strong), var(--panel-strong)) padding-box,
-        linear-gradient(120deg, #83d7ff, #ac8aff 38%, #f6a7d5 68%, #f8b7dc) border-box;
+        linear-gradient(120deg, #83d7ff, #7637CC) border-box;
       opacity: 0;
       transition: opacity 0.75s ease;
     }
@@ -576,10 +576,10 @@
 
     @keyframes ai-glow-pulse {
       0%, 100% {
-        box-shadow: -3px 0 10px #83d7ff40, 3px 0 10px #f6a7d540, 0 0 5px #ac8aff30;
+        box-shadow: -3px 0 10px #83d7ff40, 3px 0 10px #7637CC40, 0 0 5px #7637CC30;
       }
       50% {
-        box-shadow: -4px 0 20px #83d7ff80, 4px 0 20px #f6a7d580, 0 0 10px #ac8aff60;
+        box-shadow: -4px 0 20px #83d7ff80, 4px 0 20px #7637CC80, 0 0 10px #7637CC60;
       }
     }
 
@@ -599,7 +599,7 @@
       .chatgpt-search::after {
         animation: none;
         transition: none;
-        box-shadow: -3px 0 12px #83d7ff50, 3px 0 12px #f6a7d550, 0 0 6px #ac8aff40;
+        box-shadow: -3px 0 12px #83d7ff50, 3px 0 12px #7637CC50, 0 0 6px #7637CC40;
       }
       .chatgpt-search.is-intro-glowing::after {
         animation: ai-glow-intro 3.2s step-end both;
