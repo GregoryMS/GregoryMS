@@ -19,6 +19,7 @@ APPS = [
     ('Dictionary', '/dictionary.html', 'assets/dictionary-app/icon-192.png'),
     ('Maps', '/maps.html', 'assets/maps-app/icon.svg'),
     ('Cloud', 'https://cloud.gregle.uk', 'assets/cloud-app/icon.svg'),
+    ('Docs', 'https://cloud.gregle.uk', 'assets/docs-app/icon.svg'),
 ]
 EXTRAS = [
     ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),
@@ -45,7 +46,8 @@ def menu(page):
     links = []
     for label, href, icon in APPS:
         current = ' aria-current="page"' if href == ('/' if page == 'index.html' else '/' + page) else ''
-        links.append(f'<a class="gregle-app" href="{href}"{current}><img src="/{icon}" width="44" height="44" alt="" loading="lazy" decoding="async"><span>{label}</span></a>')
+        identity = ' data-gregle-app-id="docs"' if label == 'Docs' else ''
+        links.append(f'<a class="gregle-app" href="{href}"{current}{identity}><img src="/{icon}" width="44" height="44" alt="" loading="lazy" decoding="async"><span>{label}</span></a>')
     extras = ''
     extra_links = EXTRAS if page == 'index.html' else MAP_EXTRAS if page == 'maps.html' else []
     if extra_links:

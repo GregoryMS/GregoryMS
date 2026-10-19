@@ -7,7 +7,7 @@ const {execFileSync} = require('node:child_process');
 const root = path.join(__dirname, '..');
 
 test('every content page has the same valid app destinations and working icons', () => {
-  const expected = ['/', '/translate.html', '/weather.html', '/earthquakes.html', '/astro.html', '/sports.html', '/news.html', '/finance.html', '/links.html', '/radio.html', '/dictionary.html', '/maps.html', 'https://cloud.gregle.uk'];
+  const expected = ['/', '/translate.html', '/weather.html', '/earthquakes.html', '/astro.html', '/sports.html', '/news.html', '/finance.html', '/links.html', '/radio.html', '/dictionary.html', '/maps.html', 'https://cloud.gregle.uk', 'https://cloud.gregle.uk'];
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -18,6 +18,7 @@ test('every content page has the same valid app destinations and working icons',
     assert(!source.includes('id="brandToggle"'), file);
     const apps = [...menu.matchAll(/<a class="gregle-app" href="([^"]+)"[^>]*><img src="([^"]+)"/g)];
     assert.deepEqual(apps.map(a => a[1]), expected, file);
+    assert.match(menu, /href="https:\/\/cloud\.gregle\.uk" data-gregle-app-id="docs"><img src="\/assets\/docs-app\/icon\.svg"[^>]*><span>Docs<\/span>/, file);
     for (const [,href,icon] of apps) {
       if (href.startsWith('https://')) assert.equal(new URL(href).hostname, 'cloud.gregle.uk');
       else assert(fs.existsSync(path.join(root, href === '/' ? 'index.html' : href.slice(1))), href);
@@ -41,7 +42,7 @@ test('generated menu markup stays in sync with the shared configuration', () => 
   execFileSync('python3', ['scripts/update_site_menu.py','--check'], {cwd:root});
 });
 
-function launcher(saved = null) {
+function launcher(saved = null, sharedDestination = false) {
   let focused;
   const node = () => ({listeners:{},attrs:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(k,v){this.attrs[k]=v;},getAttribute(k){return this.attrs[k];},focus(){focused=this;},scrollIntoView(){}});
   const summary=node(),panel=node(),grid=node(),status=node(),apps=Array.from({length:11},node),menu=node(),document=node(),window=node();
@@ -50,6 +51,7 @@ function launcher(saved = null) {
   grid.append=app=>{grid.children.splice(grid.children.indexOf(app),1);grid.children.push(app);};
   apps.forEach((app,i)=>{
     app.attrs.href='/app-'+i; app.textContent='App '+i;
+    if (sharedDestination && i === 10) { app.attrs.href='/app-9'; app.attrs['data-gregle-app-id']='docs'; }
     app.parentElement=grid; app.querySelector=()=>({});
     app.after=other=>{grid.children.splice(grid.children.indexOf(other),1);grid.children.splice(grid.children.indexOf(app)+1,0,other);};
     app.before=other=>{grid.children.splice(grid.children.indexOf(other),1);grid.children.splice(grid.children.indexOf(app),0,other);};
@@ -110,4 +112,16 @@ test('saved order ignores duplicate or unknown apps and retains newly added apps
   assert.equal(launcher('{"apps":[]}').grid.children.length,11);
   env.window.listeners.storage({key:'gregle-app-order',newValue:'["/app-9"]'});
   assert.equal(env.grid.children[0],env.apps[9]);
+});
+
+test('Docs and Cloud keep independent positions with the same destination and legacy saved order', () => {
+  const env=launcher(JSON.stringify(['/app-9','/app-2']),true);
+  assert.equal(env.grid.children[0],env.apps[9]);
+  assert.equal(env.grid.children.at(-1),env.apps[10]);
+  env.panel.listeners.keydown(key('ArrowUp',env.apps[10],{altKey:true}));
+  const saved=JSON.parse(env.stored());
+  assert.equal(saved.filter(id=>id==='/app-9').length,1);
+  assert.equal(saved.filter(id=>id==='docs').length,1);
+  const restored=launcher(env.stored(),true);
+  assert.deepEqual(restored.grid.children.map(app=>app.attrs['data-gregle-app-id']||app.attrs.href),saved);
 });

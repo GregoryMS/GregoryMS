@@ -8,20 +8,21 @@
   const status = menu.querySelector('[data-gregle-app-status]');
   const orderKey = 'gregle-app-order';
   const apps = () => Array.from(grid.querySelectorAll('.gregle-app'));
+  const appId = app => app.getAttribute('data-gregle-app-id') || app.getAttribute('href');
   const appAt = target => {
     const app = target?.closest?.('.gregle-app');
     return app?.parentElement === grid ? app : null;
   };
   const saveOrder = () => {
-    try { localStorage.setItem(orderKey, JSON.stringify(apps().map(app => app.getAttribute('href')))); } catch {}
+    try { localStorage.setItem(orderKey, JSON.stringify(apps().map(appId))); } catch {}
   };
   const restoreOrder = saved => {
     if (!Array.isArray(saved)) return;
-    const remaining = new Map(apps().map(app => [app.getAttribute('href'), app]));
-    for (const href of saved) {
-      if (!remaining.has(href)) continue;
-      grid.append(remaining.get(href));
-      remaining.delete(href);
+    const remaining = new Map(apps().map(app => [appId(app), app]));
+    for (const id of saved) {
+      if (!remaining.has(id)) continue;
+      grid.append(remaining.get(id));
+      remaining.delete(id);
     }
     for (const app of remaining.values()) grid.append(app);
   };
