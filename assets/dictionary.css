@@ -1,7 +1,8 @@
-.dictionary-page { max-width:1000px; padding-bottom:40px; }
-.dictionary-heading { display:flex; justify-content:space-between; align-items:center; gap:24px; padding:54px 0 32px; }
-.dictionary-heading .subtitle { margin:0; }
-.dictionary-heading h1 { margin-bottom:12px; }
+.dictionary-page { width:100%; max-width:1320px; margin:auto; padding:26px 36px 32px; }
+.dictionary-heading { display:flex; justify-content:space-between; align-items:center; gap:24px; margin:10px 0 30px; }
+.dictionary-heading .eyebrow { margin-bottom:12px; }
+.dictionary-heading .subtitle { margin:0; font-size:15px; }
+.dictionary-heading h1 { font-size:clamp(46px,6.5vw,72px); margin-bottom:10px; }
 .accent-dot { color:#9850ff; }
 .lookup-card { padding:26px; background:var(--panel); border:1px solid var(--line); border-radius:26px; box-shadow:var(--shadow); }
 .lookup-controls { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:18px; margin-bottom:24px; }
@@ -47,4 +48,4 @@
 .dictionary-icon-link { width:44px; padding:0; }
 .dictionary-icon-link svg { width:23px;height:23px; }
 [hidden] { display:none !important; }
-@media(max-width:600px) { .dictionary-heading { padding:30px 0 24px; gap:12px; } .dictionary-heading h1 { font-size:35px; letter-spacing:-1.6px; } .lookup-card { padding:18px; } .lookup-controls { gap:16px; margin-bottom:18px; } .language-picker { width:100%; justify-content:space-between; } .dictionary-search { gap:8px; } .dictionary-search input { padding:14px 12px; font-size:16px; } .dictionary-search .primary { padding:10px 15px; } .dictionary-entry { padding:24px 20px; } .welcome { grid-template-columns:1fr; gap:12px; } .reference-links { align-items:flex-start; } .entry-heading { align-items:flex-start; } .entry-heading .pill { padding:8px 12px; } }
+@media(max-width:600px) { .dictionary-page { padding:14px 20px 28px; } .dictionary-heading { align-items:flex-start; flex-direction:column; margin:8px 0 24px; gap:20px; } .dictionary-heading .eyebrow { font-size:9px; } .dictionary-heading h1 { font-size:48px; } .dictionary-heading .subtitle { font-size:13px; } .lookup-card { padding:18px; } .lookup-controls { gap:16px; margin-bottom:18px; } .language-picker { width:100%; justify-content:space-between; } .dictionary-search { gap:8px; } .dictionary-search input { padding:14px 12px; font-size:16px; } .dictionary-search .primary { padding:10px 15px; } .dictionary-entry { padding:24px 20px; } .welcome { grid-template-columns:1fr; gap:12px; } .reference-links { align-items:flex-start; } .entry-heading { align-items:flex-start; } .entry-heading .pill { padding:8px 12px; } }
