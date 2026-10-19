@@ -1,5 +1,5 @@
-:root { --finance-accent:#326c63; --finance-tint:#e7f0eb; }
-:root.dark-mode { --finance-accent:#9bcdbb; --finance-tint:#303e38; }
+:root { --finance-accent:#7637cc; --finance-tint:#eee5fa; }
+:root.dark-mode { --finance-accent:#c698ff; --finance-tint:#49345f; }
 html { scroll-behavior:smooth; }
 .finance-page { width:min(100%,1420px); padding:0 36px 36px; }
 .topbar { max-width:1420px; }

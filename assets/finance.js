@@ -70,6 +70,8 @@
     },'Interactive stock and currency chart',chartURL());
   }
   function renderDashboards() {
+    const accent=theme()==='dark' ? '#c698ff' : '#7637cc';
+    const accentRGB=theme()==='dark' ? '198,152,255' : '118,55,204';
     embed('cadTickerWidget','ticker-tape',{
       symbols:['GBP','EUR','SEK','NOK','AUD','NZD','USD','CHF','JPY'].map(currency=>({
         proName:`FX_IDC:${currency}CAD`,title:`${currency} / CAD`
@@ -80,9 +82,9 @@
     embed('marketWidget','market-overview',{
       colorTheme:theme(),dateRange:'12M',locale:'en',width:'100%',height:'100%',
       isTransparent:false,showChart:true,showSymbolLogo:true,showFloatingTooltip:true,largeChartUrl:localChartURL,
-      plotLineColorGrowing:'#326c63',plotLineColorFalling:'#326c63',
-      belowLineFillColorGrowing:'rgba(50,108,99,0.12)',belowLineFillColorFalling:'rgba(50,108,99,0.12)',
-      belowLineFillColorGrowingBottom:'rgba(50,108,99,0)',belowLineFillColorFallingBottom:'rgba(50,108,99,0)',
+      plotLineColorGrowing:accent,plotLineColorFalling:accent,
+      belowLineFillColorGrowing:`rgba(${accentRGB},0.12)`,belowLineFillColorFalling:`rgba(${accentRGB},0.12)`,
+      belowLineFillColorGrowingBottom:`rgba(${accentRGB},0)`,belowLineFillColorFallingBottom:`rgba(${accentRGB},0)`,
       tabs:[
         {title:'Markets',symbols:[
           {s:'TSX:TSX',d:'S&P/TSX Composite'},
