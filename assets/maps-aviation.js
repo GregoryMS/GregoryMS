@@ -2,10 +2,20 @@
   'use strict';
   window.GregleAviation = ({ map, config, notify, onForget }) => {
     const $ = id => document.getElementById(id), storageKey = 'gregle-maps-openaip-key';
+    const opacityKey = 'gregle-maps-aviation-opacity';
+    let opacity = 0.85;
     let key = '', enabled = false, layer, paused = false, retryAt = 0, hidden = false;
     let queue = [], active = 0, timer, nextTile = 0;
     const pending = new Set();
     try { key = localStorage.getItem(storageKey) || ''; } catch {}
+    try {
+      const saved = localStorage.getItem(opacityKey), value = Number(saved);
+      if (saved && Number.isFinite(value) && value >= 0.2 && value <= 1) opacity = value;
+    } catch {}
+    function updateReference() {
+      const center = map.getCenter(), longitude = ((center.lng + 180) % 360 + 360) % 360 - 180;
+      $('aviation-full-map').href = `https://www.openaip.net/map#${map.getZoom().toFixed(2)}/${center.lat.toFixed(5)}/${longitude.toFixed(5)}`;
+    }
     const report = (message, error = false) => { $('aviation-layer-status').textContent = message; $('aviation-layer-status').dataset.state = error ? 'error' : 'ready'; };
     function render() {
       $('aviation-layer-status').hidden = !enabled;
@@ -13,6 +23,8 @@
       $('aviation-connect').textContent = key ? 'Manage OpenAIP key' : 'Connect OpenAIP';
       $('aviation-forget').hidden = !key;
       $('aviation-retry').hidden = !enabled || !key || !paused;
+      $('aviation-opacity').value = String(opacity);
+      $('aviation-percentage').textContent = `${Math.round(opacity * 100)}%`;
     }
     function cancelTile(tile) {
       tile.removed = true; tile.controller?.abort(); tile.cleanup?.();
@@ -62,6 +74,11 @@
           fail(response.status === 401 || response.status === 403 ? 'OpenAIP declined this key. Check the key and its Tiles API access.' : response.status === 429 ? 'OpenAIP rate limit reached. Charts are paused; wait at least a minute before retrying.' : 'OpenAIP charts could not load. Try again later.', response);
           return null;
         }
+        // The API returns 204 for empty/out-of-range tiles, not a PNG body.
+        if (response.status === 204) {
+          tile.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+          return null;
+        }
         return response.blob();
       }).then(blob => {
         if (!blob || controller.signal.aborted || tile.removed || owner !== layer) return;
@@ -91,9 +108,11 @@
       if (!endpoint || endpoint.origin !== 'https://api.tiles.openaip.net' || endpoint.username || endpoint.password || !endpoint.pathname.startsWith('/api/data/openaip/') || endpoint.search || endpoint.hash) {
         paused = true; report('Aviation charts need the official OpenAIP Tiles API endpoint.', true); render(); return;
       }
-      report(map.getZoom() < 4 ? 'Zoom in to see aviation charts.' : 'Loading OpenAIP aviation charts…');
+      report(map.getZoom() < 2 ? 'Zoom in to see aviation charts.' : 'Loading OpenAIP aviation charts…');
       const current = new AviationTiles(config.aviationURL, {
-        minZoom: 4, maxZoom: 19, maxNativeZoom: 14, tms: true,
+        // OpenAIP's current PNG endpoint uses XYZ rows (north to south).
+        // Flipping Y requests a different hemisphere's chart at this location.
+        minZoom: 2, maxZoom: 19, maxNativeZoom: 14, tms: false, opacity,
         updateWhenIdle: true, keepBuffer: 0, zIndex: 6, className: 'gregle-aviation-layer',
         attribution: '<a href="https://www.openaip.net/" target="_blank" rel="noopener">OpenAIP</a> (<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>)'
       });
@@ -114,6 +133,13 @@
     }
     $('aviation-connect').addEventListener('click', openKey);
     $('aviation-retry').addEventListener('click', retry);
+    $('aviation-opacity').addEventListener('input', () => {
+      const value = Number($('aviation-opacity').value);
+      if (!Number.isFinite(value) || value < 0.2 || value > 1) return;
+      opacity = value; layer?.setOpacity(opacity);
+      try { localStorage.setItem(opacityKey, String(opacity)); } catch {}
+      render();
+    });
     $('aviation-key-form').addEventListener('submit', event => {
       event.preventDefault(); const next = $('aviation-api-key').value.trim();
       if (next.length < 16 || next.length > 2048 || /\s/.test(next)) { report('Enter a valid OpenAIP API key without spaces.', true); return; }
@@ -132,8 +158,9 @@
     document.addEventListener('visibilitychange', () => { if (document.hidden) remove(); else if (enabled && key && !paused) load(); });
     window.addEventListener('pagehide', () => { hidden = true; remove(); });
     window.addEventListener('pageshow', event => { hidden = false; if (event.persisted && enabled && key && !paused) load(); });
-    map.on('zoomend', () => { if (enabled && key && !paused && map.getZoom() < 4) report('Zoom in to see aviation charts.'); });
-    render();
+    map.on('zoomend', () => { if (enabled && key && !paused && map.getZoom() < 2) report('Zoom in to see aviation charts.'); });
+    map.on('moveend', updateReference);
+    updateReference(); render();
     return { setEnabled(value) { enabled = value === true; if (enabled && paused) { render(); return; } load(); }, hasKey: () => !!key, openKey };
   };
 })();

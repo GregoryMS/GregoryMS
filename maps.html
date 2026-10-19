@@ -35,7 +35,7 @@
   <script src="assets/maps-cameras-core.js?v=20261017-signs" defer></script>
   <script src="assets/maps-cameras.js?v=20261017-signs" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-menu" defer></script>
-  <script src="assets/maps-aviation.js?v=20261017-aviation" defer></script>
+  <script src="assets/maps-aviation.js?v=20261019-aviation-xyz" defer></script>
   <script src="assets/maps-ev-core.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/maps-ev.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/maps-plugshare.js?v=20261017-plugshare-zoom" defer></script>
@@ -177,7 +177,9 @@
         <label><span><strong>Aviation</strong><small>OpenAIP · airports, airspace &amp; navigation aids</small></span><input id="map-aviation" type="checkbox"></label>
         <p class="layer-status" id="aviation-layer-status" role="status" hidden></p>
         <div id="aviation-options" hidden>
-          <p class="aviation-reference">Chart overlay · coverage varies. For reference, not for navigation.</p>
+          <p class="aviation-reference">OpenAIP flight charts · airspace boundaries, airports &amp; navigation aids. Coverage and detail vary by zoom. For reference, not for navigation.</p>
+          <div class="google-traffic-opacity"><label for="aviation-opacity">Chart opacity <output id="aviation-percentage" for="aviation-opacity">85%</output></label><input id="aviation-opacity" type="range" min="0.2" max="1" step="0.05" value="0.85"></div>
+          <p class="aviation-reference"><a id="aviation-full-map" href="https://www.openaip.net/map" target="_blank" rel="noopener">Open this view on OpenAIP ↗</a></p>
           <div class="traffic-options"><button id="aviation-connect" type="button">Connect OpenAIP</button><button id="aviation-retry" type="button" hidden>Retry charts</button></div>
           <form class="traffic-key-form" id="aviation-key-form" hidden>
             <label for="aviation-api-key">OpenAIP API key</label>
