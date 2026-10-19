@@ -1,26 +1,30 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-19T19:45:57+00:00",
-  "fetchedAt": "2026-10-19T19:46:08.903523+00:00",
+  "feedUpdatedAt": "2026-10-19T23:07:05+00:00",
+  "fetchedAt": "2026-10-19T23:07:09.392658+00:00",
   "items": [
     {
-      "title": "Watch: Are the French riots a warning of an intense election to come?",
-      "link": "https://www.bbc.co.uk/news/videos/ckzd60dy746qo?at_medium=RSS&at_campaign=rss"
+      "title": "Curfew imposed in parts of central Paris and other cities after rioting across France",
+      "link": "https://www.bbc.co.uk/news/articles/cx30ez03djyqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Australian MP critically injured after being hit by car in apparent attack",
-      "link": "https://www.bbc.co.uk/news/articles/cwp9g43g2p07o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Woman says she 'closed eyes and tried not to be there' during alleged Russell Brand rape",
-      "link": "https://www.bbc.co.uk/news/articles/cvj6jylk3456o?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Clean up begins after French riots but police remain",
+      "link": "https://www.bbc.co.uk/news/videos/cwr7y0e57r50o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Ukrainians dying because US restricting intelligence sharing, Zelensky adviser tells BBC",
       "link": "https://www.bbc.co.uk/news/articles/cmj47yx572z5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mission set to blast off for Mars to grab a piece of its moon",
+      "title": "Burnham vows end to 'rip-off parking charges' under new rules",
+      "link": "https://www.bbc.co.uk/news/articles/ck87ze7wl4qno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Woman says she 'closed eyes and tried not to be there' during alleged Russell Brand rape",
+      "link": "https://www.bbc.co.uk/news/articles/cvj6jylk3456o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Mission blasts off for Mars to grab a piece of its moon",
       "link": "https://www.bbc.co.uk/news/articles/cmvgxvkv54w1o?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -28,20 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/ckd6d2l3dz4xo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Born in jail to a mum with a heroin addiction - how US teenager Abby has been affected by drugs",
-      "link": "https://www.bbc.co.uk/news/videos/cmlyljlzw487o?at_medium=RSS&at_campaign=rss"
+      "title": "US Church on frontline of battle against drug known as 'tranq'",
+      "link": "https://www.bbc.co.uk/news/videos/cqd097z3epvno?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Ex-OpenAI worker accused of planting device had Saudi support says court filing",
+      "title": "Ex-OpenAI worker accused of planting device had Saudi support, says court filing",
       "link": "https://www.bbc.co.uk/news/articles/c6gel2dlyxvyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Apu returns to The Simpsons with new voice after race row",
       "link": "https://www.bbc.co.uk/news/articles/cw33x6gzgdm0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Inside the shadowy world of anti-Putin sabotage from within Russia",
-      "link": "https://www.bbc.co.uk/news/articles/c6pwgzkj8zzgo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
