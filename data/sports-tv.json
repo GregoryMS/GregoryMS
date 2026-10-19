@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
+      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -168,12 +168,54 @@
             "Sky Sports Main Event UHD",
             "Sky Sports+ app"
           ]
+        },
+        {
+          "home": "Bayern München (W)",
+          "away": "Real Madrid (W)",
+          "start": "2026-10-28T17:45:00+00:00",
+          "channels": [
+            "Disney+ (UK)"
+          ]
+        },
+        {
+          "home": "Chelsea (W)",
+          "away": "Roma (W)",
+          "start": "2026-10-28T17:45:00+00:00",
+          "channels": [
+            "Disney+ (UK)"
+          ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Brighton & Hove Albion",
+          "start": "2026-10-28T19:30:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Arsenal (W)",
+          "away": "Benfica (W)",
+          "start": "2026-10-28T20:00:00+00:00",
+          "channels": [
+            "Disney+ (UK)"
+          ]
+        },
+        {
+          "home": "Liverpool",
+          "away": "Chelsea",
+          "start": "2026-10-28T20:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports+ app"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
+      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -329,7 +371,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
+      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -484,7 +526,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
+      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -629,7 +671,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
+      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
