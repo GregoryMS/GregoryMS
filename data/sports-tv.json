@@ -3,32 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
+      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Crystal Palace",
-          "start": "2026-10-18T13:00:00+00:00",
-          "channels": [
-            "Sky Sports UHD 1"
-          ]
-        },
-        {
-          "home": "Newcastle United (W)",
-          "away": "Sunderland (W)",
-          "start": "2026-10-18T13:00:00+00:00",
-          "channels": [
-            "WSL YouTube"
-          ]
-        },
-        {
-          "home": "Nottingham Forest",
-          "away": "Arsenal",
-          "start": "2026-10-18T15:30:00+00:00",
-          "channels": [
-            "Sky Sports UHD 1"
-          ]
-        },
         {
           "home": "Bayern München (W)",
           "away": "VfB Stuttgart (W)",
@@ -197,24 +173,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
+      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Crystal Palace",
-          "start": "2026-10-18T13:00:00+00:00",
-          "channels": [
-            "Fubo Sports CA"
-          ]
-        },
-        {
-          "home": "Nottingham Forest",
-          "away": "Arsenal",
-          "start": "2026-10-18T15:30:00+00:00",
-          "channels": [
-            "Fubo Sports CA"
-          ]
-        },
         {
           "home": "Bayern München (W)",
           "away": "VfB Stuttgart (W)",
@@ -369,24 +329,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
+      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Crystal Palace",
-          "start": "2026-10-18T13:00:00+00:00",
-          "channels": [
-            "Viaplay"
-          ]
-        },
-        {
-          "home": "Nottingham Forest",
-          "away": "Arsenal",
-          "start": "2026-10-18T15:30:00+00:00",
-          "channels": [
-            "Viaplay"
-          ]
-        },
         {
           "home": "Bayern München (W)",
           "away": "VfB Stuttgart (W)",
@@ -540,7 +484,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
+      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -685,7 +629,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-19T11:17:07.971731+00:00",
+      "checkedAt": "2026-10-19T17:34:10.074366+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
