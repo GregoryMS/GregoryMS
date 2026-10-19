@@ -31,7 +31,7 @@
   <script src="assets/maps-ferries-core.js?v=20261017-ferries" defer></script>
   <script src="assets/maps-ferries.js?v=20261017-ferries" defer></script>
   <script src="assets/maps-signs-core.js?v=20261019-live-signs" defer></script>
-  <script src="assets/maps-signs.js?v=20261019-live-signs" defer></script>
+  <script src="assets/maps-signs.js?v=20261019-live-messages" defer></script>
   <script src="assets/maps-cameras-core.js?v=20261017-signs" defer></script>
   <script src="assets/maps-cameras.js?v=20261017-signs" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-menu" defer></script>
@@ -46,7 +46,7 @@
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-layers.js?v=20261019-drivebc-defaults" defer></script>
-  <script src="assets/maps.js?v=20261018-double-pin" defer></script>
+  <script src="assets/maps.js?v=20261019-live-signs" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
 </head>
 <body class="maps-page">
@@ -145,7 +145,7 @@
           <label><span><strong>Future events</strong><small>Include road work that has not started</small></span><input id="map-drivebc-future" type="checkbox"></label>
           <label><span><strong>Variable speed signs</strong><small>Reported speed limits &amp; update times</small></span><input id="map-drivebc-speed" type="checkbox" aria-describedby="drivebc-speed-status"></label>
           <p class="layer-status" id="drivebc-speed-status" role="status" hidden></p>
-          <label><span><strong>Message signs</strong><small>Roadside messages · snapshots about every 15 min</small></span><input id="map-drivebc-messages" type="checkbox" aria-describedby="drivebc-messages-status"></label>
+          <label><span><strong>Message signs</strong><small>Roadside messages · updates every two minutes</small></span><input id="map-drivebc-messages" type="checkbox" aria-describedby="drivebc-messages-status"></label>
           <p class="layer-status" id="drivebc-messages-status" role="status" hidden></p>
           <label><span><strong>Ferries</strong><small>Coastal terminals &amp; inland crossings</small></span><input id="map-drivebc-ferries" type="checkbox" aria-describedby="drivebc-ferries-status"></label>
           <p class="layer-status" id="drivebc-ferries-status" role="status" hidden></p>

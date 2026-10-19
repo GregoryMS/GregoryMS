@@ -80,7 +80,7 @@ test('popups display speed values with pixel-fault status and every reported mes
  h.api.setEnabled('speed',true);h.api.setEnabled('messages',true);await flush();
  assert.match(h.markers('speed')[0].options.icon.html,/>80</);const speedText=popupText(h.markers('speed')[0].popup());assert.match(speedText,/80 km\/h/);assert.match(speedText,/display pixel fault/);assert.match(speedText,/Pixel Error/);
  const messageText=popupText(h.markers('messages')[0].popup());assert.match(messageText,/ROAD\nWORK/);assert.match(messageText,/SLOW DOWN/);assert(!messageText.includes('[jl3]'));
- await h.advance(120000);assert.equal(h.calls.length,3,'speed readings refresh after two minutes');
+ await h.advance(120000);assert.equal(h.calls.length,4,'both feeds refresh after two minutes');
 });
 test('blank and switched-off message signs explain why no text is displayed',async()=>{
  for(const enabled of [true,false]){

@@ -8,7 +8,7 @@
       const output = document.getElementById(`drivebc-${type}-status`), group = L.layerGroup(), displayed = new Map();
       const endpoint = speed ? config.speedSignsURL : config.messageSignsURL;
       const attribution = `${label}: <a href="https://www.drivebc.ca/" target="_blank" rel="noopener">DriveBC</a> (<a href="https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc" target="_blank" rel="noopener">OGL-BC</a>)`;
-      const refreshEvery = speed ? 120000 : 300000, maxCacheAge = 900000;
+      const refreshEvery = 120000, maxCacheAge = 900000;
       let enabled = false, snapshot, controller, version = 0, refresh, debounce, retryAt = 0, failures = 0;
       const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; };
       function coversBC() {
@@ -49,7 +49,7 @@
         }
         const status = document.createElement('p'); status.className = 'drivebc-meta'; status.textContent = `Sign status: ${sign.status || 'Not supplied'}`;
         const changed = document.createElement('p'); changed.className = 'drivebc-meta'; changed.textContent = sign.changed ? `Last changed ${time(sign.changed)}` : 'Change time not supplied';
-        const checked = document.createElement('p'); checked.className = 'drivebc-meta'; checked.textContent = `Feed checked ${time(speed ? snapshot.checked : sign.fetched)}${speed ? '' : ' · published about every 15 minutes'}`;
+        const checked = document.createElement('p'); checked.className = 'drivebc-meta'; checked.textContent = `Feed checked ${time(speed ? snapshot.checked : sign.fetched)} · updates every two minutes`;
         const link = document.createElement('a'); link.target = '_blank'; link.rel = 'noopener';
         link.href = speed ? `https://twm.th.gov.bc.ca/?c=vsls&lon=${sign.point[1]}&lat=${sign.point[0]}&z=12` : 'https://www.drivebc.ca/';
         link.textContent = speed ? 'Open BC speed-sign map ↗' : 'Open DriveBC ↗';
@@ -80,7 +80,7 @@
         }
         const failed = retryAt > Date.now();
         const stale = data && !speed && Date.now() - Date.parse(data.fetched) > 2700000;
-        report(data ? `${signs.length} ${label.toLowerCase()} in this view · ${speed ? 'updates every two minutes' : `snapshot checked ${time(data.fetched)}`}.${stale ? ' Snapshot is old; messages are unavailable.' : ''}${failed ? ' Refresh failed; cached locations shown while waiting to retry.' : ''}` : failed ? `${label} are unavailable. Another check will run later.` : `Loading ${label.toLowerCase()}…`, failed || !!stale);
+        report(data ? `${signs.length} ${label.toLowerCase()} in this view · ${speed ? 'updates every two minutes' : `feed checked ${time(data.fetched)} · updates every two minutes`}.${stale ? ' Snapshot is old; messages are unavailable.' : ''}${failed ? ' Refresh failed; cached locations shown while waiting to retry.' : ''}` : failed ? `${label} are unavailable. Another check will run later.` : `Loading ${label.toLowerCase()}…`, failed || !!stale);
       }
       function cancel() { version++; controller?.abort(); controller = null; clearTimeout(refresh); clearTimeout(debounce); }
       function schedule(delay) {

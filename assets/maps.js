@@ -6,7 +6,7 @@
     tileURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', searchURL: 'https://photon.komoot.io/api/',
     topographicURL: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png', maritimeURL: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
     aviationURL: 'https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png',
-    speedSignsURL: 'https://vsls.drivebc.ca/heartbeat/geojson', messageSignsURL: '/data/drivebc-signs.json', ferriesURL: '/data/drivebc-ferries.json',
+    speedSignsURL: 'https://vsls.drivebc.ca/heartbeat/geojson', messageSignsURL: 'https://gregle-drivebc.square-rain-5ded.workers.dev/messages', ferriesURL: '/data/drivebc-ferries.json',
     cameraCatalogueURL: 'https://catalogue.data.gov.bc.ca/dataset/6b39a910-6c77-476f-ac96-7b4f18849b1c/resource/a9d52d85-8402-4ce7-b2ac-a2779837c48a/download/webcams.csv',
     trafficURL: 'https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256',
     googleTrafficURL: 'https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3',
@@ -133,7 +133,7 @@
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261018-daily-fuel', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261019-live-signs', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       if (['openchargemap', 'overpass'].includes(supplied.evProvider)) config.evProvider = supplied.evProvider;
