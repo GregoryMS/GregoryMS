@@ -1,11 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-19T01:33:38+00:00",
-  "fetchedAt": "2026-10-19T01:33:44.485109+00:00",
+  "feedUpdatedAt": "2026-10-19T06:43:18+00:00",
+  "fetchedAt": "2026-10-19T06:43:22.878590+00:00",
   "items": [
     {
-      "title": "Macron calls for 'calm and order' after riots across France",
-      "link": "https://www.bbc.co.uk/news/articles/cw240zl08dm5o?at_medium=RSS&at_campaign=rss"
+      "title": "Companies exploiting welfare system by using residents as 'cash cows,' BBC finds",
+      "link": "https://www.bbc.co.uk/news/articles/cm62y80yxw9vo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "France's government under pressure after widespread violence",
+      "link": "https://www.bbc.co.uk/news/articles/crwyd02yz22vo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Inside the shadowy world of anti-Putin sabotage from within Russia",
@@ -16,32 +20,28 @@
       "link": "https://www.bbc.co.uk/news/videos/cwd09vlv78rvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Major fire at Canada military base leaves four dead, dozens injured",
-      "link": "https://www.bbc.co.uk/news/articles/cxj0ly1m3q81o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "People playing loud music on buses could face £100 fine",
-      "link": "https://www.bbc.co.uk/news/articles/cm89z008x7xdo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Home sellers cut asking prices on 3,000 properties a day",
       "link": "https://www.bbc.co.uk/news/articles/c84g13z6xx4eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Cindy Crawford 'beyond heartbroken' after death of son Presley at 27",
-      "link": "https://www.bbc.co.uk/news/articles/cwzrd6123jyyo?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Inside Chicago's battle against the synthetic drugs flooding the US",
+      "link": "https://www.bbc.co.uk/news/videos/c84g166kz003o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "EU tariffs aimed at China hitting Ukraine, steel boss says",
-      "link": "https://www.bbc.co.uk/news/articles/cwdd8z6gyy96o?at_medium=RSS&at_campaign=rss"
+      "title": "NHS bosses say smaller maternity units may have to close",
+      "link": "https://www.bbc.co.uk/news/articles/cm040rgv7wz4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trump says suspension of Russia sanctions is to keep peace negotiations going",
-      "link": "https://www.bbc.co.uk/news/articles/c9p8gz7zx4peo?at_medium=RSS&at_campaign=rss"
+      "title": "'Postcode lottery' driving children's inequality in England, commissioner warns",
+      "link": "https://www.bbc.co.uk/news/articles/cmd7qypglylxo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Suspects hunted after police officer injured in shooting",
-      "link": "https://www.bbc.co.uk/news/articles/c63elzvjpgn2o?at_medium=RSS&at_campaign=rss"
+      "title": "Burnham says youth employment and training crisis is a 'moral failure'",
+      "link": "https://www.bbc.co.uk/news/articles/cq0melgpre23o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Funding shortages force World Food Programme to cut aid to Gaza",
+      "link": "https://www.bbc.co.uk/news/articles/cm79plrvpl4vo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
