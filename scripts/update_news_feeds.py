@@ -17,6 +17,9 @@ SOURCES = {
     'dw': 'https://rss.dw.com/xml/rss-de-all',
 }
 MAX_BYTES = 500_000
+FALLBACKS = {
+    'cbc': 'https://news.google.com/rss/search?q=site%3Acbc.ca%2Fnews&hl=en-CA&gl=CA&ceid=CA%3Aen',
+}
 
 
 def validate(raw):
@@ -37,12 +40,19 @@ def validate(raw):
 
 
 def fetch_feed(slug, url):
-    request = urllib.request.Request(url, headers={
-        'Accept': 'application/rss+xml, application/xml, text/xml',
-        'User-Agent': 'GregleNews/1.0 (+https://gregle.uk/news.html)',
-    })
-    with urllib.request.urlopen(request, timeout=25) as response:
-        return response.read(MAX_BYTES + 1)
+    for source in [url] + ([FALLBACKS[slug]] if slug in FALLBACKS else []):
+        request = urllib.request.Request(source, headers={
+            'Accept': 'application/rss+xml, application/xml, text/xml',
+            'User-Agent': 'GregleNews/1.0 (+https://gregle.uk/news.html)',
+        })
+        try:
+            with urllib.request.urlopen(request, timeout=10 if slug in FALLBACKS and source == url else 25) as response:
+                raw = response.read(MAX_BYTES + 1)
+            validate(raw)
+            return raw
+        except Exception:
+            if source != url or slug not in FALLBACKS:
+                raise
 
 
 def update(previous, fetch=fetch_feed, now=None):

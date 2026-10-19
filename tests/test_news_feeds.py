@@ -3,6 +3,8 @@ import importlib.util
 from pathlib import Path
 import re
 import unittest
+import urllib.parse
+from unittest.mock import patch, MagicMock
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('news_feeds', ROOT / 'scripts' / 'update_news_feeds.py')
@@ -40,6 +42,16 @@ class NewsFeedsTests(unittest.TestCase):
         for raw in [b'<html>Error</html>', b'<rss><channel/></rss>', b'<!DOCTYPE rss><rss/>', b'x' * (news.MAX_BYTES + 1)]:
             with self.subTest(raw=raw[:40]), self.assertRaises(ValueError):
                 news.validate(raw)
+
+    def test_cbc_falls_back_to_its_own_google_news_index_after_a_timeout(self):
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = XML
+        with patch.object(news.urllib.request, 'urlopen', side_effect=[TimeoutError(), response]) as request:
+            self.assertEqual(news.fetch_feed('cbc', news.SOURCES['cbc']), XML)
+        first, second = request.call_args_list
+        self.assertEqual(first.args[0].full_url, news.SOURCES['cbc'])
+        self.assertEqual(second.args[0].full_url, news.FALLBACKS['cbc'])
+        self.assertEqual(urllib.parse.parse_qs(urllib.parse.urlsplit(news.FALLBACKS['cbc']).query)['q'], ['site:cbc.ca/news'])
 
 
 if __name__ == '__main__':
