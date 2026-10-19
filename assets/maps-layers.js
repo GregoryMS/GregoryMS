@@ -283,7 +283,10 @@
       setState({ ...state, aviation: $('map-aviation').checked }, true);
       if (state.aviation && !aviation.hasKey()) aviation.openKey();
     });
-    $('map-drivebc').addEventListener('change', () => setState({ ...state, drivebc: $('map-drivebc').checked }, true));
+    $('map-drivebc').addEventListener('change', () => {
+      const enabled = $('map-drivebc').checked;
+      setState({ ...state, drivebc: enabled, future: enabled, speed: enabled, messages: enabled, ferries: enabled }, true);
+    });
     $('map-drivebc-cameras').addEventListener('change', () => setState({ ...state, webcams: $('map-drivebc-cameras').checked }, true));
     $('map-drivebc-future').addEventListener('change', () => setState({ ...state, future: $('map-drivebc-future').checked }, true));
     $('map-drivebc-speed').addEventListener('change', () => setState({ ...state, speed: $('map-drivebc-speed').checked }, true));
