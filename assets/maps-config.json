@@ -7,7 +7,7 @@
   "speedSignsURL": "https://vsls.drivebc.ca/heartbeat/geojson",
   "messageSignsURL": "https://gregle-drivebc.square-rain-5ded.workers.dev/messages",
   "ferriesURL": "/data/drivebc-ferries.json",
-  "aviationURL": "https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png",
+  "aviationURL": "https://gregle-aviation.square-rain-5ded.workers.dev/tiles/{z}/{x}/{y}.png",
   "trafficURL": "https://api.tomtom.com/maps/orbis/traffic/flow/raster/tile/{z}/{x}/{y}?apiVersion=2&style=light&tileSize=256",
   "googleTrafficURL": "https://mts0.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}&style=3",
   "evURL": "https://gregle-ev.square-rain-5ded.workers.dev/charging",
