@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <title>Cloud</title>
+  <rect width="192" height="192" rx="46" fill="#232323"/>
+  <path d="M58 126c-18 0-32-14-32-32 0-16 11-29 27-32 6-18 22-31 42-31 24 0 43 17 47 39 15 2 26 15 26 30 0 15-12 26-27 26Z" fill="#faf9f6"/>
+  <path d="M76 102h26l11 11h39a9 9 0 0 1 9 9v30a9 9 0 0 1-9 9H76a9 9 0 0 1-9-9v-41a9 9 0 0 1 9-9Z" fill="#9850ff" stroke="#232323" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M88 137h52" fill="none" stroke="#faf9f6" stroke-width="7" stroke-linecap="round"/>
+</svg>

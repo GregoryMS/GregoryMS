@@ -6,8 +6,8 @@ const vm = require('node:vm');
 const {execFileSync} = require('node:child_process');
 const root = path.join(__dirname, '..');
 
-test('every content page has the same twelve valid app destinations and working icons', () => {
-  const expected = ['/', '/translate.html', '/weather.html', '/earthquakes.html', '/astro.html', '/sports.html', '/news.html', '/finance.html', '/links.html', '/radio.html', '/dictionary.html', '/maps.html'];
+test('every content page has the same valid app destinations and working icons', () => {
+  const expected = ['/', '/translate.html', '/weather.html', '/earthquakes.html', '/astro.html', '/sports.html', '/news.html', '/finance.html', '/links.html', '/radio.html', '/dictionary.html', '/maps.html', 'https://cloud.gregle.uk'];
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -19,7 +19,8 @@ test('every content page has the same twelve valid app destinations and working 
     const apps = [...menu.matchAll(/<a class="gregle-app" href="([^"]+)"[^>]*><img src="([^"]+)"/g)];
     assert.deepEqual(apps.map(a => a[1]), expected, file);
     for (const [,href,icon] of apps) {
-      assert(fs.existsSync(path.join(root, href === '/' ? 'index.html' : href.slice(1))), href);
+      if (href.startsWith('https://')) assert.equal(new URL(href).hostname, 'cloud.gregle.uk');
+      else assert(fs.existsSync(path.join(root, href === '/' ? 'index.html' : href.slice(1))), href);
       assert(fs.existsSync(path.join(root, icon.slice(1))), icon);
     }
     assert(source.includes('assets/site-menu.css?'), file);

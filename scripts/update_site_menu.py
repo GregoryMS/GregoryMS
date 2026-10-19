@@ -18,6 +18,7 @@ APPS = [
     ('Radio', '/radio.html', 'assets/radio-app/icon-192.png'),
     ('Dictionary', '/dictionary.html', 'assets/dictionary-app/icon-192.png'),
     ('Maps', '/maps.html', 'assets/maps-app/icon.svg'),
+    ('Cloud', 'https://cloud.gregle.uk', 'assets/cloud-app/icon.svg'),
 ]
 EXTRAS = [
     ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),
