@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const endpoint='https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png';
+const endpoint='https://gregle-aviation.square-rain-5ded.workers.dev/tiles/{z}/{x}/{y}.png';
 const demoKey='test-only-aviation-key-000000';
 const flush=async()=>{for(let i=0;i<18;i++)await Promise.resolve();};
 function setup(saved=demoKey,url=endpoint,storedOpacity=null){
@@ -32,15 +32,15 @@ function setup(saved=demoKey,url=endpoint,storedOpacity=null){
  return {api,element,calls,layers,notices,events,document,urls,advance,saved:()=>saved,opacity:()=>storedOpacity,forgotten:()=>forgotten,setFetch:fn=>fetchImpl=fn,move(next,z){center=next;zoom=z;mapEvents.moveend();}};
 }
 
-test('aviation stays idle without opt-in/key and sends credentials only in official-origin headers',async()=>{
- const noKey=setup(null);noKey.api.setEnabled(true);await noKey.advance(1000);assert.equal(noKey.calls.length,0);assert.match(noKey.element('aviation-layer-status').textContent,/API key/);
+test('aviation is opt-in and uses the Worker without browser credentials',async()=>{
+ const noKey=setup(null);noKey.api.setEnabled(true);await noKey.advance(1000);assert.equal(noKey.calls.length,2);
  const h=setup();await h.advance(1000);assert.equal(h.calls.length,0);h.api.setEnabled(true);await h.advance(1000);
  assert.equal(h.calls.length,2);assert(h.calls[1].time-h.calls[0].time>=200);
- for(const call of h.calls){assert.equal(call.options.headers['x-openaip-api-key'],demoKey);assert.equal(call.options.credentials,'omit');assert(!call.url.includes(demoKey));}
+ for(const call of h.calls){assert.equal(call.options.headers,undefined);assert.equal(call.options.credentials,'omit');assert(!call.url.includes(demoKey));}
  assert.equal(h.layers[0].options.tms,false);assert.equal(h.layers[0].options.minZoom,2);assert.match(h.element('aviation-layer-status').textContent,/where available/);
- assert.equal(h.layers[0].getTileUrl({z:9,x:81,y:177}),'https://api.tiles.openaip.net/api/data/openaip/9/81/177.png');
+ assert.equal(h.layers[0].getTileUrl({z:9,x:81,y:177}),'https://gregle-aviation.square-rain-5ded.workers.dev/tiles/9/81/177.png');
  h.api.setEnabled(false);assert(h.layers[0].removed);const count=h.calls.length;await h.advance(5000);assert.equal(h.calls.length,count);
- const unsafe=setup(demoKey,'https://other.example/api/data/openaip/{z}/{x}/{y}.png');unsafe.api.setEnabled(true);await unsafe.advance(1000);assert.equal(unsafe.calls.length,0);assert.match(unsafe.element('aviation-layer-status').textContent,/official/);
+ const unsafe=setup(demoKey,'https://other.example/api/data/openaip/{z}/{x}/{y}.png');unsafe.api.setEnabled(true);await unsafe.advance(1000);assert.equal(unsafe.calls.length,0);assert.match(unsafe.element('aviation-layer-status').textContent,/Gregle aviation service/);
 });
 
 test('rate limits stop queued requests and toggles cannot bypass Retry-After',async()=>{
@@ -50,11 +50,11 @@ test('rate limits stop queued requests and toggles cannot bypass Retry-After',as
  h.setFetch(async()=>({ok:true,blob:async()=>new Blob(['test'],{type:'image/png'})}));await h.advance(30000);h.element('aviation-retry').events.click();await h.advance(1000);assert.equal(h.calls.length,3);
 });
 
-test('hiding or forgetting cancels pending work and late responses cannot restore charts',async()=>{
+test('hiding or disabling cancels pending work and late responses cannot restore charts',async()=>{
  const h=setup();let release;h.setFetch(()=>new Promise(resolve=>release=resolve));h.api.setEnabled(true);await h.advance(0);assert.equal(h.calls.length,1);
  h.document.hidden=true;h.events.visibilitychange();assert(h.calls[0].options.signal.aborted);release({ok:true,blob:async()=>new Blob(['test'],{type:'image/png'})});await flush();assert.equal(h.urls.length,0);
  h.document.hidden=false;h.setFetch(async()=>({ok:true,blob:async()=>new Blob(['test'],{type:'image/png'})}));h.events.visibilitychange();await h.advance(1000);assert.equal(h.calls.length,3);
- h.element('aviation-forget').events.click();assert.equal(h.saved(),null);assert.equal(h.forgotten(),1);assert(h.layers.at(-1).removed);await h.advance(5000);assert.equal(h.calls.length,3);
+ h.api.setEnabled(false);assert.equal(h.saved(),null);assert(h.layers.at(-1).removed);await h.advance(5000);assert.equal(h.calls.length,3);
 });
 
 test('timed-out tiles pause the overlay and clear queued work without automatic retries',async()=>{

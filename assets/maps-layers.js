@@ -14,7 +14,7 @@
     const fuel = window.GregleFuel({map, config});
     const ev = window.GregleEVCharging({ map, config: {...config,evSource:state.evSource}, notify });
     const googleTraffic = window.GregleGoogleTraffic({ map, config, notify });
-    const aviation = window.GregleAviation({ map, config, notify, onForget: () => setState({ ...state, aviation: false }, true) });
+    const aviation = window.GregleAviation({ map, config, notify });
     const aircraft = window.GregleAircraft({ map, notify });
     const vessels = window.GregleVessels({ map, notify });
     const plugshare = window.GreglePlugShare({ map });
@@ -281,7 +281,6 @@
     $('map-aircraft').addEventListener('click', () => setState({ ...state, aircraft: !state.aircraft }, true));
     $('map-aviation').addEventListener('change', () => {
       setState({ ...state, aviation: $('map-aviation').checked }, true);
-      if (state.aviation && !aviation.hasKey()) aviation.openKey();
     });
     $('map-drivebc').addEventListener('change', () => {
       const enabled = $('map-drivebc').checked;
@@ -327,7 +326,6 @@
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
     window.addEventListener('pageshow', event => { if (event.persisted && state.base !== 'plugshare' && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
     setState(state);
-    if (state.base !== 'plugshare' && state.aviation && !aviation.hasKey()) { openPanel(); aviation.openKey(); }
     return { getState: () => ({ ...state }), setState: next => setState(next, false) };
   };
 })();

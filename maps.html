@@ -35,7 +35,7 @@
   <script src="assets/maps-cameras-core.js?v=20261017-signs" defer></script>
   <script src="assets/maps-cameras.js?v=20261017-signs" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-menu" defer></script>
-  <script src="assets/maps-aviation.js?v=20261019-aviation-xyz" defer></script>
+  <script src="assets/maps-aviation.js?v=20261019-aviation-worker" defer></script>
   <script src="assets/maps-ev-core.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/maps-ev.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/maps-plugshare.js?v=20261017-plugshare-zoom" defer></script>
@@ -45,8 +45,8 @@
   <script src="assets/maps-vessels.js?v=20261018-vessel-types" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261019-drivebc-defaults" defer></script>
-  <script src="assets/maps.js?v=20261019-live-signs" defer></script>
+  <script src="assets/maps-layers.js?v=20261019-aviation-worker" defer></script>
+  <script src="assets/maps.js?v=20261019-aviation-worker" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
 </head>
 <body class="maps-page">
@@ -180,14 +180,7 @@
           <p class="aviation-reference">OpenAIP flight charts · airspace boundaries, airports &amp; navigation aids. Coverage and detail vary by zoom. For reference, not for navigation.</p>
           <div class="google-traffic-opacity"><label for="aviation-opacity">Chart opacity <output id="aviation-percentage" for="aviation-opacity">85%</output></label><input id="aviation-opacity" type="range" min="0.2" max="1" step="0.05" value="0.85"></div>
           <p class="aviation-reference"><a id="aviation-full-map" href="https://www.openaip.net/map" target="_blank" rel="noopener">Open this view on OpenAIP ↗</a></p>
-          <div class="traffic-options"><button id="aviation-connect" type="button">Connect OpenAIP</button><button id="aviation-retry" type="button" hidden>Retry charts</button></div>
-          <form class="traffic-key-form" id="aviation-key-form" hidden>
-            <label for="aviation-api-key">OpenAIP API key</label>
-            <input id="aviation-api-key" type="password" autocomplete="off" spellcheck="false" minlength="16" maxlength="2048" required placeholder="Enter your API key" aria-describedby="aviation-key-help">
-            <p id="aviation-key-help">Saved only in this browser and sent directly to OpenAIP. Create an API client in your OpenAIP profile, with Tiles API access.</p>
-            <div><button class="traffic-save" type="submit">Connect charts</button><button id="aviation-forget" type="button" hidden>Forget key</button></div>
-            <a href="https://www.openaip.net/docs" target="_blank" rel="noopener">OpenAIP documentation &amp; API key setup ↗</a>
-          </form>
+          <div class="traffic-options"><button id="aviation-retry" type="button" hidden>Retry charts</button></div>
         </div>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="tomtom-options-toggle" type="button" aria-label="TomTom API key options" aria-expanded="false" aria-controls="tomtom-options"><span><strong id="traffic-layer-label">TomTom traffic</strong><small id="traffic-layer-description">API key required for traffic</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>

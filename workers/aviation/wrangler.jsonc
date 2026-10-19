@@ -1,0 +1,10 @@
+{
+  "name": "gregle-aviation",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": true,
+  "secrets": {"required": ["OPENAIP_API_KEY"]},
+  "ratelimits": [{"name": "TILE_LIMITER", "namespace_id": "10072", "simple": {"limit": 120, "period": 60}}],
+  "observability": {"enabled": true, "head_sampling_rate": 0.1, "redact_query_string": true}
+}

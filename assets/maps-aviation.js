@@ -1,13 +1,14 @@
 (() => {
   'use strict';
-  window.GregleAviation = ({ map, config, notify, onForget }) => {
-    const $ = id => document.getElementById(id), storageKey = 'gregle-maps-openaip-key';
+  window.GregleAviation = ({ map, config, notify }) => {
+    const $ = id => document.getElementById(id);
     const opacityKey = 'gregle-maps-aviation-opacity';
     let opacity = 0.85;
-    let key = '', enabled = false, layer, paused = false, retryAt = 0, hidden = false;
+    let enabled = false, layer, paused = false, retryAt = 0, hidden = false;
     let queue = [], active = 0, timer, nextTile = 0;
     const pending = new Set();
-    try { key = localStorage.getItem(storageKey) || ''; } catch {}
+    // Remove credentials saved by the previous direct-to-provider integration.
+    try { localStorage.removeItem('gregle-maps-openaip-key'); } catch {}
     try {
       const saved = localStorage.getItem(opacityKey), value = Number(saved);
       if (saved && Number.isFinite(value) && value >= 0.2 && value <= 1) opacity = value;
@@ -20,9 +21,7 @@
     function render() {
       $('aviation-layer-status').hidden = !enabled;
       $('aviation-options').hidden = !enabled;
-      $('aviation-connect').textContent = key ? 'Manage OpenAIP key' : 'Connect OpenAIP';
-      $('aviation-forget').hidden = !key;
-      $('aviation-retry').hidden = !enabled || !key || !paused;
+      $('aviation-retry').hidden = !enabled || !paused;
       $('aviation-opacity').value = String(opacity);
       $('aviation-percentage').textContent = `${Math.round(opacity * 100)}%`;
     }
@@ -47,7 +46,7 @@
       report(message, true); render();
       // Leaflet reads the layer again after its tile callbacks return.
       setTimeout(() => { if (paused) remove(); }, 0);
-      notify('Aviation charts are unavailable. Open Layers to check the OpenAIP key or retry.', 'aviation');
+      notify('Aviation charts are unavailable. Open Layers to retry.', 'aviation');
     }
     function pump() {
       clearTimeout(timer); timer = null;
@@ -68,10 +67,10 @@
       };
       tile.onload = () => finish(null);
       tile.onerror = () => { if (tile.removed || owner !== layer) return; finish(new Error('Aviation tile unavailable')); fail('An aviation chart image could not load. Retry the layer.'); };
-      fetch(owner.getTileUrl(coords), { credentials: 'omit', headers: { 'x-openaip-api-key': key }, signal: controller.signal }).then(response => {
+      fetch(owner.getTileUrl(coords), { credentials: 'omit', signal: controller.signal }).then(response => {
         if (tile.removed || owner !== layer) return null;
         if (!response.ok) {
-          fail(response.status === 401 || response.status === 403 ? 'OpenAIP declined this key. Check the key and its Tiles API access.' : response.status === 429 ? 'OpenAIP rate limit reached. Charts are paused; wait at least a minute before retrying.' : 'OpenAIP charts could not load. Try again later.', response);
+          fail(response.status === 401 || response.status === 403 ? 'Aviation charts are temporarily unavailable. Try again later.' : response.status === 429 ? 'OpenAIP rate limit reached. Charts are paused; wait at least a minute before retrying.' : 'OpenAIP charts could not load. Try again later.', response);
           return null;
         }
         // The API returns 204 for empty/out-of-range tiles, not a PNG body.
@@ -85,7 +84,7 @@
         if (blob.type.split(';')[0] !== 'image/png') throw new Error('Invalid aviation chart tile');
         objectURL = URL.createObjectURL(blob); tile.src = objectURL;
       }).catch(() => {
-        if (!tile.removed && owner === layer) fail('Aviation charts could not load. Check your connection and OpenAIP key, then retry.');
+        if (!tile.removed && owner === layer) fail('Aviation charts could not load. Check your connection, then retry.');
       }).finally(() => { active--; pump(); });
       pump();
     }
@@ -100,13 +99,12 @@
     function load() {
       remove(); render();
       if (!enabled) return;
-      if (!key) { report('Add your OpenAIP API key to display aviation charts.'); return; }
       if (document.hidden || hidden) return;
       if (Date.now() < retryAt) { paused = true; report(`Please wait ${Math.ceil((retryAt - Date.now()) / 1000)} seconds before retrying aviation charts.`, true); render(); return; }
       let endpoint;
       try { endpoint = new URL(config.aviationURL); } catch {}
-      if (!endpoint || endpoint.origin !== 'https://api.tiles.openaip.net' || endpoint.username || endpoint.password || !endpoint.pathname.startsWith('/api/data/openaip/') || endpoint.search || endpoint.hash) {
-        paused = true; report('Aviation charts need the official OpenAIP Tiles API endpoint.', true); render(); return;
+      if (!endpoint || endpoint.origin !== 'https://gregle-aviation.square-rain-5ded.workers.dev' || endpoint.username || endpoint.password || endpoint.pathname !== '/tiles/%7Bz%7D/%7Bx%7D/%7By%7D.png' || endpoint.search || endpoint.hash) {
+        paused = true; report('Aviation charts need the Gregle aviation service.', true); render(); return;
       }
       report(map.getZoom() < 2 ? 'Zoom in to see aviation charts.' : 'Loading OpenAIP aviation charts…');
       const current = new AviationTiles(config.aviationURL, {
@@ -122,16 +120,10 @@
       current.on('load', () => { if (current === layer && !paused) report('OpenAIP · airports, airspace and navigation aids where available. For reference only.'); });
       current.addTo(map);
     }
-    function openKey() {
-      $('aviation-key-form').hidden = false;
-      $('aviation-api-key').focus({ preventScroll: true });
-      $('aviation-key-form').scrollIntoView({ block: 'nearest' });
-    }
     function retry() {
       if (Date.now() < retryAt) { report(`Please wait ${Math.ceil((retryAt - Date.now()) / 1000)} seconds before retrying aviation charts.`, true); return; }
       paused = false; load();
     }
-    $('aviation-connect').addEventListener('click', openKey);
     $('aviation-retry').addEventListener('click', retry);
     $('aviation-opacity').addEventListener('input', () => {
       const value = Number($('aviation-opacity').value);
@@ -140,27 +132,12 @@
       try { localStorage.setItem(opacityKey, String(opacity)); } catch {}
       render();
     });
-    $('aviation-key-form').addEventListener('submit', event => {
-      event.preventDefault(); const next = $('aviation-api-key').value.trim();
-      if (next.length < 16 || next.length > 2048 || /\s/.test(next)) { report('Enter a valid OpenAIP API key without spaces.', true); return; }
-      const changed = next !== key; key = next;
-      try { localStorage.setItem(storageKey, key); } catch {}
-      $('aviation-api-key').value = ''; $('aviation-key-form').hidden = true;
-      if (changed && Date.now() >= retryAt) paused = false;
-      if (!paused) load(); else retry();
-      render();
-    });
-    $('aviation-forget').addEventListener('click', () => {
-      key = ''; try { localStorage.removeItem(storageKey); } catch {}
-      $('aviation-api-key').value = ''; $('aviation-key-form').hidden = true;
-      paused = false; enabled = false; remove(); render(); onForget();
-    });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) remove(); else if (enabled && key && !paused) load(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) remove(); else if (enabled && !paused) load(); });
     window.addEventListener('pagehide', () => { hidden = true; remove(); });
-    window.addEventListener('pageshow', event => { hidden = false; if (event.persisted && enabled && key && !paused) load(); });
-    map.on('zoomend', () => { if (enabled && key && !paused && map.getZoom() < 2) report('Zoom in to see aviation charts.'); });
+    window.addEventListener('pageshow', event => { hidden = false; if (event.persisted && enabled && !paused) load(); });
+    map.on('zoomend', () => { if (enabled && !paused && map.getZoom() < 2) report('Zoom in to see aviation charts.'); });
     map.on('moveend', updateReference);
     updateReference(); render();
-    return { setEnabled(value) { enabled = value === true; if (enabled && paused) { render(); return; } load(); }, hasKey: () => !!key, openKey };
+    return { setEnabled(value) { enabled = value === true; if (enabled && paused) { render(); return; } load(); } };
   };
 })();
