@@ -6,7 +6,7 @@
     const group = L.layerGroup(), displayed = new Map();
     const credit = 'Aircraft: <a href="https://pocketworld.org/api" target="_blank" rel="noopener">PocketWorld</a> / <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> / <a href="https://opensky-network.org" target="_blank" rel="noopener">OpenSky</a> / <a href="https://adsb.lol" target="_blank" rel="noopener">ADSB.lol</a>';
     const endpoint = 'https://gregle-aircraft.square-rain-5ded.workers.dev/aircraft', interval = 15000;
-    let enabled = false, suspended = false, active, snapshot, timer, expiryTimer, version = 0, nextRequest = 0, retryAt = 0, failures = 0;
+    let enabled = false, suspended = false, active, snapshot, timer, expiryTimer, version = 0, nextRequest = 0, retryAt = 0, failures = 0, lastRequestArea = '';
     const bounds = () => { const b = map.getBounds(); return [b.getWest(), Math.max(-85.05113, b.getSouth()), b.getEast(), Math.min(85.05113, b.getNorth())]; };
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; refresh.textContent = failures ? 'Retry aircraft' : 'Refresh aircraft'; };
     const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
@@ -75,18 +75,22 @@
       if (enabled && !suspended && !document.hidden) expiryTimer = setTimeout(() => { render(); scheduleExpiry(); }, 5000);
     }
     function cancel() { version++; active?.controller.abort(); active = null; clearTimeout(timer); clearTimeout(expiryTimer); }
+    function requestTime(area) {
+      // New map areas need not wait for the periodic refresh of the previous area.
+      return area?.key === lastRequestArea ? nextRequest : nextRequest - interval + 1200;
+    }
     function schedule(delay = interval) {
       clearTimeout(timer);
-      if (enabled && !suspended && !document.hidden) timer = setTimeout(load, Math.max(delay, retryAt - Date.now(), nextRequest - Date.now()));
+      if (enabled && !suspended && !document.hidden) timer = setTimeout(load, Math.max(delay, retryAt - Date.now(), requestTime(core.area(bounds(), map.getZoom())) - Date.now()));
     }
     async function load() {
       clearTimeout(timer);
       if (!enabled || suspended || document.hidden) return;
       const area = core.area(bounds(), map.getZoom()); render();
       if (!area || active) return;
-      const now = Date.now(), wait = Math.max(nextRequest, retryAt) - now;
+      const now = Date.now(), wait = Math.max(requestTime(area), retryAt) - now;
       if (wait > 0) { schedule(wait); return; }
-      const token = version, request = { controller: new AbortController() }; active = request; nextRequest = now + interval;
+      const token = version, request = { controller: new AbortController() }; active = request; lastRequestArea = area.key; nextRequest = now + interval;
       const timeout = setTimeout(() => request.controller.abort(), 12000);
       render();
       try {
@@ -107,7 +111,7 @@
         if (failures === 1) notify('Live aircraft are temporarily unavailable. Open Layers to retry.', 'aircraft');
       } finally {
         clearTimeout(timeout);
-        if (token === version) { active = null; render(); schedule(); }
+        if (token === version) { active = null; render(); schedule(core.area(bounds(), map.getZoom())?.key === area.key ? interval : 650); }
       }
     }
     function setEnabled(value) {

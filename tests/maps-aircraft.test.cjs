@@ -47,15 +47,16 @@ function setup(){
  async function advance(ms){const end=now+ms;for(let i=0;i<1000;i++){const due=[...timers].filter(([,t])=>t.due<=end).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=end;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
  return {api,calls,output,refresh,events,credits,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
 }
-test('aircraft stay opt-in, update markers in place and rate-limit panning/refreshes',async()=>{
+test('aircraft stay opt-in, load new areas promptly and rate-limit repeated refreshes',async()=>{
  const h=setup();await h.advance(60000);assert.equal(h.calls.length,0);h.api.setEnabled(true);await flush();assert.equal(h.calls.length,1);assert.equal(h.markers().length,1);const marker=h.markers()[0];assert.equal(h.credits.size,1);
- await h.move([-123.45,48.3,-123.15,48.5]);h.refresh.events.click();await flush();assert.equal(h.calls.length,1);await h.advance(15000);assert.equal(h.calls.length,2);assert.equal(h.markers()[0],marker);assert(h.calls[1].time-h.calls[0].time>=15000);
+ await h.move([-123.45,48.3,-123.15,48.5]);h.refresh.events.click();await flush();assert.equal(h.calls.length,1);await h.advance(550);assert.equal(h.calls.length,2);assert.equal(h.markers()[0],marker);assert.equal(h.calls[1].time-h.calls[0].time,1200);
+ h.refresh.events.click();await flush();assert.equal(h.calls.length,2);await h.advance(14999);assert.equal(h.calls.length,2);await h.advance(1);assert.equal(h.calls.length,3);assert.equal(h.calls[2].time-h.calls[1].time,15000);
  for(const call of h.calls){assert.equal(new URL(call.url).hostname,'gregle-aircraft.square-rain-5ded.workers.dev');assert.equal(call.credentials,'omit');assert(+new URL(call.url).searchParams.get('radius')<=250);}
  h.api.setEnabled(false);assert.equal(h.markers().length,0);assert.equal(h.credits.size,0);const count=h.calls.length;await h.advance(60000);assert.equal(h.calls.length,count);
 });
 test('moving during a request keeps a single flight query and schedules the latest view',async()=>{
  const h=setup();let release;h.setFetch(()=>new Promise(resolve=>release=resolve));h.api.setEnabled(true);await h.move([-.1,51,.1,51.2]);assert.equal(h.calls.length,1);assert(!h.calls[0].signal.aborted);
- release({ok:true,json:async()=>packet(start)});await flush();assert.equal(h.markers().length,0);await h.advance(15000);assert.equal(h.calls.length,2);assert.equal(new URL(h.calls[1].url).searchParams.get('lat'),'51.1');h.api.setEnabled(false);assert(h.calls[1].signal.aborted);
+ release({ok:true,json:async()=>packet(start)});await flush();assert.equal(h.markers().length,0);await h.advance(650);assert.equal(h.calls.length,2);assert(h.calls[1].time-h.calls[0].time<2000);assert.equal(new URL(h.calls[1].url).searchParams.get('lat'),'51.1');h.api.setEnabled(false);assert(h.calls[1].signal.aborted);
 });
 test('rate limits survive toggles, stale markers expire during outages and recovery resumes polling',async()=>{
  const h=setup();h.api.setEnabled(true);await flush();h.setFetch(async()=>({ok:false,status:429,headers:{get:()=> '120'}}));await h.advance(15000);assert.equal(h.calls.length,2);assert.equal(h.markers().length,1);assert.match(h.output.textContent,/unavailable/);
