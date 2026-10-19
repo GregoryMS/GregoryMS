@@ -54,7 +54,7 @@
     $('place-bottom').hidden = !point;
     $('place-kicker').textContent = point ? 'On the map' : 'A world to explore';
     $('place-name').textContent = point?.name || 'Explore from here.';
-    $('place-detail').textContent = point?.detail || (point ? 'Copy the link to save or share this place.' : 'Search or click a place to see its details, or tap elsewhere to drop a pin.');
+    $('place-detail').textContent = point?.detail || (point ? 'Copy the link to save or share this place.' : 'Search for a place, or double-click or double-tap the map to drop a pin.');
     $('place-coordinates').textContent = point ? `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}` : '';
     $('map-place').classList.toggle('has-pin', !!point);
     if (point?.osm) $('place-kicker').textContent = 'OpenStreetMap place';
@@ -141,7 +141,7 @@
     }
   } catch {}
   const initial = core.readHash(location.hash);
-  map = L.map('gregle-map', { zoomControl: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
+  map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
   layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: () => { syncMapMode(); updateURL(); } });
@@ -152,8 +152,9 @@
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
-  map.on('click', event => {
-    if (usingEmbed) return;
+  // Leaflet also emits dblclick for a double-tap on touch devices.
+  map.on('dblclick', event => {
+    if (usingEmbed || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
     if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point, true, true); updateURL(); }
   });

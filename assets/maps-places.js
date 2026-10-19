@@ -100,7 +100,7 @@
       clear();
       if (!point || !point.osm && !options.nearby) return;
       card.classList.add('has-place'); current = { point, options };
-      if (!point.osm && map.getZoom() < 13) { message('Zoom in to click individual places and see their details.'); return; }
+      if (!point.osm && map.getZoom() < 13) { message('Zoom in to select individual places and see their details.'); return; }
       const zoom = map.getZoom(), query = data.query(point, zoom), token = version;
       const cached = cache.get(query);
       if (cached && Date.now() - cached.time < 600000) { display(cached.places); return; }
@@ -155,7 +155,7 @@
         if (token === version) { controller = null; box.removeAttribute('aria-busy'); }
       }
       function display(places) {
-        if (!places.length) { message('No mapped place found at this pin. Try clicking a place marker or its building.'); return; }
+        if (!places.length) { message('No mapped place found at this pin. Try a place marker, or double-click or double-tap a building.'); return; }
         // An exact search result or a clear hit opens immediately. Ambiguous clicks offer a choice.
         if (point.osm || places[0].distance <= 12 || places.length === 1) show(places[0], places);
         else { message('Several places are nearby. Choose the one you want to see.'); alternatives(places, null, true); }
