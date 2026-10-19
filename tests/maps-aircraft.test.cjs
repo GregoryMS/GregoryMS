@@ -84,10 +84,10 @@ test('live markers show distinct helicopter and small-plane shapes and update ty
  assert.equal(h.markers()[0],helicopter);assert.match(helicopter.options.icon.className,/aircraft-small-plane/);assert.match(helicopter.options.title,/^Small plane:/);assert.match(helicopter.options.icon.html,/rotate\(270deg\)/);
 });
 test('altitude colours blend continuously, clamp extremes and keep missing or ground readings neutral',()=>{
- assert.equal(core.altitudeColour(0),'rgb(228, 173, 32)');
- assert.equal(core.altitudeColour(5000),'rgb(150, 173, 60)');
- assert.equal(core.altitudeColour(10000),'rgb(72, 173, 88)');
- assert.equal(core.altitudeColour(40000),'rgb(160, 75, 216)');
+ assert.equal(core.altitudeColour(0),'rgb(255, 207, 0)');
+ assert.equal(core.altitudeColour(5000),'rgb(128, 219, 59)');
+ assert.equal(core.altitudeColour(10000),'rgb(0, 230, 118)');
+ assert.equal(core.altitudeColour(40000),'rgb(201, 0, 255)');
  assert.equal(core.altitudeColour(-2000),core.altitudeColour(0));
  assert.equal(core.altitudeColour(100000),core.altitudeColour(40000));
  for(const value of [null,undefined,NaN,Infinity,'10000'])assert.equal(core.altitudeColour(value),core.neutralColour);

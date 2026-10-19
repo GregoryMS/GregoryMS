@@ -5,7 +5,7 @@
 })(typeof window === 'object' ? window : globalThis, () => {
   'use strict';
   const maxAge = 120000;
-  const altitudeStops = [[0, [228, 173, 32]], [10000, [72, 173, 88]], [20000, [23, 166, 181]], [30000, [56, 121, 220]], [40000, [160, 75, 216]]];
+  const altitudeStops = [[0, [255, 207, 0]], [10000, [0, 230, 118]], [20000, [0, 217, 255]], [30000, [23, 107, 255]], [40000, [201, 0, 255]]];
   const neutralColour = '#788391';
   const rgb = channels => `rgb(${channels.join(', ')})`;
   const altitudeGradient = `linear-gradient(90deg, ${altitudeStops.map(([feet, colour]) => `${rgb(colour)} ${feet / 400}%`).join(', ')})`;
