@@ -15,7 +15,7 @@
       const p = feature?.properties || {}, position = point(feature?.geometry), id = String(p.id ?? '').slice(0, 128);
       if (!position || !id || seen.has(id)) continue;
       seen.add(id);
-      signs.push({ id, point: position, name: text(p.vslsId) || text(p.segmentName) || `Speed sign ${id}`, road: text(p.corridorName), direction: text(p.direction), status: text(p.status), enabled: p.isSegmentEnabled === true, posted: speed(p.postedSpeed), regular: speed(p.maxSpeed), received: timestamp(p.receivedDate), changed: timestamp(p.postedDate) });
+      signs.push({ id, point: position, name: text(p.vslsId) || text(p.segmentName) || `Speed sign ${id}`, road: text(p.corridorName), direction: text(p.direction), status: text(p.status), enabled: p.isSegmentEnabled === true && data.fresh !== false && data.vslsVisibleInDriveBC !== false, posted: speed(p.postedSpeed), regular: speed(p.maxSpeed), received: timestamp(p.receivedDate), changed: timestamp(p.postedDate) });
     }
     return { signs };
   }
@@ -39,7 +39,7 @@
   const fresh = (value, now, maxAge) => value && now - Date.parse(value) >= -300000 && now - Date.parse(value) <= maxAge;
   function available(sign, type, now = Date.now()) {
     if (!sign.enabled) return false;
-    if (type === 'speed') return sign.status.toLowerCase() === 'operational' && sign.posted !== null && fresh(sign.received, now, 900000);
+    if (type === 'speed') return ['operational', 'pixel error'].includes(sign.status.toLowerCase()) && sign.posted !== null && fresh(sign.received, now, 900000);
     return fresh(sign.fetched, now, 2700000) && (!sign.received || fresh(sign.received, now, 2700000)) && (!sign.expires || Date.parse(sign.expires) > now) && !/connection error|unknown|offline/i.test(sign.status);
   }
   return { readSpeed, readMessages, available, cleanMessage };

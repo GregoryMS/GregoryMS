@@ -29,6 +29,10 @@
         if (usable && speed) {
           const value = document.createElement('div'); value.className = 'drivebc-speed-reading';
           value.textContent = `${sign.posted} km/h`; box.append(value);
+          if (sign.status.toLowerCase() === 'pixel error') {
+            const fault = document.createElement('p'); fault.className = 'drivebc-meta';
+            fault.textContent = 'DriveBC reports a display pixel fault. The reported speed is shown above.'; box.append(fault);
+          }
         } else if (usable && sign.pages?.length) {
           sign.pages.forEach((page, index) => {
             const heading = document.createElement('p'); heading.className = 'drivebc-meta'; heading.textContent = `Reported message · page ${index + 1}`;
@@ -37,7 +41,7 @@
           });
         } else {
           const unavailable = document.createElement('p');
-          unavailable.textContent = usable ? 'No message reported.' : 'Current reading unavailable: the feed is old, the sign is offline or no usable reading was supplied.';
+          unavailable.textContent = !sign.enabled ? 'Sign is off or disabled; no current reading.' : usable ? 'Sign is blank; no message is currently reported.' : 'Current reading unavailable: the feed is old, the sign is offline or no usable reading was supplied.';
           box.append(unavailable);
         }
         if (speed && sign.regular !== null) {

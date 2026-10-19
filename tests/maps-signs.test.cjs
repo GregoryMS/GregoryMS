@@ -41,7 +41,7 @@ function setup(){
  const map={getBounds:()=>({getWest:()=>bounds[0],getSouth:()=>bounds[1],getEast:()=>bounds[2],getNorth:()=>bounds[3]}),getSize:()=>({x:1440,y:900}),on:listen,removeLayer(){},attributionControl:{addAttribution(){},removeAttribution(){}}};
  const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:options=>options,marker:(point,options)=>({point,options,bindPopup(fn){this.popup=fn;return this;},setLatLng(point){this.point=point;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
- const context={L,Date:Clock,URL,AbortController,Map,Set,Math,Number,JSON,GregleSignsCore:core,document:{hidden:false,getElementById:id=>id.includes('-speed-')?outputs.speed:outputs.messages,addEventListener:listen},addEventListener:listen,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout(id){timers.delete(id);},fetch(url,options){calls.push({url,signal:options.signal});return fetchImpl(url,options);}};
+ const context={L,Date:Clock,URL,AbortController,Map,Set,Math,Number,JSON,GregleSignsCore:core,document:{hidden:false,createElement:tag=>({tagName:tag.toUpperCase(),style:{},children:[],textContent:'',append(...items){this.children.push(...items);}}),getElementById:id=>id.includes('-speed-')?outputs.speed:outputs.messages,addEventListener:listen},addEventListener:listen,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout(id){timers.delete(id);},fetch(url,options){calls.push({url,signal:options.signal});return fetchImpl(url,options);}};
  context.window=context;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-signs.js'),'utf8'),context);
  const api=context.GregleDriveBCSigns({map,config:{speedSignsURL:'https://speed.test',messageSignsURL:'/data/messages.json'},notify(){}});
  async function advance(ms){const target=now+ms;for(let i=0;i<200;i++){const due=[...timers.entries()].filter(([,t])=>t.due<=target).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=target;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
@@ -65,4 +65,26 @@ test('hidden or disabled sign layers abort pending work and ignore late results'
  const h=setup();let release;h.setFetch(()=>new Promise(resolve=>release=resolve));h.api.setEnabled('messages',true);
  h.document.hidden=true;h.fire('visibilitychange');assert(h.calls[0].signal.aborted);h.api.setEnabled('messages',false);
  release({ok:true,json:async()=>messageData});await flush();assert.equal(h.markers('messages').length,0);await h.advance(300000);assert.equal(h.calls.length,1);
+});
+
+
+test('fresh speed readings survive pixel faults but not offline, stale or globally disabled feeds',()=>{
+ const packet={...speedData,features:[{...speedData.features[0],properties:{...speedData.features[0].properties,status:'Pixel Error'}}]};
+ const sign=core.readSpeed(packet).signs[0];assert.equal(sign.posted,80);assert(core.available(sign,'speed',NOW));
+ assert(!core.available({...sign,status:'Connection Errors'},'speed',NOW));assert(!core.available({...sign,received:'2026-10-17T00:00:00Z'},'speed',NOW));
+ for(const flags of [{fresh:false},{vslsVisibleInDriveBC:false}])assert(!core.available(core.readSpeed({...packet,...flags}).signs[0],'speed',NOW));
+});
+const popupText=node=>node.textContent+' '+node.children.map(popupText).join(' ');
+test('popups display speed values with pixel-fault status and every reported message page',async()=>{
+ const h=setup();h.setFetch(async url=>({ok:true,json:async()=>url.includes('speed')?{...speedData,features:[{...speedData.features[0],properties:{...speedData.features[0].properties,status:'Pixel Error'}}]}:messageData}));
+ h.api.setEnabled('speed',true);h.api.setEnabled('messages',true);await flush();
+ assert.match(h.markers('speed')[0].options.icon.html,/>80</);const speedText=popupText(h.markers('speed')[0].popup());assert.match(speedText,/80 km\/h/);assert.match(speedText,/display pixel fault/);assert.match(speedText,/Pixel Error/);
+ const messageText=popupText(h.markers('messages')[0].popup());assert.match(messageText,/ROAD\nWORK/);assert.match(messageText,/SLOW DOWN/);assert(!messageText.includes('[jl3]'));
+ await h.advance(120000);assert.equal(h.calls.length,3,'speed readings refresh after two minutes');
+});
+test('blank and switched-off message signs explain why no text is displayed',async()=>{
+ for(const enabled of [true,false]){
+  const h=setup();h.setFetch(async()=>({ok:true,json:async()=>({...messageData,signs:[{...messageData.signs[0],message_text:'[nl]',is_on:enabled}]})}));h.api.setEnabled('messages',true);await flush();
+  assert.match(popupText(h.markers('messages')[0].popup()),enabled?/Sign is blank/:/Sign is off or disabled/);
+ }
 });
