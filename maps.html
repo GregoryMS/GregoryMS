@@ -48,7 +48,7 @@
   <script src="assets/maps-layers.js?v=20261019-aviation-worker" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261019-navigation" defer></script>
   <script src="assets/maps-navigation.js?v=20261019-navigation" defer></script>
-  <script src="assets/maps.js?v=20261019-navigation" defer></script>
+  <script src="assets/maps.js?v=20261019-no-explore" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
 </head>
 <body class="maps-page">
@@ -230,10 +230,10 @@
       <button id="fuel-pin-action" type="button" hidden>Retry stations</button>
       <a href="https://charting.kalibrate.com/WPPS_Public/DPPS_Public.htm" target="_blank" rel="noopener">Kalibrate Canada · daily survey ↗</a>
     </section>
-    <section class="map-place map-glass" id="map-place" aria-labelledby="place-name">
-      <div class="place-heading"><span class="place-kicker" id="place-kicker">A world to explore</span><button class="map-dismiss" id="close-explore" type="button" aria-label="Close explore card" title="Close explore card">×</button><button class="map-dismiss" id="clear-pin" type="button" aria-label="Remove pin" aria-keyshortcuts="Escape" title="Remove pin (Esc)" hidden>×</button></div>
-      <h2 id="place-name">Explore from here.</h2>
-      <p id="place-detail">Search for a place, or double-click or double-tap the map to drop a pin.</p>
+    <section class="map-place map-glass" id="map-place" aria-labelledby="place-name" hidden>
+      <div class="place-heading"><span class="place-kicker" id="place-kicker"></span><button class="map-dismiss" id="clear-pin" type="button" aria-label="Remove pin" aria-keyshortcuts="Escape" title="Remove pin (Esc)" hidden>×</button></div>
+      <h2 id="place-name"></h2>
+      <p id="place-detail"></p>
       <div id="place-tags" hidden></div>
       <div class="route-pin-actions" id="route-pin-actions" hidden><button id="directions-from-pin" type="button">Start here</button><button id="directions-to-pin" type="button">Directions here</button></div>
       <div class="place-bottom" id="place-bottom" hidden><span id="place-coordinates"></span><button id="share-pin" type="button">Copy link <span aria-hidden="true">↗</span></button></div>
