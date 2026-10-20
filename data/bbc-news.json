@@ -1,18 +1,22 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-20T17:13:34+00:00",
-  "fetchedAt": "2026-10-20T17:13:43.927730+00:00",
+  "feedUpdatedAt": "2026-10-20T20:38:44+00:00",
+  "fetchedAt": "2026-10-20T20:38:50.002541+00:00",
   "items": [
+    {
+      "title": "Two men re-arrested on suspicion of assisting Iran intelligence after RAF Fairford incident",
+      "link": "https://www.bbc.co.uk/news/articles/cqm26z110vzko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Zelensky says US intelligence sharing 'works now' after talks with Trump envoy in Oslo",
+      "link": "https://www.bbc.co.uk/news/articles/cq5ynkx3xy11o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Government failings allowed Covid 'to spread like wildfire' in care homes, inquiry finds",
       "link": "https://www.bbc.co.uk/news/articles/ck1l38z0v3v6o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Two re-arrested on suspicion of assisting Iran intelligence after RAF Fairford incident",
-      "link": "https://www.bbc.co.uk/news/articles/cqm26z110vzko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Google says services recovering after cloud outage hits UK banks and websites",
+      "title": "Google resolves cloud outage affecting UK banks and websites",
       "link": "https://www.bbc.co.uk/news/articles/cxdd8mm6qy4mo?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -20,28 +24,24 @@
       "link": "https://www.bbc.co.uk/news/articles/cqx2v800nnr2o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "King praises Strait of Hormuz peace efforts at glittering banquet",
+      "link": "https://www.bbc.co.uk/news/articles/c8040qgryqd3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "North Korea publishes photos of Kim Jong Un - why do rumours of his death keep coming back?",
       "link": "https://www.bbc.co.uk/news/articles/cmvg6qv1jdydo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Harry says he wants to 'reconcile' with his family",
-      "link": "https://www.bbc.co.uk/news/articles/cry4xj79zxd1o?at_medium=RSS&at_campaign=rss"
+      "title": "Schools should recognise antisemitism as distinct form of harm, review says",
+      "link": "https://www.bbc.co.uk/news/articles/c623d7z1rxg5o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Student who stabbed housemate 30 times admits murder",
       "link": "https://www.bbc.co.uk/news/articles/ckq6n55l23rlo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Huge setback for Alberta's separatist movement after decisive defeat",
-      "link": "https://www.bbc.co.uk/news/articles/cjly016320q1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Woman says she 'couldn't speak or breathe' during alleged rape by Russell Brand",
       "link": "https://www.bbc.co.uk/news/articles/ck240rr10jdqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "UK to deploy jets to defend Saudi Arabia from Houthi attacks",
-      "link": "https://www.bbc.co.uk/news/articles/ckr5yqe1r1llo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
