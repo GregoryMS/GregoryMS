@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
+      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -146,6 +146,14 @@
           ]
         },
         {
+          "home": "Freiburg",
+          "away": "Bayern München",
+          "start": "2026-10-25T16:30:00+00:00",
+          "channels": [
+            "Prime Video PPV (UK)"
+          ]
+        },
+        {
           "home": "Manchester United (W)",
           "away": "Manchester City (W)",
           "start": "2026-10-25T18:00:00+00:00",
@@ -223,7 +231,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
+      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -379,7 +387,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
+      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -534,7 +542,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
+      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -689,7 +697,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
+      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
