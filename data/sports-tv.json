@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
+      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -231,7 +231,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
+      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -387,7 +387,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
+      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -534,6 +534,7 @@
           "away": "Arsenal",
           "start": "2026-10-27T20:00:00+00:00",
           "channels": [
+            "TV 2 Play (NO)",
             "V sport 1 NO",
             "Viaplay NO"
           ]
@@ -542,7 +543,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
+      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -697,7 +698,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-20T10:26:12.995313+00:00",
+      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
