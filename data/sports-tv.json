@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
+      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "VfB Stuttgart (W)",
-          "start": "2026-10-19T16:00:00+00:00",
-          "channels": [
-            "DAZN UK"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "AEK Athens",
@@ -231,7 +223,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
+      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -254,7 +246,8 @@
           "away": "Brighton & Hove Albion",
           "start": "2026-10-22T16:45:00+00:00",
           "channels": [
-            "DAZN Canada"
+            "DAZN Canada",
+            "OneSoccer"
           ]
         },
         {
@@ -363,7 +356,8 @@
           "away": "Bayern München",
           "start": "2026-10-25T16:30:00+00:00",
           "channels": [
-            "DAZN Canada"
+            "DAZN Canada",
+            "OneSoccer"
           ]
         },
         {
@@ -387,7 +381,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
+      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -543,7 +537,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
+      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -698,16 +692,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-20T15:23:07.429390+00:00",
+      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "VfB Stuttgart (W)",
-          "start": "2026-10-19T16:00:00+00:00",
-          "channels": [
-            "Magenta Sport"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "AEK Athens",
