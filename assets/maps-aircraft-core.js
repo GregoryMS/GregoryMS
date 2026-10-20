@@ -75,5 +75,34 @@
     }
     return { aircraft: [...records.values()].slice(0, 1500), limited: data.limited === true || records.size > 1500 || data.ac.length > 10000 };
   }
-  return { maxAge, altitudeColour, altitudeGradient, neutralColour, aircraftKind, distance, area, covers, visible, read };
+  const trackAge = 30 * 60000, trackLimit = 500;
+  function mergeTrack(previous, incoming, now = Date.now()) {
+    const points = new Map();
+    for (const point of [...previous, ...incoming]) {
+      if (!point || !number(point.updated, now - trackAge, now) || !Array.isArray(point.point) || !number(point.point[0], -85.05113, 85.05113) || !number(point.point[1], -180, 180)) continue;
+      points.set(point.updated, {updated: point.updated, point: [point.point[0], point.point[1]], altitude: number(point.altitude, -2000, 100000) ? point.altitude : null, ground: point.ground === true});
+    }
+    return [...points.values()].sort((a, b) => a.updated - b.updated).slice(-trackLimit);
+  }
+  function readTrack(data, id, now = Date.now()) {
+    if (!/^[a-f0-9]{6}$/.test(id) || typeof data?.icao24 !== 'string' || data.icao24.toLowerCase() !== id || data.synthetic !== false || data.reliable_track !== true || data.track_unavailable === true || data.source === 'synthetic') return [];
+    const raw = Array.isArray(data.waypoints) ? data.waypoints : Array.isArray(data.points) ? data.points : [];
+    return mergeTrack([], raw.slice(0, 5000).filter(p => p?.synthetic === false && p.telemetry === true && p.reliable_track === true && !['origin', 'destination'].includes(p.phase)).map(p => ({
+      updated: typeof p.time === 'number' ? p.time * 1000 : NaN,
+      point: [p.lat, p.lng], altitude: number(p.alt, -609.6, 30480) ? p.alt / 0.3048 : null, ground: p.on_ground === true
+    })), now);
+  }
+  function trackSegments(points, worldLng) {
+    const result = [];
+    for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1], b = points[i], elapsed = (b.updated - a.updated) / 1000, miles = distance(a.point, b.point);
+      // Do not draw across missing coverage, implausible jumps, or a stationary report.
+      if (elapsed <= 0 || elapsed > 180 || miles === 0 || miles > 2 + elapsed / 3600 * 1200) continue;
+      const endLng = b.point[1] + 360 * Math.round((worldLng - b.point[1]) / 360);
+      const startLng = a.point[1] + 360 * Math.round((endLng - a.point[1]) / 360);
+      result.push({points: [[a.point[0], startLng], [b.point[0], endLng]], colour: altitudeColour(b.altitude, b.ground)});
+    }
+    return result;
+  }
+  return { maxAge, trackAge, trackLimit, mergeTrack, readTrack, trackSegments, altitudeColour, altitudeGradient, neutralColour, aircraftKind, distance, area, covers, visible, read };
 });
