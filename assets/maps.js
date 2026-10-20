@@ -16,7 +16,7 @@
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, exploreDismissed = false;
+  let map, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -50,12 +50,11 @@
     if (marker) { map.removeLayer(marker); marker = null; }
     if (accuracy) { map.removeLayer(accuracy); accuracy = null; }
     $('clear-pin').hidden = !point;
-    $('close-explore').hidden = !!point;
-    $('map-place').hidden = !point && exploreDismissed;
+    $('map-place').hidden = !point;
     $('place-bottom').hidden = !point;
-    $('place-kicker').textContent = point ? 'On the map' : 'A world to explore';
-    $('place-name').textContent = point?.name || 'Explore from here.';
-    $('place-detail').textContent = point?.detail || (point ? 'Copy the link to save or share this place.' : 'Search for a place, or double-click or double-tap the map to drop a pin.');
+    $('place-kicker').textContent = point ? 'On the map' : '';
+    $('place-name').textContent = point?.name || '';
+    $('place-detail').textContent = point?.detail || (point ? 'Copy the link to save or share this place.' : '');
     $('place-coordinates').textContent = point ? `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}` : '';
     $('map-place').classList.toggle('has-pin', !!point);
     if (point?.osm) $('place-kicker').textContent = 'OpenStreetMap place';
@@ -123,11 +122,6 @@
     }
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
-  $('close-explore').addEventListener('click', () => {
-    exploreDismissed = true;
-    $('map-place').hidden = true;
-    $('gregle-map').focus({ preventScroll: true });
-  });
   controls.forEach(control => { control.disabled = true; });
   if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
