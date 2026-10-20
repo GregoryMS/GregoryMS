@@ -103,7 +103,7 @@
         for(const tick of timeline.ticks) {const label=node('span','',tick.label);label.style.left=(tick.timestamp-timeline.start)/span*100+'%';axis.append(label);}
         chart.append(track,marker,axis);
         const labels=node('div','photo-window-labels');labels.setAttribute('role','group');labels.setAttribute('aria-label','Photography windows; select to highlight on the timeline');
-        for(const window of windows) {
+        for(const window of [windows[0],windows[1],windows[3],windows[2]]) {
           const button=node('button','photo-window-label');button.type='button';button.setAttribute('aria-pressed','false');
           const valid=window.start!==null&&window.end!==null;
           button.disabled=!valid;
