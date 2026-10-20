@@ -75,7 +75,7 @@
     }
     return { aircraft: [...records.values()].slice(0, 1500), limited: data.limited === true || records.size > 1500 || data.ac.length > 10000 };
   }
-  const trackAge = 30 * 60000, trackLimit = 500;
+  const trackAge = 2 * 60 * 60000, trackLimit = 2000;
   function mergeTrack(previous, incoming, now = Date.now()) {
     const points = new Map();
     for (const point of [...previous, ...incoming]) {
