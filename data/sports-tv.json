@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
+      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -210,21 +210,21 @@
             "NOW",
             "Sky Sports+ app"
           ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "San Diego FC",
+          "start": "2026-10-29T02:30:00+00:00",
+          "channels": [
+            "Apple TV (UK)"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
+      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "VfB Stuttgart (W)",
-          "start": "2026-10-19T16:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "AEK Athens",
@@ -366,22 +366,21 @@
             "Sportsnet NOW",
             "Sportsnet One"
           ]
+        },
+        {
+          "home": "Fleetwood Town",
+          "away": "Arsenal",
+          "start": "2026-10-27T20:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
+      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "VfB Stuttgart (W)",
-          "start": "2026-10-19T16:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "AEK Athens",
@@ -521,21 +520,22 @@
           "channels": [
             "VG TV"
           ]
+        },
+        {
+          "home": "Fleetwood Town",
+          "away": "Arsenal",
+          "start": "2026-10-27T20:00:00+00:00",
+          "channels": [
+            "V sport 1 NO",
+            "Viaplay NO"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
+      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "VfB Stuttgart (W)",
-          "start": "2026-10-19T16:00:00+00:00",
-          "channels": [
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Manchester City",
           "away": "AEK Athens",
@@ -675,22 +675,28 @@
             "TV4 Play Sport",
             "TV4 Sportkanalen"
           ]
+        },
+        {
+          "home": "Fleetwood Town",
+          "away": "Arsenal",
+          "start": "2026-10-27T20:00:00+00:00",
+          "channels": [
+            "Viaplay SE",
+            "Viaplay Sport"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
+      "checkedAt": "2026-10-20T05:21:09.116518+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
           "away": "VfB Stuttgart (W)",
           "start": "2026-10-19T16:00:00+00:00",
           "channels": [
-            "DAZN Deutschland",
-            "Magenta Sport",
-            "OneFootball Deutschland",
-            "Sport1"
+            "Magenta Sport"
           ]
         },
         {
