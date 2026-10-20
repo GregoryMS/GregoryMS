@@ -426,3 +426,11 @@ Each live match has a compact UK, Canada, Norway, Sweden and Germany TV/streamin
 Run `node --test tests/sports*.test.cjs` and `python3 -m unittest discover -s tests -p 'test_sports_tv.py'` for the sports checks.
 
 
+
+## Maps driving directions
+
+The Directions map button opens a driving route planner. Search and explicitly choose both endpoints, use **My location** for the start, or select a map place / dropped pin and choose **Start here** or **Directions here**. Swap endpoints and clear the journey from the panel. Search uses the existing Photon service with map-centre bias and no automatic lookup while typing. Coordinates are sent to the public OSRM routing server only when **Show route** is pressed. Nothing is saved to browser storage. Route requests are limited to one per 1.1 seconds per page, time out after 15 seconds, and are cancelled / ignored when inputs change, the panel closes, or a newer action supersedes them.
+
+A purple route with A/B endpoints, estimated distance and driving duration, and expandable route steps appears on the map. Durations exclude live traffic and ferry waits. This is route planning; Google Maps and Apple Maps links hand the chosen coordinates to live navigation. These links remain usable if routing fails. The OSRM demo service has no availability guarantee and is for reasonable non-commercial use: https://github.com/Project-OSRM/osrm-backend/wiki/Demo-server. Routes use OpenStreetMap data, with attribution in the panel. No routing key or new server is required. Walking, cycling, transit, live location tracking, and automatic rerouting are not provided.
+
+Run `node --test tests/maps-navigation*.test.cjs` for route validation, handoff URLs, and request lifecycle checks.

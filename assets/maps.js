@@ -16,7 +16,7 @@
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, layerControl, placeDetails, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, exploreDismissed = false;
+  let map, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, exploreDismissed = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -46,6 +46,7 @@
   };
   function renderPin(point, lookup = true, nearby = false) {
     selected = point;
+    if ($('route-pin-actions')) $('route-pin-actions').hidden = !point;
     if (marker) { map.removeLayer(marker); marker = null; }
     if (accuracy) { map.removeLayer(accuracy); accuracy = null; }
     $('clear-pin').hidden = !point;
@@ -84,6 +85,7 @@
     if (embedded === usingEmbed) return;
     usingEmbed = embedded; intent++; cancelSearch(); hideSearch();
     if (embedded) {
+      navigation?.close();
       placeDetails?.clear();
       if (document.activeElement?.closest('.map-search, .map-place, .map-actions, #gregle-map')) $('plugshare-layers-toggle').focus({ preventScroll: true });
     } else if (restoreDetails) placeDetails?.select(selected);
@@ -148,6 +150,7 @@
   placeDetails = window.GregleMapPlaces({ map, config, onPlace: point => { renderPin(point, false); updateURL(); } });
   syncMapMode(false);
   renderPin(initial.pin); updateURL();
+  navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected });
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });

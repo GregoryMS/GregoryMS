@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Explore OpenStreetMap with Gregle. Find places and addresses, drop a pin, find your location and share a map.">
+  <meta name="description" content="Explore OpenStreetMap with Gregle. Find places and addresses, drop a pin, get driving directions, find your location and share a map.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="application-name" content="Gregle Maps">
   <meta name="apple-mobile-web-app-title" content="Maps">
@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261019-bright-altitudes">
+  <link rel="stylesheet" href="assets/maps.css?v=20261019-navigation">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -46,7 +46,9 @@
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-layers.js?v=20261019-aviation-worker" defer></script>
-  <script src="assets/maps.js?v=20261019-aviation-worker" defer></script>
+  <script src="assets/maps-navigation-core.js?v=20261019-navigation" defer></script>
+  <script src="assets/maps-navigation.js?v=20261019-navigation" defer></script>
+  <script src="assets/maps.js?v=20261019-navigation" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
 </head>
 <body class="maps-page">
@@ -99,7 +101,24 @@
         <div class="map-search-credit">Place search by <a href="https://github.com/komoot/photon" target="_blank" rel="noopener">Photon</a></div>
       </div>
     </section>
+    <section class="map-directions map-glass" id="map-directions" aria-labelledby="directions-heading" hidden>
+      <div class="layers-heading"><h2 id="directions-heading">Driving directions</h2><button class="map-dismiss" id="close-directions" type="button" aria-label="Close directions">×</button></div>
+      <form id="directions-search-form">
+        <label for="directions-from">Starting point</label>
+        <div class="directions-field"><input id="directions-from" type="search" autocomplete="off" maxlength="180" placeholder="Search a starting point" aria-controls="directions-results"><button type="button" id="directions-location" title="Use my location">My location</button></div>
+        <label for="directions-to">Destination</label>
+        <div class="directions-field"><input id="directions-to" type="search" autocomplete="off" maxlength="180" placeholder="Search a destination" aria-controls="directions-results"><button type="button" id="directions-swap" aria-label="Swap start and destination">⇅</button></div>
+        <button type="submit" id="directions-search">Find places</button>
+      </form>
+      <p id="directions-status" role="status">Choose a starting point and destination, or use a map pin.</p>
+      <ol id="directions-results" aria-label="Choose a route location"></ol>
+      <div class="directions-actions"><button type="button" id="directions-route" disabled>Show route</button><button type="button" id="directions-clear">Clear route</button></div>
+      <div id="directions-handoff" hidden><a id="directions-google" target="_blank" rel="noopener">Navigate in Google Maps ↗</a><a id="directions-apple" target="_blank" rel="noopener">Navigate in Apple Maps ↗</a></div>
+      <div id="directions-summary" hidden><strong id="directions-total"></strong><p>Estimated driving time excludes live traffic and ferry waits.</p><details><summary>Route steps</summary><ol id="directions-steps"></ol></details></div>
+      <p class="directions-credit">Routes: <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: Photon. Live guidance opens in your navigation app.</p>
+    </section>
     <div class="map-actions" role="group" aria-label="Map tools">
+      <button class="map-icon-button map-glass" id="map-directions-toggle" type="button" aria-label="Directions" aria-expanded="false" aria-controls="map-directions" title="Directions" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/></svg></button>
       <button class="map-icon-button map-glass" id="map-layers-toggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="map-layers-panel" title="Map layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
       <button class="map-icon-button map-glass" id="map-locate" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button>
       <button class="map-icon-button map-glass" id="map-share" type="button" aria-label="Copy map link" title="Copy map link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 1)"/></svg></button>
@@ -216,6 +235,7 @@
       <h2 id="place-name">Explore from here.</h2>
       <p id="place-detail">Search for a place, or double-click or double-tap the map to drop a pin.</p>
       <div id="place-tags" hidden></div>
+      <div class="route-pin-actions" id="route-pin-actions" hidden><button id="directions-from-pin" type="button">Start here</button><button id="directions-to-pin" type="button">Directions here</button></div>
       <div class="place-bottom" id="place-bottom" hidden><span id="place-coordinates"></span><button id="share-pin" type="button">Copy link <span aria-hidden="true">↗</span></button></div>
     </section>
     <div class="map-notice map-glass" id="map-notice" role="status" hidden></div>
