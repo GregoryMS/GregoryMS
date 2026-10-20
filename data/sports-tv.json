@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
+      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -215,7 +215,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
+      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -371,7 +371,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
+      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -526,7 +526,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
+      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -624,6 +624,14 @@
           ]
         },
         {
+          "home": "Crystal Palace (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-10-25T12:00:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
+          ]
+        },
+        {
           "home": "Crystal Palace",
           "away": "Newcastle United",
           "start": "2026-10-25T14:00:00+00:00",
@@ -664,6 +672,7 @@
           "away": "Manchester City (W)",
           "start": "2026-10-25T18:00:00+00:00",
           "channels": [
+            "TV4 Play Sport",
             "TV4 Sportkanalen"
           ]
         }
@@ -671,7 +680,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-19T21:45:00.791728+00:00",
+      "checkedAt": "2026-10-20T00:42:54.568522+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
