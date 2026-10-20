@@ -336,3 +336,38 @@
 .fuel-popup { min-width: 180px; max-width: 260px; }
 .fuel-popup p { margin: 8px 0; }
 @media(max-width:600px) { .map-fuel-card { left: 12px; top: 82px; max-width: calc(100% - 80px); padding: 12px 14px; } .fuel-card-reading strong { font-size: 25px; } }
+
+/* Driving directions share the map's light and dark Gregle surfaces. */
+.map-directions { position: absolute; z-index: 520; top: 20px; left: 20px; width: 380px; max-width: calc(100% - 100px); max-height: calc(100% - 40px); padding: 18px; border-radius: 20px; overflow-y: auto; overscroll-behavior: contain; font-size: 12px; }
+.directions-open :is(.map-search, .map-place, .map-fuel-card) { display: none; }
+.plugshare-active .map-directions { display: none; }
+.map-directions label { display: block; margin: 12px 0 6px; color: var(--muted); }
+.directions-field { display: flex; gap: 6px; }
+.directions-field input { width: 100%; min-width: 0; padding: 11px 10px; border: 1px solid var(--map-border); border-radius: 10px; color: var(--text); background: var(--bg); font: inherit; font-size: 14px; }
+.map-directions button:not(.map-dismiss), .route-pin-actions button { padding: 10px 12px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--map-accent-soft); color: var(--map-accent); font: inherit; cursor: pointer; }
+.map-directions button:disabled { opacity: .5; cursor: default; }
+#directions-search { margin-top: 10px; }
+#directions-status { color: var(--muted); line-height: 1.6; }
+#directions-results { list-style: none; padding: 0; margin: 0 0 12px; }
+#directions-results button { display: block; width: 100%; margin-bottom: 5px; text-align: left; background: transparent; }
+#directions-results strong, #directions-results span { display: block; overflow-wrap: anywhere; }
+#directions-results span { margin-top: 4px; font-size: 11px; color: var(--muted); }
+.directions-actions, .route-pin-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.route-pin-actions { margin-top: 14px; font-size: 12px; }
+#directions-route { background: #7637cc; color: #fff; border-color: #7637cc; }
+#directions-handoff { display: grid; gap: 10px; margin: 18px 0; }
+.map-directions a { color: var(--map-accent); text-underline-offset: 3px; }
+#directions-summary { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--map-border); }
+#directions-total { font-size: 20px; font-weight: 500; }
+#directions-summary p, .directions-credit { font-size: 10px; color: var(--muted); line-height: 1.6; }
+#directions-summary summary { cursor: pointer; padding: 10px 0; color: var(--map-accent); }
+#directions-steps { padding-left: 24px; }
+#directions-steps li { padding: 9px 0; line-height: 1.5; border-bottom: 1px solid var(--map-border); overflow-wrap: anywhere; }
+.directions-marker { display: grid; place-items: center; color: #fff; background: #7637cc; border: 2px solid #fff; border-radius: 50%; font: 600 12px/1 system-ui, sans-serif; box-shadow: 0 2px 8px #0005; }
+.map-directions :is(a, button, input, summary):focus-visible, .route-pin-actions button:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
+@media(max-width:700px) {
+  .map-directions { top: auto; bottom: 36px; left: 12px; width: calc(100% - 88px); max-width: none; max-height: 53%; padding: 14px; border-radius: 17px; }
+  .directions-field { flex-wrap: wrap; }
+  .directions-field input { font-size: 16px; }
+}
+@media(max-height:520px) and (min-width:701px) { .map-directions { top: 80px; max-height: calc(100% - 100px); } }
