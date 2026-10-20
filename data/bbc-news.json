@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-20T20:38:44+00:00",
-  "fetchedAt": "2026-10-20T20:38:50.002541+00:00",
+  "feedUpdatedAt": "2026-10-20T23:26:39+00:00",
+  "fetchedAt": "2026-10-20T23:26:47.107238+00:00",
   "items": [
     {
       "title": "Two men re-arrested on suspicion of assisting Iran intelligence after RAF Fairford incident",
@@ -12,36 +12,36 @@
       "link": "https://www.bbc.co.uk/news/articles/cq5ynkx3xy11o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Government failings allowed Covid 'to spread like wildfire' in care homes, inquiry finds",
-      "link": "https://www.bbc.co.uk/news/articles/ck1l38z0v3v6o?at_medium=RSS&at_campaign=rss"
+      "title": "UK government to make Jackdaw gas field announcement",
+      "link": "https://www.bbc.co.uk/news/articles/cvze4wx3elj1o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Google resolves cloud outage affecting UK banks and websites",
-      "link": "https://www.bbc.co.uk/news/articles/cxdd8mm6qy4mo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "BBC Three, BBC Scotland and Radio 4 Extra broadcast channels to close",
-      "link": "https://www.bbc.co.uk/news/articles/cqx2v800nnr2o?at_medium=RSS&at_campaign=rss"
+      "title": "Tory MP questions government advisor's position after wife's Palestine Action post",
+      "link": "https://www.bbc.co.uk/news/articles/cke8r0me3y9vo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "King praises Strait of Hormuz peace efforts at glittering banquet",
       "link": "https://www.bbc.co.uk/news/articles/c8040qgryqd3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "North Korea publishes photos of Kim Jong Un - why do rumours of his death keep coming back?",
-      "link": "https://www.bbc.co.uk/news/articles/cmvg6qv1jdydo?at_medium=RSS&at_campaign=rss"
+      "title": "Elon Musk says Tesla-SpaceX merger being considered",
+      "link": "https://www.bbc.co.uk/news/articles/cmlyl09xjke4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Government failings allowed Covid 'to spread like wildfire' in care homes, inquiry finds",
+      "link": "https://www.bbc.co.uk/news/articles/ck1l38z0v3v6o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Schools should recognise antisemitism as distinct form of harm, review says",
       "link": "https://www.bbc.co.uk/news/articles/c623d7z1rxg5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Student who stabbed housemate 30 times admits murder",
-      "link": "https://www.bbc.co.uk/news/articles/ckq6n55l23rlo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Woman says she 'couldn't speak or breathe' during alleged rape by Russell Brand",
       "link": "https://www.bbc.co.uk/news/articles/ck240rr10jdqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "BBC Three, BBC Scotland and Radio 4 Extra broadcast channels to close",
+      "link": "https://www.bbc.co.uk/news/articles/cqx2v800nnr2o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
