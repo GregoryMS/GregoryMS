@@ -115,13 +115,60 @@ test('past paths accept only real telemetry for the correct plane and validate p
  const data=trackData('a12345',{waypoints:[...trackData().waypoints,bad,{...bad,synthetic:false,telemetry:false},{...bad,synthetic:false,lat:95},{...bad,synthetic:false,time:(start+1)/1000},{...bad,synthetic:false,time:(start-core.trackAge-1)/1000}]});
  assert.equal(core.readTrack(data,'a12345',start).length,2);
  assert.equal(core.mergeTrack(points,[points[0]],start).length,2);
- assert.equal(core.mergeTrack([],Array.from({length:600},(_,i)=>({...points[0],updated:start-600000+i*1000})),start).length,core.trackLimit);
+ assert.equal(core.mergeTrack([],Array.from({length:core.trackLimit+100},(_,i)=>({...points[0],updated:start-3000000+i*1000})),start).length,core.trackLimit);
 });
 test('paths leave coverage gaps and implausible jumps open and cross the dateline without spanning the world',()=>{
  const p=(updated,point)=>({updated,point,altitude:10000,ground:false});
  const valid=core.trackSegments([p(0,[0,179.99]),p(15000,[0,-179.99])],180);assert.equal(valid.length,1);assert(Math.abs(valid[0].points[1][1]-valid[0].points[0][1])<.1);
  assert.equal(valid[0].colour,core.altitudeColour(10000));
  for(const pair of [[p(0,[0,0]),p(181000,[0,.01])],[p(0,[0,0]),p(15000,[40,40])],[p(0,[0,0]),p(15000,[0,0])]])assert.equal(core.trackSegments(pair,0).length,0);
+});
+test('paths retain real telemetry beyond 30 minutes and expire it after two hours',()=>{
+ const point=trackData().waypoints[0];
+ const data=trackData('a12345',{waypoints:[
+  {...point,time:(start-2*60*60000-1)/1000},
+  {...point,time:(start-2*60*60000)/1000},
+  {...point,time:(start-60*60000)/1000},
+  {...point,time:(start-60000)/1000}
+ ]});
+ const points=core.readTrack(data,'a12345',start);
+ assert.equal(points.length,3);assert.equal(points[0].updated,start-2*60*60000);
+ assert.equal(core.mergeTrack(points,[],start+1).length,2);
+});
+test('hover previews wait for a dwell, hide on leave, and reuse history when clicked',async()=>{
+ const h=setup();h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?trackData():packet(start)}));
+ h.api.setEnabled(true);await flush();const marker=h.markers()[0];
+ marker.events.mouseover();await h.advance(100);marker.events.mouseout();await h.advance(100);assert.equal(h.calls.length,1);assert.equal(h.paths().length,0);
+ marker.events.mouseover();await h.advance(149);assert.equal(h.calls.length,1);await h.advance(1);assert.equal(h.calls.length,2);assert(h.paths().length>1);
+ marker.events.mouseout();assert.equal(h.paths().length,0);
+ marker.events.mouseover();await h.advance(150);assert.equal(h.calls.length,2);assert(h.paths().length>1);
+ marker.events.popupopen();marker.events.mouseout();await flush();assert.equal(h.calls.length,2);assert(h.paths().length>1);
+ marker.events.popupclose();assert.equal(h.paths().length,0);
+});
+test('hovering another plane temporarily replaces a clicked path and leaving restores it',async()=>{
+ const h=setup();h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?trackData(url.split('/').at(-1)):packet(start,[aircraft(),aircraft({hex:'b12345',lat:48.45,lon:-123.34})])}));
+ h.api.setEnabled(true);await flush();const [first,second]=h.markers();
+ first.events.popupopen();await flush();const before=h.paths().map(p=>JSON.stringify(p.points));
+ second.events.mouseover();await h.advance(150);assert.equal(h.calls.length,3);assert.notDeepEqual(h.paths().map(p=>JSON.stringify(p.points)),before);
+ second.events.mouseout();assert.deepEqual(h.paths().map(p=>JSON.stringify(p.points)),before);assert.equal(h.calls.length,3);
+ first.events.popupclose();assert.equal(h.paths().length,0);
+});
+test('leaving a hover cancels history and late responses cannot restore the preview',async()=>{
+ const h=setup();let release;
+ h.setFetch(async url=>url.includes('/track/')?new Promise(resolve=>release=resolve):{ok:true,json:async()=>packet(start)});
+ h.api.setEnabled(true);await flush();const marker=h.markers()[0];marker.events.mouseover();await h.advance(150);
+ marker.events.mouseout();assert(h.calls[1].signal.aborted);release({ok:true,json:async()=>trackData()});await flush();assert.equal(h.paths().length,0);
+ marker.events.mouseover();h.api.setEnabled(false);await h.advance(150);assert.equal(h.calls.length,2);assert.equal(h.paths().length,0);
+});
+test('refreshing source history preserves earlier recorded positions inside the longer window',async()=>{
+ const h=setup();let history=trackData();
+ h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?history:packet(start+Math.max(0,h.calls.at(-1).time-start))}));
+ h.api.setEnabled(true);await flush();const marker=h.markers()[0];
+ marker.events.popupopen();await flush();marker.events.popupclose();await h.advance(31000);
+ history=trackData('a12345',{waypoints:[{...trackData().waypoints[1],time:(start+15000)/1000,lat:48.425,lng:-123.375}]});
+ marker.events.popupopen();await flush();
+ assert(h.paths().some(p=>JSON.stringify(p.points).includes('[48.4,-123.4]')));
+ assert.equal(h.calls.filter(c=>c.url.includes('/track/')).length,2);
 });
 test('clicking a plane fetches its history once, colours its path and hides it when the popup closes',async()=>{
  const h=setup();h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?trackData():packet(start)}));
