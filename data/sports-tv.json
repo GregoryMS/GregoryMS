@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
+      "checkedAt": "2026-10-20T22:40:51.188347+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -218,12 +218,29 @@
           "channels": [
             "Apple TV (UK)"
           ]
+        },
+        {
+          "home": "Everton",
+          "away": "Newcastle United",
+          "start": "2026-10-29T19:45:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Manchester City (W)",
+          "away": "Paris Saint Germain (W)",
+          "start": "2026-10-29T20:00:00+00:00",
+          "channels": [
+            "Disney+ (UK)"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
+      "checkedAt": "2026-10-20T22:40:51.188347+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -381,7 +398,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
+      "checkedAt": "2026-10-20T22:40:51.188347+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -537,7 +554,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
+      "checkedAt": "2026-10-20T22:40:51.188347+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -692,7 +709,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-20T19:36:37.054535+00:00",
+      "checkedAt": "2026-10-20T22:40:51.188347+00:00",
       "listings": [
         {
           "home": "Manchester City",
