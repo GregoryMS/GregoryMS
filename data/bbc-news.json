@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-19T23:07:05+00:00",
-  "fetchedAt": "2026-10-19T23:07:09.392658+00:00",
+  "feedUpdatedAt": "2026-10-20T01:51:45+00:00",
+  "fetchedAt": "2026-10-20T01:51:52.741185+00:00",
   "items": [
     {
       "title": "Curfew imposed in parts of central Paris and other cities after rioting across France",
@@ -16,6 +16,10 @@
       "link": "https://www.bbc.co.uk/news/articles/cmj47yx572z5o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Chancellor rejects calls to raise Capital Gains Tax in Budget",
+      "link": "https://www.bbc.co.uk/news/articles/c50me4w4x1vyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Burnham vows end to 'rip-off parking charges' under new rules",
       "link": "https://www.bbc.co.uk/news/articles/ck87ze7wl4qno?at_medium=RSS&at_campaign=rss"
     },
@@ -24,15 +28,11 @@
       "link": "https://www.bbc.co.uk/news/articles/cvj6jylk3456o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mission blasts off for Mars to grab a piece of its moon",
-      "link": "https://www.bbc.co.uk/news/articles/cmvgxvkv54w1o?at_medium=RSS&at_campaign=rss"
+      "title": "Criminals detained in hospital set to lose benefits",
+      "link": "https://www.bbc.co.uk/news/articles/cv62yzddy6dpo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Kenya cult leader who told parents to starve children guilty of 191 murders",
-      "link": "https://www.bbc.co.uk/news/articles/ckd6d2l3dz4xo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "US Church on frontline of battle against drug known as 'tranq'",
+      "title": "US church on frontline of battle against drug known as 'tranq'",
       "link": "https://www.bbc.co.uk/news/videos/cqd097z3epvno?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -40,8 +40,8 @@
       "link": "https://www.bbc.co.uk/news/articles/c6gel2dlyxvyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Apu returns to The Simpsons with new voice after race row",
-      "link": "https://www.bbc.co.uk/news/articles/cw33x6gzgdm0o?at_medium=RSS&at_campaign=rss"
+      "title": "Five ways El Niño is affecting the weather around the world",
+      "link": "https://www.bbc.co.uk/weather/articles/c6dx07dznpyyo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
