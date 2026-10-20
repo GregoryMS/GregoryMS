@@ -30,6 +30,35 @@ const worker = {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...headers, 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Max-Age': '86400' } });
     if (request.method !== 'GET') return reply({ error: 'GET required' }, 405, { Allow: 'GET, OPTIONS' });
     const url = new URL(request.url);
+    const track = /^\/aircraft\/track\/([a-f0-9]{6})$/.exec(url.pathname);
+    if (track && !url.search) {
+      const cache = caches.default, key = new Request(`${url.origin}/cache/flight-track/${track[1]}`), cooldown = new Request(`${url.origin}/cooldown/flight-tracks`);
+      /** @param {Response} response */
+      const send = response => { const h = new Headers(response.headers); h.set('Access-Control-Allow-Origin', origin); h.set('Vary', 'Origin'); h.set('Cache-Control', 'no-store'); return new Response(response.body, {status: response.status, headers: h}); };
+      try {
+        const cached = await cache.match(key); if (cached) return send(cached);
+        const paused = await cache.match(cooldown); if (paused) return send(paused);
+        const upstream = await fetch(`https://pocketworld.org/api/flights/track/${track[1]}`, {headers: {Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)'}, redirect: 'manual', signal: AbortSignal.timeout(10000)});
+        if (!upstream.ok) {
+          const raw = upstream.headers.get('Retry-After'), parsed = raw && /^\d+$/.test(raw) ? Number(raw) : Math.ceil((Date.parse(raw || '') - Date.now()) / 1000);
+          const wait = Math.min(900, Math.max(30, Number.isFinite(parsed) ? parsed : 30));
+          await upstream.body?.cancel();
+          const response = reply({error: 'Aircraft history temporarily unavailable'}, upstream.status === 429 ? 429 : 503, {'Retry-After': String(wait), 'Cache-Control': `public, max-age=${wait}`});
+          await cache.put(cooldown, response.clone()); return send(response);
+        }
+        const data = await readJSON(upstream);
+        const reliable = typeof data?.icao24 === 'string' && data.icao24.toLowerCase() === track[1] && data.synthetic === false && data.reliable_track === true && data.track_unavailable !== true && data.source !== 'synthetic';
+        /** @type {Array<{time?: unknown, lat?: unknown, lng?: unknown, alt?: unknown, on_ground?: unknown, synthetic?: unknown, telemetry?: unknown, reliable_track?: unknown, phase?: unknown}>} */
+        const raw = reliable ? Array.isArray(data.waypoints) ? data.waypoints : Array.isArray(data.points) ? data.points : [] : [];
+        const waypoints = raw.slice(0, 5000).filter(p => p && p.synthetic === false && p.telemetry === true && p.reliable_track === true && p.phase !== 'origin' && p.phase !== 'destination' && typeof p.time === 'number' && Number.isFinite(p.time) && typeof p.lat === 'number' && Number.isFinite(p.lat) && Math.abs(p.lat) <= 85.05113 && typeof p.lng === 'number' && Number.isFinite(p.lng) && Math.abs(p.lng) <= 180).map(p => ({time: p.time, lat: p.lat, lng: p.lng, alt: typeof p.alt === 'number' && Number.isFinite(p.alt) ? p.alt : null, on_ground: p.on_ground === true, synthetic: false, telemetry: true, reliable_track: true}));
+        const response = reply({icao24: track[1], synthetic: false, reliable_track: reliable, track_unavailable: !reliable, waypoints}, 200, {'Cache-Control': 'public, max-age=30'});
+        ctx.waitUntil(cache.put(key, response.clone())); return send(response);
+      } catch {
+        const response = reply({error: 'Aircraft history temporarily unavailable'}, 503, {'Retry-After': '30', 'Cache-Control': 'public, max-age=30'});
+        try { await cache.put(cooldown, response.clone()); } catch {}
+        return send(response);
+      }
+    }
     if (url.pathname !== '/aircraft') return reply({ error: 'Not found' }, 404);
     /** @param {string} key */
     const numeric = key => { const value = url.searchParams.get(key); return value && /^-?\d+(\.\d+)?$/.test(value) ? Number(value) : NaN; };

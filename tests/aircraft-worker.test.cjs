@@ -42,3 +42,22 @@ test('dateline query boxes stay valid and stale/unknown provider records are not
   for(const call of h.calls){const b=new URL(call.url).searchParams.get('bbox').split(',').map(Number);assert(b[0]>=-180&&b[2]<=180&&b[0]<b[2]);}
  }finally{await h.close();}
 });
+
+test('selected aircraft history is bounded, cached and limited to actual telemetry from the canonical endpoint',async()=>{
+ const h=await setup();try{
+  h.setFetch(async()=>new Response(JSON.stringify({icao24:'a12345',synthetic:false,reliable_track:true,source:'pocketworld_live_history',waypoints:[{time:Date.now()/1000,lat:48,lng:-123,alt:1000,telemetry:true,synthetic:false,reliable_track:true},{lat:0,lng:0,synthetic:true,telemetry:false}],route:{privateField:'omit'}})));
+  const response=await h.request('/aircraft/track/a12345');assert.equal(response.status,200);const data=await response.json();assert.equal(data.waypoints.length,1);assert.equal(data.route,undefined);assert.equal(h.calls[0].url,'https://pocketworld.org/api/flights/track/a12345');assert.equal(h.calls[0].redirect,'manual');
+  await h.request('/aircraft/track/a12345');assert.equal(h.calls.length,1);
+  for(const path of ['/aircraft/track/invalid','/aircraft/track/a12345?url=https://evil.example','/aircraft/track/~a12345'])assert.equal((await h.request(path)).status,404);
+  assert.equal(h.calls.length,1);
+ }finally{await h.close();}
+});
+test('history never treats synthetic routes as telemetry, and source throttles do not stop live positions',async()=>{
+ const h=await setup();try{
+  h.setFetch(async()=>new Response(JSON.stringify({icao24:'a12345',synthetic:true,reliable_track:false,waypoints:[{lat:0,lng:0}]})));
+  const result=await (await h.request('/aircraft/track/a12345')).json();assert(result.track_unavailable);assert.deepEqual(result.waypoints,[]);
+  h.setFetch(async()=>new Response('private upstream detail',{status:429,headers:{'Retry-After':'90'}}));const response=await h.request('/aircraft/track/b12345');assert.equal(response.status,429);assert.equal(response.headers.get('Retry-After'),'90');assert(!(await response.text()).includes('private'));
+  await h.request('/aircraft/track/c12345');assert.equal(h.calls.length,2);
+  h.setFetch(async()=>new Response(JSON.stringify(wire())));assert.equal((await h.request()).status,200);assert.equal(h.calls.length,3);
+ }finally{await h.close();}
+});

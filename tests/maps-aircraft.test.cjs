@@ -41,12 +41,12 @@ function setup(){
  const output=nodes['aircraft-layer-status']=element(),refresh=nodes['aircraft-refresh']=element();
  nodes['aircraft-altitude-gradient']=element();nodes['aircraft-altitude-neutral']=element();
  const map={getBounds:()=>({getWest:()=>box[0],getSouth:()=>box[1],getEast:()=>box[2],getNorth:()=>box[3]}),getCenter:()=>({lng:(box[0]+box[2])/2}),getZoom:()=>zoom,getSize:()=>({x:390,y:700}),on:(k,f)=>events[k]=f,removeLayer(){},attributionControl:{addAttribution:c=>credits.add(c),removeAttribution:c=>credits.delete(c)}};
- const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,pop:{options:{}},bindPopup(fn){this.popup=fn;return this;},getPopup(){return this.pop;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
+ const L={polyline:(points,options)=>({points,options,addTo(g){g.children.add(this);return this;}}),layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,events:{},on(k,f){this.events[k]=f;return this;},pop:{options:{}},bindPopup(fn){this.popup=fn;return this;},getPopup(){return this.pop;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
  const c={L,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleAircraftCore:core,document:{hidden:false,getElementById:id=>nodes[id],createElement:element,addEventListener:(k,f)=>events[k]=f},addEventListener:(k,f)=>events[k]=f,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout:id=>timers.delete(id),fetch(url,opts){calls.push({url,...opts,time:now});return impl(url,opts);}};
  c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-aircraft.js'),'utf8'),c);const api=c.GregleAircraft({map,notify(){}});
  async function advance(ms){const end=now+ms;for(let i=0;i<1000;i++){const due=[...timers].filter(([,t])=>t.due<=end).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=end;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
- return {api,calls,output,refresh,events,credits,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
+ return {api,calls,output,refresh,events,credits,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],paths:()=>[...groups[1].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
 }
 test('aircraft stay opt-in, load new areas promptly and rate-limit repeated refreshes',async()=>{
  const h=setup();await h.advance(60000);assert.equal(h.calls.length,0);h.api.setEnabled(true);await flush();assert.equal(h.calls.length,1);assert.equal(h.markers().length,1);const marker=h.markers()[0];assert.equal(h.credits.size,1);
@@ -102,4 +102,48 @@ test('live aircraft recolour in place when altitude changes, with altitude avail
  assert.equal(h.markers()[0],marker);assert(marker.options.icon.html.includes(`fill:${core.altitudeColour(5000)}`));assert.match(marker.options.title,/5,000 ft/);
  h.setFetch(async()=>({ok:true,json:async()=>packet(start+30000,[aircraft({alt_baro:'ground'})])}));await h.advance(15000);
  assert(marker.options.icon.html.includes(`fill:${core.neutralColour}`));assert.match(marker.options.title,/On the ground/);
+});
+
+const trackData=(id='a12345',extra={})=>({icao24:id,source:'pocketworld_live_history',synthetic:false,reliable_track:true,track_unavailable:false,waypoints:[
+ {time:(start-60000)/1000,lat:48.4,lng:-123.4,alt:3048,synthetic:false,telemetry:true,reliable_track:true,phase:'history'},
+ {time:(start-30000)/1000,lat:48.42,lng:-123.38,alt:6096,synthetic:false,telemetry:true,reliable_track:true,phase:'history'}
+],...extra});
+test('past paths accept only real telemetry for the correct plane and validate positions, time and altitude units',()=>{
+ const points=core.readTrack(trackData(),'a12345',start);assert.equal(points.length,2);assert.equal(points[0].altitude,10000);
+ for(const data of [null,{icao24:42},trackData('b12345'),trackData('a12345',{synthetic:true}),trackData('a12345',{reliable_track:false}),trackData('a12345',{track_unavailable:true}),trackData('a12345',{source:'synthetic'})])assert.deepEqual(core.readTrack(data,'a12345',start),[]);
+ const bad={...trackData().waypoints[0],synthetic:true};
+ const data=trackData('a12345',{waypoints:[...trackData().waypoints,bad,{...bad,synthetic:false,telemetry:false},{...bad,synthetic:false,lat:95},{...bad,synthetic:false,time:(start+1)/1000},{...bad,synthetic:false,time:(start-core.trackAge-1)/1000}]});
+ assert.equal(core.readTrack(data,'a12345',start).length,2);
+ assert.equal(core.mergeTrack(points,[points[0]],start).length,2);
+ assert.equal(core.mergeTrack([],Array.from({length:600},(_,i)=>({...points[0],updated:start-600000+i*1000})),start).length,core.trackLimit);
+});
+test('paths leave coverage gaps and implausible jumps open and cross the dateline without spanning the world',()=>{
+ const p=(updated,point)=>({updated,point,altitude:10000,ground:false});
+ const valid=core.trackSegments([p(0,[0,179.99]),p(15000,[0,-179.99])],180);assert.equal(valid.length,1);assert(Math.abs(valid[0].points[1][1]-valid[0].points[0][1])<.1);
+ assert.equal(valid[0].colour,core.altitudeColour(10000));
+ for(const pair of [[p(0,[0,0]),p(181000,[0,.01])],[p(0,[0,0]),p(15000,[40,40])],[p(0,[0,0]),p(15000,[0,0])]])assert.equal(core.trackSegments(pair,0).length,0);
+});
+test('clicking a plane fetches its history once, colours its path and hides it when the popup closes',async()=>{
+ const h=setup();h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?trackData():packet(start)}));
+ h.api.setEnabled(true);await flush();assert.equal(h.paths().length,0);assert.equal(h.calls.length,1);
+ const marker=h.markers()[0];marker.events.popupopen();await flush();assert.equal(h.calls.length,2);assert(h.paths().length>1);
+ assert.equal(h.calls[1].url,'https://gregle-aircraft.square-rain-5ded.workers.dev/aircraft/track/a12345');assert(h.paths().some(p=>p.options.color===core.altitudeColour(20000)));assert(h.paths().every(p=>p.options.interactive===false));
+ const text=e=>e.textContent+' '+e.children.map(text).join(' ');assert.match(text(marker.popup()),/Past flight path/);
+ marker.events.popupclose();assert.equal(h.paths().length,0);marker.events.popupopen();await flush();assert.equal(h.calls.length,2);assert(h.paths().length>1);
+ h.api.setEnabled(false);assert.equal(h.paths().length,0);
+});
+test('switching aircraft cancels old history and ignores late results for the previous selection',async()=>{
+ const h=setup();let release;
+ h.setFetch(async url=>url.includes('/track/a12345')?new Promise(resolve=>release=resolve):{ok:true,json:async()=>url.includes('/track/')?trackData('b12345'):packet(start,[aircraft(),aircraft({hex:'b12345',lat:48.45,lon:-123.34})])});
+ h.api.setEnabled(true);await flush();const [first,second]=h.markers();first.events.popupopen();await flush();second.events.popupopen();await flush();assert(h.calls[1].signal.aborted);const before=h.paths().map(p=>JSON.stringify(p.points));
+ release({ok:true,json:async()=>trackData()});await flush();assert.deepEqual(h.paths().map(p=>JSON.stringify(p.points)),before);
+ first.events.popupclose();assert(h.paths().length>0);
+ h.document.hidden=true;h.events.visibilitychange();assert.equal(h.paths().length,0);
+});
+test('unavailable or synthetic history falls back to a trail of observed live positions without joining a planned route',async()=>{
+ const h=setup();let tick=start;
+ h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?trackData('a12345',{synthetic:true}):packet(tick,[aircraft({lat:tick===start?48.4:48.42,lon:tick===start?-123.4:-123.38})])}));
+ h.api.setEnabled(true);await flush();const marker=h.markers()[0];marker.events.popupopen();await flush();assert.equal(h.paths().length,0);
+ tick+=15000;await h.advance(15000);assert(h.paths().length>0);const text=e=>e.textContent+' '+e.children.map(text).join(' ');assert.match(text(marker.popup()),/Live trail/);assert.match(text(marker.popup()),/Earlier history unavailable/);
+ h.setFetch(async()=>({ok:false,headers:{get:()=> '600'}}));await h.advance(125000);assert.equal(h.paths().length,0);
 });
