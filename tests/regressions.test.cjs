@@ -274,7 +274,7 @@ function vancouverWeather() {
 
 test('Vancouver loads current conditions and forecasts directly and safely', async () => {
   let requested;
-  const env = environment('weather.html', async url => { requested = url; return response(vancouverWeather()); });
+  const env = environment('weather.html', async url => { if(!url.includes('limit=1000')) requested = url; return response(vancouverWeather()); });
   await flush();
   assert.equal(requested, 'https://api.weather.gc.ca/collections/citypageweather-realtime/items/bc-74?f=json');
   assert.equal(env.get('temperature').textContent, '0°C');
@@ -373,7 +373,7 @@ test('all three city choices use the right endpoint and official forecast link',
   for (const [city,id,coords] of [['victoria','bc-75','48.421,-123.393'],['chilliwack','bc-24','49.17,-121.94'],['vancouver','bc-74','49.24,-123.12']]) {
     env.context.city = city;
     await vm.runInContext('selectCity(city)',env.context);
-    assert(urls.at(-1).includes(`/items/${id}?`));
+    assert(urls.filter(url=>!url.includes('limit=1000')).at(-1).includes(`/items/${id}?`));
     assert.equal(env.get('officialLink').href, 'https://weather.gc.ca/en/location/index.html?coords='+encodeURIComponent(coords));
     assert.equal(env.get('cityName').textContent.toLowerCase(),city);
   }
@@ -900,6 +900,8 @@ test('overseas auto-location loads modelled global conditions and local calendar
     if(url.includes('bigdatacloud')) return response({countryCode:'NZ',city:'Auckland',countryName:'New Zealand'});
     return response(url.includes('api.open-meteo.com') ? worldwideWeather() : vancouverWeather());
   },{}, {navigator:{geolocation:{getCurrentPosition(success){locate=success;}}}});
+  await flush();
+  const directoryRequests=urls.filter(url=>url.includes('limit=1000')).length;
   await locate({coords:{latitude:-36.85,longitude:174.76}}); await flush();
   assert.equal(env.get('cityName').textContent,'Auckland');
   assert.equal(env.get('temperature').textContent,'14°C');
@@ -907,7 +909,7 @@ test('overseas auto-location loads modelled global conditions and local calendar
   assert.equal(env.get('forecastGrid').children[0].children[0].textContent,'Tuesday');
   assert.equal(env.get('officialLink').href,'https://open-meteo.com/');
   assert.match(env.get('rangeNote').textContent,/Pacific\/Auckland/);
-  assert(!urls.some(url=>url.includes('limit=1000')));
+  assert.equal(urls.filter(url=>url.includes('limit=1000')).length,directoryRequests);
 });
 
 test('location denial, timeout, unsupported and synchronous failure preserve usable weather', async () => {
@@ -1014,6 +1016,7 @@ test('cached homepage weather keeps its own location and rejects invalid cached 
   cached.latitude=999;
   assert.equal(vm.runInContext('readCachedWeather()',env.context),null);
 });
+
 
 
 

@@ -6,16 +6,30 @@
     const h=Math.sin(dLat/2)**2+Math.cos(a.latitude*rad)*Math.cos(b.latitude*rad)*Math.sin(dLon/2)**2;
     return 6371*2*Math.asin(Math.sqrt(Math.min(1,h)));
   }
-  function nearestStation(data,location) {
+  function stationsByDistance(data,location) {
     if (!Array.isArray(data?.features) || data.links?.some(link=>link.rel==='next')) throw Error('Incomplete Canadian city directory');
     const stations=data.features.flatMap(feature=>{
       const c=feature.geometry?.coordinates, p=feature.properties;
-      if(!c || !coordinates(c[1],c[0]) || !/^[a-z]{2}-\d+$/.test(p?.identifier) || !p?.name?.en) return [];
-      const station={id:p.identifier,name:p.name.en,latitude:c[1],longitude:c[0]};
+      if(!c || !coordinates(c[1],c[0]) || !/^[a-z]{2}-[a-z0-9]+$/.test(p?.identifier) || typeof p?.name?.en!=='string' || !p.name.en.trim()) return [];
+      const station={id:p.identifier,name:p.name.en,latitude:c[1],longitude:c[0],observationName:p.currentConditions?.station?.value?.en};
       return [{...station,distance:distance(location,station)}];
     }).sort((a,b)=>a.distance-b.distance);
+    return stations;
+  }
+  function nearestStation(data,location) {
+    const stations=stationsByDistance(data,location);
     if(!stations[0] || stations[0].distance>150) throw Error('No nearby Canadian forecast location');
     return stations[0];
+  }
+  function stationChoices(data,location,selected) {
+    const family=name=>name.replace(/\s*\([^)]*\)\s*$/,'').replace(/\s+(?:Harbour|Island|Airport)$/i,'').trim().toLowerCase();
+    const stations=stationsByDistance(data,location), anchor=stations.find(station=>station.id===selected.id);
+    if(!anchor) return [];
+    const name=family(anchor.name);
+    return stations.filter(station=>station.id===anchor.id ||
+      (station.id.slice(0,2)===anchor.id.slice(0,2) && family(station.name)===name && distance(anchor,station)<=75))
+      .sort((a,b)=>a.name.localeCompare(b.name))
+      .map(station=>({...station,label:family(station.name)===station.name.toLowerCase() && typeof station.observationName==='string' ? station.observationName : station.name}));
   }
   function searchLocations(data) {
     if(data?.error || (data.results!==undefined && !Array.isArray(data.results))) throw Error('Invalid city search');
@@ -71,6 +85,7 @@
     else { art = cloud; if (kind === 'rain') art += '<path class="rain-stroke" d="m22 51-3 6m15-6-3 6m15-6-3 6"/>'; if (kind === 'snow') art += '<path class="rain-stroke" d="M22 51v8m-4-4h8m-7-3 6 6m0-6-6 6m23-7v8m-4-4h8m-7-3 6 6m0-6-6 6"/>'; if (kind === 'sleet') art += '<path class="rain-stroke" d="m22 51-3 6m16-6v8m-4-4h8m7-4-3 6"/>'; if (kind === 'storm') art += '<path class="sun-stroke" d="m34 43-9 11h8l-3 8"/>'; }
     return `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${art}</svg>`;
   }
-  const api={iconKind,weatherIcon,coordinates,distance,nearestStation,searchLocations,condition,globalWeather,forecastURL};
+  const api={iconKind,weatherIcon,coordinates,distance,nearestStation,stationChoices,searchLocations,condition,globalWeather,forecastURL};
   if(typeof module!=='undefined' && module.exports) module.exports=api; else root.GregleWeather=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
+
