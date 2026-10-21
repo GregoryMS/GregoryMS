@@ -6,6 +6,44 @@
     const card = document.getElementById('map-place');
     const cache = new Map();
     let controller, version = 0, nextRequest = 0, retryAt = 0, overpassRetryAt = 0, current;
+    const cacheKey = 'gregle-maps-place-cache-v1', healthKey = 'gregle-maps-place-health-v1';
+    const maxAge = 600000;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(cacheKey));
+      if (saved?.endpoint === config.placesURL && saved.lookup === config.placeLookupURL && Array.isArray(saved.entries)) {
+        for (const [key, entry] of saved.entries.slice(-40)) {
+          if (typeof key === 'string' && key.length < 4096 && entry && Number.isFinite(entry.time) && entry.time <= Date.now() && Date.now() - entry.time < maxAge && Array.isArray(entry.places) && entry.places.length <= 12) cache.set(key, entry);
+        }
+      }
+      const health = JSON.parse(sessionStorage.getItem(healthKey));
+      if (health?.endpoint === config.placesURL && Number.isFinite(health.until)) overpassRetryAt = Math.min(health.until, Date.now() + 86400000);
+    } catch {}
+    function remember(key, places) {
+      cache.delete(key); cache.set(key, { places, time: Date.now() });
+      while (cache.size > 40) cache.delete(cache.keys().next().value);
+    }
+    function saveCache() {
+      try {
+        const entries = [...cache].filter(([, entry]) => Date.now() - entry.time < maxAge);
+        const serialize = () => JSON.stringify({ endpoint: config.placesURL, lookup: config.placeLookupURL, entries });
+        let saved = serialize();
+        while (saved.length > 200000 && entries.length) { entries.shift(); saved = serialize(); }
+        sessionStorage.setItem(cacheKey, saved);
+      } catch {}
+    }
+    function cachedPlaces(entry, point) {
+      // Stored data goes through the same identity, coordinate and tag validation as network data.
+      const originals = new Map(entry.places.map(place => [place?.osm, place]));
+      const elements = entry.places.map(place => {
+        const [type, id] = String(place?.osm || '').split('/');
+        return { type, id: Number(id), lat: place?.lat, lon: place?.lng, tags: place?.tags };
+      });
+      return data.readPlaces({ elements }, point).map(place => {
+        const old = originals.get(place.osm);
+        return { ...place, distance: Number.isFinite(old.distance) && old.distance >= 0 ? old.distance : place.distance,
+          partial: old.partial === true, snapshot: Number.isFinite(Date.parse(old.snapshot)) ? old.snapshot : null };
+      }).sort((a, b) => a.distance - b.distance || a.centreDistance - b.centreDistance);
+    }
     const make = (tag, text, className) => {
       const el = document.createElement(tag);
       if (text) el.textContent = text;
@@ -68,8 +106,12 @@
         target.append(exceptions);
       }
     }
-    function show(place, places) {
-      box.replaceChildren(); box.hidden = false; card.scrollTop = 0;
+    function show(place, places, preserve = false) {
+      const scrollTop = card.scrollTop;
+      const tagsOpen = preserve && box.querySelector('.place-all-tags')?.open;
+      const choicesOpen = preserve && box.querySelector('.place-choices')?.open;
+      if (current) current.place = place;
+      box.replaceChildren(); box.hidden = false; if (!preserve) card.scrollTop = 0;
       onPlace(place);
       const list = make('dl', null, 'place-facts');
       for (const fact of data.facts(place.tags)) {
@@ -84,6 +126,7 @@
         box.append(make('p', `No ${missing.join(' or ')} recorded in OpenStreetMap.`, 'place-tags-status'));
       }
       const tags = make('details', null, 'place-all-tags');
+      tags.open = !!tagsOpen;
       const entries = Object.entries(place.tags).sort(([a], [b]) => a.localeCompare(b));
       tags.append(make('summary', `${place.partial ? 'Available' : 'All'} OpenStreetMap tags (${entries.length})`));
       const values = make('dl', null, 'place-raw-tags');
@@ -95,6 +138,8 @@
       if (place.snapshot) source.append(make('p', 'OSM snapshot: ' + new Date(place.snapshot).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }), 'place-tags-status'));
       box.append(source);
       alternatives(places, place);
+      if (choicesOpen) { const choices = box.querySelector('.place-choices'); if (choices) choices.open = true; }
+      if (preserve) card.scrollTop = scrollTop;
     }
     async function select(point, options = {}) {
       clear();
@@ -103,7 +148,13 @@
       if (!point.osm && map.getZoom() < 13) { message('Zoom in to select individual places and see their details.'); return; }
       const zoom = map.getZoom(), query = data.query(point, zoom), token = version;
       const cached = cache.get(query);
-      if (cached && Date.now() - cached.time < 600000) { display(cached.places); return; }
+      if (cached && Date.now() - cached.time < maxAge) {
+        try {
+          const places = cachedPlaces(cached, point);
+          if (!cached.places.length || places.length) { display(places); return; }
+        } catch {}
+        cache.delete(query);
+      }
       const wait = retryAt - Date.now();
       if (wait > 0) { message(`Please wait ${Math.ceil(wait / 1000)} seconds, then try place details again.`, true); return; }
       if (nextRequest > Date.now()) {
@@ -115,47 +166,73 @@
       message('Loading OpenStreetMap place details…'); box.setAttribute('aria-busy', 'true');
       controller = new AbortController(); const request = controller;
       const timer = setTimeout(() => request.abort(), 18000);
-      try {
-        let places;
-        if (Date.now() >= overpassRetryAt) {
-          try {
-            const signal = AbortSignal.any([request.signal, AbortSignal.timeout(6500)]);
-            const response = await fetch(config.placesURL, { method: 'POST', body: new URLSearchParams({ data: query }), signal, credentials: 'omit' });
-            if (token !== version) return;
-            if (!response.ok) { overpassRetryAt = retryAfter(response, 300000); throw new Error('Place details unavailable'); }
-            places = data.readPlaces(await response.json(), point);
-          } catch {
-            if (token !== version) return;
-            if (request.signal.aborted) throw new Error('Place details timed out');
-            overpassRetryAt = Math.max(overpassRetryAt, Date.now() + 300000);
+      const fallback = new AbortController();
+      let fullPlaces = null, quickPlaces = null, hedgeTimer;
+      const publish = (places, preserve = false) => {
+        if (token !== version || request.signal.aborted) return;
+        remember(query, places);
+        for (const place of places) remember(data.query(place, zoom), [place]);
+        saveCache();
+        display(places, preserve); box.removeAttribute('aria-busy');
+      };
+      const detailed = async () => {
+        if (Date.now() < overpassRetryAt) return null;
+        try {
+          const signal = AbortSignal.any([request.signal, AbortSignal.timeout(6500)]);
+          const response = await fetch(config.placesURL, { method: 'POST', body: new URLSearchParams({ data: query }), signal, credentials: 'omit' });
+          if (token !== version || request.signal.aborted) return null;
+          if (!response.ok) { overpassRetryAt = retryAfter(response, 300000); throw new Error('Place details unavailable'); }
+          fullPlaces = data.readPlaces(await response.json(), point);
+          if (token !== version || request.signal.aborted) return null;
+          if (fullPlaces.length) {
+            // Enrich the shop already being read; never switch it after a late response.
+            const active = current?.place;
+            if (active && !fullPlaces.some(place => place.osm === active.osm)) fullPlaces = [active, ...fullPlaces].slice(0, 12);
+            publish(fullPlaces, true); fallback.abort();
           }
+          return fullPlaces;
+        } catch {
+          if (token !== version || request.signal.aborted) return null;
+          overpassRetryAt = Math.max(overpassRetryAt, Date.now() + 300000);
+          try { sessionStorage.setItem(healthKey, JSON.stringify({ endpoint: config.placesURL, until: overpassRetryAt })); } catch {}
+          return null;
         }
-        if (!places) {
-          if (request.signal.aborted) throw new Error('Place details timed out');
-          // Nominatim is a user-triggered, cached fallback, never an autocomplete or polling service.
+      };
+      try {
+        const full = detailed();
+        // Give a healthy detailed lookup a head start, without making the user wait for its timeout.
+        await Promise.race([full, new Promise(resolve => { hedgeTimer = setTimeout(resolve, 800); })]);
+        clearTimeout(hedgeTimer);
+        if (token !== version || request.signal.aborted) return;
+        if (!fullPlaces?.length) {
+          // One user-triggered, rate-limited fallback; no polling or speculative area requests.
           nextRequest = Date.now() + 1100;
-          const response = await fetch(data.fallbackURL(config.placeLookupURL, point), { signal: request.signal, credentials: 'omit' });
-          if (token !== version) return;
-          if (!response.ok) { retryAt = retryAfter(response, 30000); throw new Error('Place lookup unavailable'); }
-          places = data.readFallback(await response.json(), point, zoom);
+          try {
+            const response = await fetch(data.fallbackURL(config.placeLookupURL, point), { signal: AbortSignal.any([request.signal, fallback.signal]), credentials: 'omit' });
+            if (token !== version || request.signal.aborted) return;
+            if (!response.ok) { retryAt = retryAfter(response, 30000); throw new Error('Place lookup unavailable'); }
+            quickPlaces = data.readFallback(await response.json(), point, zoom);
+            if (!fullPlaces?.length && quickPlaces.length) publish(quickPlaces);
+          } catch { /* A detailed result can still complete when the quick service fails. */ }
         }
-        if (token !== version) return;
-        if (cache.size >= 40) cache.delete(cache.keys().next().value);
-        cache.set(query, { places, time: Date.now() });
-        // Nearby choices already carry all their tags; selecting one needs no second request.
-        for (const place of places) cache.set(data.query(place, map.getZoom()), { places: [place], time: Date.now() });
-        while (cache.size > 40) cache.delete(cache.keys().next().value);
-        display(places);
+        await full;
+        if (token !== version || request.signal.aborted) return;
+        if (!fullPlaces?.length && !quickPlaces?.length) {
+          if (fullPlaces || quickPlaces) publish([]);
+          else throw new Error('Place details unavailable');
+        }
       } catch {
         if (token !== version) return;
         retryAt = Math.max(retryAt, Date.now() + 30000);
         message('Place details are unavailable right now. Your pin is still saved on the map.', true);
       } finally {
         clearTimeout(timer);
+        clearTimeout(hedgeTimer);
         if (token === version) { controller = null; box.removeAttribute('aria-busy'); }
       }
-      function display(places) {
+      function display(places, preserve = false) {
         if (!places.length) { message('No mapped place found at this pin. Try a place marker, or double-click or double-tap a building.'); return; }
+        if (preserve && current?.place) { show(places.find(place => place.osm === current.place.osm) || current.place, places, true); return; }
         // An exact search result or a clear hit opens immediately. Ambiguous clicks offer a choice.
         if (point.osm || places[0].distance <= 12 || places.length === 1) show(places[0], places);
         else { message('Several places are nearby. Choose the one you want to see.'); alternatives(places, null, true); }
