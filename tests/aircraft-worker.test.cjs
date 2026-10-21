@@ -42,6 +42,15 @@ test('PocketWorld timeout falls back to fresh ADSB.lol positions within the brow
  }finally{await h.close();}
 });
 
+test('valid fallback observations survive a cache read or write failure',async()=>{
+ const h=await setup();try{
+  global.caches.default.match=async()=>{throw Error('cache unavailable');};
+  global.caches.default.put=async()=>{throw Error('cache unavailable');};
+  h.setFetch(async()=>new Response(JSON.stringify({now:Date.now(),ac:[{hex:'a12345',lat:48,lon:-123,seen_pos:0}]})));
+  const response=await h.request();assert.equal(response.status,200);assert.equal((await response.json()).ac[0].provider,'adsblol');
+ }finally{await h.close();}
+});
+
 test('fallback does not refresh old timestamps and shares failure cooldowns across map areas',async()=>{
  for(const data of [{now:Date.now()-121000,ac:[]},{now:Date.now()+60000,ac:[]},{now:Date.now(),ac:null}]){
   const h=await setup();try{
