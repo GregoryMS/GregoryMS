@@ -65,7 +65,8 @@ test('mobile marker details retain their live DOM and return to the popup on des
   const layer={getPopup:()=>popup};h.mapEvents.layeradd({layer});assert.equal(popup.options.autoPan,false);
   h.popup(popup);assert.equal(content.parentNode,h.get('map-feature-details'));assert(!h.get('map-feature-details').hidden);
   h.desktop();assert.equal(content.parentNode,wrapper);assert(h.get('map-feature-details').hidden);assert.equal(popup.options.autoPan,true);
-  h.mobile();h.mapEvents.layerremove({layer});assert.equal(popup.options.autoPan,true,'removing a mobile layer restores its original option');
+  h.mobile();assert.equal(content.parentNode,h.get('map-feature-details'),'an open desktop popup must migrate when the screen narrows');
+  h.mapEvents.layerremove({layer});assert.equal(popup.options.autoPan,true,'removing a mobile layer restores its original option');
 });
 
 test('the drawer stays above an on-screen keyboard and clamps to the remaining height',()=>{
