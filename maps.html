@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261021-mobile-pins">
+  <link rel="stylesheet" href="assets/maps.css?v=20261021-mobile-drawer">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -42,14 +42,15 @@
   <script src="assets/maps-aircraft-core.js?v=20261020-hover-path" defer></script>
   <script src="assets/maps-aircraft.js?v=20261021-feed-recovery" defer></script>
   <script src="assets/maps-vessels-core.js?v=20261018-vessel-types" defer></script>
-  <script src="assets/maps-vessels.js?v=20261018-vessel-types" defer></script>
+  <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261019-aviation-worker" defer></script>
+  <script src="assets/maps-layers.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261019-navigation" defer></script>
-  <script src="assets/maps-navigation.js?v=20261019-navigation" defer></script>
+  <script src="assets/maps-navigation.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
-  <script src="assets/maps.js?v=20261021-mobile-pins" defer></script>
+  <script src="assets/maps-drawer.js?v=20261021-mobile-drawer" defer></script>
+  <script src="assets/maps.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -240,6 +241,19 @@
       <div class="route-pin-actions" id="route-pin-actions" hidden><button id="directions-from-pin" type="button">Start here</button><button id="directions-to-pin" type="button">Directions here</button></div>
       <div class="place-bottom" id="place-bottom" hidden><span id="place-coordinates"></span><button id="share-pin" type="button">Copy link <span aria-hidden="true">↗</span></button></div>
     </section>
+    <section class="map-drawer map-glass" id="map-drawer" aria-label="Map details drawer" hidden>
+      <div class="map-drawer-bar">
+        <div id="map-drawer-resize" class="map-drawer-resize" role="slider" tabindex="0" aria-label="Map details height" aria-orientation="vertical" aria-valuemin="64" aria-valuemax="600" aria-valuenow="300" aria-controls="map-drawer-body" aria-describedby="map-drawer-help">
+          <span class="map-drawer-grip" aria-hidden="true"></span><span id="map-drawer-title">Map details</span><span class="map-drawer-hint" aria-hidden="true">Drag to resize</span>
+        </div>
+        <button id="map-drawer-collapse" type="button" aria-label="Minimize map details" aria-expanded="true" aria-controls="map-drawer-body"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button id="map-drawer-close" type="button" aria-label="Close current map details">×</button>
+      </div>
+      <span id="map-drawer-help" class="sr-only">Drag up or down to resize. Tap to minimize or expand. Use arrow keys to adjust height, Home to minimize and End to expand.</span>
+      <div class="map-drawer-tabs" id="map-drawer-tabs" role="group" aria-label="Open map panels"></div>
+      <div class="map-drawer-body" id="map-drawer-body"></div>
+    </section>
+    <section id="map-feature-details" aria-label="Selected map feature" hidden></section>
     <div class="map-notice map-glass" id="map-notice" role="status" hidden></div>
     <div class="map-link-copy map-glass" id="map-link-copy" hidden><label for="map-link-input">Copy this map link</label><div><input id="map-link-input" type="url" readonly><button class="map-dismiss" id="close-map-link" type="button" aria-label="Close map link">×</button></div></div>
     <a class="map-report" href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue ↗</a>

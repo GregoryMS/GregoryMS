@@ -1,5 +1,5 @@
 'use strict';
-window.GregleMapNavigation = ({ map, config, getSelected }) => {
+window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) => {
   const $ = id => document.getElementById(id), core = window.GregleNavigation;
   const panel = $('map-directions'), toggle = $('map-directions-toggle');
   const inputs = { from: $('directions-from'), to: $('directions-to') }, points = { from: null, to: null };
@@ -27,6 +27,7 @@ window.GregleMapNavigation = ({ map, config, getSelected }) => {
     panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
     document.querySelector('.map-stage').classList.add('directions-open');
     if ($('map-layers-toggle').getAttribute('aria-expanded') === 'true') $('close-map-layers').click();
+    onOpen();
   }
   function close() {
     invalidate('Directions paused. Show route to calculate again.');

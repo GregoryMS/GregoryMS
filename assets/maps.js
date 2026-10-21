@@ -16,7 +16,7 @@
     placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false;
+  let map, drawer, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -45,6 +45,7 @@
     $('map-search-form').removeAttribute('aria-busy');
   };
   function renderPin(point, lookup = true, nearby = false) {
+    const changed = point && (!selected || point.lat !== selected.lat || point.lng !== selected.lng);
     selected = point;
     if ($('route-pin-actions')) $('route-pin-actions').hidden = !point;
     if (marker) { map.removeLayer(marker); marker = null; }
@@ -64,6 +65,7 @@
       marker.on('click', () => placeDetails?.select(point, { nearby: !point.osm }));
     }
     if (lookup && !usingEmbed) placeDetails?.select(point, { nearby });
+    if (changed && lookup) drawer?.show('map-place', true);
   }
   function selectPoint(point, zoom = 16) {
     intent++;
@@ -138,13 +140,14 @@
   } catch {}
   const initial = core.readHash(location.hash);
   map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, tapHold: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
+  drawer = window.GregleMapDrawer?.({ map });
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
-  layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: () => { syncMapMode(); updateURL(); } });
+  layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: () => { syncMapMode(); updateURL(); }, onOpen: () => drawer?.show('map-layers-panel', true) });
   placeDetails = window.GregleMapPlaces({ map, config, onPlace: point => { renderPin(point, false); updateURL(); } });
   syncMapMode(false);
   renderPin(initial.pin); updateURL();
-  navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected });
+  navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected, onOpen: () => drawer?.show('map-directions', true) });
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
@@ -230,7 +233,7 @@
       event.preventDefault(); query.focus();
     }
   });
-  document.addEventListener('click', event => { if (!event.target.closest('.map-search')) hideSearch(); });
+  document.addEventListener('click', event => { if (!event.target.closest('.map-search, #map-search-content, #map-drawer')) hideSearch(); });
   $('clear-pin').addEventListener('click', clearPin);
   $('map-locate').addEventListener('click', () => {
     if (!navigator.geolocation) { notify('Your browser does not support location sharing. Search for a place instead.'); return; }
