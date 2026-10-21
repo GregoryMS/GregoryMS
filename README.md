@@ -10,7 +10,10 @@ hostname, for example `weather.gregle.uk` and `maps.gregle.uk`. The Cloudflare
 Worker in `workers/site-router/` fetches the existing page from `gregle.uk` for
 each app root and streams shared assets and generated data from the same origin.
 Its `*.gregle.uk/*` route passes unlisted hosts, including Cloud, Docs and www,
-to their existing origins. The apex and original `.html` URLs remain available,
+to their existing origins. More-specific routes for `cloud.gregle.uk/*`,
+`docs.gregle.uk/*` and `www.gregle.uk/*` have no Worker selected, so these existing
+services bypass the router entirely. Keep these dashboard bypass routes when
+redeploying the app router. The apex and original `.html` URLs remain available,
 including existing installed app launch URLs and their browser storage.
 
 Menus, home links, tool cards, canonical links and generated Weather/Tides links
