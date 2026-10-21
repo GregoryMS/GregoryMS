@@ -1,11 +1,39 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-21T18:05:50+00:00",
-  "fetchedAt": "2026-10-21T18:06:00.593081+00:00",
+  "feedUpdatedAt": "2026-10-21T21:34:32+00:00",
+  "fetchedAt": "2026-10-21T21:34:37.313244+00:00",
   "items": [
     {
       "title": "Burnham defends Jackdaw decision as Badenoch urges PM to overturn ban on new oil and gas licences",
       "link": "https://www.bbc.co.uk/news/articles/cy4zdgk081eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Websites taken down worldwide as critical cyber-security update issued",
+      "link": "https://www.bbc.co.uk/news/articles/cmly0lg3w5x2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Missiles hit Kyiv after Russia agrees to US call to resume Ukraine peace talks",
+      "link": "https://www.bbc.co.uk/news/articles/cq3djn5nxx12o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Rosenberg: US diplomatic push offers little hope for imminent Ukraine peace",
+      "link": "https://www.bbc.co.uk/news/articles/cm98zn5j89kdo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Targeted' attack on much-loved MP leaves Australian town heartbroken",
+      "link": "https://www.bbc.co.uk/news/articles/cmgr8q88r5eqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Aberfan disaster 'most tragic of days imaginable' says King on 60th anniversary",
+      "link": "https://www.bbc.co.uk/news/articles/crgj9d4zgj5yo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Don't Stop Believin'! - high school musical Glee set for reboot",
+      "link": "https://www.bbc.co.uk/news/articles/c6x2vpn4xy0yo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Macron accuses foreign leaders of exploiting French riots",
+      "link": "https://www.bbc.co.uk/news/articles/ckjrw044ggxgo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Google staff resign in backlash over its AI contracts with military",
@@ -14,34 +42,6 @@
     {
       "title": "Jailed former DUP leader Jeffrey Donaldson being investigated over alleged rape inside Parliament",
       "link": "https://www.bbc.co.uk/news/articles/c94g1pjmxg0ko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Russia says it is ready to resume talks with Ukraine and US to end war",
-      "link": "https://www.bbc.co.uk/news/articles/cq3djn5nxx12o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Aberfan disaster 'most tragic of days imaginable' says King on 60th anniversary",
-      "link": "https://www.bbc.co.uk/news/articles/crgj9d4zgj5yo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'I was only 8 but I realised my friend was dead' - Aberfan survivor recalls moment of disaster",
-      "link": "https://www.bbc.co.uk/news/videos/c6n4e0vj018qo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Don't Stop Believin'! - high school musical Glee set for reboot",
-      "link": "https://www.bbc.co.uk/news/articles/c6x2vpn4xy0yo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Websites taken down worldwide as critical cyber-security update issued",
-      "link": "https://www.bbc.co.uk/news/articles/cmly0lg3w5x2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Holocaust school lessons to be improved after 'shocking' antisemitism review",
-      "link": "https://www.bbc.co.uk/news/articles/cq39870ypgl7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Teenage boy guilty of trying to murder girl, 15, in school",
-      "link": "https://www.bbc.co.uk/news/articles/cm0j0q9znzdlo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
