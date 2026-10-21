@@ -73,25 +73,69 @@ const worker = {
     const cache = caches.default, key = new Request(`${url.origin}/cache/pocketworld/${point}`), cooldown = new Request(`${url.origin}/cooldown/pocketworld`);
     /** @param {Response} response */
     const send = response => { const h = new Headers(response.headers); h.set('Access-Control-Allow-Origin', origin); h.set('Vary', 'Origin'); h.set('Cache-Control', 'no-store'); return new Response(response.body, { status: response.status, headers: h }); };
+    // Keep a separate source cache/cooldown so a PocketWorld outage cannot
+    // suppress fresh receiver observations, or retry that outage on every pan.
+    const fallbackKey = new Request(`${url.origin}/cache/adsblol/${point}`);
+    const fallbackCooldown = new Request(`${url.origin}/cooldown/adsblol`);
+    /** @param {Response} failure */
+    async function fallback(failure) {
+      try {
+        const cached = await cache.match(fallbackKey).catch(() => undefined);
+        if (cached) return send(cached);
+        if (await cache.match(fallbackCooldown).catch(() => undefined)) return send(failure);
+        const upstream = await fetch(`https://api.adsb.lol/v2/point/${latitude}/${longitude}/${Math.ceil(radius / 10) * 10}`, {
+          headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' },
+          redirect: 'manual', signal: AbortSignal.timeout(4500)
+        });
+        if (!upstream.ok) {
+          console.warn(JSON.stringify({event: 'aircraft_fallback_unavailable', status: upstream.status}));
+          const value = upstream.headers.get('Retry-After');
+          const parsed = value && /^\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value || '') - Date.now()) / 1000);
+          const wait = Math.min(900, Math.max(30, Number.isFinite(parsed) ? parsed : 30));
+          await upstream.body?.cancel();
+          await cache.put(fallbackCooldown, new Response('', { headers: { 'Cache-Control': `public, max-age=${wait}` } }));
+          return send(failure);
+        }
+        const data = await readJSON(upstream);
+        const stamp = data?.now > 1e12 ? data.now : data?.now * 1000;
+        if (!Array.isArray(data?.ac) || typeof data.now !== 'number' || !Number.isFinite(stamp) || stamp < Date.now() - 120000 || stamp > Date.now() + 30000) throw new Error('Invalid fallback data');
+        // Preserve source time and position ages; never turn old data into live data.
+        const ac = data.ac.slice(0, 5000).filter(a => a && typeof a.hex === 'string' && /^~?[a-f0-9]{6}$/i.test(a.hex) &&
+          typeof a.lat === 'number' && Number.isFinite(a.lat) && Math.abs(a.lat) <= 85.05113 &&
+          typeof a.lon === 'number' && Number.isFinite(a.lon) && Math.abs(a.lon) <= 180 &&
+          typeof a.seen_pos === 'number' && Number.isFinite(a.seen_pos) && a.seen_pos >= 0 &&
+          Date.now() - (stamp - a.seen_pos * 1000) < 120000 && !/^C[0-9]$/.test(a.category)
+        ).map(a => ({ hex: a.hex, flight: a.flight, r: a.r, t: a.t, desc: a.desc, lat: a.lat, lon: a.lon,
+          alt_baro: a.alt_baro, gs: a.gs, track: a.track, baro_rate: a.baro_rate, squawk: a.squawk,
+          seen_pos: a.seen_pos, type: a.type, category: a.category, provider: 'adsblol' }));
+        const response = reply({ now: stamp, ac, limited: data.ac.length > 5000 }, 200, { 'Cache-Control': 'public, max-age=15' });
+        ctx.waitUntil(cache.put(fallbackKey, response.clone()).catch(() => {}));
+        return send(response);
+      } catch (error) {
+        console.warn(JSON.stringify({event: 'aircraft_fallback_unavailable', message: error instanceof Error ? error.message.replace(/https?:\/\/\S+/g, '[upstream]') : 'Unknown error'}));
+        try { await cache.put(fallbackCooldown, new Response('', { headers: { 'Cache-Control': 'public, max-age=30' } })); } catch {}
+        return send(failure);
+      }
+    }
     let stage = 'cache';
     try {
-      const paused = await cache.match(cooldown);
-      if (paused) return send(paused);
-      const cached = await cache.match(key);
+      const cached = await cache.match(key) || await cache.match(fallbackKey);
       if (cached) return send(cached);
+      const paused = await cache.match(cooldown);
+      if (paused) return fallback(paused);
       const ac = []; let limited = false;
       for (const box of boxes) {
         stage = 'source';
         const endpoint = new URL('https://pocketworld.org/api/flights');
         endpoint.search = new URLSearchParams({ wire: '1', bbox: box.map(x => x.toFixed(4)).join(',') }).toString();
-        const upstream = await fetch(endpoint.href, { headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' }, redirect: 'manual', signal: AbortSignal.timeout(10000) });
+        const upstream = await fetch(endpoint.href, { headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' }, redirect: 'manual', signal: AbortSignal.timeout(3500) });
         if (!upstream.ok) {
           const value = upstream.headers.get('Retry-After');
           const wait = Math.min(900, Math.max(30, value && /^\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value || '') - Date.now()) / 1000) || 30));
           await upstream.body?.cancel();
           const response = reply({ error: 'Aircraft source temporarily unavailable' }, upstream.status === 429 ? 429 : 503, { 'Retry-After': String(wait), 'Cache-Control': `public, max-age=${wait}` });
-          ctx.waitUntil(cache.put(cooldown, response.clone()));
-          return send(response);
+          await cache.put(cooldown, response.clone());
+          return fallback(response);
         }
         stage = 'decode';
         const data = await readJSON(upstream);
@@ -115,7 +159,9 @@ const worker = {
       return send(response);
     } catch (error) {
       console.warn(JSON.stringify({ event: 'aircraft_source_unavailable', stage, message: error instanceof Error ? error.message.replace(/https?:\/\/\S+/g, '[upstream]') : 'Unknown error' }));
-      return reply({ error: 'Aircraft source temporarily unavailable', reason: stage }, 503, { 'Retry-After': '30' });
+      const response = reply({ error: 'Aircraft source temporarily unavailable', reason: stage }, 503, { 'Retry-After': '30', 'Cache-Control': 'public, max-age=30' });
+      try { await cache.put(cooldown, response.clone()); } catch {}
+      return fallback(response);
     }
   }
 };

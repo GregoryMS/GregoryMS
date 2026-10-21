@@ -10,7 +10,7 @@
     let selectedAircraft = null, pinnedAircraft = null, hoveredAircraft = null, hoverTimer, trackRequest = null, trackVersion = 0, trackRetryAt = 0, pathState = '';
     const credit = 'Aircraft: <a href="https://pocketworld.org/api" target="_blank" rel="noopener">PocketWorld</a> / <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> / <a href="https://opensky-network.org" target="_blank" rel="noopener">OpenSky</a> / <a href="https://adsb.lol" target="_blank" rel="noopener">ADSB.lol</a>';
     const endpoint = 'https://gregle-aircraft.square-rain-5ded.workers.dev/aircraft', interval = 15000;
-    let enabled = false, suspended = false, active, snapshot, timer, expiryTimer, version = 0, nextRequest = 0, retryAt = 0, failures = 0, lastRequestArea = '';
+    let enabled = false, suspended = false, active, snapshot, timer, expiryTimer, version = 0, nextRequest = 0, retryAt = 0, serverRetryAt = 0, failures = 0, lastRequestArea = '';
     const bounds = () => { const b = map.getBounds(); return [b.getWest(), Math.max(-85.05113, b.getSouth()), b.getEast(), Math.min(85.05113, b.getNorth())]; };
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; refresh.textContent = failures ? 'Retry aircraft' : 'Refresh aircraft'; };
     const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
@@ -190,11 +190,14 @@
       clearTimeout(timer);
       if (enabled && !suspended && !document.hidden) timer = setTimeout(load, Math.max(delay, retryAt - Date.now(), requestTime(core.area(bounds(), map.getZoom())) - Date.now()));
     }
-    async function load() {
+    async function load(manual = false) {
       clearTimeout(timer);
       if (!enabled || suspended || document.hidden) return;
       const area = core.area(bounds(), map.getZoom()); render();
       if (!area || active) return;
+      // A deliberate retry can skip client backoff, but never the server's
+      // Retry-After or the normal request cadence.
+      if (manual === true) retryAt = serverRetryAt;
       const now = Date.now(), wait = Math.max(requestTime(area), retryAt) - now;
       if (wait > 0) { schedule(wait); return; }
       const token = version, request = { controller: new AbortController() }; active = request; lastRequestArea = area.key; nextRequest = now + interval;
@@ -206,15 +209,16 @@
         if (!response.ok) {
           const error = new Error('Aircraft unavailable'), value = response.headers.get('Retry-After');
           error.retryAfter = value && /^\d+$/.test(value) ? Number(value) * 1000 : Math.max(0, Date.parse(value || '') - Date.now()) || 0;
+          serverRetryAt = Math.max(serverRetryAt, Date.now() + Math.min(900000, error.retryAfter));
           throw error;
         }
         const result = core.read(await response.json(), Date.now());
         if (token !== version) return;
-        snapshot = { ...result, area, time: Date.now() }; rememberPositions(result.aircraft); failures = 0; retryAt = 0;
+        snapshot = { ...result, area, time: Date.now() }; rememberPositions(result.aircraft); failures = 0; retryAt = 0; serverRetryAt = 0;
       } catch (error) {
         if (token !== version) return;
         failures++;
-        retryAt = Date.now() + Math.max(Math.min(900000, Number(error.retryAfter) || 0), Math.min(300000, 30000 * 2 ** Math.min(failures - 1, 4)));
+        retryAt = Math.max(serverRetryAt, Date.now() + Math.min(60000, 30000 * 2 ** Math.min(failures - 1, 1)));
         if (failures === 1) notify('Live aircraft are temporarily unavailable. Open Layers to retry.', 'aircraft');
       } finally {
         clearTimeout(timeout);
@@ -227,7 +231,7 @@
       if (enabled) { group.addTo(map); pathGroup.addTo(map); map.attributionControl.addAttribution(credit); load(); scheduleExpiry(); }
       else { snapshot = null; clear(); histories.clear(); tracks.clear(); map.removeLayer(group); map.removeLayer(pathGroup); map.attributionControl.removeAttribution(credit); }
     }
-    refresh.addEventListener('click', load);
+    refresh.addEventListener('click', () => load(true));
     map.on('moveend', () => { if (enabled && !suspended && !document.hidden) { render(); schedule(650); } });
     document.addEventListener('visibilitychange', () => {
       if (!enabled) return;
