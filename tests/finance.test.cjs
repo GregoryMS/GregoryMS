@@ -35,6 +35,6 @@ test('finance saved favourites reject corrupt data, duplicates and oversized lis
 test('finance currency directory creates distinct directed pairs and navigation points to the page',()=>{
   assert.equal(new Set(core.currencies.map(c=>c[0])).size,core.currencies.length);
   for(const [a] of core.currencies) for(const [b] of core.currencies) if(a!==b) assert.equal(core.search(`${a}/${b}`)[0].symbol,`FX_IDC:${a}${b}`);
-  assert.match(fs.readFileSync(path.join(root,'index.html'),'utf8'),/href="\/finance.html"[^>]*>[\s\S]*?<span>Finance<\/span>/);
-  assert.match(fs.readFileSync(path.join(root,'links.html'),'utf8'),/href="finance.html"/);
+  assert.match(fs.readFileSync(path.join(root,'index.html'),'utf8'),/href="https:\/\/finance\.gregle\.uk\/"[^>]*>[\s\S]*?<span>Finance<\/span>/);
+  assert.match(fs.readFileSync(path.join(root,'links.html'),'utf8'),/href="https:\/\/finance\.gregle\.uk\/"/);
 });

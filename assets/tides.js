@@ -66,8 +66,8 @@
     if(!weather.coordinates(value.latitude,value.longitude))return;
     cancelLookup();location=value;selectedDay=null;
     $('tideCity').textContent=value.name;$('tideRegion').textContent=value.region || 'Coastal tide forecast';document.title=value.name+' tides · Gregle';
-    $('weatherLink').href=core.locationURL('weather.html',value);
-    if(window.history?.replaceState) window.history.replaceState(null,'',core.locationURL('tides.html',value));
+    $('weatherLink').href=core.locationURL('https://weather.gregle.uk/',value);
+    if(window.history?.replaceState) window.history.replaceState(null,'',core.locationURL(new URL(window.location.href).hostname === 'tides.gregle.uk' ? '/' : 'tides.html',value));
     $('tideResults').replaceChildren();$('tideLocationStatus').textContent='Showing tides for '+value.name+'.';
     document.querySelectorAll('[data-tide-city]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tideCity===key)));
     return refresh();

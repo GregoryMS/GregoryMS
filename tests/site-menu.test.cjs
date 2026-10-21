@@ -5,9 +5,11 @@ const path = require('node:path');
 const vm = require('node:vm');
 const {execFileSync} = require('node:child_process');
 const root = path.join(__dirname, '..');
+const routes = require('../assets/site-routes.json');
+const destination = page => `https://${routes[page]}/`;
 
 test('every content page has the same valid app destinations and working icons', () => {
-  const expected = ['/', '/translate.html', '/weather.html', '/earthquakes.html', '/astro.html', '/sports.html', '/news.html', '/finance.html', '/links.html', '/radio.html', '/dictionary.html', '/maps.html', 'https://cloud.gregle.uk', 'https://cloud.gregle.uk'];
+  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html', 'sports.html', 'news.html', 'finance.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk']);
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -20,8 +22,9 @@ test('every content page has the same valid app destinations and working icons',
     assert.deepEqual(apps.map(a => a[1]), expected, file);
     assert.match(menu, /href="https:\/\/cloud\.gregle\.uk" data-gregle-app-id="docs"><img src="\/assets\/docs-app\/icon\.svg"[^>]*><span>Docs<\/span>/, file);
     for (const [,href,icon] of apps) {
-      if (href.startsWith('https://')) assert.equal(new URL(href).hostname, 'cloud.gregle.uk');
-      else assert(fs.existsSync(path.join(root, href === '/' ? 'index.html' : href.slice(1))), href);
+      const host = new URL(href).hostname;
+      assert(host === 'cloud.gregle.uk' || Object.values(routes).includes(host), href);
+      if (host !== 'cloud.gregle.uk') assert(fs.existsSync(path.join(root, Object.keys(routes).find(page => routes[page] === host))), href);
       assert(fs.existsSync(path.join(root, icon.slice(1))), icon);
     }
     assert(source.includes('assets/site-menu.css?'), file);
@@ -29,13 +32,13 @@ test('every content page has the same valid app destinations and working icons',
     const headerWithoutMenu = source.match(/<header\b[\s\S]*?<\/header>/)[0].replace(/<!-- Gregle app menu -->[\s\S]*?<!-- \/Gregle app menu -->/, '');
     assert(!/<a\b[^>]*>\s*←?\s*(?:Home|Tools|All tools|Back to Gregle)\s*<\/a>/i.test(headerWithoutMenu), file);
     const current = [...menu.matchAll(/href="([^"]+)" aria-current="page"/g)].map(m => m[1]);
-    assert.deepEqual(current, expected.includes('/'+file) ? ['/'+file] : file === 'index.html' ? ['/'] : [], file);
+    assert.deepEqual(current, expected.includes(destination(file)) ? [destination(file)] : [], file);
   }
 });
 
 test('homepage retains the additional menu links', () => {
   const source = fs.readFileSync(path.join(root,'index.html'),'utf8');
-  for (const href of ['https://portal.gregle.de','https://42.gsuth.uk','https://maps.apple.com','https://music.apple.com','https://gregle.uk/radio.html','https://spaceweather.com','https://news.ycombinator.com','https://xkcd.com','https://gsuth.uk']) assert(source.includes('href="'+href+'"'),href);
+  for (const href of ['https://portal.gregle.de','https://42.gsuth.uk','https://maps.apple.com','https://music.apple.com','https://radio.gregle.uk/','https://spaceweather.com','https://news.ycombinator.com','https://xkcd.com','https://gsuth.uk']) assert(source.includes('href="'+href+'"'),href);
 });
 
 test('generated menu markup stays in sync with the shared configuration', () => {

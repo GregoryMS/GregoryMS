@@ -9,7 +9,7 @@
   let symbol=normalizeSymbol(params.get('tvwidgetsymbol') || params.get('symbol')) || 'NASDAQ:AAPL';
   const disposers=new Map();
   const chartURL=()=>`https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`;
-  const localChartURL=new URL('finance.html',location.href).href;
+  const localChartURL=new URL(location.href).origin + new URL(location.href).pathname;
   const theme=()=>document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light';
 
   function embed(id,kind,config,label,fallback) {

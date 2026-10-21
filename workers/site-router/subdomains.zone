@@ -1,0 +1,23 @@
+; Gregle app subdomains. Existing apex, www, Cloud and Docs records remain unchanged.
+$ORIGIN gregle.uk.
+$TTL 300
+astro IN CNAME gregle.uk.
+bill-splitter IN CNAME gregle.uk.
+bookmarks IN CNAME gregle.uk.
+contact IN CNAME gregle.uk.
+dictionary IN CNAME gregle.uk.
+donate IN CNAME gregle.uk.
+earthquakes IN CNAME gregle.uk.
+ev IN CNAME gregle.uk.
+finance IN CNAME gregle.uk.
+links IN CNAME gregle.uk.
+maps IN CNAME gregle.uk.
+news IN CNAME gregle.uk.
+petrol IN CNAME gregle.uk.
+radio IN CNAME gregle.uk.
+sports IN CNAME gregle.uk.
+tides IN CNAME gregle.uk.
+translate IN CNAME gregle.uk.
+victoria-weather IN CNAME gregle.uk.
+weather IN CNAME gregle.uk.
+xkcd IN CNAME gregle.uk.

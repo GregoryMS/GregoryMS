@@ -2,9 +2,20 @@
 """Regenerate the shared, JavaScript-independent Gregle app launcher."""
 from pathlib import Path
 import argparse
+import json
+from urllib.parse import urlsplit, urlunsplit
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+PAGES = json.loads((ROOT / 'assets/site-routes.json').read_text())
+
+def canonical(href):
+    parsed = urlsplit(href)
+    if parsed.netloc and parsed.netloc not in ('gregle.uk', 'www.gregle.uk'):
+        return href
+    page = parsed.path.lstrip('/') or 'index.html'
+    return urlunsplit(('https', PAGES[page], '/', parsed.query, parsed.fragment)) if page in PAGES else href
+
 APPS = [
     ('Gregle', '/', 'favicons/favicon.svg'),
     ('Translate', '/translate.html', 'assets/translate-app/icon-192.png'),
@@ -46,12 +57,14 @@ def menu(page):
     links = []
     for label, href, icon in APPS:
         current = ' aria-current="page"' if href == ('/' if page == 'index.html' else '/' + page) else ''
-        identity = ' data-gregle-app-id="docs"' if label == 'Docs' else ''
+        app_id = 'docs' if label == 'Docs' else href
+        identity = f' data-gregle-app-id="{app_id}"'
+        href = canonical(href)
         links.append(f'<a class="gregle-app" href="{href}"{current}{identity}><img src="/{icon}" width="44" height="44" alt="" loading="lazy" decoding="async"><span>{label}</span></a>')
     extras = ''
     extra_links = EXTRAS if page == 'index.html' else MAP_EXTRAS if page == 'maps.html' else []
     if extra_links:
-        extras = '<section class="gregle-menu-more" aria-label="More links"><h3>More links</h3><div>' + ''.join(f'<a href="{href}" rel="noreferrer">{label}</a>' for label, href in extra_links) + '</div></section>'
+        extras = '<section class="gregle-menu-more" aria-label="More links"><h3>More links</h3><div>' + ''.join(f'<a href="{canonical(href)}" rel="noreferrer">{label}</a>' for label, href in extra_links) + '</div></section>'
     return '\n'.join([
         '<!-- Gregle app menu -->',
         '<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>',

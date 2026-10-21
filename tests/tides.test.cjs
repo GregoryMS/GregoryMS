@@ -83,7 +83,7 @@ function app({page='tides',load=async()=>dataset(),fetch=async()=>response({}),h
  const document={getElementById:get,createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag),querySelectorAll:()=>[],addEventListener(){},documentElement:new Element()};
  const c={GregleTides:core,GregleWeather:weather,GregleTideData:{load},document,fetch,URL,AbortController,Intl,console,
  Date:class extends Date{static now(){return now;}},setTimeout:()=>1,clearTimeout(){},setInterval(){},matchMedia:()=>({matches:false}),
- localStorage:{getItem:()=>null,setItem(){}},navigator:{geolocation:{getCurrentPosition(...args){geolocationCalls++;geolocation.getCurrentPosition(...args);}}},location:{href},history:{replaceState(_,__,url){c.location.href='https://gregle.uk/'+url;}}};c.window=c;
+ localStorage:{getItem:()=>null,setItem(){}},navigator:{geolocation:{getCurrentPosition(...args){geolocationCalls++;geolocation.getCurrentPosition(...args);}}},location:{href},history:{replaceState(_,__,url){c.location.href=new URL(url,c.location.href).href;}}};c.window=c;
  vm.createContext(c);vm.runInContext(fs.readFileSync(require.resolve('../assets/tide-ui.js'),'utf8'),c);
  if(page==='tides') vm.runInContext(fs.readFileSync(require.resolve('../assets/tides.js'),'utf8'),c);
  if(page==='weather') {const html=fs.readFileSync(require.resolve('../weather.html'),'utf8');const inline=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');vm.runInContext(inline,c);}
@@ -108,6 +108,18 @@ test('tide page renders curve and seven days, preserving location in weather lin
  assert.equal(a.get('tideCity').textContent,'Victoria');assert.equal(a.get('tideDays').children.length,7);assert.equal(a.get('tideChart').children[0].tagName,'SVG');
  assert.equal(core.locationFromURL('https://gregle.uk/'+a.get('weatherLink').href).name,'Victoria');
  a.get('tideDays').children[1].listeners.click();assert.match(a.get('tideDayTitle').textContent,/Sep 30/);
+});
+test('new Weather and Tides roots preserve the selected location across origins and keep history on Tides',async()=>{
+ const href=core.locationURL('https://tides.gregle.uk/',victoria);
+ const tide=app({href});await flush();
+ assert.equal(new URL(tide.c.location.href).origin,'https://tides.gregle.uk');
+ assert.equal(new URL(tide.c.location.href).pathname,'/');
+ assert.equal(new URL(tide.get('weatherLink').href).origin,'https://weather.gregle.uk');
+ assert.equal(core.locationFromURL(tide.get('weatherLink').href).name,'Victoria');
+ const forecast=app({page:'weather',href:tide.get('weatherLink').href});await flush();
+ assert.equal(new URL(forecast.get('tideLink').href).origin,'https://tides.gregle.uk');
+ assert.equal(core.locationFromURL(forecast.get('tideLink').href).latitude,victoria.latitude);
+ assert.equal(forecast.geolocationCalls(),0);
 });
 test('tide search treats names as text and retains selected location after service errors',async()=>{
  const a=app({fetch:async()=>response({results:[{name:'<Coast & Bay>',latitude:51.5,longitude:-.1,country_code:'GB',timezone:'Europe/London'}]})});await flush();

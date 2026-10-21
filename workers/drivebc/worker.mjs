@@ -1,5 +1,5 @@
 const source = 'https://www.drivebc.ca/api/dms/';
-const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
+const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk', 'https://maps.gregle.uk']);
 const fields = ['name', 'description', 'roadway_name', 'roadway_direction', 'status', 'message_display_1', 'message_display_2', 'message_display_3', 'message_text', 'updated_datetime_utc', 'message_expiry_datetime_utc', 'cache_datetime_utc'];
 
 export function snapshot(data, now = new Date()) {

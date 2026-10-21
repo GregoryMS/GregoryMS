@@ -124,7 +124,7 @@ test('failed empty feeds and blocked browser storage are handled explicitly', as
 });
 test('sports page is linked from Tools and uses the shared theme and local scripts', () => {
   const root = path.join(__dirname, '..');
-  assert.match(fs.readFileSync(path.join(root, 'links.html'), 'utf8'), /class="tool-card" href="sports.html"/);
+  assert.match(fs.readFileSync(path.join(root, 'links.html'), 'utf8'), /class="tool-card" href="https:\/\/sports\.gregle\.uk\/"/);
   const html = fs.readFileSync(path.join(root, 'sports.html'), 'utf8');
   assert.match(html, /id="themeToggle"/);
   for (const [, file] of html.matchAll(/(?:src|href)="(assets\/[^"?]+)(?:\?[^\"]*)?"/g)) assert(fs.existsSync(path.join(root, file)), file);

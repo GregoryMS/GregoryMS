@@ -635,9 +635,9 @@ test('shared tool theme restores preference and works with blocked storage', () 
 test('homepage tools menu and tool cards resolve to the intended local pages', () => {
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const links = fs.readFileSync(path.join(root, 'links.html'), 'utf8');
-  assert.match(home, /href="\/links.html"[^>]*>[\s\S]*?<span>More<\/span>/);
+  assert.match(home, /href="https:\/\/links\.gregle\.uk\/"[^>]*>[\s\S]*?<span>More<\/span>/);
   for (const target of ['petrol.html', 'ev.html', 'xkcd.html']) {
-    assert(links.includes('href="' + target + '"'));
+    assert(links.includes('href="https://' + target.replace('.html', '') + '.gregle.uk/"'));
     assert(fs.existsSync(path.join(root, target)));
   }
   for (const page of ['links.html', 'xkcd.html']) {
@@ -993,7 +993,7 @@ test('homepage weather links preserve the displayed location and forecast timezo
   const env=environment('index.html');
   vm.runInContext('setWeatherChip(18,2,51.5,-0.12,"London & area",1,"Europe/London","GB")',env.context);
   const href=new URL(env.get('weatherChip').href,'https://gregle.uk');
-  assert.equal(href.pathname,'/weather.html');assert.equal(href.searchParams.get('lat'),'51.5');
+  assert.equal(href.origin,'https://weather.gregle.uk');assert.equal(href.pathname,'/');assert.equal(href.searchParams.get('lat'),'51.5');
   assert.equal(href.searchParams.get('lon'),'-0.12');assert.equal(href.searchParams.get('name'),'London & area');
   assert.equal(href.searchParams.get('tz'),'Europe/London');assert.equal(href.searchParams.get('country'),'GB');
   const parsed=require('../assets/tide-core.js').locationFromURL(href.href);
@@ -1003,7 +1003,7 @@ test('homepage weather links preserve the displayed location and forecast timezo
   assert.equal(fallback.searchParams.get('name'),'Victoria');assert.equal(fallback.searchParams.get('country'),'CA');
   assert.equal(fallback.searchParams.get('tz'),'America/Vancouver');assert.match(env.get('weatherChip').innerHTML,/--°C/);
   const markup=fs.readFileSync(path.join(root,'index.html'),'utf8').match(/<a class="weather-chip"[^>]+>/)[0];
-  assert(!markup.includes('target="_blank"'));assert(markup.includes('/weather.html?lat='));
+  assert(!markup.includes('target="_blank"'));assert(markup.includes('https://weather.gregle.uk/?lat='));
 });
 
 test('cached homepage weather keeps its own location and rejects invalid cached coordinates', () => {
