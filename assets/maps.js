@@ -13,7 +13,7 @@
     evURL: 'https://gregle-ev.square-rain-5ded.workers.dev/charging', evProvider: 'openchargemap',
     evOSMURL: 'https://gregle-ev.square-rain-5ded.workers.dev/charging?source=osm',
     fuelPricesURL: 'https://gregle-ev.square-rain-5ded.workers.dev/fuel-prices', fuelStationsURL: 'https://gregle-ev.square-rain-5ded.workers.dev/fuel-stations',
-    placesURL: 'https://overpass.kumi.systems/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
+    placesURL: 'https://overpass.private.coffee/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
   let map, drawer, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false;
@@ -131,7 +131,7 @@
   }
   let config = { ...defaults };
   try {
-    const response = await fetch('assets/maps-config.json?v=20261019-aviation-worker', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261021-fast-places', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       if (['openchargemap', 'overpass'].includes(supplied.evProvider)) config.evProvider = supplied.evProvider;

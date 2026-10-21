@@ -13,7 +13,7 @@
   "evURL": "https://gregle-ev.square-rain-5ded.workers.dev/charging",
   "evProvider": "openchargemap",
   "evOSMURL": "https://gregle-ev.square-rain-5ded.workers.dev/charging?source=osm",
-  "placesURL": "https://overpass.kumi.systems/api/interpreter",
+  "placesURL": "https://overpass.private.coffee/api/interpreter",
   "placeLookupURL": "https://nominatim.openstreetmap.org/",
   "fuelPricesURL": "https://gregle-ev.square-rain-5ded.workers.dev/fuel-prices",
   "fuelStationsURL": "https://gregle-ev.square-rain-5ded.workers.dev/fuel-stations"
