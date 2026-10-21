@@ -80,9 +80,9 @@ const worker = {
     /** @param {Response} failure */
     async function fallback(failure) {
       try {
-        const cached = await cache.match(fallbackKey);
+        const cached = await cache.match(fallbackKey).catch(() => undefined);
         if (cached) return send(cached);
-        if (await cache.match(fallbackCooldown)) return send(failure);
+        if (await cache.match(fallbackCooldown).catch(() => undefined)) return send(failure);
         const upstream = await fetch(`https://api.adsb.lol/v2/point/${latitude}/${longitude}/${Math.ceil(radius / 10) * 10}`, {
           headers: { Accept: 'application/json', 'User-Agent': 'GregleMaps/1.0 (+https://gregle.uk/maps.html)' },
           redirect: 'manual', signal: AbortSignal.timeout(4500)
@@ -108,7 +108,7 @@ const worker = {
           alt_baro: a.alt_baro, gs: a.gs, track: a.track, baro_rate: a.baro_rate, squawk: a.squawk,
           seen_pos: a.seen_pos, type: a.type, category: a.category, provider: 'adsblol' }));
         const response = reply({ now: stamp, ac, limited: data.ac.length > 5000 }, 200, { 'Cache-Control': 'public, max-age=15' });
-        await cache.put(fallbackKey, response.clone());
+        ctx.waitUntil(cache.put(fallbackKey, response.clone()).catch(() => {}));
         return send(response);
       } catch {
         try { await cache.put(fallbackCooldown, new Response('', { headers: { 'Cache-Control': 'public, max-age=30' } })); } catch {}
