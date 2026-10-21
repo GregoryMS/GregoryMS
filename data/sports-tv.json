@@ -3,18 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-21T17:12:57.675870+00:00",
+      "checkedAt": "2026-10-21T20:38:35.028527+00:00",
       "listings": [
-        {
-          "home": "Manchester City",
-          "away": "AEK Athens",
-          "start": "2026-10-20T19:00:00+00:00",
-          "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 1",
-            "TNT Sports Ultimate"
-          ]
-        },
         {
           "home": "Bayern München",
           "away": "Arsenal",
@@ -241,6 +231,11 @@
           "away": "Paris Saint Germain (W)",
           "start": "2026-10-29T20:00:00+00:00",
           "channels": [
+            "BBC Sport online",
+            "BBC Two",
+            "BBC Two Northern Ireland",
+            "BBC Two Wales",
+            "BBC iPlayer",
             "Disney+ (UK)"
           ]
         }
@@ -248,7 +243,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-21T17:12:57.675870+00:00",
+      "checkedAt": "2026-10-21T20:38:35.028527+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -414,7 +409,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-21T17:12:57.675870+00:00",
+      "checkedAt": "2026-10-21T20:38:35.028527+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -614,7 +609,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-21T17:12:57.675870+00:00",
+      "checkedAt": "2026-10-21T20:38:35.028527+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -802,7 +797,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-21T17:12:57.675870+00:00",
+      "checkedAt": "2026-10-21T20:38:35.028527+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -957,6 +952,7 @@
             "Sky Sport 2",
             "Sky Sport News",
             "Sky Ultra HD",
+            "Sportschau.de",
             "WOW"
           ]
         },
