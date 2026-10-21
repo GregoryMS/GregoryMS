@@ -88,6 +88,28 @@
     });
     return readPlaces({ elements }, point).filter(place => point.osm || place.distance <= clickRadius(point, zoom)).map(place => ({ ...place, partial: true }));
   }
+  function addressURL(endpoint, point) {
+    if (!core.validPoint(point.lat, point.lng)) throw new Error('Invalid address location');
+    const url = new URL('reverse', endpoint.endsWith('/') ? endpoint : endpoint + '/');
+    url.searchParams.set('format', 'jsonv2'); url.searchParams.set('addressdetails', '1');
+    url.searchParams.set('lat', point.lat.toFixed(5)); url.searchParams.set('lon', point.lng.toFixed(5));
+    url.searchParams.set('zoom', '18'); url.searchParams.set('layer', 'address');
+    return url.href;
+  }
+  function readAddress(response) {
+    if (response?.error === 'Unable to geocode') return null;
+    const osm = core.osmReference(response?.osm_type, response?.osm_id);
+    const lat = Number(response?.lat), lng = Number(response?.lon);
+    const coordinate = value => ['string', 'number'].includes(typeof value) && String(value).trim() !== '';
+    if (!osm || !coordinate(response?.lat) || !coordinate(response?.lon) || !core.validPoint(lat, lng)) throw new Error('Invalid address response');
+    const address = response.address || {};
+    const street = [clean(address.house_number), clean(address.road || address.pedestrian || address.residential || address.footway || address.path || address.cycleway || address.square)].filter(Boolean).join(' ');
+    const locality = clean(address.city || address.town || address.village || address.municipality || address.hamlet || address.suburb);
+    const parts = [street, locality, clean(address.state), clean(address.postcode), clean(address.country)].filter(Boolean);
+    const label = [...new Set(parts)].join(', ') || clean(response.display_name);
+    if (!label) throw new Error('Address missing from response');
+    return { label: clean(label), osm, lat, lng };
+  }
   function safeLink(kind, value) {
     value = clean(value);
     if (kind === 'phone') {
@@ -190,5 +212,5 @@
     add('Operator', tags.operator);
     return rows;
   }
-  return { query, readPlaces, fallbackURL, readFallback, facts, safeLink, readHours };
+  return { query, readPlaces, fallbackURL, readFallback, addressURL, readAddress, facts, safeLink, readHours };
 });
