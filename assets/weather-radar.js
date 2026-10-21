@@ -110,7 +110,6 @@
     location=value;
     root.GregleLightning?.setLocation(value);
     root.GregleWeatherLayers?.setLocation(value);
-    $('radarLocation').textContent=`Weather layers around ${value.name}`;
     if(map) { stop();clearLayers();marker.setLatLng([value.latitude,value.longitude]);recenter();if(frames.length)show(frames.length-1); }
   }
   function start() {
