@@ -123,7 +123,7 @@
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces) {
+  if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces || !window.GregleMapPinGestures) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }
@@ -137,7 +137,7 @@
     }
   } catch {}
   const initial = core.readHash(location.hash);
-  map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
+  map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, tapHold: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
   layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: () => { syncMapMode(); updateURL(); } });
@@ -149,12 +149,16 @@
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
-  // Leaflet also emits dblclick for a double-tap on touch devices.
-  map.on('dblclick', event => {
+  const dropPin = event => {
     if (usingEmbed || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
     if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point, true, true); updateURL(); }
+  };
+  const pinGestures = window.GregleMapPinGestures({
+    container: $('gregle-map'),
+    onPin: touch => dropPin({ latlng: map.mouseEventToLatLng(touch), originalEvent: { target: touch.target } }),
   });
+  map.on('dblclick', event => { if (!pinGestures.ignoreDoubleClick(event.originalEvent)) dropPin(event); });
   window.addEventListener('hashchange', () => {
     intent++; cancelSearch(); hideSearch();
     const state = core.readHash(location.hash);
