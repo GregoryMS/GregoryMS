@@ -1,0 +1,1281 @@
+{
+  "source": "https://api.weather.gc.ca/collections/citypageweather-realtime/items?f=json&limit=1000&properties=identifier,name.en,name.fr,currentConditions.station.value.en",
+  "retrieved": "2026-10-21",
+  "features": [
+    {
+      "id": "ab-50",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.49,
+          53.54
+        ]
+      },
+      "properties": {
+        "identifier": "ab-50",
+        "name": {
+          "en": "Edmonton",
+          "fr": "Edmonton"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Edmonton Blatchford"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "mb-55",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -96.56,
+          50.71
+        ]
+      },
+      "properties": {
+        "identifier": "mb-55",
+        "name": {
+          "en": "Victoria Beach",
+          "fr": "Victoria Beach"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Victoria Beach"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-32",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.29,
+          48.41
+        ]
+      },
+      "properties": {
+        "identifier": "bc-32",
+        "name": {
+          "en": "Gonzales Point",
+          "fr": "Gonzales Point"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Victoria Gonzales"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "mb-38",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -97.13,
+          49.89
+        ]
+      },
+      "properties": {
+        "identifier": "mb-38",
+        "name": {
+          "en": "Winnipeg",
+          "fr": "Winnipeg"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Winnipeg Richardson Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "mb-36",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -97.13,
+          49.89
+        ]
+      },
+      "properties": {
+        "identifier": "mb-36",
+        "name": {
+          "en": "Winnipeg (The Forks)",
+          "fr": "Winnipeg (La Fourche)"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Winnipeg - The Forks"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "ab-71",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.55,
+          53.27
+        ]
+      },
+      "properties": {
+        "identifier": "ab-71",
+        "name": {
+          "en": "Edmonton (Int'l Aprt)",
+          "fr": "Edmonton (Aprt int.)"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Edmonton Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "on-85",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.26,
+          43.88
+        ]
+      },
+      "properties": {
+        "identifier": "on-85",
+        "name": {
+          "en": "Markham",
+          "fr": "Markham"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Toronto City Centre Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "on-128",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.39,
+          43.63
+        ]
+      },
+      "properties": {
+        "identifier": "on-128",
+        "name": {
+          "en": "Toronto Island",
+          "fr": "Toronto Island"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Toronto City Centre Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "on-143",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.38,
+          43.65
+        ]
+      },
+      "properties": {
+        "identifier": "on-143",
+        "name": {
+          "en": "Toronto",
+          "fr": "Toronto"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Toronto Pearson Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-59",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.46,
+          48.57
+        ]
+      },
+      "properties": {
+        "identifier": "bc-59",
+        "name": {
+          "en": "Victoria (Hartland)",
+          "fr": "Victoria (Hartland)"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Victoria Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-85",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.36,
+          48.43
+        ]
+      },
+      "properties": {
+        "identifier": "bc-85",
+        "name": {
+          "en": "Victoria",
+          "fr": "Victoria"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Victoria Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-74",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.12,
+          49.24
+        ]
+      },
+      "properties": {
+        "identifier": "bc-74",
+        "name": {
+          "en": "Vancouver",
+          "fr": "Vancouver"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Vancouver Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-96",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.16,
+          49.15
+        ]
+      },
+      "properties": {
+        "identifier": "bc-96",
+        "name": {
+          "en": "Richmond",
+          "fr": "Richmond"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Vancouver Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-58",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.29,
+          45.45
+        ]
+      },
+      "properties": {
+        "identifier": "qc-58",
+        "name": {
+          "en": "Chambly",
+          "fr": "Chambly"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-21",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.25,
+          45.44
+        ]
+      },
+      "properties": {
+        "identifier": "qc-21",
+        "name": {
+          "en": "Richelieu",
+          "fr": "Richelieu"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-71",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.57,
+          45.41
+        ]
+      },
+      "properties": {
+        "identifier": "qc-71",
+        "name": {
+          "en": "La Prairie",
+          "fr": "La Prairie"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-b1",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.33,
+          45.59
+        ]
+      },
+      "properties": {
+        "identifier": "qc-b1",
+        "name": {
+          "en": "Sainte-Julie",
+          "fr": "Sainte-Julie"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-b0",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.57,
+          45.41
+        ]
+      },
+      "properties": {
+        "identifier": "qc-b0",
+        "name": {
+          "en": "Sainte-Catherine",
+          "fr": "Sainte-Catherine"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-55",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.52,
+          45.39
+        ]
+      },
+      "properties": {
+        "identifier": "qc-55",
+        "name": {
+          "en": "Candiac",
+          "fr": "Candiac"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-162",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.43,
+          45.68
+        ]
+      },
+      "properties": {
+        "identifier": "qc-162",
+        "name": {
+          "en": "Varennes",
+          "fr": "Varennes"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-109",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.43,
+          45.51
+        ]
+      },
+      "properties": {
+        "identifier": "qc-109",
+        "name": {
+          "en": "Longueuil",
+          "fr": "Longueuil"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-62",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.54,
+          45.38
+        ]
+      },
+      "properties": {
+        "identifier": "qc-62",
+        "name": {
+          "en": "Delson",
+          "fr": "Delson"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-22",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -72.95,
+          45.63
+        ]
+      },
+      "properties": {
+        "identifier": "qc-22",
+        "name": {
+          "en": "Saint-Hyacinthe",
+          "fr": "Saint-Hyacinthe"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-92",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.32,
+          45.55
+        ]
+      },
+      "properties": {
+        "identifier": "qc-92",
+        "name": {
+          "en": "Mont-Saint-Hilaire",
+          "fr": "Mont-Saint-Hilaire"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-a6",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.32,
+          45.55
+        ]
+      },
+      "properties": {
+        "identifier": "qc-a6",
+        "name": {
+          "en": "Saint-Basile Le Grand",
+          "fr": "Saint-Basile Le Grand"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-a5",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.3,
+          45.65
+        ]
+      },
+      "properties": {
+        "identifier": "qc-a5",
+        "name": {
+          "en": "Saint-Amable",
+          "fr": "Saint-Amable"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-93",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.22,
+          45.54
+        ]
+      },
+      "properties": {
+        "identifier": "qc-93",
+        "name": {
+          "en": "Otterburn Park",
+          "fr": "Otterburn Park"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-a7",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.57,
+          45.37
+        ]
+      },
+      "properties": {
+        "identifier": "qc-a7",
+        "name": {
+          "en": "Saint-Constant",
+          "fr": "Saint-Constant"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal Metropolitain Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "ab-52",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.06,
+          51.05
+        ]
+      },
+      "properties": {
+        "identifier": "ab-52",
+        "name": {
+          "en": "Calgary",
+          "fr": "Calgary"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Calgary Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "on-163",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -84.64,
+          47.24
+        ]
+      },
+      "properties": {
+        "identifier": "on-163",
+        "name": {
+          "en": "Montreal River Harbour",
+          "fr": "Montreal River Harbour"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Wawa Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "ab-61",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.18,
+          51.09
+        ]
+      },
+      "properties": {
+        "identifier": "ab-61",
+        "name": {
+          "en": "Calgary (Olympic Park)",
+          "fr": "Calgary (Parc Olympique)"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Canada Olympic Park"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-76",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.67,
+          45.6
+        ]
+      },
+      "properties": {
+        "identifier": "qc-76",
+        "name": {
+          "en": "Laval",
+          "fr": "Laval"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Trudeau Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-49",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.88,
+          45.31
+        ]
+      },
+      "properties": {
+        "identifier": "qc-49",
+        "name": {
+          "en": "Beauharnois",
+          "fr": "Beauharnois"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Trudeau Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-147",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.55,
+          45.51
+        ]
+      },
+      "properties": {
+        "identifier": "qc-147",
+        "name": {
+          "en": "Montréal",
+          "fr": "Montréal"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Trudeau Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-66",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.3,
+          48.47
+        ]
+      },
+      "properties": {
+        "identifier": "bc-66",
+        "name": {
+          "en": "Victoria (University of)",
+          "fr": "Victoria (Université de)"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "University of Victoria"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-81",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.79,
+          45.67
+        ]
+      },
+      "properties": {
+        "identifier": "qc-81",
+        "name": {
+          "en": "Lorraine",
+          "fr": "Lorraine"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-b4",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.89,
+          45.56
+        ]
+      },
+      "properties": {
+        "identifier": "qc-b4",
+        "name": {
+          "en": "Saint-Eustache",
+          "fr": "Saint-Eustache"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-53",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.84,
+          45.61
+        ]
+      },
+      "properties": {
+        "identifier": "qc-53",
+        "name": {
+          "en": "Boisbriand",
+          "fr": "Boisbriand"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-a9",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.82,
+          45.76
+        ]
+      },
+      "properties": {
+        "identifier": "qc-a9",
+        "name": {
+          "en": "Sainte-Anne-Des-Plaines",
+          "fr": "Sainte-Anne-Des-Plaines"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-123",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -74.08,
+          45.65
+        ]
+      },
+      "properties": {
+        "identifier": "qc-123",
+        "name": {
+          "en": "Mirabel",
+          "fr": "Mirabel"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-a3",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.93,
+          45.58
+        ]
+      },
+      "properties": {
+        "identifier": "qc-a3",
+        "name": {
+          "en": "Rosemère",
+          "fr": "Rosemère"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-b3",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.93,
+          45.58
+        ]
+      },
+      "properties": {
+        "identifier": "qc-b3",
+        "name": {
+          "en": "Sainte-Thérèse",
+          "fr": "Sainte-Thérèse"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-14",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -74.34,
+          45.66
+        ]
+      },
+      "properties": {
+        "identifier": "qc-14",
+        "name": {
+          "en": "Lachute",
+          "fr": "Lachute"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "on-71",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -74.6,
+          45.61
+        ]
+      },
+      "properties": {
+        "identifier": "on-71",
+        "name": {
+          "en": "Hawkesbury",
+          "fr": "Hawkesbury"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-13",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.96,
+          45.82
+        ]
+      },
+      "properties": {
+        "identifier": "qc-13",
+        "name": {
+          "en": "Saint-Jérôme",
+          "fr": "Saint-Jérôme"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-98",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.92,
+          46.01
+        ]
+      },
+      "properties": {
+        "identifier": "qc-98",
+        "name": {
+          "en": "Prévost",
+          "fr": "Prévost"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-52",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.87,
+          45.68
+        ]
+      },
+      "properties": {
+        "identifier": "qc-52",
+        "name": {
+          "en": "Blainville",
+          "fr": "Blainville"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-c3",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.92,
+          46.01
+        ]
+      },
+      "properties": {
+        "identifier": "qc-c3",
+        "name": {
+          "en": "Saint-Sauveur",
+          "fr": "Saint-Sauveur"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "qc-b2",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.96,
+          45.82
+        ]
+      },
+      "properties": {
+        "identifier": "qc-b2",
+        "name": {
+          "en": "Sainte-Sophie",
+          "fr": "Sainte-Sophie"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Montréal-Mirabel Int'l Airport"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-99",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.16,
+          49.33
+        ]
+      },
+      "properties": {
+        "identifier": "bc-99",
+        "name": {
+          "en": "West Vancouver",
+          "fr": "West Vancouver"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "West Vancouver"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bc-75",
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.39,
+          48.42
+        ]
+      },
+      "properties": {
+        "identifier": "bc-75",
+        "name": {
+          "en": "Victoria Harbour",
+          "fr": "Victoria Harbour"
+        },
+        "currentConditions": {
+          "station": {
+            "value": {
+              "en": "Victoria Harbour"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
