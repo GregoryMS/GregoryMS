@@ -30,7 +30,7 @@
     });
     document.getElementById('close-vessels-legend').addEventListener('click', () => closeLegend(true));
     document.addEventListener('click', event => {
-      if (!legend.hidden && !legend.contains(event.target) && !legendToggle.contains(event.target)) closeLegend();
+      if (!event.target.closest?.('#map-drawer') && !legend.hidden && !legend.contains(event.target) && !legendToggle.contains(event.target)) closeLegend();
     });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !legend.hidden) { event.preventDefault(); closeLegend(true); }

@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  window.GregleMapLayers = ({ map, config, initial, notify, onChange }) => {
+  window.GregleMapLayers = ({ map, config, initial, notify, onChange, onOpen = () => {} }) => {
     const core = window.GregleMaps, $ = id => document.getElementById(id);
     const panel = $('map-layers-panel'), toggle = $('map-layers-toggle'), embedToggle = $('plugshare-layers-toggle');
     const preferenceKey = 'gregle-maps-layers', credentialKey = 'gregle-maps-tomtom-key';
@@ -50,6 +50,7 @@
     };
     const openPanel = (keyForm = false) => {
       panel.hidden = false; toggle.setAttribute('aria-expanded', 'true'); embedToggle.setAttribute('aria-expanded', 'true');
+      onOpen();
       if (keyForm) {
         tomtomMenu.setOpen(true, true);
         $('traffic-api-key').focus();
@@ -266,7 +267,7 @@
     toggle.addEventListener('click', () => { if (panel.hidden) openPanel(); else closePanel(); });
     embedToggle.addEventListener('click', () => { if (panel.hidden) openPanel(); else closePanel(); });
     $('close-map-layers').addEventListener('click', () => closePanel(true));
-    document.addEventListener('click', event => { if (!panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target) && !embedToggle.contains(event.target)) closePanel(); });
+    document.addEventListener('click', event => { if (!event.target.closest?.('#map-drawer') && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target) && !embedToggle.contains(event.target)) closePanel(); });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
