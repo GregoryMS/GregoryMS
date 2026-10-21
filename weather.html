@@ -190,7 +190,7 @@
     </section>
     <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
-  <script src="assets/weather-core.js?v=20261021-stations"></script>
+  <script src="assets/weather-core.js?v=20261021-station-coverage"></script>
   <script src="assets/weather-hourly.js?v=20261016-feels"></script>
   <script src="assets/weather-photography.js?v=20261020-order"></script>
   <script src="assets/weather-details.js?v=20261016-feels"></script>
@@ -360,7 +360,8 @@
       try {
         if(signal.aborted) return;
         const directory=stationDirectory || await fetchJSON(stationDirectoryURL,controller.signal);
-        const choices=weatherCore.stationChoices(directory,location,station);
+        // Keep the city's original group when choosing a differently named station such as Gonzales Point.
+        const choices=selectedStationId && availableStations.some(choice=>choice.id===station.id) ? availableStations : weatherCore.stationChoices(directory,location,station);
         if(id!==requestId || controller.signal.aborted || signal.aborted) return;
         stationDirectory=directory; availableStations=choices;
         const options=choices.map(choice=>{
@@ -392,8 +393,8 @@
               if(!stationDirectory) stationDirectory=await fetchJSON(stationDirectoryURL,controller.signal);
               station=weatherCore.nearestStation(stationDirectory,location);
             }
-            // Default Victoria to the harbour, while allowing an explicit airport selection.
-            if(!selectedStationId && (station.id==='bc-85' || location.name.toLowerCase()==='victoria' && ['bc-59','bc-66'].includes(station.id))) station={...LOCATIONS.victoria,latitude:48.421,longitude:-123.393};
+            // Default Victoria to the harbour, while allowing an explicit local station selection.
+            if(!selectedStationId && (station.id==='bc-85' || location.name.toLowerCase()==='victoria' && ['bc-32','bc-59','bc-66'].includes(station.id))) station={...LOCATIONS.victoria,latitude:48.421,longitude:-123.393};
             const data=await fetchJSON(`https://api.weather.gc.ca/collections/citypageweather-realtime/items/${station.id}?f=json`,controller.signal);
             const weather=data.properties, forecasts=weather?.forecastGroup?.forecasts;
             if(!Array.isArray(forecasts) || !forecasts.length) throw new Error('No Canadian forecast');
@@ -415,6 +416,7 @@
         }
         const data=await fetchJSON(weatherCore.forecastURL(location),controller.signal);
         if(id!==requestId) return;
+        $('stationControl').hidden=true;
         renderGlobal(data); sourceLinks(false,location);
         globalThis.GregleWeatherContext?.renderNormals(null);
         statusEl.textContent=canadianFailure ? `${location.name} · Environment Canada is unavailable or has no nearby forecast. Showing Open-Meteo.` : '';

@@ -10,7 +10,10 @@ const directory={features:[
   feature('bc-85','Victoria',48.43,-123.36,"Victoria Int'l Airport"),
   feature('bc-59','Victoria (Hartland)',48.57,-123.46,"Victoria Int'l Airport"),
   feature('bc-66','Victoria (University of)',48.47,-123.30,'University of Victoria'),
-  feature('bc-74','Vancouver',49.24,-123.12),
+  feature('bc-32','Gonzales Point',48.41,-123.29,'Victoria Gonzales'),
+  feature('bc-74','Vancouver',49.24,-123.12,"Vancouver Int'l Airport"),
+  feature('bc-99','West Vancouver',49.33,-123.16),
+  feature('bc-96','Richmond',49.15,-123.16,"Vancouver Int'l Airport"),
   feature('mb-55','Victoria Beach',50.71,-96.56),
   feature('bc-999','Victoria (Far away)',51,-123.39),
   feature('mb-99','Victoria',48.42,-123.39),
@@ -22,21 +25,35 @@ const directory={features:[
 const victoria={name:'Victoria',latitude:48.42,longitude:-123.39,country:'CA'};
 test('station choices group local feeds without including other cities, provinces or distant namesakes',()=>{
   const choices=core.stationChoices(directory,victoria,{id:'bc-75'});
-  assert.deepEqual(choices.map(s=>s.id).sort(),['bc-59','bc-66','bc-75','bc-85']);
+  assert.deepEqual(choices.map(s=>s.id).sort(),['bc-32','bc-59','bc-66','bc-75','bc-85']);
   assert.equal(choices.find(s=>s.id==='bc-85').label,"Victoria Int'l Airport");
+  assert.equal(choices.find(s=>s.id==='bc-32').label,'Victoria Gonzales');
   assert.equal(choices.find(s=>s.id==='bc-59').label,'Victoria (Hartland)');
   assert.equal(core.stationChoices(directory,victoria,{id:'missing'}).length,0);
-  assert.equal(core.stationChoices(directory,victoria,{id:'bc-74'}).length,1);
+  assert.deepEqual(core.stationChoices(directory,victoria,{id:'bc-74'}).map(s=>s.id).sort(),['bc-74','bc-99']);
   assert.equal(core.stationChoices(directory,{latitude:43.65,longitude:-79.38},{id:'on-143'}).length,2);
   assert.equal(core.stationChoices(directory,{latitude:45.4,longitude:-75.69},{id:'on-118'}).length,2);
 });
 test('station choices reject incomplete directories and skip invalid station entries',()=>{
   assert.throws(()=>core.stationChoices({...directory,links:[{rel:'next'}]},victoria,{id:'bc-75'}));
   const bad={features:[feature('not/an-id','Victoria',48.43,-123.36),feature('bc-1','Victoria',NaN,0),feature('bc-2',123,48.43,-123.36),...directory.features]};
-  assert.equal(core.stationChoices(bad,victoria,{id:'bc-75'}).length,4);
+  assert.equal(core.stationChoices(bad,victoria,{id:'bc-75'}).length,5);
 });
 
-const weather=id=>({properties:{currentConditions:{temperature:{value:{en:id==='bc-85'?12:9}},station:{value:{en:id}}},forecastGroup:{forecasts:[{period:{value:{en:'Today'}},textSummary:{en:'Clear'},temperatures:{temperature:[]}}]}}});
+test('the official directory exposes multiple station choices across Canada, including accents and different location names',()=>{
+  const real=require('./fixtures/weather-station-cities.json');
+  const groups=[['bc-75',['bc-32','bc-59','bc-66','bc-75','bc-85']],['bc-74',['bc-74','bc-99']],
+    ['on-143',['on-128','on-143']],['ab-52',['ab-52','ab-61']],['ab-50',['ab-50','ab-71']],
+    ['mb-38',['mb-36','mb-38']],['qc-147',['qc-109','qc-147','qc-53']]];
+  for(const [id,expected] of groups){
+    const entry=real.features.find(f=>f.properties.identifier===id);assert(entry,id);
+    const [longitude,latitude]=entry.geometry.coordinates;
+    const choices=core.stationChoices(real,{latitude,longitude},{id});
+    assert.deepEqual(choices.map(s=>s.id).sort(),[...expected].sort(),entry.properties.name.en);
+  }
+});
+
+const weather=id=>({properties:{currentConditions:{temperature:{value:{en:id==='bc-85'?12:id==='bc-32'?7:9}},station:{value:{en:id==='bc-32'?'Victoria Gonzales':id}}},forecastGroup:{forecasts:[{period:{value:{en:'Today'}},textSummary:{en:'Clear'},temperatures:{temperature:[]}}]}}});
 const globalWeather={timezone:'Europe/London',current:{time:'2026-10-21T12:00',temperature_2m:15},daily:{time:['2026-10-21'],weather_code:[0],temperature_2m_max:[15],temperature_2m_min:[8]}};
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 function environment(fetch) {
@@ -63,22 +80,45 @@ test('Victoria defaults to Harbour, explicit Airport selection updates data and 
   await flush();
   assert.equal(env.get('weatherStation').value,'bc-75');
   assert.equal(env.get('stationControl').hidden,false);
-  assert.equal(env.get('weatherStation').children.length,4);
+  assert.equal(env.get('weatherStation').children.length,5);
   env.get('weatherStation').value='bc-85';env.get('weatherStation').listeners.change();await flush();
   assert.equal(env.get('temperature').textContent,'12°C');
   assert.equal(env.get('weatherStation').value,'bc-85');
   assert.equal(env.get('cityName').textContent,'Victoria');
   await env.run('loadWeather()');assert.equal(env.get('weatherStation').value,'bc-85');
-  await env.run('selectCity("vancouver")');assert.equal(env.get('stationControl').hidden,true);
+  await env.run('selectCity("vancouver")');await flush();assert.equal(env.get('stationControl').hidden,false);
+  assert.equal(env.get('weatherStation').children.length,2);
+  await env.run('selectCity("chilliwack")');await flush();assert.equal(env.get('stationControl').hidden,true);
   await env.run('selectCity("victoria")');assert.equal(env.get('weatherStation').value,'bc-75');
 });
 test('Victoria city lookups default to Harbour even when another local feed is nearest',async()=>{
   const env=environment(normalFetch);
-  for(const [latitude,longitude] of [[48.43,-123.36],[48.47,-123.30],[48.57,-123.46]]) {
+  for(const [latitude,longitude] of [[48.43,-123.36],[48.47,-123.30],[48.57,-123.46],[48.41,-123.29]]) {
     await env.run(`selectLocation({name:"Victoria",country:"CA",latitude:${latitude},longitude:${longitude},timezone:"America/Vancouver"})`);
     await flush();
     assert.equal(env.get('weatherStation').value,'bc-75');
   }
+});
+
+test('choosing Gonzales retains the full Victoria selector and keeps the choice on refresh',async()=>{
+  const env=environment(normalFetch);await env.run('selectCity("victoria")');await flush();
+  env.get('weatherStation').value='bc-32';env.get('weatherStation').listeners.change();await flush();
+  assert.equal(env.get('temperature').textContent,'7°C');assert.match(env.get('currentDetails').textContent,/Victoria Gonzales/);
+  assert.equal(env.get('cityName').textContent,'Victoria');assert.equal(env.get('stationControl').hidden,false);
+  assert.equal(env.get('weatherStation').value,'bc-32');assert.equal(env.get('weatherStation').children.length,5);
+  await env.run('loadWeather()');await flush();assert.equal(env.get('weatherStation').value,'bc-32');assert.equal(env.get('weatherStation').children.length,5);
+  env.get('weatherStation').value='bc-75';env.get('weatherStation').listeners.change();await flush();
+  assert.equal(env.get('weatherStation').value,'bc-75');assert.equal(env.get('weatherStation').children.length,5);
+});
+
+test('searched Canadian cities expose their choices and station failures hide the selector during model fallback',async()=>{
+  let fail=false;
+  const env=environment(async url=>{if(fail && url.includes('items/on-128?'))throw Error('Unavailable');return normalFetch(url);});
+  await env.run('selectLocation({name:"Toronto",country:"CA",latitude:43.65,longitude:-79.38,timezone:"America/Toronto"})');await flush();
+  assert.equal(env.get('stationControl').hidden,false);assert.equal(env.get('weatherStation').children.length,2);
+  fail=true;env.get('weatherStation').value='on-128';env.get('weatherStation').listeners.change();await flush();
+  assert.equal(env.get('stationControl').hidden,true);assert.match(env.get('sourceCredit').textContent,/Open-Meteo/);
+  fail=false;await env.run('loadWeather()');await flush();assert.equal(env.get('weatherStation').value,'on-128');assert.equal(env.get('stationControl').hidden,false);
 });
 test('directory failure preserves a working forecast and hides unavailable station choices',async()=>{
   const env=environment(async url=>{if(url.includes('limit=1000'))throw Error('Unavailable');return normalFetch(url);});

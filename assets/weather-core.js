@@ -22,14 +22,26 @@
     return stations[0];
   }
   function stationChoices(data,location,selected) {
-    const family=name=>name.replace(/\s*\([^)]*\)\s*$/,'').replace(/\s+(?:Harbour|Island|Airport)$/i,'').trim().toLowerCase();
+    const normalized=value=>typeof value==='string' ? value.normalize('NFD').replace(/\p{M}/gu,'').replace(/['’]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim() : '';
+    const family=name=>normalized(name.replace(/\s*\([^)]*\)\s*$/,'').replace(/\s+(?:Harbour|Island|Airport)$/i,''));
+    const namesCity=(value,city)=>(' '+normalized(value)+' ').includes(' '+city+' ');
     const stations=stationsByDistance(data,location), anchor=stations.find(station=>station.id===selected.id);
     if(!anchor) return [];
-    const name=family(anchor.name);
-    return stations.filter(station=>station.id===anchor.id ||
-      (station.id.slice(0,2)===anchor.id.slice(0,2) && family(station.name)===name && distance(anchor,station)<=75))
+    const city=family(anchor.name);
+    const nearby=stations.filter(station=>station.id.slice(0,2)===anchor.id.slice(0,2) && distance(anchor,station)<=75);
+    const named=nearby.filter(station=>station.id===anchor.id || namesCity(station.name,city));
+    const observations=new Set(named.map(station=>normalized(station.observationName)).filter(Boolean));
+    // A station can serve a city without using that city in its forecast-location name
+    // (Gonzales Point reports Victoria Gonzales). Don't add other towns sharing an existing observation.
+    const extra=nearby.filter(station=>{
+      if(named.includes(station) || !namesCity(station.observationName,city)) return false;
+      const observation=normalized(station.observationName);
+      if(!observation || observations.has(observation)) return false;
+      observations.add(observation); return true;
+    });
+    return [...named,...extra]
       .sort((a,b)=>a.name.localeCompare(b.name))
-      .map(station=>({...station,label:family(station.name)===station.name.toLowerCase() && typeof station.observationName==='string' ? station.observationName : station.name}));
+      .map(station=>({...station,label:typeof station.observationName==='string' && (normalized(station.name)===city || !namesCity(station.name,city)) ? station.observationName : station.name}));
   }
   function searchLocations(data) {
     if(data?.error || (data.results!==undefined && !Array.isArray(data.results))) throw Error('Invalid city search');
