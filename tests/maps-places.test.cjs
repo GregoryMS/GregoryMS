@@ -73,6 +73,34 @@ test('fallback lookups keep exact identities and reject distant reverse-geocodin
   assert.deepEqual(places.readFallback({ error: 'Unable to geocode' }, point), []);
 });
 
+test('closest-address requests use the address layer at the selected coordinates', () => {
+  const point = {lat:48.42888,lng:-123.36789,osm:'way/42'};
+  const url = new URL(places.addressURL('https://lookup.test/api', point));
+  assert.equal(url.pathname, '/api/reverse'); assert.equal(url.searchParams.get('layer'), 'address');
+  assert.equal(url.searchParams.get('lat'), '48.42888'); assert.equal(url.searchParams.get('lon'), '-123.36789');
+  assert.equal(url.searchParams.get('zoom'), '18'); assert.equal(url.searchParams.get('addressdetails'), '1');
+  assert(!url.searchParams.has('osm_ids')); assert(!url.searchParams.has('polygon_geojson'));
+  assert.throws(() => places.addressURL('https://lookup.test/', {lat:91,lng:0}));
+});
+
+test('address lookup formats numbered streets, roads and locality-only coverage without inventing a number', () => {
+  const raw = {osm_type:'way',osm_id:42,lat:'48.429',lon:'-123.368',address:{house_number:'123',road:'Main Street',city:'Victoria',state:'British Columbia',postcode:'V8W 1A1',country:'Canada'}};
+  assert.deepEqual(places.readAddress(raw), {label:'123 Main Street, Victoria, British Columbia, V8W 1A1, Canada',osm:'way/42',lat:48.429,lng:-123.368});
+  assert.equal(places.readAddress({...raw,address:{road:'Country Lane',village:'Small Village'}}).label, 'Country Lane, Small Village');
+  assert.equal(places.readAddress({...raw,address:{town:'Small Town'}}).label, 'Small Town');
+  assert.equal(places.readAddress({...raw,address:{},display_name:'Mapped address'}).label, 'Mapped address');
+  assert.equal(places.readAddress({...raw,address:{city:'Victoria',state:'Victoria'}}).label, 'Victoria');
+  assert.equal(places.readAddress({error:'Unable to geocode'}), null);
+});
+
+test('invalid address records cannot produce misleading coordinates or source links', () => {
+  const raw = {osm_type:'node',osm_id:42,lat:'48.429',lon:'-123.368',display_name:'Main Street'};
+  for (const override of [{osm_id:0},{osm_type:'javascript:alert(1)'},{lat:'91'},{lon:null},{lat:''},{lat:false},{address:{},display_name:''}]) {
+    assert.throws(() => places.readAddress({...raw,...override}));
+  }
+  assert.equal(places.readAddress({...raw,display_name:'x'.repeat(1500)}).label.length,1000);
+});
+
 test('weekly hours list every day using 24-hour times and keep Sunday separate', () => {
   const schedule = places.readHours('Mo-Sa 09:00-21:00; Su 10:00-19:00');
   assert.equal(schedule.weekly, true);

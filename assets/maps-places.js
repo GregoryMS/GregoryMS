@@ -18,8 +18,8 @@
       const health = JSON.parse(sessionStorage.getItem(healthKey));
       if (health?.endpoint === config.placesURL && Number.isFinite(health.until)) overpassRetryAt = Math.min(health.until, Date.now() + 86400000);
     } catch {}
-    function remember(key, places) {
-      cache.delete(key); cache.set(key, { places, time: Date.now() });
+    function remember(key, places, address) {
+      cache.delete(key); cache.set(key, { places, address, time: Date.now() });
       while (cache.size > 40) cache.delete(cache.keys().next().value);
     }
     function saveCache() {
@@ -44,6 +44,11 @@
           partial: old.partial === true, snapshot: Number.isFinite(Date.parse(old.snapshot)) ? old.snapshot : null };
       }).sort((a, b) => a.distance - b.distance || a.centreDistance - b.centreDistance);
     }
+    function cachedAddress(address) {
+      if (address === null) return null;
+      const [type, id] = String(address?.osm || '').split('/');
+      return data.readAddress({ osm_type: type, osm_id: Number(id), lat: address?.lat, lon: address?.lng, display_name: address?.label });
+    }
     const make = (tag, text, className) => {
       const el = document.createElement(tag);
       if (text) el.textContent = text;
@@ -67,6 +72,18 @@
         const button = make('button', 'Try place details again', 'place-retry'); button.type = 'button';
         button.addEventListener('click', () => current && select(current.point, current.options)); box.append(button);
       }
+    }
+    function showAddress(address) {
+      if (!address) { message('No mapped place or nearby address found at this pin.'); return; }
+      box.replaceChildren(); box.hidden = false;
+      // The address belongs to a nearby mapped feature. Keep the selected pin and its shared coordinates unchanged.
+      const list = make('dl', null, 'place-facts');
+      list.append(make('dt', 'Closest mapped address'), make('dd', address.label));
+      box.append(list);
+      const source = make('div', null, 'place-data-source');
+      source.append(link('View address on OpenStreetMap ↗', 'https://www.openstreetmap.org/' + address.osm));
+      source.append(make('p', 'Address lookup: Nominatim · OpenStreetMap', 'place-tags-status'));
+      box.append(source);
     }
     function alternatives(places, active, chooseOnly = false) {
       if (places.length < 2 && !chooseOnly) return;
@@ -151,7 +168,8 @@
       if (cached && Date.now() - cached.time < maxAge) {
         try {
           const places = cachedPlaces(cached, point);
-          if (!cached.places.length || places.length) { display(places); return; }
+          if (places.length) { display(places); return; }
+          if (!cached.places.length && cached.address !== undefined) { showAddress(cachedAddress(cached.address)); return; }
         } catch {}
         cache.delete(query);
       }
@@ -165,9 +183,10 @@
       nextRequest = Date.now() + 1000;
       message('Loading OpenStreetMap place details…'); box.setAttribute('aria-busy', 'true');
       controller = new AbortController(); const request = controller;
-      const timer = setTimeout(() => request.abort(), 18000);
+      let timedOut = false;
+      const timer = setTimeout(() => { timedOut = true; request.abort(); }, 18000);
       const fallback = new AbortController();
-      let fullPlaces = null, quickPlaces = null, hedgeTimer;
+      let fullPlaces = null, quickPlaces = null, hedgeTimer, addressTask;
       const publish = (places, preserve = false) => {
         if (token !== version || request.signal.aborted) return;
         remember(query, places);
@@ -198,6 +217,25 @@
           return null;
         }
       };
+      const closestAddress = async () => {
+        try {
+          if (retryAt > Date.now()) throw new Error('Address lookup cooling down');
+          message('No mapped place found. Looking up the closest address…');
+          if (nextRequest > Date.now()) await new Promise(resolve => setTimeout(resolve, nextRequest - Date.now()));
+          if (token !== version || request.signal.aborted || fullPlaces?.length || quickPlaces?.length) return;
+          nextRequest = Date.now() + 1100;
+          const response = await fetch(data.addressURL(config.placeLookupURL, point), { signal: AbortSignal.any([request.signal, fallback.signal]), credentials: 'omit' });
+          if (token !== version || request.signal.aborted || fullPlaces?.length || quickPlaces?.length) return;
+          if (!response.ok) { retryAt = retryAfter(response, 30000); throw new Error('Address lookup unavailable'); }
+          const address = data.readAddress(await response.json());
+          if (token !== version || request.signal.aborted || fullPlaces?.length || quickPlaces?.length) return;
+          remember(query, [], address); saveCache(); showAddress(address); box.removeAttribute('aria-busy');
+        } catch {
+          if (token !== version || request.signal.aborted && !timedOut || fullPlaces?.length || quickPlaces?.length) return;
+          retryAt = Math.max(retryAt, Date.now() + 30000);
+          message('No mapped place found at this pin. The closest address is unavailable right now. Try again shortly.', true);
+        }
+      };
       try {
         const full = detailed();
         // Give a healthy detailed lookup a head start, without making the user wait for its timeout.
@@ -215,12 +253,15 @@
             if (!fullPlaces?.length && quickPlaces.length) publish(quickPlaces);
           } catch { /* A detailed result can still complete when the quick service fails. */ }
         }
+        // An empty quick lookup can show the address while the detailed service finishes.
+        if (!fullPlaces?.length && !quickPlaces?.length && (fullPlaces || quickPlaces)) addressTask = closestAddress();
         await full;
         if (token !== version || request.signal.aborted) return;
         if (!fullPlaces?.length && !quickPlaces?.length) {
-          if (fullPlaces || quickPlaces) publish([]);
+          if (fullPlaces || quickPlaces) addressTask ||= closestAddress();
           else throw new Error('Place details unavailable');
         }
+        await addressTask;
       } catch {
         if (token !== version) return;
         retryAt = Math.max(retryAt, Date.now() + 30000);
@@ -231,7 +272,7 @@
         if (token === version) { controller = null; box.removeAttribute('aria-busy'); }
       }
       function display(places, preserve = false) {
-        if (!places.length) { message('No mapped place found at this pin. Try a place marker, or double-click or double-tap a building.'); return; }
+        if (!places.length) { showAddress(null); return; }
         if (preserve && current?.place) { show(places.find(place => place.osm === current.place.osm) || current.place, places, true); return; }
         // An exact search result or a clear hit opens immediately. Ambiguous clicks offer a choice.
         if (point.osm || places[0].distance <= 12 || places.length === 1) show(places[0], places);

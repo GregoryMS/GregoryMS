@@ -6,6 +6,7 @@ const data = require('../assets/maps-places-core.js');
 const point = {lat:48.42888,lng:-123.36789,name:'Dropped pin'};
 const full = (id=1,name='Shop',tags={}) => ({elements:[{type:'node',id,lat:point.lat,lon:point.lng,tags:{shop:'convenience',name,...tags}}]});
 const quick = (id=1,name='Shop') => ({osm_type:'node',osm_id:id,lat:String(point.lat),lon:String(point.lng),category:'shop',type:'convenience',name,extratags:{phone:'+1 250 555 0123'}});
+const address = {osm_type:'way',osm_id:42,lat:'48.429',lon:'-123.368',address:{house_number:'123',road:'Main Street',city:'Victoria',postcode:'V8W 1A1'}};
 const flush = async () => { for(let i=0;i<30;i++) await Promise.resolve(); };
 function setup({storage=new Map(),now=1792617000000,ignoreAbort=false,endpoint='https://overpass.test/api'}={}) {
   const start=now, timers=new Map(), calls=[], shown=[], nodes=new Map(), events={}; let nextTimer=0;
@@ -120,4 +121,74 @@ test('oversized place records cannot exceed the session cache budget or break th
   const h=setup(),run=h.choose();const tags=Object.fromEntries(Array.from({length:210},(_,i)=>['tag'+i,'x'.repeat(1000)]));
   await h.respond(0,full(1,'Large shop',tags));await run;
   assert.equal(h.shown[0].name,'Large shop');assert(h.storage.get('gregle-maps-place-cache-v1').length<=200000);
+});
+
+test('empty place lookups display the closest address without moving the selected pin, and cache it across reloads',async()=>{
+  const h=setup(),run=h.choose();await h.respond(0,{elements:[]});await h.respond(1,{error:'Unable to geocode'});
+  assert.match(h.get('place-tags').textContent,/Looking up the closest address/);
+  await h.advance(1099);assert.equal(h.calls.length,2);await h.advance(1);assert.equal(h.calls.length,3);
+  assert.equal(new URL(h.calls[2].url).searchParams.get('layer'),'address');assert.equal(h.calls[2].at-h.calls[1].at,1100);
+  await h.respond(2,address);await run;
+  assert.match(h.get('place-tags').textContent,/Closest mapped address.*123 Main Street, Victoria, V8W 1A1/);
+  assert.equal(h.get('place-tags').querySelector('a').href,'https://www.openstreetmap.org/way/42');
+  assert.equal(h.shown.length,0);assert.deepEqual(point,{lat:48.42888,lng:-123.36789,name:'Dropped pin'});
+  await h.choose();assert.equal(h.calls.length,3);
+  const reload=setup({storage:h.storage,now:h.now()});await reload.choose();assert.equal(reload.calls.length,0);
+  assert.match(reload.get('place-tags').textContent,/123 Main Street/);assert.equal(reload.shown.length,0);
+});
+
+test('a quick empty result shows the address before a slow detailed lookup finishes; late shop data replaces it',async()=>{
+  const h=setup(),run=h.choose();await h.advance(800);await h.respond(1,{error:'Unable to geocode'});
+  await h.advance(1100);await h.respond(2,address);
+  assert.match(h.get('place-tags').textContent,/Closest mapped address/);assert(!h.calls[0].options.signal.aborted);
+  await h.respond(0,full());await run;
+  assert.equal(h.shown.at(-1).name,'Shop');assert(!h.get('place-tags').textContent.includes('Closest mapped address'));
+  await h.choose();assert.equal(h.calls.length,3);assert.equal(h.shown.at(-1).name,'Shop');
+});
+
+test('a late shop response cancels a pending address lookup and an ignored abort cannot overwrite the shop',async()=>{
+  const h=setup({ignoreAbort:true}),run=h.choose();await h.advance(800);await h.respond(1,{error:'Unable to geocode'});await h.advance(1100);
+  await h.respond(0,full());assert(h.calls[2].options.signal.aborted);await h.respond(2,address);await run;
+  assert.equal(h.shown.at(-1).name,'Shop');assert(!h.get('place-tags').textContent.includes('Main Street'));
+});
+
+test('address work is skipped when full shop data arrives during the rate-limit wait',async()=>{
+  const h=setup(),run=h.choose();await h.advance(800);await h.respond(1,{error:'Unable to geocode'});
+  await h.respond(0,full());await h.advance(1100);await run;
+  assert.equal(h.calls.length,2);assert.equal(h.shown.at(-1).name,'Shop');
+});
+
+test('switching pins cancels address responses without changing the new place or poisoning its cache',async()=>{
+  const h=setup({ignoreAbort:true}),old=h.choose();await h.respond(0,{elements:[]});await h.respond(1,{error:'Unable to geocode'});await h.advance(1100);
+  const newer=h.api.select({...point,osm:'node/2'},{nearby:true});await h.advance(1100);await h.respond(3,full(2,'New shop'));await newer;
+  assert(h.calls[2].options.signal.aborted);await h.respond(2,address);await old;
+  assert.equal(h.shown.at(-1).name,'New shop');assert(!h.get('place-tags').textContent.includes('Main Street'));
+});
+
+test('no-address coverage is cached, and failed address lookups honour Retry-After without a false address',async()=>{
+  const h=setup(),run=h.choose();await h.respond(0,{elements:[]});await h.respond(1,{error:'Unable to geocode'});await h.advance(1100);
+  await h.respond(2,{error:'Unable to geocode'});await run;assert.match(h.get('place-tags').textContent,/No mapped place or nearby address/);
+  await h.choose();assert.equal(h.calls.length,3);
+  const failed=setup(),attempt=failed.choose();await failed.respond(0,{elements:[]});await failed.respond(1,{error:'Unable to geocode'});await failed.advance(1100);
+  await failed.respond(2,{},429,'60');await attempt;assert.match(failed.get('place-tags').textContent,/closest address is unavailable/);
+  await failed.advance(30000);await failed.choose();assert.equal(failed.calls.length,3);assert.match(failed.get('place-tags').textContent,/30 seconds/);
+});
+
+test('old empty records and invalid saved addresses are re-queried rather than hiding an available address',async()=>{
+  const h=setup(),run=h.choose();await h.respond(0,{elements:[]});await h.respond(1,{error:'Unable to geocode'});await h.advance(1100);await h.respond(2,address);await run;
+  const saved=h.storage.get('gregle-maps-place-cache-v1');
+  for(const legacy of [true,false]){
+    const raw=JSON.parse(saved);for(const [,entry] of raw.entries){if(legacy)delete entry.address;else entry.address.lat=91;}
+    const storage=new Map([['gregle-maps-place-cache-v1',JSON.stringify(raw)]]),reload=setup({storage}),next=reload.choose();await flush();
+    assert.equal(reload.calls.length,1);assert(!reload.get('place-tags').textContent.includes('Main Street'));
+    await reload.respond(0,full());await next;
+  }
+});
+
+test('an address timeout offers a retry, while closing the pin quietly cancels the address request',async()=>{
+  const h=setup(),run=h.choose();await h.respond(0,{elements:[]});await h.respond(1,{error:'Unable to geocode'});await h.advance(18000);await run;
+  assert(h.calls[2].options.signal.aborted);assert.match(h.get('place-tags').textContent,/closest address is unavailable/);
+  const closed=setup(),attempt=closed.choose();await closed.respond(0,{elements:[]});await closed.respond(1,{error:'Unable to geocode'});await closed.advance(1100);
+  closed.api.clear();await attempt;assert(closed.calls[2].options.signal.aborted);assert(closed.get('place-tags').hidden);
+  assert.equal(closed.get('place-tags').textContent,'');
 });
