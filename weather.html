@@ -18,7 +18,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261021-stations">
+  <link rel="stylesheet" href="assets/weather.css?v=20261021-station-layout">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-mobile-layers">
@@ -72,13 +72,12 @@
       <form id="citySearch" class="city-search"><label for="cityQuery">Find a city</label><div class="city-search-row"><input id="cityQuery" type="search" placeholder="City or postal code" autocomplete="off" minlength="2" maxlength="100" required><button class="pill" id="searchButton" type="submit">Search</button><button class="pill" id="locateWeather" type="button">◎ My location</button></div></form>
       <p id="locationStatus" class="location-note" role="status">Allow location access to load your local forecast, or search for a city.</p>
       <div id="cityResults" class="city-results" aria-label="City search results"></div>
-      <div id="stationControl" class="station-control" hidden><label for="weatherStation">Environment Canada station</label><select id="weatherStation" class="pill"></select></div>
     </section>
     <noscript><p>Enable JavaScript for live weather. Visit <a href="https://weather.gc.ca/">Environment Canada</a> or <a href="https://open-meteo.com/">Open-Meteo</a> for forecasts.</p></noscript>
     <div id="weatherContent" aria-busy="true">
       <section class="current" aria-label="Current weather and next forecast">
         <div class="current-main">
-          <p class="eyebrow" id="currentLabel">Right now</p>
+          <div class="current-heading"><p class="eyebrow" id="currentLabel">Right now</p><div id="stationControl" class="station-control" hidden><select id="weatherStation" aria-label="Environment Canada station" title="Choose weather station"></select></div></div>
           <div class="current-reading"><div class="current-icon" id="currentIcon" aria-hidden="true"></div><div><div class="temperature" id="temperature">--°C</div><p class="condition" id="condition">Loading…</p><p class="current-feels">Feels like <b id="feelsLike">—</b></p></div></div>
           <p class="details" id="currentDetails"></p>
           <div class="metrics"><div><span>Humidity</span><b id="humidity">—</b></div><div id="airQualityMetric" hidden><a id="airQualityLink" href="https://weather.gc.ca/airquality/pages/index_e.html"><span>Air quality</span><b id="airQuality"></b></a></div><div><span>Wind</span><b id="wind">—</b></div><div><span>Pressure</span><b id="pressure">—</b></div></div>

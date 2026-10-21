@@ -74,9 +74,14 @@
     .city-search-row { display:flex; flex-wrap:wrap; gap:10px; }
     .city-search input { flex:1; min-width:150px; padding:11px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--text); font:inherit; }
     .location-note { font-size:14px; color:var(--muted); margin:12px 0 0; }
-    .station-control { margin-top:16px; }
-    .station-control label { display:block; margin-bottom:8px; font-size:14px; color:var(--muted); }
-    .station-control select { max-width:100%; font:inherit; font-size:14px; cursor:pointer; }
+    .current-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:28px; }
+    .current-heading .eyebrow { margin:0; }
+    .station-control { position:relative; flex:0 1 200px; min-width:0; max-width:65%; color:var(--muted); }
+    .station-control::after { content:""; position:absolute; right:11px; top:50%; width:5px; height:5px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:translateY(-65%) rotate(45deg); pointer-events:none; }
+    .station-control select { appearance:none; -webkit-appearance:none; display:block; width:100%; height:28px; padding:4px 28px 4px 9px; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--muted); font:inherit; font-size:12px; text-overflow:ellipsis; cursor:pointer; transition:background .2s,border-color .2s,color .2s; }
+    .station-control select:hover { background:var(--soft); border-color:var(--line); color:var(--text); }
+    .station-control select:focus-visible { outline:2px solid var(--text); outline-offset:2px; }
+    .station-control option { background:var(--panel); color:var(--text); }
     .city-results { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
     .city-results:empty { display:none; }
     .city-results .pill { text-align:left; border-radius:16px; }
