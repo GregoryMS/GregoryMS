@@ -88,6 +88,7 @@ const worker = {
           redirect: 'manual', signal: AbortSignal.timeout(4500)
         });
         if (!upstream.ok) {
+          console.warn(JSON.stringify({event: 'aircraft_fallback_unavailable', status: upstream.status}));
           const value = upstream.headers.get('Retry-After');
           const parsed = value && /^\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value || '') - Date.now()) / 1000);
           const wait = Math.min(900, Math.max(30, Number.isFinite(parsed) ? parsed : 30));
@@ -110,7 +111,8 @@ const worker = {
         const response = reply({ now: stamp, ac, limited: data.ac.length > 5000 }, 200, { 'Cache-Control': 'public, max-age=15' });
         ctx.waitUntil(cache.put(fallbackKey, response.clone()).catch(() => {}));
         return send(response);
-      } catch {
+      } catch (error) {
+        console.warn(JSON.stringify({event: 'aircraft_fallback_unavailable', message: error instanceof Error ? error.message.replace(/https?:\/\/\S+/g, '[upstream]') : 'Unknown error'}));
         try { await cache.put(fallbackCooldown, new Response('', { headers: { 'Cache-Control': 'public, max-age=30' } })); } catch {}
         return send(failure);
       }
