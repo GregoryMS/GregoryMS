@@ -11,7 +11,7 @@ window.GregleMapDrawer = ({ map }) => {
     ['map-fuel-card', 'Fuel'], ['vessels-legend', 'Vessel key', 'close-vessels-legend'],
     ['map-feature-details', 'Details'], ['map-link-copy', 'Copy link', 'close-map-link'],
   ];
-  let active, rendered, height = 0, expandedHeight = 0, gesture, popupState;
+  let active, rendered, height = 0, expandedHeight = 0, gesture, popupState, currentPopup;
   const popupOptions = new Map();
   const panels = definitions.map(([id, label, close]) => {
     const node = $(id), home = document.createComment(`${id} home`), tab = document.createElement('button');
@@ -158,8 +158,11 @@ window.GregleMapDrawer = ({ map }) => {
     const p = event.layer.getPopup?.();
     if (popupOptions.has(p)) { p.options.autoPan = popupOptions.get(p); popupOptions.delete(p); }
   });
-  map.on('popupopen', event => showPopup(event.popup));
-  map.on('popupclose', event => { if (popupState?.popup === event.popup) { restorePopup(); refresh(); } });
+  map.on('popupopen', event => { currentPopup = event.popup; showPopup(event.popup); });
+  map.on('popupclose', event => {
+    if (currentPopup === event.popup) currentPopup = null;
+    if (popupState?.popup === event.popup) { restorePopup(); refresh(); }
+  });
   const observer = new MutationObserver(refresh);
   for (const p of panels) observer.observe(p.node, { attributes: true, attributeFilter: ['hidden'] });
   observer.observe($('place-name'), { childList: true, characterData: true, subtree: true });
@@ -174,7 +177,7 @@ window.GregleMapDrawer = ({ map }) => {
     stage.classList.toggle('has-mobile-drawer', media.matches);
     for (const [popup, autoPan] of popupOptions) popup.options.autoPan = media.matches ? false : autoPan;
     if (!media.matches) { drawer.hidden = true; stage.style.removeProperty('--map-drawer-height'); }
-    else refresh();
+    else { refresh(); if (currentPopup && !popupState) showPopup(currentPopup); }
     if (focus && focus !== document.body && focus.isConnected && !focus.closest('[inert]')) focus.focus({ preventScroll: true });
   }
   media.addEventListener('change', layout);
