@@ -46,7 +46,7 @@
   function updateWeatherLink() {
     window.GregleSatellite?.setLocation(place);
     window.GregleAstroCalendar?.setTimezone(forecast?.timezone || place.timezone || 'UTC');
-    $('weather-link').href = 'weather.html?' + new URLSearchParams({lat:place.latitude, lon:place.longitude, name:place.name, country:place.country || '', tz:forecast?.timezone || place.timezone || 'UTC'});
+    $('weather-link').href = 'https://weather.gregle.uk/?' + new URLSearchParams({lat:place.latitude, lon:place.longitude, name:place.name, country:place.country || '', tz:forecast?.timezone || place.timezone || 'UTC'});
   }
   async function json(url, controller) {
     const timeout = setTimeout(() => controller.abort(), 15000);

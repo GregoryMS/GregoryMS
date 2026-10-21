@@ -1,4 +1,4 @@
-const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
+const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk', 'https://maps.gregle.uk']);
 const sources = ['https://maps.mail.ru/osm/tools/overpass/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
 const day = 86400000, freshAge = day, maxAge = 7 * day, limit = 750;
 const wrap = n => ((n + 180) % 360 + 360) % 360 - 180;

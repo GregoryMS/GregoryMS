@@ -1,4 +1,4 @@
-const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
+const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk', 'https://maps.gregle.uk']);
 const pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
 const maxBytes = 2 * 1024 * 1024;
 

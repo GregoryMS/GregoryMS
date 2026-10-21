@@ -123,7 +123,7 @@ async function readSurvey(response) {
 }
 export default {
   async fetch(request, env) {
-    const origin = request.headers.get('Origin'), allowed = ['https://gregle.uk', 'https://www.gregle.uk'].includes(origin);
+    const origin = request.headers.get('Origin'), allowed = ['https://gregle.uk', 'https://www.gregle.uk', 'https://maps.gregle.uk'].includes(origin);
     const headers = {'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Vary': 'Origin', 'X-Content-Type-Options': 'nosniff', ...(allowed ? {'Access-Control-Allow-Origin': origin} : {})};
     const reply = (body, status = 200) => new Response(JSON.stringify(body), {status, headers});
     if (!allowed) return reply({error: 'Origin not allowed'}, 403);

@@ -26,7 +26,7 @@
     const link=document.getElementById('tidePreview'),host=document.getElementById('tidePreviewContent'),shortcut=document.getElementById('tideLink');
     if(!link || !host) return;
     previewLocation=location;previewUpdated=Date.now();
-    const url=core.locationURL('tides.html',location);link.href=url;if(shortcut)shortcut.href=url;
+    const url=core.locationURL('https://tides.gregle.uk/',location);link.href=url;if(shortcut)shortcut.href=url;
     previewController?.abort(); const controller=new AbortController();previewController=controller;const version=++previewVersion;
     host.replaceChildren(node('p','location-note','Loading today’s tides…'));link.setAttribute('aria-busy','true');
     try { const data=await root.GregleTideData.load(location,controller.signal);if(version===previewVersion)summary(host,data); }

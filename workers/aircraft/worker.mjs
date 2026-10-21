@@ -1,4 +1,4 @@
-const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
+const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk', 'https://maps.gregle.uk']);
 /** @param {Response} response */
 async function readJSON(response) {
   if (!response.body) throw new Error('Empty response');

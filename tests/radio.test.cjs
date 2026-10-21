@@ -137,7 +137,7 @@ test('native HLS is used where supported and missing HLS support fails usefully'
 
 test('radio is linked from Tools and its local scripts and stylesheet exist', () => {
   const root = path.join(__dirname, '..'); const html = fs.readFileSync(path.join(root, 'radio.html'), 'utf8');
-  assert.match(fs.readFileSync(path.join(root, 'links.html'), 'utf8'), /href="radio.html"/);
+  assert.match(fs.readFileSync(path.join(root, 'links.html'), 'utf8'), /href="https:\/\/radio\.gregle\.uk\/"/);
   for (const [, file] of html.matchAll(/(?:src|href)="(assets\/[^\"]+)"/g)) assert(fs.existsSync(path.join(root, file.split('?')[0])), file);
   assert.match(html, /integrity="sha384-/); assert(!html.includes(' autoplay'));
 });

@@ -1,4 +1,4 @@
-const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
+const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk', 'https://maps.gregle.uk']);
 const positionTypes = new Set(['PositionReport', 'StandardClassBPositionReport', 'ExtendedClassBPositionReport', 'LongRangeAisBroadcastMessage']);
 const wrap = x => ((x + 180) % 360 + 360) % 360 - 180;
 const numeric = (x, min, max) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;

@@ -1,6 +1,6 @@
 import osm, {fuelStations} from './osm.mjs';
 import fuelPrices from './fuel-prices.mjs';
-const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk']);
+const origins = new Set(['https://gregle.uk', 'https://www.gregle.uk', 'https://maps.gregle.uk']);
 const day = 86400000, maxAge = 7 * day, limit = 750;
 const quiet = promise => promise.catch(() => {});
 const text = (value, max = 1000) => typeof value === 'string' ? value.trim().slice(0, max) : '';

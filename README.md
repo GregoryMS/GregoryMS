@@ -2,6 +2,34 @@
 
 A static personal homepage and collection of browser tools, served at the domain in `CNAME`.
 
+## App subdomains
+
+GitHub Pages remains the only site host and this repository remains the only
+source. `assets/site-routes.json` maps each content page to its canonical
+hostname, for example `weather.gregle.uk` and `maps.gregle.uk`. The Cloudflare
+Worker in `workers/site-router/` fetches the existing page from `gregle.uk` for
+each app root and streams shared assets and generated data from the same origin.
+Its `*.gregle.uk/*` route passes unlisted hosts, including Cloud, Docs and www,
+to their existing origins. The apex and original `.html` URLs remain available,
+including existing installed app launch URLs and their browser storage.
+
+Menus, home links, tool cards, canonical links and generated Weather/Tides links
+use the new hostnames. Stable menu IDs retain the original saved ordering on
+the old origin. On an app subdomain its manifest uses `/` for its ID and launch
+URL; the source manifests retain their original IDs for existing installations.
+Browsers keep saved app settings separately for each origin, so a newly opened
+subdomain starts with its own settings; the old URL retains existing saved data.
+The map API Workers explicitly allow `https://maps.gregle.uk` alongside the apex
+and www origins.
+
+To add a page, add it to `assets/site-routes.json`, add a proxied CNAME for its
+hostname pointing to `gregle.uk`, regenerate the launcher, and redeploy the
+router with `npx wrangler deploy --config workers/site-router/wrangler.jsonc`.
+`workers/site-router/subdomains.zone` is the initial set of app DNS records;
+import with **Proxy imported DNS records** checked. Keep the existing seven
+apex/www/Cloud/Docs records. Reverting the router route and this change restores
+the original navigation without moving or deleting any site files.
+
 - `index.html`: search, recent searches, local weather and BBC headlines.
 - `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference and Women’s Super League tables.
 - `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
