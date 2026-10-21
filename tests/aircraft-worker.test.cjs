@@ -26,7 +26,39 @@ test('relay restricts upstream requests, strips unused fields and caches identic
 test('upstream throttles produce a shared bounded cooldown rather than requests from each pan',async()=>{
  const h=await setup();try{
   h.setFetch(async()=>new Response('Limited',{status:429,headers:{'Retry-After':'120'}}));const r=await h.request();assert.equal(r.status,429);assert.equal(r.headers.get('Retry-After'),'120');
-  const next=await h.request('/aircraft?lat=50&lon=-122&radius=10');assert.equal(next.status,429);assert.equal(h.calls.length,1);
+  const next=await h.request('/aircraft?lat=50&lon=-122&radius=10');assert.equal(next.status,429);assert.equal(h.calls.length,2);
+ }finally{await h.close();}
+});
+
+test('PocketWorld timeout falls back to fresh ADSB.lol positions within the browser deadline',async()=>{
+ const h=await setup();try{
+  const now=Date.now(), plane={hex:'a12345',lat:48.4,lon:-123.4,alt_baro:12000,gs:210,seen_pos:5,category:'A3',privateField:'omit'};
+  h.setFetch(async url=>{if(url.startsWith('https://pocketworld.org/'))throw new DOMException('Timed out','TimeoutError');return new Response(JSON.stringify({now,ac:[plane,{...plane,hex:'b12345',seen_pos:121},{...plane,hex:'c12345',category:'C1'}]}));});
+  const response=await h.request();assert.equal(response.status,200);
+  const data=await response.json();assert.equal(data.now,now);assert.equal(data.ac.length,1);assert.equal(data.ac[0].provider,'adsblol');assert.equal(data.ac[0].seen_pos,5);assert.equal(data.ac[0].alt_baro,12000);assert.equal(data.ac[0].privateField,undefined);
+  assert.equal(h.calls[1].url,'https://api.adsb.lol/v2/point/48.43/-123.37/20');assert.equal(h.calls[1].redirect,'manual');assert(!h.calls[1].headers.Cookie);assert(!h.calls[1].headers.Authorization);
+  await h.request();assert.equal(h.calls.length,2);
+  await h.request('/aircraft?lat=50&lon=-122&radius=10');assert.equal(h.calls.length,3);assert(h.calls[2].url.startsWith('https://api.adsb.lol/'));
+ }finally{await h.close();}
+});
+
+test('fallback does not refresh old timestamps and shares failure cooldowns across map areas',async()=>{
+ for(const data of [{now:Date.now()-121000,ac:[]},{now:Date.now()+60000,ac:[]},{now:Date.now(),ac:null}]){
+  const h=await setup();try{
+   h.setFetch(async url=>url.startsWith('https://pocketworld.org/')?new Response('Unavailable',{status:503}):new Response(JSON.stringify(data)));
+   assert.equal((await h.request()).status,503);assert.equal(h.calls.length,2);
+   assert.equal((await h.request('/aircraft?lat=50&lon=-122&radius=10')).status,503);assert.equal(h.calls.length,2);
+  }finally{await h.close();}
+ }
+});
+
+test('a fallback outage respects Retry-After without suppressing recovered primary data',async()=>{
+ const h=await setup();try{
+  h.setFetch(async()=>new Response('Limited',{status:429,headers:{'Retry-After':'240'}}));
+  assert.equal((await h.request()).status,429);
+  const fallbackPause=[...h.store.entries()].find(([key])=>key.endsWith('/cooldown/adsblol'))[1];assert.equal(fallbackPause.headers.get('Cache-Control'),'public, max-age=240');
+  h.store.delete(base+'/cooldown/pocketworld');h.setFetch(async()=>new Response(JSON.stringify(wire())));
+  assert.equal((await h.request()).status,200);assert.equal(h.calls.length,3);
  }finally{await h.close();}
 });
 test('source errors, malformed and oversized payloads fail without passing source bodies to clients',async()=>{
