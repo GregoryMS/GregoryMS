@@ -382,9 +382,9 @@
   .map-drawer-grip { position: absolute; width: 38px; height: 4px; top: 8px; left: calc(50% + 40px); border-radius: 4px; background: var(--map-border); }
   #map-drawer-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; }
   .map-drawer-hint { font-size: 10px; color: var(--muted); margin-top: 3px; }
-  .map-drawer-bar button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 10px; border: 0; border-radius: 14px; color: var(--map-accent); background: transparent; font-size: 24px; cursor: pointer; }
+  .map-drawer-bar button { display: flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 14px; color: var(--map-accent); background: transparent; line-height: 1; cursor: pointer; }
   .map-drawer-bar button:hover { background: var(--map-accent-soft); }
-  .map-drawer-bar svg { width: 20px; height: 20px; }
+  .map-drawer-bar svg { display: block; flex: none; width: 20px; height: 20px; }
   .map-drawer.is-compact #map-drawer-collapse svg { transform: rotate(180deg); }
   .map-drawer.is-compact :is(.map-drawer-body, .map-drawer-tabs) { display: none; }
   .map-drawer-tabs { display: flex; flex: 0 0 auto; gap: 6px; padding: 2px 14px 10px; overflow-x: auto; scrollbar-width: thin; }
