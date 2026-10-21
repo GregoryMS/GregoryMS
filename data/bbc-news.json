@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-21T01:54:40+00:00",
-  "fetchedAt": "2026-10-21T01:54:48.917364+00:00",
+  "feedUpdatedAt": "2026-10-21T07:24:49+00:00",
+  "fetchedAt": "2026-10-21T07:24:56.054268+00:00",
   "items": [
     {
-      "title": "Two men re-arrested on suspicion of assisting Iran intelligence after RAF Fairford incident",
-      "link": "https://www.bbc.co.uk/news/articles/cqm26z110vzko?at_medium=RSS&at_campaign=rss"
+      "title": "Chris Mason: Jackdaw approved but tricky energy trade-offs remain",
+      "link": "https://www.bbc.co.uk/news/articles/cked35dz47y7o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Zelensky says US intelligence sharing 'works now' after talks with Trump envoy in Oslo",
+      "title": "Lawyer caught by BBC offering to make illegal-worker fine go away",
+      "link": "https://www.bbc.co.uk/news/articles/c30rln4pz58xo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Watch: 'We don't pay' - lawyer advises how to avoid £45,000 illegal-worker fine",
+      "link": "https://www.bbc.co.uk/news/videos/cm93z1j33dkpo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "US envoy arrives in Russia ahead of meeting with Putin as Zelensky says intelligence sharing 'works now'",
       "link": "https://www.bbc.co.uk/news/articles/cq5ynkx3xy11o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "UK government to make Jackdaw gas field announcement",
-      "link": "https://www.bbc.co.uk/news/articles/cvze4wx3elj1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Tory MP questions government advisor's position after wife's Palestine Action post",
-      "link": "https://www.bbc.co.uk/news/articles/cke8r0me3y9vo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "King praises Strait of Hormuz peace efforts at glittering banquet",
-      "link": "https://www.bbc.co.uk/news/articles/c8040qgryqd3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Elon Musk says Tesla-SpaceX merger being considered",
-      "link": "https://www.bbc.co.uk/news/articles/cmlyl09xjke4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "France is divided over who to blame for and what to learn from weekend riots",
+      "title": "Katya Adler: France divided over who to blame for riots and what to learn from them",
       "link": "https://www.bbc.co.uk/news/articles/cq0me4g9p970o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Government failings allowed Covid 'to spread like wildfire' in care homes, inquiry finds",
-      "link": "https://www.bbc.co.uk/news/articles/ck1l38z0v3v6o?at_medium=RSS&at_campaign=rss"
+      "title": "Where to spot brilliant colours after 'false autumn' spoils some leaf displays",
+      "link": "https://www.bbc.co.uk/weather/articles/cr62yw2lvyg2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Schools should recognise antisemitism as distinct form of harm, review says",
-      "link": "https://www.bbc.co.uk/news/articles/c623d7z1rxg5o?at_medium=RSS&at_campaign=rss"
+      "title": "Why is Elon Musk plotting a mega-merger of SpaceX and Tesla?",
+      "link": "https://www.bbc.co.uk/news/articles/cr93z1e87e0do?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Woman says she 'couldn't speak or breathe' during alleged rape by Russell Brand",
-      "link": "https://www.bbc.co.uk/news/articles/ck240rr10jdqo?at_medium=RSS&at_campaign=rss"
+      "title": "Woman given cancer diagnosis by hospital worker who accessed her records",
+      "link": "https://www.bbc.co.uk/news/articles/cjn5vq6n7r54o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "King praises Oman's Strait of Hormuz peace efforts at glittering banquet",
+      "link": "https://www.bbc.co.uk/news/articles/c8040qgryqd3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "The Aberfan disaster through the eyes of those who survived, 60 years on",
+      "link": "https://www.bbc.co.uk/news/articles/cr9dzpx2xl0lo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
