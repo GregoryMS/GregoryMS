@@ -69,6 +69,17 @@ test('hidden, disabled and bfcache pages cancel in-flight requests and ignore la
  const h=setup();let release;h.setFetch(()=>new Promise(resolve=>release=resolve));h.api.setEnabled(true);h.document.hidden=true;h.events.visibilitychange();assert(h.calls[0].signal.aborted);release({ok:true,json:async()=>packet(start)});await flush();assert.equal(h.markers().length,0);await h.advance(60000);assert.equal(h.calls.length,1);
  h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000)}));h.document.hidden=false;h.events.visibilitychange();await flush();assert.equal(h.calls.length,2);h.events.pagehide();await h.advance(60000);assert.equal(h.calls.length,2);h.events.pageshow({persisted:true});await flush();assert.equal(h.calls.length,3);
 });
+test('manual retry skips network backoff while keeping the request cadence',async()=>{
+ const h=setup();h.setFetch(async()=>{throw Error('network unavailable');});h.api.setEnabled(true);await flush();
+ h.refresh.events.click();await flush();assert.equal(h.calls.length,1);
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start+15000)}));
+ await h.advance(14999);assert.equal(h.calls.length,1);await h.advance(1);assert.equal(h.calls.length,2);assert.equal(h.markers().length,1);
+});
+test('a prolonged outage retries within a minute when the source recovers',async()=>{
+ const h=setup();h.setFetch(async()=>{throw Error('network unavailable');});h.api.setEnabled(true);await flush();
+ await h.advance(210000);assert.deepEqual(h.calls.map(c=>c.time-start),[0,30000,90000,150000,210000]);
+ h.setFetch(async()=>({ok:true,json:async()=>packet(start+270000)}));await h.advance(60000);assert.equal(h.markers().length,1);
+});
 test('zoomed-out maps pause queries and position details use safe text and reported units',async()=>{
  const h=setup();await h.move([-180,-80,180,80],3);h.api.setEnabled(true);await flush();assert.equal(h.calls.length,0);assert.match(h.output.textContent,/Zoom in/);
  h.setFetch(async()=>({ok:true,json:async()=>packet(start,[aircraft({flight:'<img src=x onerror=alert(1)>',baro_rate:500,squawk:'1200'})])}));await h.move([-123.5,48.3,-123.2,48.5],13);assert.equal(h.calls.length,1);
