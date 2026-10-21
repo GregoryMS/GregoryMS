@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-21T06:02:29.480143+00:00",
+      "checkedAt": "2026-10-21T11:49:48.806714+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -243,7 +243,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-21T06:02:29.480143+00:00",
+      "checkedAt": "2026-10-21T11:49:48.806714+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -409,7 +409,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-21T06:02:29.480143+00:00",
+      "checkedAt": "2026-10-21T11:49:48.806714+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -609,7 +609,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-21T06:02:29.480143+00:00",
+      "checkedAt": "2026-10-21T11:49:48.806714+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -797,7 +797,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-21T06:02:29.480143+00:00",
+      "checkedAt": "2026-10-21T11:49:48.806714+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -823,6 +823,7 @@
           "away": "Manchester City",
           "start": "2026-10-24T11:30:00+00:00",
           "channels": [
+            "RTL+",
             "Sky Sport Premier League",
             "WOW"
           ]
@@ -944,6 +945,9 @@
           "away": "Magdeburg",
           "start": "2026-10-28T19:45:00+00:00",
           "channels": [
+            "ARD-Mediathek",
+            "Das Erste",
+            "OneFootball Deutschland",
             "RTL+",
             "Sky Sport 2",
             "Sky Sport News",
