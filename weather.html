@@ -61,7 +61,7 @@
       <div id="weatherAlertList" class="weather-alert-list"></div>
     </section>
     <div class="page-heading">
-      <div><p class="eyebrow">A look outside</p><h1 id="cityName">Vancouver</h1><p class="location-meta" id="locationMeta">British Columbia <span aria-hidden="true">·</span> Temperatures in °C</p></div>
+      <div><p class="eyebrow">A look outside</p><h1 id="cityName">Vancouver</h1><p class="location-meta" id="locationMeta">British Columbia</p></div>
       <div class="location-switch" role="group" aria-label="Weather location">
         <button class="city-button" data-city="victoria" type="button" aria-pressed="false">Victoria</button>
         <button class="city-button" data-city="vancouver" type="button" aria-pressed="true">Vancouver</button>
@@ -97,7 +97,7 @@
       </section>
     </div>
     <section class="radar-section" aria-labelledby="radarHeading">
-      <div class="radar-heading"><div><h2 id="radarHeading">Weather map</h2><p id="radarLocation" class="radar-meta">Weather layers around your selected location</p></div></div>
+      <div class="radar-heading"><div><h2 id="radarHeading">Weather map</h2></div></div>
       <div class="radar-map-toolbar">
         <div class="radar-layer-switches" role="radiogroup" aria-label="Weather map layer">
           <label><input id="radarLayer-radar" type="radio" name="weatherMapLayer" checked disabled><span>Radar</span></label>
@@ -187,7 +187,7 @@
       </div>
       <p class="history-source">Normals: <a href="https://climate.weather.gc.ca/climate_normals/index_e.html">Environment Canada</a>. Yesterday: <a href="https://open-meteo.com/">Open-Meteo</a> archived weather-model estimates (CC BY 4.0), not station observations.</p>
     </section>
-    <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night. — means not provided.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
+    <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
   <script src="assets/weather-core.js?v=20261002-icons"></script>
   <script src="assets/weather-hourly.js?v=20261016-feels"></script>
@@ -199,7 +199,7 @@
   <script src="assets/weather-precip-type.js?v=20261014-scroll-zoom"></script>
   <script src="assets/weather-map-layers.js?v=20261010-ptype"></script>
   <script src="assets/weather-lightning.js?v=20261010-lightning"></script>
-  <script src="assets/weather-radar.js?v=20261015-page-cleanup"></script>
+  <script src="assets/weather-radar.js?v=20261021-text-cleanup"></script>
   <script src="assets/tide-core.js"></script>
   <script src="assets/tide-data.js"></script>
   <script src="assets/tide-ui.js"></script>
@@ -348,7 +348,7 @@
       $('currentHigh').textContent=degrees(first.high); $('currentLow').textContent=degrees(first.low);
       $('updated').textContent=`Updated ${formatDate(new Date().toISOString())}`;
       $('sourceCredit').textContent='Weather data by Open-Meteo (CC BY 4.0). Current conditions are weather-model estimates.';
-      $('rangeNote').textContent=`Highs and lows cover each calendar day in ${weather.timezone.replaceAll('_',' ')}. — means not provided.`;
+      $('rangeNote').textContent=`Highs and lows cover each calendar day in ${weather.timezone.replaceAll('_',' ')}.`;
     }
     async function loadWeather() {
       activeController?.abort();
@@ -382,7 +382,7 @@
             const issued=formatDate(weather.forecastGroup.timestamp?.en);
             $('updated').textContent=issued?'Forecast issued '+issued:'';
             $('sourceCredit').textContent='Weather by Environment and Climate Change Canada.';
-            $('rangeNote').textContent=`Highs are daytime; lows are the following night. Times: ${forecastTimezone.replaceAll('_',' ')}. — means not provided.`;
+            $('rangeNote').textContent=`Highs are daytime; lows are the following night. Times: ${forecastTimezone.replaceAll('_',' ')}.`;
             sourceLinks(true,station.coords?station:{...station,coords:`${station.latitude},${station.longitude}`});
             statusEl.textContent=station.distance!==undefined ? `Environment Canada forecast for ${station.name}, ${Math.round(station.distance)} km from ${location.name}.` : '';
             return;
@@ -416,7 +416,7 @@
       if(!weatherCore.coordinates(location.latitude,location.longitude)) return;
       cancelLocationLookup(); selectedCity=key; selectedLocation=location;
       $('cityResults').replaceChildren(); $('cityName').textContent=location.name;
-      $('locationMeta').textContent=`${location.region || location.country || 'Local forecast'} · Temperatures in °C`;
+      $('locationMeta').textContent=`${location.region || location.country || 'Local forecast'}`;
       document.title=`${location.name} weather · Gregle`;
       document.querySelectorAll('[data-city]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.city===key)));
       $('locationStatus').textContent=key?'Choose a city or use your location.':`Showing weather for ${location.name}.`;
