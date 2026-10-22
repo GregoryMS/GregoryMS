@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
+      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -238,12 +238,22 @@
             "BBC iPlayer",
             "Disney+ (UK)"
           ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Manchester United",
+          "start": "2026-10-31T12:30:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 1",
+            "TNT Sports Ultimate"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
+      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -412,7 +422,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
+      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -631,7 +641,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
+      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -834,7 +844,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
+      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
