@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
+      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -124,7 +124,8 @@
           "away": "Newcastle United",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
-            "WSL2 YouTube"
+            "WSL2 YouTube",
+            "Youtube UK"
           ]
         },
         {
@@ -253,7 +254,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
+      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -417,12 +418,36 @@
             "TSN+",
             "TSN3"
           ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Manchester United",
+          "start": "2026-10-31T12:30:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Hull City",
+          "away": "Ipswich Town",
+          "start": "2026-10-31T15:00:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Brighton & Hove Albion",
+          "start": "2026-10-31T15:00:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
+      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -636,12 +661,36 @@
           "channels": [
             "Disney+ Norge"
           ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Manchester United",
+          "start": "2026-10-31T12:30:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
+        },
+        {
+          "home": "Hull City",
+          "away": "Ipswich Town",
+          "start": "2026-10-31T15:00:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Brighton & Hove Albion",
+          "start": "2026-10-31T15:00:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
+      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -844,7 +893,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
+      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
