@@ -68,6 +68,7 @@
   function createController(win) {
     const $=id=>win.document.getElementById(id);let place=null,forecast=null,timezone=null,selected=null,today=null,timelineView=null;
     function node(tag,cls,text) {const el=win.document.createElement(tag);el.className=cls;if(text!==undefined)el.textContent=text;return el;}
+    const solarReadings=node('dl','photo-sun');solarReadings.id='photoSun';solarReadings.setAttribute('aria-label','Sun times');
     function renderTimeline(times,windows,now,next,time) {
       const key=[place.latitude,place.longitude,selected,timezone].join('|');
       if(timelineView?.key!==key) {
@@ -124,7 +125,7 @@
           }
           labels.append(group);
         }
-        panel.append(heading,chart,legend,selection,labels);$('photoWindows').replaceChildren(panel);
+        panel.append(heading,chart,legend,solarReadings,selection,labels);$('photoWindows').replaceChildren(panel);
         timelineView={key,update(current,upcoming){
           marker.hidden=current<timeline.start||current>=timeline.end;
           const progress=(current-timeline.start)/span*100;
@@ -158,7 +159,7 @@
         const solar=[['Sunrise',time(times.sunrise)],['Sunset',time(times.sunset)],['Solar noon',time(times.solarNoon)]];
         const duration=times.sunset-times.sunrise;
         if(Number.isFinite(duration)&&duration>=0) {const minutes=Math.round(duration/60000);solar.push(['Daylight',`${Math.floor(minutes/60)} h ${minutes%60} min`]);}
-        $('photoSun').replaceChildren(...solar.map(([label,value])=>{const row=node('div','');row.append(node('dt','',label),node('dd','',value));return row;}));
+        solarReadings.replaceChildren(...solar.map(([label,value])=>{const row=node('div','');row.append(node('dt','',label),node('dd','',value));return row;}));
         const weather=next?nearbyWeather(forecast,(next.start+next.end)/2):null;
         $('photoWeatherLabel').textContent=next?`Weather near ${next.label.toLowerCase()}`:'Light-window weather';
         const readings=[['Cloud cover',weather?.cloud,'%'],['Rain chance',weather?.rain,'%'],['Wind',weather?.wind,' km/h'],['Visibility',weather?.visibility===null||weather?.visibility===undefined?null:weather.visibility/1000,' km']];
@@ -169,7 +170,7 @@
     win.document.addEventListener('DOMContentLoaded',render);
     win.document.addEventListener('visibilitychange',()=>{if(!win.document.hidden)render();});
     win.setInterval(()=>{if(!win.document.hidden)render();},60000);
-    return {setLocation(value){place=value;forecast=null;timezone=value.timezone || null;today=null;timelineView=null;$('photoWindows').replaceChildren();$('photoSun').replaceChildren();$('photoWeather').replaceChildren();render();},
+    return {setLocation(value){place=value;forecast=null;timezone=value.timezone || null;today=null;timelineView=null;$('photoWindows').replaceChildren();solarReadings.replaceChildren();$('photoWeather').replaceChildren();render();},
       setForecast(data){forecast=data;if(data?.timezone)timezone=data.timezone;render();}};
   }
   return {dateKey,addDay,zonedNoon,solarTimeline,lightWindows,nearbyWeather,createController};

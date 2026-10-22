@@ -491,3 +491,11 @@
   .photo-timeline-selection { grid-template-columns:minmax(0,1fr); }
   .photo-selection-duration { grid-column:1; grid-row:auto; justify-self:start; margin-top:3px; }
 }
+
+/* Sun times belong to the daily light card, just before its selected window. */
+.photo-timeline-panel .photo-sun { margin:0 0 18px; padding:16px; border:0; border-radius:12px; background:var(--soft); gap:16px; }
+.photo-timeline-panel .photo-sun dt { font-size:13px; margin-bottom:5px; }
+.photo-timeline-panel .photo-sun dd { font-size:17px; font-weight:500; line-height:1.4; }
+@media (max-width:700px) {
+  .photo-timeline-panel .photo-sun { padding:14px; gap:16px 12px; }
+}
