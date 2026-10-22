@@ -177,15 +177,30 @@ test('aviation is opt-in and its chart selection is shared without the OpenAIP k
   assert.equal(maps.readHash(hash).pin.osm, 'node/123');
 });
 
-test('PlugShare base links retain native overlay preferences and pins without sharing credentials', () => {
-  const layers = maps.normalizeLayers({ base: 'plugshare', ev: true, tesla: true, drivebc: true, google: true, traffic: true, apiKey: 'private' });
+test('embedded base links retain native overlay preferences and pins without sharing credentials', () => {
+  for(const base of ['plugshare','adsbexchange']) {
+  const layers = maps.normalizeLayers({ base, ev: true, tesla: true, drivebc: true, google: true, traffic: true, apiKey: 'private' });
   const pin = { lat: 48.42, lng: -123.37, name: 'A saved place', osm: 'node/123' };
   const hash = maps.makeHash(maps.defaultView, pin, layers);
-  assert.equal(layers.base, 'plugshare');
+  assert.equal(layers.base, base);assert(maps.isEmbeddedBase(base));
   assert.deepEqual(maps.readLayers(hash), layers);
   assert.deepEqual(maps.readHash(hash).pin, { ...pin, detail: '' });
   assert(!hash.includes('private'));
+  }
   for (const base of ['https://example.com/', true, {}, 'PLUGSHARE']) assert.equal(maps.normalizeLayers({ base }).base, 'street');
+});
+
+test('ADS-B Exchange opens its official map at the Gregle view and keeps provider controls in the embed',()=>{
+  const view={lat:48.4284,lng:-123.3656,zoom:9};
+  const full=new URL(maps.adsbExchangeURL(view)),embed=new URL(maps.adsbExchangeEmbedURL(view));
+  assert.equal(full.origin,'https://globe.adsbexchange.com');assert.equal(full.pathname,'/');
+  assert.equal(+full.searchParams.get('lat'),view.lat);assert.equal(+full.searchParams.get('lon'),view.lng);assert.equal(+full.searchParams.get('zoom'),9);
+  assert(!full.searchParams.has('hideSidebar'));assert(embed.searchParams.has('hideSidebar'));
+  assert(!embed.searchParams.has('hideButtons'));assert(!embed.searchParams.has('kiosk'));
+  const world=new URL(maps.adsbExchangeURL({lat:89,lng:541,zoom:99}));
+  assert.equal(+world.searchParams.get('lat'),85.051129);assert.equal(+world.searchParams.get('lon'),-179);assert.equal(+world.searchParams.get('zoom'),20);
+  assert.throws(()=>maps.adsbExchangeURL({lat:NaN,lng:0,zoom:9}));assert.throws(()=>maps.adsbExchangeURL({lat:0,lng:Infinity,zoom:9}));
+  for(const value of ['street','topographic','https://globe.adsbexchange.com/',{},null])assert(!maps.isEmbeddedBase(value));
 });
 
 test('PlugShare embeds use the official widget with the current centre and bounded view spans', () => {

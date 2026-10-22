@@ -20,11 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261021-map-tools-no-shadow">
+  <link rel="stylesheet" href="assets/maps.css?v=20261021-adsbexchange">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261018-daily-fuel" defer></script>
+  <script src="assets/maps-core.js?v=20261021-adsbexchange" defer></script>
   <script src="assets/maps-places-core.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-places.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-signs" defer></script>
@@ -38,19 +38,19 @@
   <script src="assets/maps-aviation.js?v=20261019-aviation-worker" defer></script>
   <script src="assets/maps-ev-core.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/maps-ev.js?v=20261018-daily-fuel" defer></script>
-  <script src="assets/maps-plugshare.js?v=20261017-plugshare-zoom" defer></script>
+  <script src="assets/maps-embed.js?v=20261021-adsbexchange" defer></script>
   <script src="assets/maps-aircraft-core.js?v=20261020-hover-path" defer></script>
   <script src="assets/maps-aircraft.js?v=20261021-feed-recovery" defer></script>
   <script src="assets/maps-vessels-core.js?v=20261018-vessel-types" defer></script>
   <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261021-mobile-drawer" defer></script>
+  <script src="assets/maps-layers.js?v=20261021-adsbexchange" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261019-navigation" defer></script>
   <script src="assets/maps-navigation.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
-  <script src="assets/maps-drawer.js?v=20261021-mobile-drawer" defer></script>
-  <script src="assets/maps.js?v=20261021-fast-places" defer></script>
+  <script src="assets/maps-drawer.js?v=20261021-adsbexchange" defer></script>
+  <script src="assets/maps.js?v=20261021-adsbexchange" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -85,9 +85,9 @@
   </header>
   <main class="map-stage" aria-label="Gregle Maps">
     <div id="gregle-map" aria-label="Interactive OpenStreetMap. Double-click, double-tap, or touch and hold to drop a pin. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
-    <section class="plugshare-map" id="plugshare-map" aria-label="PlugShare charging map" hidden>
-      <div class="plugshare-toolbar"><strong>PlugShare</strong><a id="plugshare-full-map" href="https://www.plugshare.com/" target="_blank" rel="noopener">Open full map ↗</a><button id="plugshare-layers-toggle" type="button" aria-expanded="false" aria-controls="map-layers-panel">Change map</button></div>
-      <div class="plugshare-frame" id="plugshare-frame"><p class="map-glass" id="plugshare-status" role="status" hidden></p><p class="map-glass" id="plugshare-zoom-help" role="status" hidden>Use two-finger scrolling or the map’s zoom controls to zoom PlugShare.</p></div>
+    <section class="embedded-map" id="embedded-map" aria-label="Embedded map" hidden>
+      <div class="embedded-toolbar"><strong id="embedded-title">Embedded map</strong><a id="embedded-full-map" href="https://www.plugshare.com/" target="_blank" rel="noopener">Open full map ↗</a><button id="embedded-layers-toggle" type="button" aria-expanded="false" aria-controls="map-layers-panel">Change map</button></div>
+      <div class="embedded-frame" id="embedded-frame"><p class="map-glass" id="embedded-status" role="status" hidden></p><p class="map-glass" id="embedded-zoom-help" role="status" hidden>Use two-finger scrolling or the map’s zoom controls to zoom.</p></div>
     </section>
     <section class="map-search map-glass" aria-label="Find a place">
       <form id="map-search-form" role="search" aria-label="Search the map">
@@ -138,7 +138,8 @@
       <fieldset class="map-base-options"><legend>Base map</legend>
         <label><input type="radio" name="map-base" value="street" checked><span><strong>Street</strong><small>OpenStreetMap</small></span></label>
         <label><input type="radio" name="map-base" value="topographic"><span><strong>Topographic</strong><small>Contours &amp; terrain</small></span></label>
-        <label class="plugshare-base-option"><input type="radio" name="map-base" value="plugshare"><span><strong>PlugShare</strong><small>Embedded EV charging map</small></span></label>
+        <label><input type="radio" name="map-base" value="plugshare"><span><strong>PlugShare</strong><small>EV charging map</small></span></label>
+        <label><input type="radio" name="map-base" value="adsbexchange"><span><strong>ADS-B Exchange</strong><small>Live aircraft map</small></span></label>
       </fieldset>
       <p class="layer-status" id="base-layer-status" role="status"></p>
       <fieldset class="map-overlay-options"><legend>Overlays</legend>

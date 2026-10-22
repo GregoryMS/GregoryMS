@@ -82,13 +82,13 @@
     $('gregle-map').focus({ preventScroll: true });
   }
   function syncMapMode(restoreDetails = true) {
-    const embedded = layerControl.getState().base === 'plugshare';
+    const embedded = core.isEmbeddedBase(layerControl.getState().base);
     if (embedded === usingEmbed) return;
     usingEmbed = embedded; intent++; cancelSearch(); hideSearch();
     if (embedded) {
       navigation?.close();
       placeDetails?.clear();
-      if (document.activeElement?.closest('.map-search, .map-place, .map-actions, #gregle-map')) $('plugshare-layers-toggle').focus({ preventScroll: true });
+      if (document.activeElement?.closest('.map-search, .map-place, .map-actions, #gregle-map')) $('embedded-layers-toggle').focus({ preventScroll: true });
     } else if (restoreDetails) placeDetails?.select(selected);
   }
   function showScopeAction(worldwide) {
@@ -125,7 +125,7 @@
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GreglePlugShare || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces || !window.GregleMapPinGestures) {
+  if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GregleMapEmbed || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces || !window.GregleMapPinGestures) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }

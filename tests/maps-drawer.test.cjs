@@ -79,3 +79,10 @@ test('the drawer stays above an on-screen keyboard and clamps to the remaining h
   assert.equal(h.get('map-drawer').style['--map-drawer-lift'],'0px');
   assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'350','keyboard dismissal must not unexpectedly expand the panel');
 });
+
+test('embedded maps hide native details while keeping the layers drawer available for switching back',()=>{
+  const h=setup();h.open('map-place');h.open('map-fuel-card');
+  h.stage.classList.add('embedded-active');h.refresh();assert(h.get('map-drawer').hidden);
+  h.open('map-layers-panel');assert(!h.get('map-drawer').hidden);assert(!h.get('map-layers-panel').inert);assert(h.get('map-place').inert);
+  h.stage.classList.remove('embedded-active');h.refresh();h.api.show('map-place');assert(!h.get('map-place').inert);
+});

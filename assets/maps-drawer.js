@@ -62,7 +62,7 @@ window.GregleMapDrawer = ({ map }) => {
     if (!media.matches) return;
     let opened;
     for (const p of panels) {
-      const visible = !p.node.hidden && !(stage.classList.contains('plugshare-active') && ['map-place', 'map-search-content', 'map-directions', 'map-fuel-card', 'map-feature-details'].includes(p.id));
+      const visible = !p.node.hidden && !(stage.classList.contains('embedded-active') && ['map-place', 'map-search-content', 'map-directions', 'map-fuel-card', 'map-feature-details'].includes(p.id));
       if (!visible) p.dismissed = false;
       const available = visible && !p.dismissed;
       if (available && !p.available && (p.id !== 'map-fuel-card' || !active)) opened = p;
