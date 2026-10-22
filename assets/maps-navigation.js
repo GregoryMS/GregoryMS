@@ -4,16 +4,19 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
   const panel = $('map-directions'), toggle = $('map-directions-toggle');
   const inputs = { from: $('directions-from'), to: $('directions-to') }, points = { from: null, to: null };
   const routeLayers = L.layerGroup().addTo(map);
-  let active = 'from', version = 0, controller, locating = false, nextSearch = 0, nextRoute = 0;
+  let active = 'from', version = 0, controller, locating = false, nextSearch = 0, nextRoute = 0, mode = 'driving', currentRoute = null;
   const status = text => { $('directions-status').textContent = text; };
+  const live = window.GregleLiveNavigation?.({ map, onRoute: renderRoute, onStop: message => { open(); status(message); $('directions-start').focus({ preventScroll: true }); } });
   function invalidate(message = 'Choose locations, then show your route.') {
+    if (live?.active) live.stop();
+    currentRoute = null; $('directions-start').disabled = true;
     version++; controller?.abort(); controller = null; locating = false;
     $('directions-location').disabled = false;
     panel.removeAttribute('aria-busy');
     routeLayers.clearLayers(); $('directions-summary').hidden = true;
     $('directions-steps').replaceChildren(); $('directions-results').replaceChildren();
     $('directions-route').disabled = !points.from || !points.to;
-    const urls = core.links(points.from, points.to);
+    const urls = core.links(points.from, points.to, mode);
     $('directions-handoff').hidden = !urls;
     if (urls) { $('directions-google').href = urls.google; $('directions-apple').href = urls.apple; }
     status(message);
@@ -21,7 +24,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
   function setPoint(field, point) {
     points[field] = { lat: point.lat, lng: point.lng, name: point.name, detail: point.detail };
     inputs[field].value = [point.name, point.detail].filter(Boolean).join(' · ');
-    invalidate(points.from && points.to ? 'Ready to find a driving route.' : 'Choose the other end of your journey.');
+    invalidate(points.from && points.to ? `Ready to find a ${mode} route.` : 'Choose the other end of your journey.');
   }
   function open() {
     panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
@@ -35,6 +38,20 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
     document.querySelector('.map-stage').classList.remove('directions-open'); toggle.focus();
   }
   toggle.disabled = false;
+  for (const travel of ['driving', 'walking']) $('directions-' + travel).addEventListener('click', () => {
+    if (travel === mode) return;
+    mode = travel;
+    for (const choice of ['driving', 'walking']) $('directions-' + choice).setAttribute('aria-pressed', String(choice === mode));
+    $('directions-estimate-note').textContent = mode === 'walking' ? 'Estimated walking time. Routes follow mapped pedestrian access.' : 'Estimated driving time excludes live traffic and ferry waits.';
+    invalidate(`Choose locations, then show your ${mode} route.`);
+  });
+  $('directions-start').addEventListener('click', () => {
+    if (!currentRoute || !live) return;
+    panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
+    document.querySelector('.map-stage').classList.remove('directions-open');
+    live.start(currentRoute, mode, points.to);
+    if (live.active) $('navigation-stop').focus({ preventScroll: true });
+  });
   toggle.addEventListener('click', () => { if (panel.hidden) { open(); inputs[active].focus(); } else close(); });
   $('close-directions').addEventListener('click', close);
   panel.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } });
@@ -94,25 +111,37 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
     nextRoute = Date.now() + 1100;
     const token = version, from = { ...points.from }, to = { ...points.to };
     controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), 15000);
-    panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; status('Finding a driving route…');
+    panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; status(`Finding a ${mode} route…`);
     try {
-      const response = await fetch(core.routeURL(from, to), { signal: current.signal });
+      const response = await fetch(core.routeURL(from, to, mode), { signal: current.signal });
       const data = await response.json(); if (token !== version) return;
       if (!response.ok && !['NoRoute', 'NoSegment'].includes(data?.code)) throw new Error('Routing is unavailable. Try again, or open your navigation app below.');
-      const route = core.readRoute(data);
-      L.polyline(route.points, { color: '#fff', weight: 9, opacity: .9, interactive: false }).addTo(routeLayers);
-      const line = L.polyline(route.points, { color: '#7637cc', weight: 5, opacity: .95, interactive: false }).addTo(routeLayers);
-      for (const [label, p] of [['A', from], ['B', to]]) {
-        const icon = L.divIcon({ className: 'directions-marker', html: label, iconSize: [28, 28], iconAnchor: [14, 14] });
-        L.marker([p.lat, p.lng], { icon, title: `${label}: ${p.name}`, alt: `${label}: ${p.name}` }).addTo(routeLayers);
-      }
-      const small = window.innerWidth <= 700;
-      map.fitBounds(line.getBounds(), { paddingTopLeft: small ? [30, 30] : [425, 35], paddingBottomRight: small ? [75, 290] : [85, 35], maxZoom: 16 });
-      $('directions-total').textContent = `${core.duration(route.duration)} · ${core.distance(route.distance)}`;
-      for (const step of route.steps) { const li = document.createElement('li'); li.textContent = `${step.text} · ${core.distance(step.distance)}`; $('directions-steps').append(li); }
-      $('directions-summary').hidden = false; status('Driving route ready. Open a navigation app for live guidance.');
+      renderRoute(core.readRoute(data, mode), from, to);
+      status(`${mode === 'walking' ? 'Walking' : 'Driving'} route ready. Start navigation for live guidance.`);
     } catch (error) { if (token === version) status(error.name === 'AbortError' ? 'Routing timed out. Try again, or use your navigation app below.' : error.message || 'Routing is unavailable. Try again.'); }
     finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; } }
   });
+  function renderRoute(route, from, to, fit = true) {
+    if (!fit) {
+      points.from = { ...from, name: 'My location' }; inputs.from.value = 'My location';
+      const urls = core.links(points.from, points.to, mode);
+      if (urls) { $('directions-google').href = urls.google; $('directions-apple').href = urls.apple; }
+    }
+    currentRoute = route; routeLayers.clearLayers(); $('directions-steps').replaceChildren();
+    L.polyline(route.points, { color: '#fff', weight: 10, opacity: .9, interactive: false }).addTo(routeLayers);
+    const line = L.polyline(route.points, { color: '#7637cc', weight: 6, opacity: .95, interactive: false, dashArray: mode === 'walking' ? '3 10' : null }).addTo(routeLayers);
+    for (const [label, p] of [['A', from], ['B', to]]) {
+      const icon = L.divIcon({ className: 'directions-marker', html: label, iconSize: [28, 28], iconAnchor: [14, 14] });
+      L.marker([p.lat, p.lng], { icon, title: `${label}: ${p.name || 'Location'}`, alt: `${label}: ${p.name || 'Location'}` }).addTo(routeLayers);
+    }
+    if (fit) {
+      const small = window.innerWidth <= 700, size = map.getSize();
+      const panelWidth = panel.getBoundingClientRect?.().width || 380;
+      map.fitBounds(line.getBounds(), { paddingTopLeft: small ? [25, 25] : [Math.min(panelWidth + 40, size.x * .48), 30], paddingBottomRight: small ? [55, Math.min(340, (size.y || 700) * .45)] : [80, 30], maxZoom: 16 });
+    }
+    $('directions-total').textContent = `${core.duration(route.duration)} · ${core.distance(route.distance)}`;
+    for (const step of route.steps) { const li = document.createElement('li'); li.textContent = `${step.text} · ${core.distance(step.distance)}`; $('directions-steps').append(li); }
+    $('directions-summary').hidden = false; $('directions-start').disabled = !live;
+  }
   return { close };
 };

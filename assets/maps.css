@@ -423,3 +423,86 @@
   #map-feature-details :is(th, td) { color: var(--text); }
   #map-feature-details :is(.ev-facts dt, .aircraft-popup dt, .vessels-popup dt) { color: var(--muted); }
 }
+
+/* Live guidance stays outside the details drawer at every viewport width. */
+.directions-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.map-directions .directions-modes button { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; color: var(--text); background: transparent; }
+.directions-modes svg { width: 24px; height: 24px; flex-shrink: 0; }
+.map-directions .directions-modes button[aria-pressed="true"] { background: var(--map-accent-soft); color: var(--map-accent); border-color: var(--map-accent); }
+.map-directions #directions-start { width: 100%; min-height: 52px; font-size: 16px; font-weight: 500; color: #fff; background: #7637cc; border-color: #7637cc; }
+.navigation-live { position: absolute; z-index: 650; top: 16px; left: 16px; width: 390px; max-width: calc(100% - 32px); padding: 18px; border-radius: 20px; box-sizing: border-box; }
+.navigation-turn { display: flex; align-items: center; gap: 16px; }
+#navigation-arrow { flex: 0 0 48px; color: var(--map-accent); font: 500 48px/1 system-ui, sans-serif; text-align: center; }
+.navigation-turn > div { min-width: 0; }
+#navigation-distance { color: var(--map-accent); font: 600 22px/1.3 system-ui, sans-serif; }
+#navigation-instruction { font: 500 22px/1.3 system-ui, sans-serif; margin: 6px 0 0; overflow-wrap: anywhere; }
+.navigation-trip { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--map-border); font: 500 15px/1.5 system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+#navigation-status { margin: 8px 0 12px; min-height: 18px; color: var(--muted); font: 400 13px/1.5 system-ui, sans-serif; }
+.navigation-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.navigation-controls button { flex: 1; min-width: 75px; min-height: 48px; border: 1px solid var(--map-border); border-radius: 12px; background: var(--map-surface); color: var(--text); font: 500 15px/1.2 system-ui, sans-serif; padding: 10px; cursor: pointer; touch-action: manipulation; }
+.navigation-controls button[aria-pressed="true"] { background: var(--map-accent-soft); color: var(--map-accent); }
+#navigation-stop { background: #7637cc; border-color: #7637cc; color: #fff; }
+.navigation-controls button:focus-visible, .map-car-layout:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
+.navigation-position { display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; background: #2476e8; color: #fff; box-shadow: 0 0 0 2px #2476e8, 0 2px 6px #0004; font: 24px/1 system-ui, sans-serif; }
+.navigation-position span { display: block; }
+.navigating :is(.map-search, .map-actions, .map-place, .map-directions, .map-layers-panel, .map-fuel-card, .map-drawer, .map-link-copy, #map-feature-details) { display: none !important; }
+.map-car-layout { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--map-border); border-radius: 12px; color: var(--text); background: var(--map-surface); font: 500 12px/1.3 system-ui, sans-serif; cursor: pointer; touch-action: manipulation; }
+.map-car-layout svg { width: 23px; height: 23px; flex-shrink: 0; }
+.map-car-layout[aria-pressed="true"] { color: var(--map-accent); background: var(--map-accent-soft); border-color: var(--map-accent); }
+.vehicle-layout .topbar { padding: 10px 20px; }
+.vehicle-layout .map-stage { margin: 0 10px 10px; border-radius: 18px; }
+.vehicle-layout .map-icon-button { width: 56px; height: 56px; padding: 14px; }
+.vehicle-layout .map-icon-button svg { width: 26px; height: 26px; }
+.vehicle-layout .map-actions { gap: 8px; }
+.vehicle-layout .map-search-submit { flex-basis: 50px; height: 50px; }
+.vehicle-layout #map-search-form { min-height: 68px; }
+.vehicle-layout #map-query { font-size: 18px; }
+.vehicle-layout :is(.map-directions, .map-layers-panel) { font-size: 16px; }
+.vehicle-layout :is(.map-directions, .map-layers-panel) :is(button, input, summary, a) { min-height: 48px; touch-action: manipulation; }
+.vehicle-layout .directions-field { flex-wrap: wrap; }
+.vehicle-layout .directions-field input { flex: 1 1 160px; font-size: 18px; }
+.vehicle-layout .map-directions :is(label, #directions-status) { font-size: 15px; }
+.vehicle-layout .map-layers-panel :is(strong, legend) { font-size: 15px; }
+.vehicle-layout .map-layers-panel :is(small, .layer-status) { font-size: 12px; }
+.vehicle-layout .map-base-options label { min-height: 60px; }
+.vehicle-layout .map-overlay-options label { min-height: 52px; }
+.vehicle-layout .map-dismiss { width: 48px; height: 48px; }
+.vehicle-layout .leaflet-control-zoom a { width: 52px; height: 52px; line-height: 52px; }
+.vehicle-layout .navigation-controls button { min-height: 56px; font-size: 17px; }
+.vehicle-layout #navigation-instruction { font-size: 25px; }
+@media (min-width: 701px) and (max-width: 1100px) {
+  .map-directions { width: 340px; }
+  .vehicle-layout .map-directions { width: 330px; }
+  .vehicle-layout .map-search { width: 340px; }
+  .vehicle-layout .top-actions { gap: 12px; }
+  .vehicle-layout .map-source :is(.osm-label, .plugshare-label, .osm-arrow, .plugshare-arrow) { display: none; }
+}
+@media (max-width: 700px) {
+  .maps-page .topbar { gap: 10px; }
+  .maps-page .top-actions { min-width: 0; gap: 10px; }
+  .map-source :is(.osm-label, .plugshare-label, .osm-arrow, .plugshare-arrow) { display: none; }
+  .map-car-layout span { display: none; }
+  .map-car-layout { padding: 8px; }
+  .navigation-live { top: 10px; left: 10px; width: calc(100% - 20px); max-width: none; padding: 14px; }
+  #navigation-instruction { font-size: 21px; }
+  .vehicle-layout .topbar { padding: 8px 12px; }
+  .vehicle-layout .brand { font-size: 28px; }
+  .vehicle-layout .top-actions { gap: 10px; }
+  .vehicle-layout .map-stage { margin: 0 6px 6px; }
+  .vehicle-layout .has-mobile-drawer .map-actions { top: 94px; }
+  .vehicle-layout .has-mobile-drawer .map-actions .map-icon-button { flex-basis: 52px; width: 52px; height: 52px; }
+  .vehicle-layout .has-mobile-drawer .leaflet-top.leaflet-right { top: 158px; }
+  .vehicle-layout .map-drawer-body { padding-bottom: 24px; }
+  .vehicle-layout .map-drawer-bar button { width: 52px; height: 52px; flex-basis: 52px; }
+  .vehicle-layout .map-drawer-tabs button { min-height: 48px; font-size: 15px; }
+  .vehicle-layout .map-drawer-body .map-base-options label { min-height: 68px; }
+}
+@media (max-height: 560px) and (min-width: 701px) {
+  .vehicle-layout .topbar { padding-top: 4px; padding-bottom: 4px; }
+  .vehicle-layout .map-actions { display: flex; flex-wrap: wrap; max-width: calc(100% - 410px); justify-content: flex-end; }
+  .vehicle-layout .map-directions { top: 12px; max-height: calc(100% - 24px); }
+  .navigation-live { top: 10px; left: 10px; padding: 12px; }
+  .navigation-trip { margin-top: 10px; padding-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .navigation-live, .navigation-position { transition: none; } }
+@media (max-width: 360px) { .maps-page .breadcrumb { display: none; } }
