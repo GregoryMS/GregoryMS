@@ -8,6 +8,7 @@
   const validPoint = (lat, lng) => typeof lat === 'number' && typeof lng === 'number' && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
   const wrapLongitude = lng => ((lng + 180) % 360 + 360) % 360 - 180;
   const text = value => typeof value === 'string' ? value.trim().slice(0, 180) : '';
+  const isEmbeddedBase = base => ['plugshare', 'adsbexchange'].includes(base);
   function osmReference(type, id) {
     type = ({ N: 'node', W: 'way', R: 'relation' })[type] || type;
     return ['node', 'way', 'relation'].includes(type) && /^[1-9]\d{0,15}$/.test(String(id)) && Number.isSafeInteger(Number(id)) ? `${type}/${id}` : null;
@@ -31,7 +32,7 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { fuel: value?.fuel === true, fuelType: ['regular','midgrade','premium','diesel'].includes(value?.fuelType) ? value.fuelType : 'regular', evSource: value?.evSource === 'openstreetmap' ? 'openstreetmap' : 'openchargemap', base: ['street', 'topographic', 'plugshare'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true || value?.ev === true && value?.tesla === undefined, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { fuel: value?.fuel === true, fuelType: ['regular','midgrade','premium','diesel'].includes(value?.fuelType) ? value.fuelType : 'regular', evSource: value?.evSource === 'openstreetmap' ? 'openstreetmap' : 'openchargemap', base: ['street', 'topographic', 'plugshare', 'adsbexchange'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true || value?.ev === true && value?.tesla === undefined, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
@@ -73,6 +74,19 @@
   function plugshareEmbedURL(view, bounds = []) {
     const url = new URL(plugshareURL(view, bounds));
     url.pathname = '/widget2.html';
+    return url.href;
+  }
+  function adsbExchangeURL(view) {
+    if (!Number.isFinite(view?.lat) || !Number.isFinite(view?.lng)) throw new Error('Invalid aircraft map centre');
+    const url = new URL('https://globe.adsbexchange.com/');
+    url.searchParams.set('lat', Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(6));
+    url.searchParams.set('lon', wrapLongitude(view.lng).toFixed(6));
+    url.searchParams.set('zoom', String(Math.max(1, Math.min(20, Number.isFinite(view.zoom) ? view.zoom : 13))));
+    return url.href;
+  }
+  function adsbExchangeEmbedURL(view) {
+    const url = new URL(adsbExchangeURL(view));
+    url.searchParams.set('hideSidebar', '');
     return url.href;
   }
   function searchArea(current, bounds = []) {
@@ -172,5 +186,5 @@
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, plugshareURL, plugshareEmbedURL, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
+  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, plugshareURL, plugshareEmbedURL, adsbExchangeURL, adsbExchangeEmbedURL, isEmbeddedBase, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
 });
