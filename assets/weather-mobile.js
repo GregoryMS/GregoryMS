@@ -10,4 +10,10 @@
   setLayout();
   if (mobile.addEventListener) mobile.addEventListener('change', setLayout);
   else mobile.addListener?.(setLayout);
+  document.getElementById('cityResults').addEventListener('click', event => {
+    if (mobile.matches && event.target.closest('button')) {
+      picker.open = false;
+      picker.querySelector('summary').focus({ preventScroll:true });
+    }
+  });
 })();

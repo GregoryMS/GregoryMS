@@ -18,7 +18,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261022-timeline-24h">
+  <link rel="stylesheet" href="assets/weather.css?v=20261022-location-ui">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261022-mobile">
@@ -62,23 +62,28 @@
       <div id="weatherAlertList" class="weather-alert-list"></div>
     </section>
     <div class="page-heading">
-      <div><p class="eyebrow">A look outside</p><h1 id="cityName">Vancouver</h1><p class="location-meta" id="locationMeta">British Columbia</p></div>
-    </div>
+      <div class="weather-location-title"><p class="eyebrow">A look outside</p><h1 id="cityName">Vancouver</h1><p class="location-meta" id="locationMeta">British Columbia</p></div>
     <details class="location-picker" id="locationPicker" open>
       <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Change location</span></summary>
       <div class="location-picker-body">
-      <div class="location-switch" role="group" aria-label="Weather location">
-        <button class="city-button" data-city="victoria" type="button" aria-pressed="false">Victoria</button>
-        <button class="city-button" data-city="vancouver" type="button" aria-pressed="true">Vancouver</button>
-        <button class="city-button" data-city="chilliwack" type="button" aria-pressed="false">Chilliwack</button>
-      </div>
     <section class="location-controls" aria-label="Find weather for a location">
-      <form id="citySearch" class="city-search"><label for="cityQuery">Find a city</label><div class="city-search-row"><input id="cityQuery" type="search" placeholder="City or postal code" autocomplete="off" minlength="2" maxlength="100" required><button class="pill" id="searchButton" type="submit">Search</button><button class="pill" id="locateWeather" type="button">◎ My location</button></div></form>
+      <form id="citySearch" class="city-search">
+        <label for="cityQuery">Find a city</label>
+        <div class="city-search-row">
+          <div class="city-search-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+            <input id="cityQuery" type="search" placeholder="City or postal code" autocomplete="off" enterkeyhint="search" minlength="2" maxlength="100" required>
+            <button class="pill" id="searchButton" type="submit">Search</button>
+          </div>
+          <button class="pill locate-weather" id="locateWeather" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg><span>My location</span></button>
+        </div>
+      </form>
       <p id="locationStatus" class="location-note" role="status">Allow location access to load your local forecast, or search for a city.</p>
       <div id="cityResults" class="city-results" aria-label="City search results"></div>
     </section>
       </div>
     </details>
+    </div>
     <nav class="weather-jump-links" aria-label="Weather sections"><a href="#forecast">Forecast</a><a href="#weather-map">Weather map</a><a href="#photography">Light times</a></nav>
     <noscript><p>Enable JavaScript for live weather. Visit <a href="https://weather.gc.ca/">Environment Canada</a> or <a href="https://open-meteo.com/">Open-Meteo</a> for forecasts.</p></noscript>
     <div id="weatherContent" aria-busy="true">
@@ -196,7 +201,7 @@
     </section>
     <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
-  <script src="assets/weather-mobile.js?v=20261022-mobile"></script>
+  <script src="assets/weather-mobile.js?v=20261022-location-ui"></script>
   <script src="assets/weather-core.js?v=20261021-station-coverage"></script>
   <script src="assets/weather-hourly.js?v=20261022-timeline-24h"></script>
   <script src="assets/weather-photography.js?v=20261022-timeline-24h"></script>
@@ -450,8 +455,7 @@
       $('cityResults').replaceChildren(); $('cityName').textContent=location.name;
       $('locationMeta').textContent=`${location.region || location.country || 'Local forecast'}`;
       document.title=`${location.name} weather · Gregle`;
-      document.querySelectorAll('[data-city]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.city===key)));
-      $('locationStatus').textContent=key?'Choose a city or use your location.':`Showing weather for ${location.name}.`;
+      $('locationStatus').textContent=key?'Search for a city or use My location.':`Showing weather for ${location.name}.`;
       globalThis.GregleTideUI.weatherPreview(location);
       globalThis.GregleRadar?.setLocation(location);
       globalThis.GregleWeatherAlerts?.setLocation(location);
@@ -465,8 +469,8 @@
     }
     function requestLocation() {
       cancelLocationLookup(); const version=locationVersion;
-      if(!navigator.geolocation || window.isSecureContext===false) { $('locationStatus').textContent='Automatic location is unavailable. Search for a city or use a shortcut.'; return; }
-      $('locateWeather').disabled=true; $('locationStatus').textContent='Finding your location… Allow location access, or choose a city below.';
+      if(!navigator.geolocation || window.isSecureContext===false) { $('locationStatus').textContent='Automatic location is unavailable. Search for a city or try My location again.'; return; }
+      $('locateWeather').disabled=true; $('locationStatus').textContent='Finding your location… Allow location access or search for a city.';
       try { navigator.geolocation.getCurrentPosition(async position=>{
         if(version!==locationVersion) return;
         const {latitude,longitude}=position.coords;
@@ -487,9 +491,9 @@
       },error=>{
         if(version!==locationVersion) return;
         $('locateWeather').disabled=false;
-        $('locationStatus').textContent=(error.code===1?'Location access was declined.':'Your location could not be found.')+` Showing ${selectedLocation.name}; search for another city or try My location.`;
+        $('locationStatus').textContent=(error.code===1?'Location access was declined.':'Your location could not be found.')+` Showing ${selectedLocation.name}.`;
       },{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
-      } catch (_) { $('locateWeather').disabled=false; $('locationStatus').textContent='Automatic location is unavailable. Search for a city or use a shortcut.'; }
+      } catch (_) { $('locateWeather').disabled=false; $('locationStatus').textContent='Automatic location is unavailable. Search for a city or try My location again.'; }
     }
     async function searchCities(event) {
       event.preventDefault(); const query=$('cityQuery').value.trim();
@@ -512,7 +516,6 @@
       } catch (_) { if(version===searchVersion) $('locationStatus').textContent='City search is unavailable. Try again or use My location.'; }
       finally { clearTimeout(timeout); if(version===searchVersion) $('searchButton').disabled=false; }
     }
-    document.querySelectorAll('[data-city]').forEach(button=>button.addEventListener('click',()=>selectCity(button.dataset.city)));
     retryButton.addEventListener('click',loadWeather);
     $('weatherStation').addEventListener('change',()=>{
       const station=availableStations.find(station=>station.id===$('weatherStation').value);
