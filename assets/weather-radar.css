@@ -126,3 +126,33 @@
 .ptype-freezing { background:linear-gradient(90deg,#fecbc8,#fe1e0d); }
 
 @media(prefers-reduced-motion:reduce) { .radar-layer-switches span { transition:none; } }
+
+/* Readable controls and legends without squeezing the phone map. */
+@media (max-width:700px) {
+  .radar-section { margin-top:30px; }
+  .radar-map-toolbar { gap:10px; }
+  .radar-layer-switches { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; gap:6px; padding:6px; border-radius:16px; }
+  .radar-layer-switches label { min-width:0; }
+  .radar-layer-switches span { min-width:0; min-height:46px; padding:0 4px; font-size:14px; }
+  .radar-mode,.radar-meta,.radar-source-note,.radar-forecast-caption { font-size:13px; line-height:1.65; }
+  .radar-actions { flex-wrap:wrap; }
+  .radar-actions .pill { flex:1; min-height:44px; }
+  .lightning-toggle { flex-basis:100%; margin-right:0; }
+  .lightning-toggle-body { min-height:46px; }
+  .lightning-toggle-label { font-size:14px; }
+  .lightning-toggle-region { font-size:12px; }
+  .radar-map { height:360px; height:clamp(300px,48svh,440px); }
+  .radar-forecast-map { height:480px; }
+  .radar-controls { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; padding:16px; }
+  .radar-controls button { justify-self:start; min-width:92px; }
+  .radar-timeline label { flex-direction:row; flex-wrap:wrap; font-size:13px; gap:4px 12px; }
+  .radar-timeline output { text-align:left; }
+  .radar-timeline input { min-height:44px; margin:4px 0; }
+  .radar-range { font-size:12px; }
+  .radar-legends { display:grid; gap:10px; }
+  .radar-legend { font-size:13px; }
+  .radar-legend i { flex:1; max-width:180px; min-width:40px; }
+  .radar-source-note summary { display:flex; align-items:center; min-height:44px; }
+  .ptype-legend,.smoke-legend { font-size:13px; }
+  .lightning-legend figcaption span,.lightning-legend-ticks { font-size:12px; }
+}

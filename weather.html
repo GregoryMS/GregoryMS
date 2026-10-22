@@ -18,10 +18,10 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261021-station-layout">
+  <link rel="stylesheet" href="assets/weather.css?v=20261022-mobile">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20261010-mobile-layers">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20261022-mobile">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/vendor/suncalc.js" defer></script>
@@ -63,17 +63,23 @@
     </section>
     <div class="page-heading">
       <div><p class="eyebrow">A look outside</p><h1 id="cityName">Vancouver</h1><p class="location-meta" id="locationMeta">British Columbia</p></div>
+    </div>
+    <details class="location-picker" id="locationPicker" open>
+      <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Change location</span></summary>
+      <div class="location-picker-body">
       <div class="location-switch" role="group" aria-label="Weather location">
         <button class="city-button" data-city="victoria" type="button" aria-pressed="false">Victoria</button>
         <button class="city-button" data-city="vancouver" type="button" aria-pressed="true">Vancouver</button>
         <button class="city-button" data-city="chilliwack" type="button" aria-pressed="false">Chilliwack</button>
       </div>
-    </div>
     <section class="location-controls" aria-label="Find weather for a location">
       <form id="citySearch" class="city-search"><label for="cityQuery">Find a city</label><div class="city-search-row"><input id="cityQuery" type="search" placeholder="City or postal code" autocomplete="off" minlength="2" maxlength="100" required><button class="pill" id="searchButton" type="submit">Search</button><button class="pill" id="locateWeather" type="button">◎ My location</button></div></form>
       <p id="locationStatus" class="location-note" role="status">Allow location access to load your local forecast, or search for a city.</p>
       <div id="cityResults" class="city-results" aria-label="City search results"></div>
     </section>
+      </div>
+    </details>
+    <nav class="weather-jump-links" aria-label="Weather sections"><a href="#forecast">Forecast</a><a href="#weather-map">Weather map</a><a href="#photography">Light times</a></nav>
     <noscript><p>Enable JavaScript for live weather. Visit <a href="https://weather.gc.ca/">Environment Canada</a> or <a href="https://open-meteo.com/">Open-Meteo</a> for forecasts.</p></noscript>
     <div id="weatherContent" aria-busy="true">
       <section class="current" aria-label="Current weather and next forecast">
@@ -83,9 +89,9 @@
           <p class="details" id="currentDetails"></p>
           <div class="metrics"><div><span>Humidity</span><b id="humidity">—</b></div><div id="airQualityMetric" hidden><a id="airQualityLink" href="https://weather.gc.ca/airquality/pages/index_e.html"><span>Air quality</span><b id="airQuality"></b></a></div><div><span>Wind</span><b id="wind">—</b></div><div><span>Pressure</span><b id="pressure">—</b></div></div>
         </div>
-        <div class="current-next"><p class="weather-moon" id="currentMoon" hidden><svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true" focusable="false"><circle class="weather-moon-disc" cx="20" cy="20" r="17"/><path class="weather-moon-lit" id="currentMoonLight"/><circle class="weather-moon-rim" cx="20" cy="20" r="17"/></svg><span><span class="weather-moon-label">Current moon</span><span id="currentMoonName"></span></span></p><p class="eyebrow" id="nextPeriod">Next forecast</p><p class="next-summary" id="nextSummary">Your forecast is on its way.</p><div class="range"><div><span class="range-label">High</span><span class="range-value" id="currentHigh">—</span></div><div><span class="range-label">Low</span><span class="range-value low" id="currentLow">—</span></div></div></div>
+        <div class="current-next"><p class="weather-moon" id="currentMoon" hidden><svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true" focusable="false"><circle class="weather-moon-disc" cx="20" cy="20" r="17"/><path class="weather-moon-lit" id="currentMoonLight"/><circle class="weather-moon-rim" cx="20" cy="20" r="17"/></svg><span><span class="weather-moon-label">Current moon</span><span id="currentMoonName"></span></span></p><p class="eyebrow" id="nextPeriod">Next forecast</p><details class="next-forecast-details" id="nextForecastDetails" open><summary>Read forecast</summary><p class="next-summary" id="nextSummary">Your forecast is on its way.</p></details><div class="range"><div><span class="range-label">High</span><span class="range-value" id="currentHigh">—</span></div><div><span class="range-label">Low</span><span class="range-value low" id="currentLow">—</span></div></div></div>
       </section>
-      <section aria-labelledby="forecast-heading">
+      <section id="forecast" aria-labelledby="forecast-heading">
         <div class="forecast-head forecast-view-head">
           <div class="forecast-view-title"><h2 id="forecast-heading">The days ahead</h2><div class="forecast-switch" role="radiogroup" aria-label="Forecast interval"><label><input type="radio" name="forecastView" id="forecastDaily" checked><span>Daily</span></label><label><input type="radio" name="forecastView" id="forecastHourly"><span>Hourly</span></label></div></div>
           <span class="updated" id="updated"></span>
@@ -97,7 +103,7 @@
         </div>
       </section>
     </div>
-    <section class="radar-section" aria-labelledby="radarHeading">
+    <section id="weather-map" class="radar-section" aria-labelledby="radarHeading">
       <div class="radar-heading"><div><h2 id="radarHeading">Weather map</h2></div></div>
       <div class="radar-map-toolbar">
         <div class="radar-layer-switches" role="radiogroup" aria-label="Weather map layer">
@@ -168,7 +174,7 @@
       </div>
     </section>
     <a class="tide-preview" id="tidePreview" href="https://tides.gregle.uk/"><div class="tide-preview-heading"><h2>Today’s tides</h2><span>View tide tracker ↗</span></div><div id="tidePreviewContent" aria-live="polite"></div></a>
-    <section class="photography-section" aria-labelledby="photoHeading">
+    <section id="photography" class="photography-section" aria-labelledby="photoHeading">
       <div class="forecast-head photo-heading"><div><p class="eyebrow">Chase the light</p><h2 id="photoHeading">Photography</h2></div><div class="photo-day-control"><label for="photoDay">Light windows</label><select id="photoDay" class="pill"><option>Today</option></select></div></div>
       <p id="photoLocation" class="updated"></p>
       <p id="photoStatus" class="photo-status" role="status">Loading local light times…</p>
@@ -190,6 +196,7 @@
     </section>
     <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
+  <script src="assets/weather-mobile.js?v=20261022-mobile"></script>
   <script src="assets/weather-core.js?v=20261021-station-coverage"></script>
   <script src="assets/weather-hourly.js?v=20261016-feels"></script>
   <script src="assets/weather-photography.js?v=20261020-order"></script>
