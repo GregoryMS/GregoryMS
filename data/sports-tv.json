@@ -3,17 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
+      "checkedAt": "2026-10-22T21:36:10.270146+00:00",
       "listings": [
-        {
-          "home": "Bayern München",
-          "away": "Arsenal",
-          "start": "2026-10-21T19:00:00+00:00",
-          "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 1"
-          ]
-        },
         {
           "home": "Jablonec",
           "away": "Brighton & Hove Albion",
@@ -254,7 +245,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
+      "checkedAt": "2026-10-22T21:36:10.270146+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -447,7 +438,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
+      "checkedAt": "2026-10-22T21:36:10.270146+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -690,7 +681,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
+      "checkedAt": "2026-10-22T21:36:10.270146+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -893,7 +884,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-22T17:59:34.276940+00:00",
+      "checkedAt": "2026-10-22T21:36:10.270146+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
