@@ -27,10 +27,10 @@
 
 .radar-section [hidden] { display:none !important; }
 .radar-map-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
-.radar-layer-switches { display:flex; gap:4px; padding:4px; border:1px solid var(--line); border-radius:16px; background:var(--soft); }
+.radar-layer-switches { display:flex; gap:4px; padding:4px; border:1px solid var(--line); border-radius:999px; background:var(--soft); }
 .radar-layer-switches label { position:relative; cursor:pointer; }
 .radar-layer-switches input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
-.radar-layer-switches span { display:flex; align-items:center; justify-content:center; min-height:42px; min-width:84px; padding:0 14px; border-radius:12px; color:var(--muted); font-size:13px; font-weight:500; }
+.radar-layer-switches span { display:flex; align-items:center; justify-content:center; min-height:42px; min-width:84px; padding:0 14px; border-radius:999px; color:var(--muted); font-size:13px; font-weight:500; }
 .radar-layer-switches input:checked + span { background:var(--panel); color:var(--text); box-shadow:0 2px 6px #00000012; }
 .radar-layer-switches input:focus-visible + span { outline:2px solid var(--rain); outline-offset:2px; }
 .radar-layer-switches input:disabled + span { opacity:0.55; }
@@ -49,7 +49,7 @@
     width:100%;
     gap:6px;
     padding:6px;
-    border-radius:18px;
+    border-radius:28px;
   }
   .radar-layer-switches label { min-width:0; }
   .radar-layer-switches span {
@@ -57,7 +57,7 @@
     min-height:44px;
     padding:0 6px;
     border:1px solid transparent;
-    border-radius:12px;
+    border-radius:999px;
     font-size:12px;
     transition:background .18s,color .18s,border-color .18s;
   }
@@ -131,7 +131,7 @@
 @media (max-width:700px) {
   .radar-section { margin-top:30px; }
   .radar-map-toolbar { gap:10px; }
-  .radar-layer-switches { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; gap:6px; padding:6px; border-radius:16px; }
+  .radar-layer-switches { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; gap:6px; padding:6px; border-radius:28px; }
   .radar-layer-switches label { min-width:0; }
   .radar-layer-switches span { min-width:0; min-height:46px; padding:0 4px; font-size:14px; }
   .radar-mode,.radar-meta,.radar-source-note,.radar-forecast-caption { font-size:13px; line-height:1.65; }
