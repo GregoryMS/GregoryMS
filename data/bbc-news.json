@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-21T21:34:32+00:00",
-  "fetchedAt": "2026-10-21T21:34:37.313244+00:00",
+  "feedUpdatedAt": "2026-10-22T00:09:08+00:00",
+  "fetchedAt": "2026-10-22T00:09:17.764617+00:00",
   "items": [
     {
       "title": "Burnham defends Jackdaw decision as Badenoch urges PM to overturn ban on new oil and gas licences",
@@ -20,28 +20,28 @@
       "link": "https://www.bbc.co.uk/news/articles/cm98zn5j89kdo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Diabetes and ADHD drugs to be tested on Alzheimer's patients in new study",
+      "link": "https://www.bbc.co.uk/news/articles/cqlye4v721nwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "The real reasons US politicians are getting older",
+      "link": "https://www.bbc.co.uk/news/articles/cmde8rr2d6eno?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "'Targeted' attack on much-loved MP leaves Australian town heartbroken",
       "link": "https://www.bbc.co.uk/news/articles/cmgr8q88r5eqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Aberfan disaster 'most tragic of days imaginable' says King on 60th anniversary",
-      "link": "https://www.bbc.co.uk/news/articles/crgj9d4zgj5yo?at_medium=RSS&at_campaign=rss"
+      "title": "Airbnb hosts can no longer make guests strip beds and wash dishes under new rules",
+      "link": "https://www.bbc.co.uk/news/articles/c6n049gg75r4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Don't Stop Believin'! - high school musical Glee set for reboot",
-      "link": "https://www.bbc.co.uk/news/articles/c6x2vpn4xy0yo?at_medium=RSS&at_campaign=rss"
+      "title": "The four locations in the running to be UK City of Culture 2029",
+      "link": "https://www.bbc.co.uk/news/articles/c6jrw03njgxzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Macron accuses foreign leaders of exploiting French riots",
-      "link": "https://www.bbc.co.uk/news/articles/ckjrw044ggxgo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Google staff resign in backlash over its AI contracts with military",
-      "link": "https://www.bbc.co.uk/news/articles/cmreyvepnv0po?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Jailed former DUP leader Jeffrey Donaldson being investigated over alleged rape inside Parliament",
-      "link": "https://www.bbc.co.uk/news/articles/c94g1pjmxg0ko?at_medium=RSS&at_campaign=rss"
+      "title": "Only one female scientist named in GCSEs, research finds",
+      "link": "https://www.bbc.co.uk/news/articles/c69wzv5pg447o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
