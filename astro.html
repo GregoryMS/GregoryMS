@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261022-purple-search">
+  <link rel="stylesheet" href="assets/astro.css?v=20261022-observing-controls">
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
@@ -46,7 +46,11 @@
 <body>
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Astronomy</span></div>
-    <div class="top-actions"><a class="pill" href="https://stellarium-web.org/" target="_blank" rel="noopener">Stellarium Web ↗</a><!-- Gregle app menu -->
+    <div class="top-actions"><a class="pill astro-stellarium-link" href="https://stellarium-web.org/" target="_blank" rel="noopener" aria-label="Stellarium Web" title="Open Stellarium Web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg><span>Stellarium Web ↗</span></a>
+      <button class="pill night-vision-toggle" id="night-vision-toggle" type="button" aria-label="Night vision" aria-pressed="false" title="Turn on night vision" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="3" fill="currentColor" fill-opacity=".16"/></svg>
+      </button>
+<!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
 <summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
 <nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>
@@ -75,11 +79,8 @@
         <div class="astro-clock"><span>UTC</span><time id="utc-clock" aria-label="Current UTC time">--:--:--</time></div>
         <div class="astro-clock"><span>Local</span><time id="local-clock" aria-label="Current time in your time zone">--:--:--</time></div>
       </div>
-      <button class="pill night-vision-toggle" id="night-vision-toggle" type="button" aria-label="Night vision" aria-pressed="false" title="Turn on night vision" hidden>
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13.1A9 9 0 0 1 10.9 3.1a9 9 0 1 0 10 10Z"/><path d="M18 2v4m-2-2h4"/></svg>
-      </button>
     </div>
-    <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner</h1></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
+    <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner</h1></div></div>
     <section class="location-section" aria-label="Choose an observing location">
       <form id="location-form" class="location-form">
         <label for="location-query">Find a city</label>
@@ -97,7 +98,7 @@
     </section>
     <noscript><p>Enable JavaScript for location search and forecasts. Visit <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada astronomy</a> or the <a href="https://test.cleardarksky.com/browse/map.html">Clear Sky Chart map</a> directly.</p></noscript>
     <section class="forecast-section" aria-labelledby="hourly-heading">
-      <div class="section-heading"><h2 id="hourly-heading">The next 48 hours</h2><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label></div>
+      <div class="section-heading"><h2 id="hourly-heading">The next 48 hours</h2><div class="forecast-controls"><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label><button class="pill" id="refresh" type="button">↻ Refresh</button></div></div>
       <p class="meta">Times are local to the selected location. Scroll across for the full forecast.</p>
       <div id="hourly" class="hourly-wrap panel" tabindex="0" role="region" aria-label="Scrollable hourly observing forecast"><p class="empty">Loading hourly forecast…</p></div>
       <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and the Clear Sky Chart below. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>

@@ -4,8 +4,15 @@
 .astro-clock { display:flex; align-items:baseline; gap:10px; font-size:20px; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .astro-clock span { color:var(--muted); font-size:inherit; }
 .astro-clock time { font-size:inherit; letter-spacing:.04em; }
-.night-vision-toggle { width:44px; height:44px; padding:0; flex-shrink:0; }
-.night-vision-toggle[aria-pressed="true"] { background:var(--text); color:var(--bg); border-color:var(--text); }
+.astro-stellarium-link > svg { display:none; }
+.night-vision-toggle { width:44px; height:44px; padding:0; flex-shrink:0; color:#a33939; }
+:root.dark-mode .night-vision-toggle { color:#efaaa6; }
+:root .night-vision-toggle[aria-pressed="true"] { background:var(--text); color:var(--bg); border-color:var(--text); }
+@media(max-width:600px) {
+  .astro-stellarium-link { width:44px; height:44px; padding:0; flex-shrink:0; }
+  .astro-stellarium-link > span { display:none; }
+  .astro-stellarium-link > svg { display:block; width:22px; height:22px; }
+}
 /* Native CSS filters also cover Safari's composited chart/map layers; SVG
    url() filters can leave those layers in full colour (WebKit bug 222757).
    Dim before sepia/saturation to preserve detail instead of clipping highlights. */
@@ -102,6 +109,11 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
 .hourly-wrap td[data-outlook="Twilight"],.hourly-wrap td[data-outlook="Daylight"] { background:var(--soft); }
 .check-label { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:12px; }
 .check-label input { accent-color:#52796a; width:17px; height:17px; }
+.forecast-section > .section-heading { align-items:flex-start; }
+.forecast-controls { display:flex; flex-direction:column; align-items:flex-end; gap:10px; margin-left:auto; }
+.forecast-controls .check-label { min-height:24px; }
+#night-only { accent-color:#7637cc; }
+#night-only:focus-visible { outline-color:#7637cc; }
 .chart-image { overflow:auto; text-align:center; }
 .chart-image img { display:block; width:auto; min-width:100%; max-width:none; height:auto; image-rendering:auto; }
 .chart-image { background:#000; border-radius:12px; }
