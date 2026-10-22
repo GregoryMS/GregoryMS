@@ -152,8 +152,7 @@
         const format=new Intl.DateTimeFormat('en-CA',{hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:timezone});
         const time=value=>Number.isFinite(value instanceof Date?value.getTime():value)?format.format(value):'—';
         const next=windows.filter(w=>w.start!==null&&w.end!==null&&w.end>now).sort((a,b)=>a.start-b.start)[0];
-        const active=next && next.start<=now;
-        $('photoStatus').textContent=next?`${active?'Now':'Next'} · ${next.label}${active?' · until '+time(next.end):' · '+time(next.start)}`:'No more light windows on this day.';
+        $('photoStatus').textContent='';
         $('photoLocation').textContent=`${place.name} · ${selected} · ${timezone.replaceAll('_',' ')}`;
         renderTimeline(times,windows,now,next,time);
         const solar=[['Sunrise',time(times.sunrise)],['Sunset',time(times.sunset)],['Solar noon',time(times.solarNoon)]];
