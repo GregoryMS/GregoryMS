@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-21T23:39:19.551845+00:00",
+      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -243,16 +243,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-21T23:39:19.551845+00:00",
+      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
       "listings": [
-        {
-          "home": "Bayern München",
-          "away": "Arsenal",
-          "start": "2026-10-21T19:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Jablonec",
           "away": "Brighton & Hove Albion",
@@ -404,21 +396,24 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "San Diego FC",
+          "start": "2026-10-29T02:30:00+00:00",
+          "channels": [
+            "Apple TV (US)",
+            "TSN",
+            "TSN+",
+            "TSN3"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-21T23:39:19.551845+00:00",
+      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
       "listings": [
-        {
-          "home": "Bayern München",
-          "away": "Arsenal",
-          "start": "2026-10-21T19:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)"
-          ]
-        },
         {
           "home": "Jablonec",
           "away": "Brighton & Hove Albion",
@@ -592,7 +587,8 @@
           "away": "Benfica (W)",
           "start": "2026-10-28T20:00:00+00:00",
           "channels": [
-            "Disney+ Norge"
+            "Disney+ Norge",
+            "TV 2 Sport 1"
           ]
         },
         {
@@ -604,23 +600,39 @@
             "V sport 1 NO",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "San Diego FC",
+          "start": "2026-10-29T02:30:00+00:00",
+          "channels": [
+            "Apple TV (NO)"
+          ]
+        },
+        {
+          "home": "Everton",
+          "away": "Newcastle United",
+          "start": "2026-10-29T19:45:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)",
+            "V sport 1 NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Manchester City (W)",
+          "away": "Paris Saint Germain (W)",
+          "start": "2026-10-29T20:00:00+00:00",
+          "channels": [
+            "Disney+ Norge"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-21T23:39:19.551845+00:00",
+      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
       "listings": [
-        {
-          "home": "Bayern München",
-          "away": "Arsenal",
-          "start": "2026-10-21T19:00:00+00:00",
-          "channels": [
-            "V Sport Football",
-            "V Ultra HD",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Jablonec",
           "away": "Brighton & Hove Albion",
@@ -792,21 +804,38 @@
             "Viaplay SE",
             "Viaplay Sport"
           ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "San Diego FC",
+          "start": "2026-10-29T02:30:00+00:00",
+          "channels": [
+            "Apple TV (SE)"
+          ]
+        },
+        {
+          "home": "Everton",
+          "away": "Newcastle United",
+          "start": "2026-10-29T19:45:00+00:00",
+          "channels": [
+            "Viaplay SE",
+            "Viaplay Sport"
+          ]
+        },
+        {
+          "home": "Manchester City (W)",
+          "away": "Paris Saint Germain (W)",
+          "start": "2026-10-29T20:00:00+00:00",
+          "channels": [
+            "Disney+ Sverige"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-21T23:39:19.551845+00:00",
+      "checkedAt": "2026-10-22T01:53:00.375683+00:00",
       "listings": [
-        {
-          "home": "Bayern München",
-          "away": "Arsenal",
-          "start": "2026-10-21T19:00:00+00:00",
-          "channels": [
-            "DAZN Deutschland"
-          ]
-        },
         {
           "home": "RB Leipzig (W)",
           "away": "Bayern München (W)",
@@ -971,6 +1000,31 @@
           "channels": [
             "Sky Sport Premier League",
             "WOW"
+          ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "San Diego FC",
+          "start": "2026-10-29T02:30:00+00:00",
+          "channels": [
+            "Apple TV (DE)"
+          ]
+        },
+        {
+          "home": "Everton",
+          "away": "Newcastle United",
+          "start": "2026-10-29T19:45:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Manchester City (W)",
+          "away": "Paris Saint Germain (W)",
+          "start": "2026-10-29T20:00:00+00:00",
+          "channels": [
+            "Disney+ (DE)"
           ]
         }
       ],
