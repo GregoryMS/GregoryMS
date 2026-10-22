@@ -110,7 +110,7 @@
             const button=node('button','photo-window-label');button.type='button';button.setAttribute('aria-pressed','false');
             const valid=window.start!==null&&window.end!==null;
             button.disabled=!valid;
-            button.append(node('i','photo-swatch photo-light--'+window.kind),node('span','photo-window-name',window.label),node('span','photo-window-time',valid?`${time(window.start)} – ${time(window.end)}`:'No window on this day'));
+            button.append(node('i','photo-swatch photo-light--'+window.kind),node('span','photo-window-name',window.id.startsWith('morning-')?'Morning':'Evening'),node('span','photo-window-time',valid?`${time(window.start)} – ${time(window.end)}`:'No window on this day'));
             button.addEventListener('click',()=>selectPhase(timeline.segments.find(s=>s.kind===window.kind&&(s.start+s.end)/2>=window.start&&(s.start+s.end)/2<window.end),true));
             windowButtons.push({button,value:window});group.append(button);
           }
