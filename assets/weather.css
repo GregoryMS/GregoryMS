@@ -497,9 +497,19 @@
 }
 
 /* Sun times belong to the daily light card, just before its selected window. */
-.photo-timeline-panel .photo-sun { margin:0 0 18px; padding:16px; border:0; border-radius:12px; background:var(--soft); gap:16px; }
-.photo-timeline-panel .photo-sun dt { font-size:13px; margin-bottom:5px; }
-.photo-timeline-panel .photo-sun dd { font-size:17px; font-weight:500; line-height:1.4; }
+.photo-timeline-panel .photo-sun { margin:0 0 18px; padding:0; border:0; background:transparent; gap:10px; }
+.photo-sun-stat { min-width:0; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--panel); }
+.photo-timeline-panel .photo-sun dt { display:flex; align-items:center; gap:8px; margin:0 0 10px; color:var(--muted); font-size:13px; }
+.photo-sun-icon { display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:10px; background:var(--glow); color:var(--sun); }
+.photo-sun-icon svg { display:block; width:20px; height:20px; }
+.photo-timeline-panel .photo-sun dd { font-size:20px; font-weight:500; line-height:1.4; min-height:28px; }
+.photo-timeline-panel .photo-sun-stat--daylight dd { font-size:17px; line-height:28px; }
 @media (max-width:700px) {
-  .photo-timeline-panel .photo-sun { padding:14px; gap:16px 12px; }
+  .photo-sun-stat { padding:12px; }
+  .photo-timeline-panel .photo-sun dt { gap:7px; }
+  .photo-sun-icon { flex-basis:28px; width:28px; height:28px; border-radius:9px; }
 }
+
+.photo-window-group--twilight { grid-column:1/-1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:22px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
+.photo-window-group--twilight .photo-window-group-title { grid-column:1/-1; }
+@media (max-width:700px) { .photo-window-group--twilight { grid-template-columns:minmax(0,1fr); } }

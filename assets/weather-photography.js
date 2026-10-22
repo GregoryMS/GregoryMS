@@ -19,6 +19,12 @@
   }
   function zonedNoon(key,timezone) {return zonedTime(key,timezone,12);}
   const lightKinds=[['night','Night'],['twilight','Twilight'],['blue','Blue hour'],['golden','Golden hour'],['daylight','Daylight']];
+  const solarSymbols={
+    sunrise:'<path d="M3 19h18M5 15h14M12 3v7m-3-4 3-3 3 3M4 10l2 2m12 0 2-2M7 15a5 5 0 0 1 10 0"/>',
+    sunset:'<path d="M3 19h18M5 15h14M12 3v7m-3-3 3 3 3-3M4 10l2 2m12 0 2-2M7 15a5 5 0 0 1 10 0"/>',
+    noon:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
+    daylight:'<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>'
+  };
   function solarTimeline(sun,place,key,timezone) {
     const start=zonedTime(key,timezone).getTime(),end=zonedTime(addDay(key,1),timezone).getTime();
     const classify=timestamp=>{
@@ -52,7 +58,9 @@
     const definitions=[['morning-blue','Morning blue hour',times.dawn,times.photoMorningStart,'blue'],
       ['morning-golden','Morning golden hour',times.photoMorningStart,times.goldenHourEnd,'golden'],
       ['evening-golden','Evening golden hour',times.goldenHour,times.photoEveningEnd,'golden'],
-      ['evening-blue','Evening blue hour',times.photoEveningEnd,times.dusk,'blue']];
+      ['evening-blue','Evening blue hour',times.photoEveningEnd,times.dusk,'blue'],
+      ['morning-twilight','Morning twilight',times.nightEnd,times.dawn,'twilight'],
+      ['evening-twilight','Evening twilight',times.dusk,times.night,'twilight']];
     return {times,windows:definitions.map(([id,label,start,end,kind])=>({id,label,kind,
       start:Number.isFinite(start?.getTime())?start.getTime():null,end:Number.isFinite(end?.getTime())?end.getTime():null}))};
   }
@@ -112,8 +120,8 @@
         for(const tick of timeline.ticks) {const label=node('span','',tick.label);label.style.left=(tick.timestamp-timeline.start)/span*100+'%';axis.append(label);}
         chart.append(track,marker,axis);
         const labels=node('div','photo-window-labels');labels.setAttribute('role','group');labels.setAttribute('aria-label','Photography windows; select to highlight on the timeline');
-        for(const [kind,title] of [['blue','Blue hours'],['golden','Golden hours']]) {
-          const group=node('div','photo-window-group');group.setAttribute('role','group');group.setAttribute('aria-label',title);
+        for(const [kind,title] of [['blue','Blue hours'],['golden','Golden hours'],['twilight','Twilight']]) {
+          const group=node('div','photo-window-group photo-window-group--'+kind);group.setAttribute('role','group');group.setAttribute('aria-label',title);
           group.append(node('h4','photo-window-group-title photo-light--'+kind,title));
           for(const window of windows.filter(window=>window.kind===kind)) {
             const button=node('button','photo-window-label photo-light--'+window.kind);button.type='button';button.setAttribute('aria-pressed','false');
@@ -155,10 +163,15 @@
         $('photoStatus').textContent='';
         $('photoLocation').textContent=`${place.name} · ${selected} · ${timezone.replaceAll('_',' ')}`;
         renderTimeline(times,windows,now,next,time);
-        const solar=[['Sunrise',time(times.sunrise)],['Sunset',time(times.sunset)],['Solar noon',time(times.solarNoon)]];
+        const solar=[['sunrise','Sunrise',time(times.sunrise)],['sunset','Sunset',time(times.sunset)],['noon','Solar noon',time(times.solarNoon)]];
         const duration=times.sunset-times.sunrise;
-        if(Number.isFinite(duration)&&duration>=0) {const minutes=Math.round(duration/60000);solar.push(['Daylight',`${Math.floor(minutes/60)} h ${minutes%60} min`]);}
-        solarReadings.replaceChildren(...solar.map(([label,value])=>{const row=node('div','');row.append(node('dt','',label),node('dd','',value));return row;}));
+        if(Number.isFinite(duration)&&duration>=0) {const minutes=Math.round(duration/60000);solar.push(['daylight','Daylight',`${Math.floor(minutes/60)} h ${minutes%60} min`]);}
+        solarReadings.replaceChildren(...solar.map(([kind,label,value])=>{
+          const row=node('div','photo-sun-stat photo-sun-stat--'+kind),caption=node('dt',''),icon=node('span','photo-sun-icon');
+          icon.setAttribute('aria-hidden','true');
+          icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+solarSymbols[kind]+'</svg>';
+          caption.append(icon,node('span','',label));row.append(caption,node('dd','',value));return row;
+        }));
         const weather=next?nearbyWeather(forecast,(next.start+next.end)/2):null;
         $('photoWeatherLabel').textContent=next?`Weather near ${next.label.toLowerCase()}`:'Light-window weather';
         const readings=[['Cloud cover',weather?.cloud,'%'],['Rain chance',weather?.rain,'%'],['Wind',weather?.wind,' km/h'],['Visibility',weather?.visibility===null||weather?.visibility===undefined?null:weather.visibility/1000,' km']];
