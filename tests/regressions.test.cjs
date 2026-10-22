@@ -632,6 +632,41 @@ test('shared tool theme restores preference and works with blocked storage', () 
   }
 });
 
+test('homepage follows device appearance on load and changes despite an old saved theme', () => {
+  let changed;
+  const writes = [], appearance = { matches: false, addEventListener(event, fn) { assert.equal(event, 'change'); changed = fn; } };
+  const env = environment('index.html', undefined, {
+    getItem: key => key === 'gregle-theme' ? 'dark' : null,
+    setItem: (key, value) => writes.push([key, value])
+  }, { matchMedia: () => appearance });
+  const check = dark => {
+    assert.equal(env.context.document.documentElement.classList.contains('dark-mode'), dark);
+    assert.equal(env.context.document.body.classList.contains('dark-mode'), dark);
+    assert.equal(env.get('themeToggle').attributes['aria-checked'], String(dark));
+    assert.equal(env.get('brandThemeToggle').attributes['aria-pressed'], String(dark));
+  };
+  check(false); assert.deepEqual(writes, []);
+  appearance.matches = true; changed(); check(true); assert.deepEqual(writes, []);
+  env.get('brandThemeToggle').listeners.click(); check(false);
+  assert.deepEqual(writes, [['gregle-theme', 'light']]);
+  appearance.matches = false; changed(); check(false);
+  appearance.matches = true; changed(); check(true);
+});
+
+test('homepage auto theme supports older media listeners and unavailable storage or media queries', () => {
+  let changed;
+  const appearance = { matches: true, addListener(fn) { changed = fn; } };
+  const blocked = { getItem() { throw new Error('Blocked'); }, setItem() { throw new Error('Blocked'); } };
+  const env = environment('index.html', undefined, blocked, { matchMedia: () => appearance });
+  assert.equal(env.context.document.body.classList.contains('dark-mode'), true);
+  appearance.matches = false; changed();
+  assert.equal(env.context.document.body.classList.contains('dark-mode'), false);
+  env.get('themeToggle').listeners.click();
+  assert.equal(env.context.document.body.classList.contains('dark-mode'), true);
+  const fallback = environment('index.html', undefined, blocked, { matchMedia: undefined });
+  assert.equal(fallback.context.document.body.classList.contains('dark-mode'), false);
+});
+
 test('homepage tools menu and tool cards resolve to the intended local pages', () => {
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const links = fs.readFileSync(path.join(root, 'links.html'), 'utf8');

@@ -5,6 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="theme-color" content="#7637cc">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    // Apply the device appearance before the first paint.
+    document.documentElement.classList.toggle('dark-mode', !!window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+  </script>
   <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
   <link rel="shortcut icon" href="/favicons/favicon.ico" />
@@ -26,7 +31,7 @@
       --ticker-hover: rgba(187,25,25,0.08);
     }
 
-    body.dark-mode {
+    :root.dark-mode, body.dark-mode {
       --bg: #242424;
       --panel-strong: #2c2c2c;
       --text: #f1f1f1;
@@ -915,30 +920,25 @@
       } catch {}
     }
 
-    function applyTheme(theme) {
+    function applyTheme(theme, savePreference = false) {
       const isDark = theme === 'dark';
       document.body.classList.toggle('dark-mode', isDark);
       document.documentElement.classList.toggle('dark-mode', isDark);
       themeToggle.setAttribute('aria-checked', String(isDark));
       brandThemeToggle.setAttribute('aria-pressed', String(isDark));
-      try {
-        localStorage.setItem('gregle-theme', isDark ? 'dark' : 'light');
-      } catch {}
+      if (savePreference) {
+        try {
+          localStorage.setItem('gregle-theme', isDark ? 'dark' : 'light');
+        } catch {}
+      }
     }
 
     function initTheme() {
-      let savedTheme = null;
-      try {
-        savedTheme = localStorage.getItem('gregle-theme');
-      } catch {}
-
-      if (savedTheme === 'dark' || savedTheme === 'light') {
-        applyTheme(savedTheme);
-        return;
-      }
-
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(prefersDark ? 'dark' : 'light');
+      const appearance = window.matchMedia?.('(prefers-color-scheme: dark)');
+      const followDevice = () => applyTheme(appearance?.matches ? 'dark' : 'light');
+      followDevice();
+      if (appearance?.addEventListener) appearance.addEventListener('change', followDevice);
+      else appearance?.addListener?.(followDevice);
     }
 
     function escapeHtml(value) {
@@ -1216,7 +1216,8 @@
 
     function toggleTheme() {
       const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-      applyTheme(nextTheme);
+      // Manual changes last until the next device appearance change or page load.
+      applyTheme(nextTheme, true);
     }
     themeToggle.addEventListener('click', toggleTheme);
     brandThemeToggle.addEventListener('click', toggleTheme);
