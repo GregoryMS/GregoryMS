@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
+      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -253,7 +253,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
+      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -422,7 +422,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
+      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -641,7 +641,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
+      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
       "listings": [
         {
           "home": "Jablonec",
@@ -844,7 +844,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-22T07:35:42.973217+00:00",
+      "checkedAt": "2026-10-22T13:12:54.822272+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
