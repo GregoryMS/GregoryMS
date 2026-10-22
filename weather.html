@@ -18,7 +18,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261022-mobile-groups">
+  <link rel="stylesheet" href="assets/weather.css?v=20261022-timeline-24h">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261022-mobile">
@@ -198,19 +198,19 @@
   </main>
   <script src="assets/weather-mobile.js?v=20261022-mobile"></script>
   <script src="assets/weather-core.js?v=20261021-station-coverage"></script>
-  <script src="assets/weather-hourly.js?v=20261016-feels"></script>
-  <script src="assets/weather-photography.js?v=20261022-short-labels"></script>
+  <script src="assets/weather-hourly.js?v=20261022-timeline-24h"></script>
+  <script src="assets/weather-photography.js?v=20261022-timeline-24h"></script>
   <script src="assets/weather-details.js?v=20261016-feels"></script>
-  <script src="assets/weather-context.js?v=20261009-history"></script>
-  <script src="assets/weather-alerts.js?v=20261008-alerts"></script>
-  <script src="assets/weather-smoke.js?v=20261014-scroll-zoom"></script>
-  <script src="assets/weather-precip-type.js?v=20261014-scroll-zoom"></script>
+  <script src="assets/weather-context.js?v=20261022-timeline-24h"></script>
+  <script src="assets/weather-alerts.js?v=20261022-timeline-24h"></script>
+  <script src="assets/weather-smoke.js?v=20261022-timeline-24h"></script>
+  <script src="assets/weather-precip-type.js?v=20261022-timeline-24h"></script>
   <script src="assets/weather-map-layers.js?v=20261010-ptype"></script>
-  <script src="assets/weather-lightning.js?v=20261010-lightning"></script>
-  <script src="assets/weather-radar.js?v=20261021-text-cleanup"></script>
+  <script src="assets/weather-lightning.js?v=20261022-timeline-24h"></script>
+  <script src="assets/weather-radar.js?v=20261022-timeline-24h"></script>
   <script src="assets/tide-core.js"></script>
   <script src="assets/tide-data.js"></script>
-  <script src="assets/tide-ui.js?v=20261021-subdomains"></script>
+  <script src="assets/tide-ui.js?v=20261022-timeline-24h"></script>
   <script>
     const weatherCore = globalThis.GregleWeather;
     const LOCATIONS = {
@@ -242,7 +242,7 @@
       if (!value) return '';
       const date = new Date(value);
       if (Number.isNaN(date.getTime())) return '';
-      return date.toLocaleString('en-CA', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit', timeZone:forecastTimezone, timeZoneName:'short' });
+      return date.toLocaleString('en-CA', { month:'short', day:'numeric', hour:'2-digit',hourCycle:'h23', minute:'2-digit', timeZone:forecastTimezone, timeZoneName:'short' });
     }
     function degrees(value) { return Number.isFinite(value) ? `${Math.round(value)}°` : '—'; }
     const {iconKind,weatherIcon} = weatherCore;

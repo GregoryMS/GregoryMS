@@ -15,9 +15,9 @@
     if(data?.error || !h || !Array.isArray(h.time) || !h.time.length || fields.filter(f=>f!=='apparent_temperature').some(f=>!Array.isArray(h[f]) || h[f].length!==h.time.length)) throw Error('Incomplete hourly forecast');
     const timezone=data.timezone;
     if(typeof timezone!=='string' || !timezone) throw Error('Missing time zone');
-    const time=new Intl.DateTimeFormat('en-CA',{hour:'numeric',minute:'2-digit',timeZone:timezone});
+    const time=new Intl.DateTimeFormat('en-CA',{hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:timezone});
     const day=new Intl.DateTimeFormat('en-CA',{weekday:'short',month:'short',day:'numeric',timeZone:timezone});
-    const full=new Intl.DateTimeFormat('en-CA',{weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short',timeZone:timezone});
+    const full=new Intl.DateTimeFormat('en-CA',{weekday:'long',month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZoneName:'short',timeZone:timezone});
     const start=Math.floor(now/3600000)*3600000;
     let previous=-Infinity;
     const hours=h.time.flatMap((seconds,i)=>{

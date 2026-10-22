@@ -42,8 +42,8 @@
       if(previous?.kind===kind) {previous.end=until;previous.width=(until-previous.start)/(end-start)*100;}
       else segments.push({kind,label,start:from,end:until,left:(from-start)/(end-start)*100,width:(until-from)/(end-start)*100});
     }
-    const ticks=[0,6,12,18].map(hour=>({timestamp:zonedTime(key,timezone,hour).getTime(),label:hour===0?'12 am':hour===6?'6 am':hour===12?'12 pm':'6 pm'}));
-    ticks.push({timestamp:end,label:'12 am'});
+    const ticks=[0,6,12,18].map(hour=>({timestamp:zonedTime(key,timezone,hour).getTime(),label:String(hour).padStart(2,'0')+':00'}));
+    ticks.push({timestamp:end,label:'24:00'});
     return {start,end,segments,ticks};
   }
   function lightWindows(sun,place,key,timezone) {
@@ -84,6 +84,7 @@
         function selectPhase(segment,byUser=false) {
           if(!segment)return;
           chosen=segment;manual=byUser;
+          selection.className='photo-timeline-selection photo-light--'+segment.kind;
           const midpoint=(segment.start+segment.end)/2;
           const window=windows.find(w=>w.start!==null&&w.end!==null&&midpoint>=w.start&&midpoint<w.end);
           selection.replaceChildren(node('span','photo-selection-kind photo-light--'+segment.kind,window?.label || segment.label),node('strong','',`${time(segment.start)} – ${time(segment.end)}`),node('span','photo-selection-duration',`${Math.round((segment.end-segment.start)/60000)} min`));
@@ -93,6 +94,13 @@
         for(const segment of timeline.segments) {
           const button=node('button','photo-phase photo-light--'+segment.kind);button.type='button';
           button.style.left=segment.left+'%';button.style.width=segment.width+'%';
+          if(segment.width>=12) {
+            const caption=node('span','photo-phase-caption'),symbol=node('span','photo-phase-symbol');symbol.setAttribute('aria-hidden','true');
+            symbol.innerHTML=segment.kind==='night'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>';
+            caption.append(symbol);
+            if(segment.width>=22)caption.append(node('span','',segment.label));
+            caption.setAttribute('aria-hidden','true');button.append(caption);
+          }
           const label=`${segment.label}: ${time(segment.start)} to ${segment.end===timeline.end?'midnight':time(segment.end)}`;
           button.title=label;button.setAttribute('aria-label',label);button.setAttribute('aria-pressed','false');
           button.addEventListener('click',()=>selectPhase(segment,true));
@@ -107,7 +115,7 @@
           const group=node('div','photo-window-group');group.setAttribute('role','group');group.setAttribute('aria-label',title);
           group.append(node('h4','photo-window-group-title photo-light--'+kind,title));
           for(const window of windows.filter(window=>window.kind===kind)) {
-            const button=node('button','photo-window-label');button.type='button';button.setAttribute('aria-pressed','false');
+            const button=node('button','photo-window-label photo-light--'+window.kind);button.type='button';button.setAttribute('aria-pressed','false');
             const valid=window.start!==null&&window.end!==null;
             button.disabled=!valid;
             button.append(node('i','photo-swatch photo-light--'+window.kind),node('span','photo-window-name',window.id.startsWith('morning-')?'Morning':'Evening'),node('span','photo-window-time',valid?`${time(window.start)} – ${time(window.end)}`:'No window on this day'));
@@ -116,10 +124,12 @@
           }
           labels.append(group);
         }
-        panel.append(heading,legend,chart,selection,labels);$('photoWindows').replaceChildren(panel);
+        panel.append(heading,chart,legend,selection,labels);$('photoWindows').replaceChildren(panel);
         timelineView={key,update(current,upcoming){
           marker.hidden=current<timeline.start||current>=timeline.end;
-          marker.style.left=(current-timeline.start)/span*100+'%';
+          const progress=(current-timeline.start)/span*100;
+          marker.style.left=progress+'%';
+          marker.className='photo-now'+(progress<8?' photo-now--start':progress>92?' photo-now--end':'');
           if(!manual) {
             const target=upcoming?timeline.segments.find(s=>s.kind===upcoming.kind&&(s.start+s.end)/2>=upcoming.start&&(s.start+s.end)/2<upcoming.end):timeline.segments.find(s=>current>=s.start&&current<s.end);
             selectPhase(target || chosen || timeline.segments[0]);
@@ -138,7 +148,7 @@
         const options=Array.from({length:7},(_,i)=>{const key=addDay(today,i),label=i===0?'Today':i===1?'Tomorrow':new Date(key+'T12:00:00Z').toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});const option=node('option','',label);option.value=key;return option;});
         select.replaceChildren(...options);select.value=selected;
         const {times,windows}=lightWindows(win.SunCalc,place,selected,timezone);
-        const format=new Intl.DateTimeFormat('en-CA',{hour:'numeric',minute:'2-digit',timeZone:timezone});
+        const format=new Intl.DateTimeFormat('en-CA',{hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:timezone});
         const time=value=>Number.isFinite(value instanceof Date?value.getTime():value)?format.format(value):'—';
         const next=windows.filter(w=>w.start!==null&&w.end!==null&&w.end>now).sort((a,b)=>a.start-b.start)[0];
         const active=next && next.start<=now;

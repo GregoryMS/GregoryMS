@@ -24,7 +24,7 @@
   function stamp(value) {
     let zone=location?.timezone || 'UTC';
     try {new Intl.DateTimeFormat('en',{timeZone:zone});} catch(_){zone='UTC';}
-    return new Date(value).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
+    return new Date(value).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
   }
   function render() {
     const status=$('lightningStatus');

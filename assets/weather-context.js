@@ -79,7 +79,7 @@
         $('airQuality').textContent=`${scale} ${scale==='AQHI' && reading.value>10?'10+':reading.value} · ${label}`;
         $('airQualityMetric').dataset.risk=risk;
         $('airQualityLink').href=link;
-        $('airQualityLink').title=`${reading.name} · ${new Date(reading.time).toLocaleString('en-CA',{timeZone:place.timezone || 'UTC'})}`;
+        $('airQualityLink').title=`${reading.name} · ${new Date(reading.time).toLocaleString('en-CA',{timeZone:place.timezone || 'UTC',hourCycle:'h23'})}`;
         $('airQualityMetric').hidden=false;
       } catch(_) { /* Optional air quality must not interrupt the forecast. */ }
     }

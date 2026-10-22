@@ -50,7 +50,7 @@
     function clear() { alerts = []; list.replaceChildren(); section.hidden = true; }
     function stop() { version++; controller?.abort(); controller = null; win.clearTimeout(timer); }
     function timestamp(value) {
-      return new win.Date(value).toLocaleString('en-CA', {month:'short', day:'numeric', hour:'numeric', minute:'2-digit', timeZoneName:'short', timeZone:location.timezone || 'America/Vancouver'});
+      return new win.Date(value).toLocaleString('en-CA', {month:'short', day:'numeric', hour:'2-digit',hourCycle:'h23', minute:'2-digit', timeZoneName:'short', timeZone:location.timezone || 'America/Vancouver'});
     }
     function render() {
       alerts = alerts.filter(alert => alert.expires > now());

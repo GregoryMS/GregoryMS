@@ -25,7 +25,7 @@
     if(!frame)return '';
     let zone=location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     try { new Intl.DateTimeFormat('en',{timeZone:zone}); } catch(_) { zone='UTC'; }
-    return new Date(frame.time*1000).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
+    return new Date(frame.time*1000).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
   }
   function status() {
     $('radarStatus').textContent=failed?'Radar refresh failed. Showing the previous images; try Refresh.':

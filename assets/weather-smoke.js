@@ -31,7 +31,7 @@
     function format(time) {
       let zone=location?.timezone || 'UTC';
       try {new Intl.DateTimeFormat('en',{timeZone:zone});} catch(_){zone='UTC';}
-      return new Date(time).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',timeZone:zone,timeZoneName:'short'});
+      return new Date(time).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
     }
     function cancelPending() { renderVersion++;if(pending){pending.cancel();pending=null;} }
     function stop() {playing=false;win.clearTimeout(playTimer);cancelPending();$('smokePlay').textContent='▶ Play';$('smokePlay').setAttribute('aria-pressed','false');}

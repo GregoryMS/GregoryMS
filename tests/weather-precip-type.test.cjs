@@ -31,7 +31,7 @@ async function setup(){
 test('map loads only when selected and changes the timestamp only after tiles complete',async()=>{
   const h=await setup();assert.equal(h.maps.length,0);h.api.setActive(true);await h.flush();
   assert.equal(h.latest().opacity,0);await h.load();assert.equal(h.latest().opacity,.8);
-  assert.match(h.element('ptypeTimestamp').textContent,/6:00/);
+  assert.match(h.element('ptypeTimestamp').textContent,/18:00/);
   h.element('ptypeTime').value='0';h.element('ptypeTime').events.input();await h.flush();
   assert.equal(h.element('ptypeTime').value,'30');await h.load();assert.equal(h.element('ptypeTime').value,'0');
 });

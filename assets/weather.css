@@ -410,3 +410,58 @@
 }
 
 
+
+/* A softer sky strip, a clear present-time marker, and a readable selected window. */
+.photo-timeline-panel { padding:26px; box-shadow:0 8px 28px #00000005; }
+.photo-timeline-heading { align-items:center; }
+.photo-timeline-heading h3 { font-size:18px; letter-spacing:-.3px; }
+.photo-timeline-heading > span { font-size:12px; }
+.photo-timeline-chart { padding-top:38px; margin-top:8px; }
+.photo-timeline-track { height:76px; border-radius:16px; box-shadow:inset 0 0 0 1px #00000008,0 4px 14px #00000006; }
+.photo-phase { background:linear-gradient(180deg,color-mix(in srgb,var(--light-colour) 76%,#fff),var(--light-colour)); box-shadow:inset -1px 0 #ffffff28; }
+.photo-phase:hover { filter:brightness(1.05); }
+.photo-phase[aria-pressed="true"] { box-shadow:inset 0 0 0 2px #fff,0 0 0 1px #00000012; border-radius:5px; }
+.photo-phase:focus-visible { outline:3px solid var(--text); outline-offset:-4px; box-shadow:inset 0 0 0 2px #fff; }
+.photo-phase-caption { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#203047; font-size:12px; font-weight:600; pointer-events:none; }
+.photo-light--night .photo-phase-caption { color:#f4f6ff; }
+.photo-phase-symbol,.photo-phase-symbol svg { display:block; width:21px; height:21px; }
+.photo-timeline-axis { height:24px; margin-top:12px; font-size:12px; }
+.photo-timeline-axis span::before { content:''; position:absolute; width:1px; height:4px; top:-8px; left:50%; background:var(--muted); opacity:.4; }
+.photo-timeline-axis span:first-child::before { left:0; }
+.photo-timeline-axis span:last-child::before { left:auto; right:0; }
+.photo-now { top:32px; height:88px; border-left:2px solid var(--text); filter:drop-shadow(0 0 2px var(--panel)); }
+.photo-now span { top:-27px; padding:2px 9px; border-radius:999px; background:var(--text); color:var(--panel); font-size:11px; line-height:20px; box-shadow:0 2px 6px #00000012; }
+.photo-now span::after { content:''; position:absolute; bottom:-3px; left:50%; width:6px; height:6px; background:var(--text); transform:translateX(-50%) rotate(45deg); }
+.photo-now--start span { transform:translateX(-10px); }
+.photo-now--start span::after { left:10px; }
+.photo-now--end span { transform:translateX(calc(-100% + 10px)); }
+.photo-now--end span::after { left:calc(100% - 10px); }
+.photo-legend { gap:8px; margin:10px 0 18px; font-size:12px; }
+.photo-legend > span { gap:6px; min-height:32px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; background:var(--panel); }
+.photo-swatch { width:8px; height:8px; }
+.photo-timeline-selection { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:5px 12px; margin:0 0 8px; padding:16px; border:1px solid color-mix(in srgb,var(--light-colour) 32%,var(--line)); border-radius:14px; background:color-mix(in srgb,var(--light-colour) 9%,var(--panel)); }
+.photo-selection-kind { grid-column:1; font-size:14px; font-weight:500; }
+.photo-timeline-selection strong { grid-column:1; font-size:20px; font-weight:600; letter-spacing:-.3px; }
+.photo-selection-duration { grid-column:2; grid-row:1/3; align-self:center; padding:5px 9px; border-radius:8px; background:var(--panel); font-size:12px; white-space:nowrap; }
+.photo-window-group .photo-window-label[aria-pressed="true"] { background:color-mix(in srgb,var(--light-colour) 12%,var(--panel)); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--light-colour) 30%,var(--line)); }
+@media (max-width:700px) {
+  .photo-timeline-panel { padding:20px 14px; border-radius:20px; }
+  .photo-timeline-heading { align-items:flex-start; gap:5px; }
+  .photo-timeline-heading h3 { font-size:18px; }
+  .photo-timeline-heading > span { font-size:12px; }
+  .photo-timeline-track { height:72px; border-radius:14px; }
+  .photo-phase-caption { font-size:11px; }
+  .photo-phase-symbol,.photo-phase-symbol svg { width:19px; height:19px; }
+  .photo-now { height:84px; }
+  .photo-timeline-axis { font-size:11px; }
+  .photo-legend { gap:6px; font-size:12px; }
+  .photo-legend > span { padding:5px 8px; }
+  .photo-timeline-selection { padding:14px 12px; column-gap:8px; }
+  .photo-timeline-selection strong { font-size:19px; }
+  .photo-selection-kind { font-size:14px; }
+  .photo-selection-duration { padding:5px 7px; }
+}
+@media (max-width:360px) {
+  .photo-timeline-selection { grid-template-columns:minmax(0,1fr); }
+  .photo-selection-duration { grid-column:1; grid-row:auto; justify-self:start; margin-top:3px; }
+}

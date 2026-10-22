@@ -23,7 +23,7 @@
     function format(time) {
       let zone=location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
       try{new Intl.DateTimeFormat('en',{timeZone:zone});}catch(_){zone='UTC';}
-      return new Date(time).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
+      return new Date(time).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
     }
     function cancelPending(){renderVersion++;if(pending){pending.cancel();pending=null;}}
     function stop(){playing=false;win.clearTimeout(playTimer);cancelPending();$('ptypePlay').textContent='▶ Play';$('ptypePlay').setAttribute('aria-pressed','false');if(layer)status('Paused · Drag the timeline or select Play to explore precipitation types.');}
