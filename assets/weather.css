@@ -203,7 +203,10 @@
 .photo-heading .eyebrow { margin-bottom:6px; }
 .photo-day-control { display:flex; align-items:center; gap:10px; }
 .photo-day-control label { font-size:12px; color:var(--muted); }
-.photo-day-control select { font:inherit; font-size:14px; min-height:44px; max-width:180px; }
+.photo-day-select { position:relative; display:inline-block; width:160px; max-width:100%; }
+.photo-day-control select { appearance:none; -webkit-appearance:none; display:block; width:100%; min-height:44px; padding:10px 44px 10px 16px; border:1px solid var(--line); border-radius:14px; background:var(--panel); color:var(--text); font:inherit; font-size:14px; line-height:1.4; text-align:left; cursor:pointer; }
+.photo-day-select > svg { position:absolute; top:50%; right:14px; width:18px; height:18px; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+.photo-day-select:focus-within > svg { color:var(--rain); }
 .photo-status:empty { display:none; }
 .photo-status { margin:12px 0 18px; color:var(--text); font-size:14px; }
 /* Solar light phases share the same colours in the timeline and its key. */
