@@ -103,13 +103,18 @@
         for(const tick of timeline.ticks) {const label=node('span','',tick.label);label.style.left=(tick.timestamp-timeline.start)/span*100+'%';axis.append(label);}
         chart.append(track,marker,axis);
         const labels=node('div','photo-window-labels');labels.setAttribute('role','group');labels.setAttribute('aria-label','Photography windows; select to highlight on the timeline');
-        for(const window of [windows[0],windows[1],windows[3],windows[2]]) {
-          const button=node('button','photo-window-label');button.type='button';button.setAttribute('aria-pressed','false');
-          const valid=window.start!==null&&window.end!==null;
-          button.disabled=!valid;
-          button.append(node('i','photo-swatch photo-light--'+window.kind),node('span','photo-window-name',window.label),node('span','photo-window-time',valid?`${time(window.start)} – ${time(window.end)}`:'No window on this day'));
-          button.addEventListener('click',()=>selectPhase(timeline.segments.find(s=>s.kind===window.kind&&(s.start+s.end)/2>=window.start&&(s.start+s.end)/2<window.end),true));
-          windowButtons.push({button,value:window});labels.append(button);
+        for(const [kind,title] of [['blue','Blue hours'],['golden','Golden hours']]) {
+          const group=node('div','photo-window-group');group.setAttribute('role','group');group.setAttribute('aria-label',title);
+          group.append(node('h4','photo-window-group-title photo-light--'+kind,title));
+          for(const window of windows.filter(window=>window.kind===kind)) {
+            const button=node('button','photo-window-label');button.type='button';button.setAttribute('aria-pressed','false');
+            const valid=window.start!==null&&window.end!==null;
+            button.disabled=!valid;
+            button.append(node('i','photo-swatch photo-light--'+window.kind),node('span','photo-window-name',window.label),node('span','photo-window-time',valid?`${time(window.start)} – ${time(window.end)}`:'No window on this day'));
+            button.addEventListener('click',()=>selectPhase(timeline.segments.find(s=>s.kind===window.kind&&(s.start+s.end)/2>=window.start&&(s.start+s.end)/2<window.end),true));
+            windowButtons.push({button,value:window});group.append(button);
+          }
+          labels.append(group);
         }
         panel.append(heading,legend,chart,selection,labels);$('photoWindows').replaceChildren(panel);
         timelineView={key,update(current,upcoming){
