@@ -18,7 +18,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261022-location-ui">
+  <link rel="stylesheet" href="assets/weather.css?v=20261022-location-ui-clean">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261022-mobile">
@@ -78,7 +78,7 @@
           <button class="pill locate-weather" id="locateWeather" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg><span>My location</span></button>
         </div>
       </form>
-      <p id="locationStatus" class="location-note" role="status">Allow location access to load your local forecast, or search for a city.</p>
+      <p id="locationStatus" class="location-note" role="status"></p>
       <div id="cityResults" class="city-results" aria-label="City search results"></div>
     </section>
       </div>
@@ -455,7 +455,7 @@
       $('cityResults').replaceChildren(); $('cityName').textContent=location.name;
       $('locationMeta').textContent=`${location.region || location.country || 'Local forecast'}`;
       document.title=`${location.name} weather · Gregle`;
-      $('locationStatus').textContent=key?'Search for a city or use My location.':`Showing weather for ${location.name}.`;
+      $('locationStatus').textContent='';
       globalThis.GregleTideUI.weatherPreview(location);
       globalThis.GregleRadar?.setLocation(location);
       globalThis.GregleWeatherAlerts?.setLocation(location);
@@ -487,11 +487,11 @@
         finally { clearTimeout(timeout); }
         if(version!==locationVersion) return;
         selectLocation(location);
-        $('locationStatus').textContent=location.country ? `Using your approximate location: ${location.name}.` : 'Your city could not be identified. Showing a global forecast at your location.';
+        $('locationStatus').textContent=location.country ? '' : 'Location name unavailable; forecasts use your approximate location.';
       },error=>{
         if(version!==locationVersion) return;
         $('locateWeather').disabled=false;
-        $('locationStatus').textContent=(error.code===1?'Location access was declined.':'Your location could not be found.')+` Showing ${selectedLocation.name}.`;
+        $('locationStatus').textContent=(error.code===1?'Location access was declined.':'Your location could not be found.');
       },{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
       } catch (_) { $('locateWeather').disabled=false; $('locationStatus').textContent='Automatic location is unavailable. Search for a city or try My location again.'; }
     }

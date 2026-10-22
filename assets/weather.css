@@ -85,6 +85,7 @@
     .city-search-field #searchButton:focus-visible { outline:2px solid var(--rain); outline-offset:2px; }
     .locate-weather { min-height:56px; padding:12px 16px; border-radius:14px; font-size:14px; white-space:nowrap; }
     .locate-weather svg { flex-shrink:0; width:18px; height:18px; }
+    .location-controls .location-note:empty { display:none; }
     .location-note { font-size:14px; color:var(--muted); margin:12px 0 0; }
     .current-heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; min-height:28px; }
     .current-heading .eyebrow { margin:0; }
