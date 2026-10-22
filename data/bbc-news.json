@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-22T09:58:56+00:00",
-  "fetchedAt": "2026-10-22T09:59:05.249904+00:00",
+  "feedUpdatedAt": "2026-10-22T15:00:01+00:00",
+  "fetchedAt": "2026-10-22T15:00:06.138283+00:00",
   "items": [
     {
-      "title": "What is PHP and why did it spark an international cyber-security alert?",
-      "link": "https://www.bbc.co.uk/news/articles/c3qjnwye0ep5o?at_medium=RSS&at_campaign=rss"
+      "title": "AI discovered a massive cyber-security flaw - here's what happened",
+      "link": "https://www.bbc.co.uk/news/videos/cq0ld7e0jg2eo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Barclays cutting 5,000 jobs as it increases reliance on AI",
       "link": "https://www.bbc.co.uk/news/articles/cm4g1p347qgxo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Rosenberg: Russia agrees to Ukraine talks but sees little to talk about in new peace push",
-      "link": "https://www.bbc.co.uk/news/articles/cm98zn5j89kdo?at_medium=RSS&at_campaign=rss"
+      "title": "Russell Brand accuser said alleged rape 'really hurt', court hears",
+      "link": "https://www.bbc.co.uk/news/articles/c9e8lz4mrg88o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "How Arab parties could hold critical balance of power in Israeli election",
-      "link": "https://www.bbc.co.uk/news/articles/cx8dzrp768j8o?at_medium=RSS&at_campaign=rss"
+      "title": "Moment man rescued from sinking car by Australian TV reporter",
+      "link": "https://www.bbc.co.uk/news/videos/cwdr8zm3r5gko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Only one female scientist named in GCSEs, research finds",
-      "link": "https://www.bbc.co.uk/news/articles/c69wzv5pg447o?at_medium=RSS&at_campaign=rss"
+      "title": "Two storms in two days as Austen and Boelo head for UK",
+      "link": "https://www.bbc.co.uk/weather/articles/ckx2qpy2d13ro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Dame Judi Dench: 'I can't do a play, a film or read any more'",
+      "title": "Retired decorator's Pokémon cards sell for £1.5m after years in attic",
+      "link": "https://www.bbc.co.uk/news/articles/cvp8gy1zwxxwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "French weekend protests to be limited to union demos only, says Macron",
+      "link": "https://www.bbc.co.uk/news/articles/cvde8g40xx42o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Dame Judi Dench: 'I can't do a play, a film or read anymore'",
       "link": "https://www.bbc.co.uk/news/articles/c6ly09v09lnjo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "New punishments for criminals who skip sentence will 'rebalance power', aunt of murder victim says",
-      "link": "https://www.bbc.co.uk/news/articles/cr74p0zkd4jjo?at_medium=RSS&at_campaign=rss"
+      "title": "Tommy Robinson hired detectives to find journalists, court told",
+      "link": "https://www.bbc.co.uk/news/articles/c8x23dlqkl01o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Is the UK set to green-light a huge untapped oil field in the North Atlantic?",
-      "link": "https://www.bbc.co.uk/news/videos/cxnv0emj06v1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Man Utd captain Fernandes rounds on boss Carrick after Champions League humiliation",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cq74pjn80x4wo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Legendary video game studio BioWare closed after 31 years",
-      "link": "https://www.bbc.co.uk/news/articles/cq8jzrxlkmwmo?at_medium=RSS&at_campaign=rss"
+      "title": "Ilhan Omar says 'bizarre' pre-dawn raid on her home is forcing her to move out",
+      "link": "https://www.bbc.co.uk/news/articles/cm75p1kxryl5o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
