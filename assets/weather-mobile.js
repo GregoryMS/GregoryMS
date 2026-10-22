@@ -1,19 +1,13 @@
-/* Keep the forecast close to the top on phones; native details remains usable without JS. */
+/* Keep the main search visible and adapt forecast details to the screen size. */
 (() => {
-  const picker = document.getElementById('locationPicker');
   const nextForecast = document.getElementById('nextForecastDetails');
+  const query = document.getElementById('cityQuery');
   const mobile = window.matchMedia('(max-width: 700px)');
   const setLayout = () => {
-    picker.open = !mobile.matches;
     nextForecast.open = !mobile.matches;
+    query.placeholder = mobile.matches ? 'Find a city' : 'City or postal code';
   };
   setLayout();
   if (mobile.addEventListener) mobile.addEventListener('change', setLayout);
   else mobile.addListener?.(setLayout);
-  document.getElementById('cityResults').addEventListener('click', event => {
-    if (mobile.matches && event.target.closest('button')) {
-      picker.open = false;
-      picker.querySelector('summary').focus({ preventScroll:true });
-    }
-  });
 })();
