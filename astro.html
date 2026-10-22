@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261022-observing-controls">
+  <link rel="stylesheet" href="assets/astro.css?v=20261022-forecast-spacing">
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
@@ -98,8 +98,7 @@
     </section>
     <noscript><p>Enable JavaScript for location search and forecasts. Visit <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada astronomy</a> or the <a href="https://test.cleardarksky.com/browse/map.html">Clear Sky Chart map</a> directly.</p></noscript>
     <section class="forecast-section" aria-labelledby="hourly-heading">
-      <div class="section-heading"><h2 id="hourly-heading">The next 48 hours</h2><div class="forecast-controls"><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label><button class="pill" id="refresh" type="button">↻ Refresh</button></div></div>
-      <p class="meta">Times are local to the selected location. Scroll across for the full forecast.</p>
+      <div class="section-heading"><div class="forecast-heading-copy"><h2 id="hourly-heading">The next 48 hours</h2><p class="meta">Local times · Scroll across</p></div><div class="forecast-controls"><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label><button class="pill" id="refresh" type="button">↻ Refresh</button></div></div>
       <div id="hourly" class="hourly-wrap panel" tabindex="0" role="region" aria-label="Scrollable hourly observing forecast"><p class="empty">Loading hourly forecast…</p></div>
       <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and the Clear Sky Chart below. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>
     </section>

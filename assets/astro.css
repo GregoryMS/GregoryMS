@@ -109,7 +109,9 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
 .hourly-wrap td[data-outlook="Twilight"],.hourly-wrap td[data-outlook="Daylight"] { background:var(--soft); }
 .check-label { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:12px; }
 .check-label input { accent-color:#52796a; width:17px; height:17px; }
-.forecast-section > .section-heading { align-items:flex-start; }
+.forecast-section > .section-heading { align-items:flex-end; flex-wrap:nowrap; gap:16px; margin-bottom:12px; }
+.forecast-heading-copy { flex:1; min-width:0; }
+.forecast-heading-copy .meta { margin:6px 0 0; }
 .forecast-controls { display:flex; flex-direction:column; align-items:flex-end; gap:10px; margin-left:auto; }
 .forecast-controls .check-label { min-height:24px; }
 #night-only { accent-color:#7637cc; }
