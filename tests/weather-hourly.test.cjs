@@ -52,3 +52,39 @@ test('hourly feels-like preserves zero and missing values',()=>{
   const parsed=core.parseHours(data,now);assert.equal(parsed.hours[0].feelsLike,0);assert.equal(parsed.hours[1].feelsLike,null);
   assert.match(core.forecastURL({latitude:0,longitude:0}),/apparent_temperature/);
 });
+
+test('solar events use exact destination times, span midnight and stay inside the 24-hour window',()=>{
+  const data=fixture(),start=now-1800000;
+  const rise=Date.parse('2025-11-02T15:02:00Z'),set=Date.parse('2025-11-03T00:48:00Z');
+  data.daily={sunrise:[rise/1000,null,rise/1000],sunset:[set/1000,(start+24*3600000)/1000,'bad']};
+  const parsed=core.parseHours(data,now);
+  assert.deepEqual(parsed.events.map(e=>[e.kind,e.time]),[['sunrise','07:02'],['sunset','16:48']]);
+  assert.match(parsed.events[0].label,/Sunrise/);
+  data.timezone='Asia/Tokyo';
+  const tokyo=core.parseHours(data,now).events;
+  assert.equal(tokyo[0].time,'00:02');assert.match(tokyo[0].day,/Nov 3/);
+  const url=new URL(core.forecastURL({latitude:48.42,longitude:-123.37}));
+  assert.equal(url.searchParams.get('daily'),'sunrise,sunset');assert.equal(url.searchParams.get('forecast_days'),'2');
+});
+
+test('missing or invalid solar data preserves all hourly forecasts',()=>{
+  for(const daily of [undefined,{}, {sunrise:[null,NaN,Infinity],sunset:[null]}, {sunrise:'invalid',sunset:[]}]) {
+    const parsed=core.parseHours({...fixture(),daily},now);
+    assert.equal(parsed.hours.length,24);assert.deepEqual(parsed.events,[]);
+  }
+});
+
+test('sunrise and sunset cards are inserted chronologically with accessible exact times',async()=>{
+  const h=setup(),data=fixture(),start=now-1800000;
+  data.daily={sunrise:[(start+2*3600000+120000)/1000],sunset:[(start+10*3600000+2880000)/1000]};
+  h.api.setActive(true);await h.respond(0,data);
+  const cards=h.el('hourlyGrid').children;
+  assert.equal(cards.length,26);
+  assert.match(cards[3].className,/hourly-solar-card/);assert.match(cards[3].attrs['aria-label'],/^Sunrise ·/);
+  assert.equal(cards[3].children[0].textContent,'02:02');assert.equal(cards[3].children[3].textContent,'Sunrise');
+  assert.match(cards[12].attrs['aria-label'],/^Sunset ·/);
+  assert.match(h.el('hourlyStatus').textContent,/24 hours/);
+  h.api.setActive(false);h.api.setActive(true);
+  assert.equal(h.requests.length,1);assert.equal(h.el('hourlyGrid').children.length,26);
+});
+
