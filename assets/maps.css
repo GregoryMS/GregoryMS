@@ -1,5 +1,5 @@
-:root { --map-accent: #7637cc; --map-accent-soft: #eee5fa; --map-surface: #faf9f6; --map-border: #e6e2eb; }
-:root.dark-mode { --map-accent: #c698ff; --map-accent-soft: #49345f; --map-surface: #29272e; --map-border: #45404d; }
+:root { --map-accent: #7637cc; --map-accent-soft: #eee5fa; --map-surface: #faf9f6; --map-border: #e6e2eb; --map-control-surface: rgba(250, 249, 246, .88); --map-control-accent-soft: rgba(238, 229, 250, .88); }
+:root.dark-mode { --map-accent: #c698ff; --map-accent-soft: #49345f; --map-surface: #29272e; --map-border: #45404d; --map-control-surface: rgba(41, 39, 46, .88); --map-control-accent-soft: rgba(73, 52, 95, .88); }
 [hidden] { display: none !important; }
 .maps-page { height: 100vh; height: 100dvh; min-height: 320px; display: flex; flex-direction: column; overflow: hidden; }
 .maps-page .topbar { flex-shrink: 0; width: 100%; max-width: none; margin: 0; padding: 18px 30px; }
@@ -10,13 +10,13 @@
 #gregle-map { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; font-family: inherit; }
 #gregle-map .leaflet-tile { -webkit-touch-callout: none; }
 .map-glass { color: var(--text); background: var(--map-surface); border: 1px solid var(--map-border); box-shadow: 0 6px 24px #0002; }
-.map-search { position: absolute; top: 20px; left: 20px; z-index: 500; width: 380px; max-width: calc(100% - 100px); border-radius: 19px; overflow: hidden; }
+.map-search { position: absolute; top: 20px; left: 20px; z-index: 500; width: 380px; max-width: calc(100% - 100px); border-radius: 19px; overflow: hidden; background: var(--map-control-surface); }
 #map-search-form { display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 6px 8px 6px 18px; }
 .map-search-icon { flex: 0 0 20px; width: 20px; height: 20px; color: var(--map-accent); }
 #map-query { min-width: 0; width: 100%; border: 0; padding: 8px 0; outline: none; background: transparent; color: var(--text); font-size: 14px; }
 #map-query::placeholder { color: var(--muted); opacity: 1; }
 .map-search:focus-within { border-color: var(--map-accent); }
-.map-search-submit { display: grid; place-items: center; flex: 0 0 42px; height: 42px; padding: 10px; background: var(--map-accent-soft); color: var(--map-accent); border: 0; border-radius: 13px; }
+.map-search-submit { display: grid; place-items: center; flex: 0 0 42px; height: 42px; padding: 10px; background: var(--map-control-accent-soft); color: var(--map-accent); border: 0; border-radius: 13px; }
 .map-search-submit svg, .map-icon-button svg { width: 22px; height: 22px; }
 .map-search-content { border-top: 1px solid var(--map-border); max-height: min(440px, calc(100dvh - 240px)); overflow-y: auto; overscroll-behavior: contain; }
 #map-search-status { margin: 14px 18px 8px; font-size: 12px; color: var(--muted); }
@@ -29,8 +29,8 @@
 .map-search-scope { display: block; margin: 8px 18px; padding: 0; border: 0; background: transparent; color: var(--map-accent); font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
 .map-search-credit { margin: 12px 18px; color: var(--muted); font-size: 10px; }
 .map-actions { position: absolute; top: 20px; right: 20px; z-index: 450; display: grid; gap: 9px; }
-.map-icon-button { display: grid; place-items: center; width: 46px; height: 46px; padding: 11px; border: 1px solid var(--map-border); border-radius: 15px; background: var(--map-surface); box-shadow: none; color: var(--text); }
-.map-icon-button:hover, .map-icon-button[aria-busy="true"] { color: var(--map-accent); background: var(--map-accent-soft); }
+.map-icon-button { display: grid; place-items: center; width: 46px; height: 46px; padding: 11px; border: 1px solid var(--map-border); border-radius: 15px; background: var(--map-control-surface); box-shadow: none; color: var(--text); }
+.map-icon-button:hover, .map-icon-button[aria-busy="true"] { color: var(--map-accent); background: var(--map-control-accent-soft); }
 .map-icon-button:focus-visible { outline: 2px solid var(--map-accent); outline-offset: -2px; }
 .map-icon-button:disabled { opacity: .5; cursor: default; }
 .map-place { position: absolute; bottom: 38px; left: 20px; z-index: 400; width: 330px; max-width: calc(100% - 100px); max-height: calc(100% - 145px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--map-accent) transparent; border-radius: 20px; padding: 18px 20px; }
@@ -81,8 +81,8 @@
 .map-report { position: absolute; bottom: 7px; left: 20px; z-index: 400; color: #38363d; background: #faf9f6e8; border-radius: 5px; padding: 1px 6px; font-size: 10px; text-decoration: none; }
 .map-stage .leaflet-top.leaflet-right { top: auto; bottom: 54px; right: 10px; }
 .map-stage .leaflet-control-zoom { border: 1px solid var(--map-border); border-radius: 15px; overflow: hidden; box-shadow: 0 6px 24px #0002; }
-.map-stage .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; background: var(--map-surface); color: var(--text); border-color: var(--map-border); font-size: 22px; font-weight: 400; }
-.map-stage .leaflet-control-zoom a:hover { background: var(--map-accent-soft); color: var(--map-accent); }
+.map-stage .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; background: var(--map-control-surface); color: var(--text); border-color: var(--map-border); font-size: 22px; font-weight: 400; }
+.map-stage .leaflet-control-zoom a:hover { background: var(--map-control-accent-soft); color: var(--map-accent); }
 .map-stage .leaflet-control-attribution { font: 10px/1.5 Arial, sans-serif; color: #333; background: transparent; padding: 2px 7px; text-shadow: 0 0 2px #fff, 0 1px 4px #fff; pointer-events: none; }
 .map-stage .leaflet-control-attribution a { color: #4c257e; pointer-events: auto; }
 .map-stage .leaflet-control-attribution a:hover,
@@ -117,7 +117,7 @@
 @media(max-height:520px) { .map-place:not(.has-pin) { display: none; } .map-place.has-pin { max-height: calc(100% - 125px); } .map-actions { display: flex; } .map-search-content { max-height: calc(100dvh - 180px); } }
 
 /* Optional map layers use the same Gregle surfaces and controls as the launcher. */
-.map-icon-button[aria-expanded="true"] { color: var(--map-accent); background: var(--map-accent-soft); }
+.map-icon-button[aria-expanded="true"] { color: var(--map-accent); background: var(--map-control-accent-soft); }
 .map-layers-panel { position: absolute; z-index: 550; top: 20px; right: 80px; width: 300px; max-width: calc(100% - 100px); max-height: calc(100% - 40px); overflow-y: auto; overscroll-behavior: contain; border-radius: 20px; padding: 16px 18px; }
 .layers-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .layers-heading h2 { margin: 0; color: var(--text); font: 500 17px/1.4 Montserrat, ui-sans-serif, system-ui, sans-serif; letter-spacing: -.4px; }
