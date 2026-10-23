@@ -3,15 +3,14 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-23T15:04:31.304390+00:00",
+      "checkedAt": "2026-10-23T19:13:41.034994+00:00",
       "listings": [
         {
-          "home": "Jablonec",
-          "away": "Brighton & Hove Albion",
-          "start": "2026-10-22T16:45:00+00:00",
+          "home": "RB Leipzig (W)",
+          "away": "Bayern München (W)",
+          "start": "2026-10-23T16:30:00+00:00",
           "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 2"
+            "DAZN UK"
           ]
         },
         {
@@ -115,8 +114,7 @@
           "away": "Newcastle United",
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
-            "WSL2 YouTube",
-            "Youtube UK"
+            "WSL2 YouTube"
           ]
         },
         {
@@ -148,6 +146,7 @@
             "Sky Sports Football",
             "Sky Sports Main Event",
             "Sky Sports Main Event UHD",
+            "Sky Sports UHD 1",
             "Sky Sports+ app"
           ]
         },
@@ -240,12 +239,32 @@
             "TNT Sports 1",
             "TNT Sports Ultimate"
           ]
+        },
+        {
+          "home": "Arsenal (W)",
+          "away": "Aston Villa (W)",
+          "start": "2026-11-01T12:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports+ HD",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Brighton (W)",
+          "away": "Crystal Palace (W)",
+          "start": "2026-11-01T14:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports+ HD",
+            "Sky Sports+ app"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-23T15:04:31.304390+00:00",
+      "checkedAt": "2026-10-23T19:13:41.034994+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
@@ -432,12 +451,20 @@
           "channels": [
             "Fubo Sports CA"
           ]
+        },
+        {
+          "home": "Liverpool",
+          "away": "Arsenal",
+          "start": "2026-11-01T16:30:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-23T15:04:31.304390+00:00",
+      "checkedAt": "2026-10-23T19:13:41.034994+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
@@ -665,12 +692,20 @@
           "channels": [
             "Viaplay"
           ]
+        },
+        {
+          "home": "Liverpool",
+          "away": "Arsenal",
+          "start": "2026-11-01T16:30:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-23T15:04:31.304390+00:00",
+      "checkedAt": "2026-10-23T19:13:41.034994+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
@@ -865,7 +900,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-23T15:04:31.304390+00:00",
+      "checkedAt": "2026-10-23T19:13:41.034994+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
