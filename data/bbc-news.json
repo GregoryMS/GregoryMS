@@ -1,15 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-23T19:30:07+00:00",
-  "fetchedAt": "2026-10-23T19:30:14.043659+00:00",
+  "feedUpdatedAt": "2026-10-23T22:32:48+00:00",
+  "fetchedAt": "2026-10-23T22:32:50.098264+00:00",
   "items": [
     {
       "title": "Storm Austen brings power cuts and travel disruption as more wind and rain forecast",
       "link": "https://www.bbc.co.uk/news/articles/cxj0l193y0l8o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: Moment part of Brighton's historic West Pier collapses",
-      "link": "https://www.bbc.co.uk/news/videos/cwe8ln10l6nyo?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Trees ripped up as Storm Austen batters Britain",
+      "link": "https://www.bbc.co.uk/news/videos/c6x2qdpnn35po?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Meghan says she was informed about 'disturbing allegations' against her father in 2018",
@@ -24,8 +24,12 @@
       "link": "https://www.bbc.co.uk/news/articles/c6ev38dj1g8zo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "White House says Melania Trump brokers truce for Ukraine city 'on brink of disaster'",
+      "title": "White House says Melania Trump brokered truce for Ukraine city 'on brink of disaster'",
       "link": "https://www.bbc.co.uk/news/articles/c6vgxkvl4w5eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Watch: Prince William on how he once dreamed of becoming 'DJ Xara'",
+      "link": "https://www.bbc.co.uk/news/videos/c6q8nd7n91eyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Bayern Munich manager Kompany taken to hospital after collapsing at training",
@@ -36,12 +40,8 @@
       "link": "https://www.bbc.co.uk/news/articles/ckr5yz2pqqppo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Israeli forces begin demolishing Palestinian buildings in Hebron after two Israeli soldiers shot dead",
-      "link": "https://www.bbc.co.uk/news/articles/cq4g1p974wxko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Seven shot dead by gunmen at church funeral in Jordan, officials say",
-      "link": "https://www.bbc.co.uk/news/articles/ck87zlpzny15o?at_medium=RSS&at_campaign=rss"
+      "title": "GP says she was forced out of job after raising concerns about gender treatment",
+      "link": "https://www.bbc.co.uk/news/articles/cr5ynl415j79o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
