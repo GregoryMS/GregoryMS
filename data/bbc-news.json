@@ -1,8 +1,24 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-23T05:27:52+00:00",
-  "fetchedAt": "2026-10-23T05:27:53.932969+00:00",
+  "feedUpdatedAt": "2026-10-23T10:26:18+00:00",
+  "fetchedAt": "2026-10-23T10:26:25.698470+00:00",
   "items": [
+    {
+      "title": "Meghan says she was informed about 'disturbing allegations' against her father in 2018",
+      "link": "https://www.bbc.co.uk/news/articles/c6x2wpgejjkjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Watch: BBC presenter battles strong winds as storm hits Newquay",
+      "link": "https://www.bbc.co.uk/news/videos/cmzxlgkyl3vpo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Five Israelis wounded and two suspected Palestinian attackers killed in West Bank shooting",
+      "link": "https://www.bbc.co.uk/news/articles/cq4g1p974wxko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Cyprus police open investigation into financial affairs of Roman Abramovich",
+      "link": "https://www.bbc.co.uk/news/articles/c875p1yy90ryo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Detective raped by colleague says Met handling of case 'like being raped again'",
       "link": "https://www.bbc.co.uk/news/articles/ckdd83dz0153o?at_medium=RSS&at_campaign=rss"
@@ -12,36 +28,20 @@
       "link": "https://www.bbc.co.uk/news/videos/c3wyv7lr15nvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Musk has restored access to Ukraine's Starlink network, Trump says",
+      "title": "Ukraine says Starlink still restricted after Trump says limits lifted",
       "link": "https://www.bbc.co.uk/news/articles/cq74pjpmx0e8o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Amber warning in place as Storm Austen hits parts of UK",
-      "link": "https://www.bbc.co.uk/weather/articles/cq8ezy256e42o?at_medium=RSS&at_campaign=rss"
+      "title": "Personalised skin cancer vaccine cuts risk of disease returning in major trial",
+      "link": "https://www.bbc.co.uk/news/articles/cq0ld9g9e913o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Chancellor plans to cut 'pointless paperwork' to save businesses up to £800m",
-      "link": "https://www.bbc.co.uk/news/articles/cm5ynpywq1e3o?at_medium=RSS&at_campaign=rss"
+      "title": "Final James Bond screen tests to take place this weekend, reports say",
+      "link": "https://www.bbc.co.uk/news/articles/c50mep10dek7o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Raye wins the Mercury Prize with This Music May Contain Hope",
-      "link": "https://www.bbc.co.uk/news/articles/cw073mj02v72o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Celebrity Traitors - paranoia deepens as traitor behaviour splits opinion",
-      "link": "https://www.bbc.co.uk/news/articles/cmqxn3133rdwo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Prepare for supply chain disruption from cyber or climate emergencies, Streeting warns public",
-      "link": "https://www.bbc.co.uk/news/articles/cwd094x57p32o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Grid operator says lights will stay on this winter after concerns",
-      "link": "https://www.bbc.co.uk/news/articles/cmy56q2n1veqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Give more people weight-loss jabs on the NHS, say MPs",
-      "link": "https://www.bbc.co.uk/news/articles/cm4g1pkwxdqwo?at_medium=RSS&at_campaign=rss"
+      "title": "Hospitals deliberately targeted by Sudan's RSF fighters, BBC finds",
+      "link": "https://www.bbc.co.uk/news/articles/c54g1kxw4nvvo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
