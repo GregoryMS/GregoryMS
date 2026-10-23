@@ -171,6 +171,9 @@
 .hourly-arrow:disabled { opacity:.35; cursor:default; }
 .hourly-grid { display:grid; grid-auto-flow:column; grid-auto-columns:154px; gap:12px; overflow-x:auto; padding:2px 2px 14px; scroll-snap-type:x proximity; scrollbar-width:thin; scrollbar-color:var(--rain) var(--soft); }
 .hourly-card { scroll-snap-align:start; }
+.hourly-solar-card { background:var(--glow); border-color:var(--sun); }
+.hourly-solar-icon { color:var(--sun); }
+.hourly-solar-label { font-size:16px; font-weight:600; margin:0; }
 .hourly-card .period { margin-bottom:5px; }
 .hourly-date { color:var(--muted); font-size:11px; margin:0 0 14px; }
 .hourly-temperature { font-size:26px; font-weight:500; letter-spacing:-1px; margin:0 0 10px; }
@@ -512,4 +515,5 @@
 .photo-window-group--twilight { grid-column:1/-1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:22px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
 .photo-window-group--twilight .photo-window-group-title { grid-column:1/-1; }
 @media (max-width:700px) { .photo-window-group--twilight { grid-template-columns:minmax(0,1fr); } }
+
 

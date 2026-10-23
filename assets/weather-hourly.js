@@ -8,7 +8,7 @@
   const fields=['temperature_2m','apparent_temperature','weather_code','is_day','precipitation_probability','wind_speed_10m'];
   function forecastURL(location) {
     if(!Number.isFinite(location?.latitude) || !Number.isFinite(location.longitude) || Math.abs(location.latitude)>90 || Math.abs(location.longitude)>180) throw Error('Invalid coordinates');
-    return 'https://api.open-meteo.com/v1/forecast?latitude='+location.latitude.toFixed(2)+'&longitude='+location.longitude.toFixed(2)+'&hourly='+fields.join(',')+'&timezone=auto&timeformat=unixtime&forecast_hours=24&temperature_unit=celsius&wind_speed_unit=kmh';
+    return 'https://api.open-meteo.com/v1/forecast?latitude='+location.latitude.toFixed(2)+'&longitude='+location.longitude.toFixed(2)+'&hourly='+fields.join(',')+'&daily=sunrise,sunset&timezone=auto&timeformat=unixtime&forecast_hours=24&forecast_days=2&temperature_unit=celsius&wind_speed_unit=kmh';
   }
   function parseHours(data,now=Date.now()) {
     const h=data?.hourly;
@@ -30,7 +30,20 @@
         chance:Number.isFinite(chance)&&chance>=0&&chance<=100?chance:null,wind:Number.isFinite(wind)&&wind>=0?wind:null}];
     });
     if(!hours.length || !hours.some(h=>Number.isFinite(h.temperature))) throw Error('Hourly forecast unavailable');
-    return {hours,timezone};
+    // Solar events are optional: polar days/nights and missing data must not hide the forecast.
+    const seen=new Set(),events=[];
+    for(const [kind,name] of [['sunrise','Sunrise'],['sunset','Sunset']]) {
+      const values=data.daily?.[kind];
+      if(!Array.isArray(values)) continue;
+      for(const seconds of values) {
+        const timestamp=seconds*1000,key=kind+':'+timestamp;
+        if(!Number.isFinite(seconds) || !Number.isFinite(new Date(timestamp).getTime()) || timestamp<start || timestamp>=start+24*3600000 || seen.has(key)) continue;
+        seen.add(key);
+        events.push({kind,name,timestamp,time:time.format(timestamp),day:day.format(timestamp),label:name+' · '+full.format(timestamp)});
+      }
+    }
+    events.sort((a,b)=>a.timestamp-b.timestamp);
+    return {hours,events,timezone};
   }
   function createController(win) {
     const $=id=>win.document.getElementById(id),core=win.GregleWeather;
@@ -45,7 +58,16 @@
     function node(tag,className,text) {const el=win.document.createElement(tag);el.className=className;if(text!==undefined)el.textContent=text;return el;}
     function render(data) {
       const forecast=parseHours(data,now());
-      const cards=forecast.hours.map(hour=>{
+      const timeline=[...forecast.hours,...forecast.events].sort((a,b)=>a.timestamp-b.timestamp || (a.kind?-1:b.kind?1:0));
+      const cards=timeline.map(hour=>{
+        if(hour.kind) {
+          const card=node('article','forecast-card hourly-card hourly-solar-card');card.setAttribute('aria-label',hour.label);
+          const icon=node('div','forecast-icon hourly-solar-icon');
+          const arrow=hour.kind==='sunrise'?'M32 27V9m-6 6 6-6 6 6':'M32 9v18m-6-6 6 6 6-6';
+          icon.innerHTML='<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 44a14 14 0 0 1 28 0M8 44h48M16 53h32M11 30l5 3m32 0 5-3M9 39h4m38 0h4"/><path d="'+arrow+'"/></svg>';
+          card.append(node('h3','period',hour.time),node('p','hourly-date',hour.day),icon,node('p','hourly-solar-label',hour.name));
+          return card;
+        }
         const card=node('article','forecast-card hourly-card');card.setAttribute('aria-label',hour.label);
         const time=node('h3','period',hour.time),date=node('p','hourly-date',hour.day);
         const icon=node('div','forecast-icon');icon.innerHTML=core.weatherIcon(core.condition(hour.code),hour.night);
@@ -95,4 +117,5 @@
   }
   return {forecastURL,parseHours,createController};
 });
+
 
