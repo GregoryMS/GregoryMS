@@ -1,7 +1,6 @@
 (function() {
   'use strict';
   const core=globalThis.GregleTides, ui=globalThis.GregleTideUI, weather=globalThis.GregleWeather, $=id=>document.getElementById(id);
-  const cities={victoria:{name:'Victoria',latitude:48.43,longitude:-123.36},vancouver:{name:'Vancouver',latitude:49.24,longitude:-123.12},tofino:{name:'Tofino',latitude:49.15,longitude:-125.91}};
   let location=null,data=null,selectedDay=null,controller=null,version=0,lookupVersion=0,lookupController=null,loadedAt=0;
   function cancelLookup() { lookupVersion++;lookupController?.abort();$('tideSearchButton').disabled=false;$('locateTides').disabled=false; }
   function dayLabel(day) { return new Date(day+'T12:00:00Z').toLocaleDateString('en-CA',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}); }
@@ -62,14 +61,13 @@
     } catch(_) {if(id===version)$('tideStatus').textContent='Tide data is temporarily unavailable for '+location.name+'. Try Refresh or choose another location.';}
     finally {if(id===version){$('refreshTides').disabled=false;$('tideContent').setAttribute('aria-busy','false');}}
   }
-  function select(value,key=null) {
+  function select(value) {
     if(!weather.coordinates(value.latitude,value.longitude))return;
     cancelLookup();location=value;selectedDay=null;
     $('tideCity').textContent=value.name;$('tideRegion').textContent=value.region || 'Coastal tide forecast';document.title=value.name+' tides · Gregle';
     $('weatherLink').href=core.locationURL('https://weather.gregle.uk/',value);
     if(window.history?.replaceState) window.history.replaceState(null,'',core.locationURL(new URL(window.location.href).hostname === 'tides.gregle.uk' ? '/' : 'tides.html',value));
     $('tideResults').replaceChildren();$('tideLocationStatus').textContent='Showing tides for '+value.name+'.';
-    document.querySelectorAll('[data-tide-city]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tideCity===key)));
     return refresh();
   }
   async function search(event) {
@@ -81,14 +79,14 @@
       const results=weather.searchLocations(await r.json());if(id!==lookupVersion)return;
       $('tideLocationStatus').textContent=results.length?'Choose a location:':'No locations found. Try a nearby city or a different spelling.';
       $('tideResults').replaceChildren(...results.map(value=>{const b=ui.node('button','pill',[value.name,value.region].filter(Boolean).join(' · '));b.type='button';b.addEventListener('click',()=>select(value));return b;}));
-    } catch(_) {if(id===lookupVersion)$('tideLocationStatus').textContent='Location search is unavailable. Try again or use a shortcut.';}
+    } catch(_) {if(id===lookupVersion)$('tideLocationStatus').textContent='Location search is unavailable. Try again or use My location.';}
     finally {clearTimeout(timeout);if(id===lookupVersion)$('tideSearchButton').disabled=false;}
   }
   function locate() {
     cancelLookup();const id=lookupVersion;
     if(!navigator.geolocation){$('tideLocationStatus').textContent='Location is unavailable. Search for a coastal city.';return;}
     $('locateTides').disabled=true;$('tideLocationStatus').textContent='Finding your location…';
-    const failed=()=>{if(id===lookupVersion){$('locateTides').disabled=false;$('tideLocationStatus').textContent='Location access is unavailable. Search for a city or choose a shortcut.';}};
+    const failed=()=>{if(id===lookupVersion){$('locateTides').disabled=false;$('tideLocationStatus').textContent='Location access is unavailable. Search for a coastal city.';}};
     try {navigator.geolocation.getCurrentPosition(async p=>{
       if(id!==lookupVersion)return;
       if(!weather.coordinates(p.coords.latitude,p.coords.longitude)){failed();return;}
@@ -99,11 +97,11 @@
       if(id===lookupVersion)select(value);
     },failed,{enableHighAccuracy:false,timeout:12000,maximumAge:300000});}catch(_){failed();}
   }
-  document.querySelectorAll('[data-tide-city]').forEach(b=>b.addEventListener('click',()=>select({...cities[b.dataset.tideCity],country:'CA',region:'British Columbia, Canada',timezone:'America/Vancouver'},b.dataset.tideCity)));
   $('tideSearch').addEventListener('submit',search);$('locateTides').addEventListener('click',locate);$('refreshTides').addEventListener('click',refresh);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden && Date.now()-loadedAt>900000)refresh();});
   setInterval(()=>{if(!document.hidden && data){if(Date.now()-loadedAt>900000)refresh();else render();}},60000);
   window.addEventListener?.('resize',()=>{if(data && selectedDay)renderChart(selectedDay);});
   const linked=core.locationFromURL(window.location?.href);
-  select(linked || {...cities.vancouver,country:'CA',region:'British Columbia, Canada',timezone:'America/Vancouver'},linked?Object.keys(cities).find(key=>cities[key].latitude===linked.latitude && cities[key].longitude===linked.longitude):'vancouver');
+  select(linked || {name:'Vancouver',latitude:49.24,longitude:-123.12,country:'CA',region:'British Columbia, Canada',timezone:'America/Vancouver'});
 })();
+

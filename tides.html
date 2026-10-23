@@ -18,7 +18,7 @@
   <link rel="manifest" href="/tides.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/tides-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/tides-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css">
+  <link rel="stylesheet" href="assets/weather.css?v=20261023-tides-search">
   <link rel="stylesheet" href="assets/tides.css?v=20260930-surf">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261006-fog-waves">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
@@ -55,13 +55,27 @@
   </header>
   <main class="page tide-page">
     <div class="page-heading">
-      <div><p class="eyebrow">By the water</p><h1 id="tideCity">Vancouver</h1><p class="location-meta" id="tideRegion">Your tide tracker</p></div>
-      <div class="location-switch" role="group" aria-label="Tide location"><button class="city-button" data-tide-city="victoria" type="button" aria-pressed="false">Victoria</button><button class="city-button" data-tide-city="vancouver" type="button" aria-pressed="true">Vancouver</button><button class="city-button" data-tide-city="tofino" type="button" aria-pressed="false">Tofino</button></div>
+      <div class="weather-location-title"><p class="eyebrow">By the water</p><h1 id="tideCity">Vancouver</h1><p class="location-meta" id="tideRegion">Your tide tracker</p></div>
+      <div class="location-picker">
+        <div class="location-picker-body">
+          <section class="location-controls" aria-label="Find tides for a location">
+            <form class="city-search" id="tideSearch">
+              <label for="tideQuery">Find a coastal city</label>
+              <div class="city-search-row">
+                <div class="city-search-field">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+                  <input id="tideQuery" type="search" placeholder="City or postal code" autocomplete="off" enterkeyhint="search" minlength="2" maxlength="100" required>
+                  <button class="pill" id="tideSearchButton" type="submit">Search</button>
+                </div>
+                <button class="pill locate-weather" id="locateTides" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg><span>My location</span></button>
+              </div>
+            </form>
+            <p class="location-note" id="tideLocationStatus" role="status"></p>
+            <div id="tideResults" class="city-results" aria-label="Location search results"></div>
+          </section>
+        </div>
+      </div>
     </div>
-    <section class="location-controls" aria-label="Find tides for a location">
-      <form class="city-search" id="tideSearch"><label for="tideQuery">Find a coastal city</label><div class="city-search-row"><input id="tideQuery" type="search" placeholder="City or postal code" autocomplete="off" minlength="2" maxlength="100" required><button class="pill" id="tideSearchButton" type="submit">Search</button><button class="pill" id="locateTides" type="button">◎ My location</button></div></form>
-      <p class="location-note" id="tideLocationStatus" role="status">Search for a location or choose a shortcut.</p><div id="tideResults" class="city-results" aria-label="Location search results"></div>
-    </section>
     <noscript><p>Enable JavaScript to see tides, or visit <a href="https://www.tides.gc.ca/">Canadian Hydrographic Service tide tables</a>.</p></noscript>
     <div class="tide-status-row"><p class="status" id="tideStatus" role="status">Loading tides…</p><button class="pill" id="refreshTides" type="button">↻ Refresh</button></div>
     <div id="tideContent" aria-busy="true">
@@ -91,6 +105,7 @@
     <p class="location-note" id="tideNote"></p>
     <footer><div><p>Tides from the <a href="https://www.tides.gc.ca/">Canadian Hydrographic Service</a>. Worldwide estimates from <a href="https://open-meteo.com/en/docs/marine-weather-api">Open-Meteo / Meteo-France (CC BY 4.0)</a>.</p><p class="location-privacy">Search: Open-Meteo / GeoNames. Coordinates are sent to tide, marine and weather providers and included in weather/tide links. My location uses approximate coordinates and BigDataCloud to find your city.</p></div><a class="source-link" id="tideSource" href="https://www.tides.gc.ca/">Tide source ↗</a></footer>
   </main>
-  <script src="assets/weather-core.js"></script><script src="assets/tide-core.js"></script><script src="assets/tide-data.js"></script><script src="assets/tide-ui.js?v=20261021-subdomains"></script><script src="assets/surf-core.js?v=20260930-surf"></script><script src="assets/surf.js?v=20260930-surf"></script><script src="assets/surf-waves.js?v=20261006-fog-waves"></script><script src="assets/tides.js?v=20261021-subdomains"></script>
+  <script src="assets/weather-core.js"></script><script src="assets/tide-core.js"></script><script src="assets/tide-data.js"></script><script src="assets/tide-ui.js?v=20261021-subdomains"></script><script src="assets/surf-core.js?v=20260930-surf"></script><script src="assets/surf.js?v=20260930-surf"></script><script src="assets/surf-waves.js?v=20261006-fog-waves"></script><script src="assets/tides.js?v=20261023-tides-search"></script>
 </body>
 </html>
+
