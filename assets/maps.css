@@ -477,8 +477,8 @@
 .vehicle-layout .map-live-control { min-height: 56px; padding-left: 32px; }
 .vehicle-layout .map-live-switch > svg { width: 22px; height: 22px; left: -30px; }
 .vehicle-layout .map-layers-panel input:is([type="checkbox"], [type="radio"]) { width: 24px; height: 24px; min-height: 24px; }
-.map-layer-heading > .map-layer-check { display: contents; }
-.vehicle-layout .map-layer-heading > .map-layer-check { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 48px; min-height: 48px; margin: 0; padding: 0; }
+:is(.map-layer-heading, .map-layer-row) > .map-layer-check { display: contents; }
+.vehicle-layout :is(.map-layer-heading, .map-layer-row) > .map-layer-check { display: grid; place-items: center; justify-content: center; gap: 0; flex: 0 0 48px; width: 48px; height: 48px; min-height: 48px; margin: 0; padding: 0; }
 .vehicle-layout .directions-field { flex-wrap: wrap; }
 .vehicle-layout .directions-field input { flex: 1 1 160px; font-size: 18px; }
 .vehicle-layout .map-directions :is(label, #directions-status) { font-size: 15px; }
