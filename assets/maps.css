@@ -464,7 +464,7 @@
 .vehicle-layout .map-icon-button svg { width: 26px; height: 26px; }
 .vehicle-layout .map-actions { top: var(--map-tools-top); left: 20px; right: auto; display: flex; flex-wrap: wrap; width: max-content; max-width: calc(100% - 40px); justify-content: flex-start; gap: 8px; }
 .vehicle-layout .map-stage .leaflet-top.leaflet-right { top: calc(var(--map-tools-top) + var(--map-tools-height, 56px) + 12px); left: 20px; right: auto; bottom: auto; }
-.vehicle-layout .leaflet-top.leaflet-right .leaflet-control-zoom { display: flex; margin: 0; }
+.vehicle-layout .leaflet-control-zoom { display: flex; float: none; margin: 0; }
 .vehicle-layout .leaflet-control-zoom a { border-radius: 0; }
 .vehicle-layout .leaflet-control-zoom .leaflet-control-zoom-in { border-bottom: 0; border-right: 1px solid var(--map-border); }
 .vehicle-layout .directions-open .map-search { display: block; }
@@ -472,7 +472,13 @@
 .vehicle-layout #map-search-form { min-height: 68px; }
 .vehicle-layout #map-query { font-size: 18px; }
 .vehicle-layout :is(.map-directions, .map-layers-panel) { font-size: 16px; }
-.vehicle-layout :is(.map-directions, .map-layers-panel) :is(button, input, summary, a) { min-height: 48px; touch-action: manipulation; }
+.vehicle-layout :is(.map-directions, .map-layers-panel) :is(button:not([role="switch"]), input:not([type="checkbox"]):not([type="radio"]), summary, a) { min-height: 48px; touch-action: manipulation; }
+.vehicle-layout .map-live-toggles { --gregle-switch-width: 52px; --gregle-switch-height: 30px; --gregle-switch-thumb: 22px; --gregle-switch-travel: 22px; --gm-line: var(--map-accent-soft); }
+.vehicle-layout .map-live-control { min-height: 56px; padding-left: 32px; }
+.vehicle-layout .map-live-switch > svg { width: 22px; height: 22px; left: -30px; }
+.vehicle-layout .map-layers-panel input:is([type="checkbox"], [type="radio"]) { width: 24px; height: 24px; min-height: 24px; }
+.map-layer-heading > .map-layer-check { display: contents; }
+.vehicle-layout .map-layer-heading > .map-layer-check { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 48px; min-height: 48px; margin: 0; padding: 0; }
 .vehicle-layout .directions-field { flex-wrap: wrap; }
 .vehicle-layout .directions-field input { flex: 1 1 160px; font-size: 18px; }
 .vehicle-layout .map-directions :is(label, #directions-status) { font-size: 15px; }
@@ -522,6 +528,17 @@
   .vehicle-layout .map-stage:not(.embedded-active) > :is(.map-directions, .map-layers-panel, .map-place, .map-fuel-card, .map-link-copy, .vessels-legend) { top: calc(var(--map-tools-top) + var(--map-tools-height, 56px) + 12px); left: 140px; right: auto; bottom: auto; max-width: calc(100% - 160px); max-height: calc(100% - var(--map-tools-top) - var(--map-tools-height, 56px) - 32px); overflow-y: auto; }
 }
 .vehicle-layout .map-stage.navigating .leaflet-top.leaflet-right { top: auto; bottom: 20px; }
+.car-layers-zoom:not([hidden]) { display: block; flex: 0 0 auto; }
+.vehicle-layout #map-layers-panel > .layers-heading { position: sticky; top: -16px; z-index: 2; gap: 10px; background: var(--map-surface); }
+.vehicle-layout #map-layers-panel > .layers-heading h2 { margin-right: auto; }
+.vehicle-layout .map-stage.car-layers-zoom-docked > #map-layers-panel { left: 20px; width: 380px; max-width: calc(100% - 40px); }
+@media (min-width: 701px) and (max-width: 1100px) { .vehicle-layout .map-stage.car-layers-zoom-docked > #map-layers-panel { width: 340px; } }
+@media (max-width: 700px) { .vehicle-layout #map-layers-panel > .layers-heading { top: -4px; } }
+@media (max-width: 700px) {
+  .vehicle-layout .car-layers-zoom-docked #map-layers-panel > .layers-heading { display: none; }
+  .vehicle-layout .car-layers-zoom-docked .map-drawer-hint { display: none; }
+  .vehicle-layout .car-layers-zoom-docked .map-drawer-grip { left: calc(50% - 19px); }
+}
 @media (prefers-reduced-motion: reduce) { .navigation-live, .navigation-position { transition: none; } }
 @media (prefers-reduced-motion: reduce) { .map-car-track, .map-car-thumb { transition: none; } }
 @media (max-width: 360px) {

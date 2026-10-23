@@ -17,11 +17,34 @@
   let preferred = null;
   try { preferred = localStorage.getItem('gregle-maps-car-layout'); } catch {}
   let enabled = preferred === null ? /Tesla/i.test(navigator.userAgent) : preferred === 'true';
+  const layers = document.getElementById('map-layers-panel');
+  const zoomSlot = document.getElementById('car-layers-zoom');
+  const drawerZoomSlot = document.getElementById('car-drawer-zoom');
+  const drawer = document.getElementById('map-drawer');
+  let zoomHome;
+  function placeZoom() {
+    const zoom = stage?.querySelector('.leaflet-control-zoom');
+    if (!zoom || !layers || !zoomSlot || !drawerZoomSlot) return;
+    zoomHome ||= zoom.parentElement;
+    const mobile = stage.classList.contains('has-mobile-drawer');
+    const visible = !layers.hidden && !layers.inert && (!mobile || layers.classList.contains('drawer-active-panel'));
+    const dock = enabled && visible && !stage.classList.contains('embedded-active') && !stage.classList.contains('navigating');
+    zoomSlot.hidden = !(dock && !mobile);
+    drawerZoomSlot.hidden = !(dock && mobile);
+    if (stage.classList.contains('car-layers-zoom-docked') !== dock) stage.classList.toggle('car-layers-zoom-docked', dock);
+    const target = dock ? (mobile ? drawerZoomSlot : zoomSlot) : zoomHome;
+    if (zoom.parentElement !== target) {
+      const focused = zoom.contains(document.activeElement) ? document.activeElement : null;
+      target.append(zoom);
+      focused?.focus({ preventScroll: true });
+    }
+  }
   function apply() {
     document.body.classList.toggle('vehicle-layout', enabled);
     button.setAttribute('aria-checked', String(enabled));
     button.title = enabled ? 'Turn off car mode' : 'Use larger touchscreen controls';
     sizeTools();
+    placeZoom();
     window.dispatchEvent(new Event('resize'));
   }
   button.addEventListener('click', () => {
@@ -31,6 +54,15 @@
   });
   apply();
   window.addEventListener('resize', sizeTools);
+  window.addEventListener('resize', placeZoom);
+  if (stage) {
+    const initialZoom = new MutationObserver(() => {
+      if (stage.querySelector('.leaflet-control-zoom')) { placeZoom(); initialZoom.disconnect(); }
+    });
+    initialZoom.observe(stage, { childList: true, subtree: true });
+    const zoomLayout = new MutationObserver(placeZoom);
+    for (const node of [stage, layers, drawer]) if (node) zoomLayout.observe(node, { attributes: true, attributeFilter: ['class', 'hidden', 'inert'] });
+  }
   if (tools && window.ResizeObserver) new ResizeObserver(sizeTools).observe(tools);
   if (stage && window.ResizeObserver) new ResizeObserver(() => window.dispatchEvent(new Event('resize'))).observe(stage);
 })();

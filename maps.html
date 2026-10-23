@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261022-driver-controls">
+  <link rel="stylesheet" href="assets/maps.css?v=20261022-car-layers">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -46,7 +46,7 @@
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-layers.js?v=20261021-adsbexchange" defer></script>
-  <script src="assets/maps-display.js?v=20261022-driver-controls" defer></script>
+  <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261022-live-navigation" defer></script>
   <script src="assets/maps-navigation-live.js?v=20261022-live-navigation" defer></script>
   <script src="assets/maps-navigation.js?v=20261022-live-navigation" defer></script>
@@ -143,7 +143,7 @@
       <p>Colours show the reported AIS vessel type. Ferries use Passenger. Grey means other or unreported. A circle means the heading is unknown.</p>
     </section>
     <section class="map-layers-panel map-glass" id="map-layers-panel" aria-labelledby="map-layers-heading" hidden>
-      <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
+      <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><div id="car-layers-zoom" class="car-layers-zoom" role="group" aria-label="Map zoom" hidden></div><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
       <fieldset class="map-base-options"><legend>Base map</legend>
         <label><input type="radio" name="map-base" value="street" checked><span><strong>Street</strong><small>OpenStreetMap</small></span></label>
         <label><input type="radio" name="map-base" value="topographic"><span><strong>Topographic</strong><small>Contours &amp; terrain</small></span></label>
@@ -160,7 +160,7 @@
         <div id="vessels-options" hidden><p class="layer-status" id="vessels-layer-status" role="status"></p><div class="traffic-options"><button id="vessels-refresh" type="button">Refresh vessels</button></div><details class="aircraft-sources"><summary>Data sources &amp; coverage</summary><p>Recent position reports from <a href="https://openwaters.io/api/ais/" target="_blank" rel="noopener">Open Waters AIS</a>, combining public feeds and community receivers. Requests cover this map area. Coverage varies; reports older than ten minutes are hidden. Refreshes each minute while enabled and visible, with recent cached reports during brief interruptions. For information only; not for navigation.</p><div id="vessels-source-credits"><p>Open Waters AIS · <a href="https://www.aishub.net/" target="_blank" rel="noopener">AISHub contributors</a> · <a href="https://aisstream.io/" target="_blank" rel="noopener">AISStream.io</a> · Kystverket / BarentsWatch · Fintraffic Digitraffic · community receivers.</p></div></details></div>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="google-options-toggle" type="button" aria-label="Google traffic options" aria-expanded="false" aria-controls="google-traffic-options"><span><strong id="google-layer-label">Google traffic</strong><small>Experimental · no key</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <input id="map-google-traffic" type="checkbox" aria-labelledby="google-layer-label" aria-describedby="google-traffic-help">
+          <label class="map-layer-check"><input id="map-google-traffic" type="checkbox" aria-labelledby="google-layer-label" aria-describedby="google-traffic-help"></label>
         </div>
         <div id="google-traffic-options" class="google-traffic-options" hidden>
           <p id="google-traffic-help">Unofficial source; availability may change.</p>
@@ -170,7 +170,7 @@
         </div>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="drivebc-options-toggle" type="button" aria-label="DriveBC options" aria-expanded="false" aria-controls="drivebc-sublayers"><span><strong id="drivebc-layer-label">DriveBC</strong><small>BC closures, incidents &amp; road conditions · no key</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <input id="map-drivebc" type="checkbox" aria-labelledby="drivebc-layer-label">
+          <label class="map-layer-check"><input id="map-drivebc" type="checkbox" aria-labelledby="drivebc-layer-label"></label>
         </div>
         <p class="layer-status" id="drivebc-layer-status" role="status" hidden></p>
         <div class="drivebc-sublayer" id="drivebc-sublayers" hidden>
@@ -186,7 +186,7 @@
         </div>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="ev-options-toggle" type="button" aria-label="EV charging options" aria-expanded="false" aria-controls="ev-sublayers"><span><strong id="ev-layer-label">EV charging</strong><small id="ev-layer-description">Open Charge Map · openly licensed locations</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <input id="map-ev" type="checkbox" aria-labelledby="ev-layer-label" aria-describedby="ev-layer-status">
+          <label class="map-layer-check"><input id="map-ev" type="checkbox" aria-labelledby="ev-layer-label" aria-describedby="ev-layer-status"></label>
         </div>
         <div class="ev-sublayer" id="ev-sublayers" hidden>
           <label><span><strong id="ev-osm-label">OpenStreetMap data</strong><small id="ev-source-description">Using Open Charge Map</small></span><input id="map-ev-osm" type="checkbox" aria-labelledby="ev-osm-label" aria-describedby="ev-source-description"></label>
@@ -196,7 +196,7 @@
         </div>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="fuel-options-toggle" type="button" aria-label="Fuel prices options" aria-expanded="false" aria-controls="fuel-sublayers"><span><strong id="fuel-layer-label">Fuel prices</strong><small>Canada · daily city averages &amp; station locations</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <input id="map-fuel" type="checkbox" aria-labelledby="fuel-layer-label" aria-describedby="fuel-layer-status">
+          <label class="map-layer-check"><input id="map-fuel" type="checkbox" aria-labelledby="fuel-layer-label" aria-describedby="fuel-layer-status"></label>
         </div>
         <div class="ev-sublayer fuel-sublayer" id="fuel-sublayers" hidden>
           <label for="fuel-type">Fuel type <select id="fuel-type"><option value="regular">Regular</option><option value="midgrade">Mid-grade</option><option value="premium">Premium</option><option value="diesel">Diesel</option></select></label>
@@ -216,7 +216,7 @@
         </div>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="tomtom-options-toggle" type="button" aria-label="TomTom API key options" aria-expanded="false" aria-controls="tomtom-options"><span><strong id="traffic-layer-label">TomTom traffic</strong><small id="traffic-layer-description">API key required for traffic</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <input id="map-traffic" type="checkbox" aria-labelledby="traffic-layer-label">
+          <label class="map-layer-check"><input id="map-traffic" type="checkbox" aria-labelledby="traffic-layer-label"></label>
         </div>
       </fieldset>
       <div class="tomtom-sublayer" id="tomtom-options" hidden>
@@ -253,6 +253,7 @@
     </section>
     <section class="map-drawer map-glass" id="map-drawer" aria-label="Map details drawer" hidden>
       <div class="map-drawer-bar">
+        <div id="car-drawer-zoom" class="car-layers-zoom" role="group" aria-label="Map zoom" hidden></div>
         <div id="map-drawer-resize" class="map-drawer-resize" role="slider" tabindex="0" aria-label="Map details height" aria-orientation="vertical" aria-valuemin="64" aria-valuemax="600" aria-valuenow="300" aria-controls="map-drawer-body" aria-describedby="map-drawer-help">
           <span class="map-drawer-grip" aria-hidden="true"></span><span id="map-drawer-title">Map details</span><span class="map-drawer-hint" aria-hidden="true">Drag to resize</span>
         </div>
