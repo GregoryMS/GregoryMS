@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-24T13:36:35.781084+00:00",
+      "checkedAt": "2026-10-24T16:59:23.786397+00:00",
       "listings": [
         {
           "home": "Aston Villa",
@@ -274,7 +274,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-24T13:36:35.781084+00:00",
+      "checkedAt": "2026-10-24T16:59:23.786397+00:00",
       "listings": [
         {
           "home": "Aston Villa",
@@ -477,7 +477,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-24T13:36:35.781084+00:00",
+      "checkedAt": "2026-10-24T16:59:23.786397+00:00",
       "listings": [
         {
           "home": "Aston Villa",
@@ -723,7 +723,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-24T13:36:35.781084+00:00",
+      "checkedAt": "2026-10-24T16:59:23.786397+00:00",
       "listings": [
         {
           "home": "Aston Villa",
@@ -946,16 +946,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-24T13:36:35.781084+00:00",
+      "checkedAt": "2026-10-24T16:59:23.786397+00:00",
       "listings": [
-        {
-          "home": "RB Leipzig (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-10-23T16:30:00+00:00",
-          "channels": [
-            "Magenta Sport"
-          ]
-        },
         {
           "home": "Aston Villa",
           "away": "Manchester City",
