@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-24T21:48:49+00:00",
-  "fetchedAt": "2026-10-24T21:48:57.459080+00:00",
+  "feedUpdatedAt": "2026-10-24T23:46:55+00:00",
+  "fetchedAt": "2026-10-24T23:46:59.321412+00:00",
   "items": [
     {
       "title": "Almost 1,000 arrested as clashes follow another day of mass protests across France",
@@ -12,16 +12,16 @@
       "link": "https://www.bbc.co.uk/news/videos/cm89zqw9lx1do?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Met Police says letter with claims about Meghan's father not shared with other law enforcement",
-      "link": "https://www.bbc.co.uk/news/articles/c39wz740e0nyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Storm Boelo amber warnings kick in as parts of UK brace for 80mph gusts",
       "link": "https://www.bbc.co.uk/news/articles/cmr4ydglq9r3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mum who died trying to save sons swept away in Bahamas was hero, husband says",
-      "link": "https://www.bbc.co.uk/news/articles/cm86z5n0yvy6o?at_medium=RSS&at_campaign=rss"
+      "title": "Ukraine depends on Starlink - can Europe plug the gap?",
+      "link": "https://www.bbc.co.uk/news/articles/c65yn97xe7ypo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Met Police says letter with claims about Meghan's father not shared with other law enforcement",
+      "link": "https://www.bbc.co.uk/news/articles/c39wz740e0nyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Between quick wins and big dreams lies Burnham's biggest test",
@@ -32,16 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/cqd09k1k7532o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Before you crank up the thermostat, try these tips to keep you and your home warmer for longer",
-      "link": "https://www.bbc.co.uk/news/articles/cqr7yeed1ed7o?at_medium=RSS&at_campaign=rss"
+      "title": "Rosebank: Life on the oil field at the centre of a political storm",
+      "link": "https://www.bbc.co.uk/news/articles/cqy8ljkle97ro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Strictly's new presenters - after mixed reviews have they found their feet?",
-      "link": "https://www.bbc.co.uk/news/articles/c5zjxp1rjne8o?at_medium=RSS&at_campaign=rss"
+      "title": "Why the King's Caribbean tour could be 'biggest risk of his reign'",
+      "link": "https://www.bbc.co.uk/news/articles/ckzd6gvg1r2jo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "California considers imposing 'world's first' tax on billionaires",
-      "link": "https://www.bbc.co.uk/news/articles/ck4g1jg4n9dno?at_medium=RSS&at_campaign=rss"
+      "title": "The bitter row over military service that could shape Israel's future",
+      "link": "https://www.bbc.co.uk/news/articles/cmvg7w0x742do?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
