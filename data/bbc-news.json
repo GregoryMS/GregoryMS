@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-24T13:38:20+00:00",
-  "fetchedAt": "2026-10-24T13:38:28.189246+00:00",
+  "feedUpdatedAt": "2026-10-24T17:00:24+00:00",
+  "fetchedAt": "2026-10-24T17:00:35.586277+00:00",
   "items": [
     {
       "title": "Met Police says letter with claims about Meghan's father not shared with other law enforcement",
@@ -24,24 +24,24 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c6q8nd9g9n72o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Before you crank up the thermostat, try these tips to keep you and your home warmer for longer",
+      "link": "https://www.bbc.co.uk/news/articles/cqr7yeed1ed7o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Strictly's new presenters - after mixed reviews have they found their feet?",
       "link": "https://www.bbc.co.uk/news/articles/c5zjxp1rjne8o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Are California voters about to impose 'world's first' tax on billionaires?",
+      "title": "California considers imposing 'world's first' tax on billionaires",
       "link": "https://www.bbc.co.uk/news/articles/ck4g1jg4n9dno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Before you crank up the thermostat, try these tips to keep you and your home warmer for longer",
-      "link": "https://www.bbc.co.uk/news/articles/cqr7yeed1ed7o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "The artist dropping her debut album after a billion streams",
       "link": "https://www.bbc.co.uk/news/articles/cwj0leg7ng67o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Ruins of Limoges city hall a symbol of France divided by national protests",
-      "link": "https://www.bbc.co.uk/news/articles/cxyvrged14d0o?at_medium=RSS&at_campaign=rss"
+      "title": "How the UK state pension compares with other countries",
+      "link": "https://www.bbc.co.uk/news/articles/c3gr84w85glyo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
