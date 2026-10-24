@@ -1,31 +1,35 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-24T19:22:47+00:00",
-  "fetchedAt": "2026-10-24T19:22:55.479875+00:00",
+  "feedUpdatedAt": "2026-10-24T21:48:49+00:00",
+  "fetchedAt": "2026-10-24T21:48:57.459080+00:00",
   "items": [
+    {
+      "title": "Almost 1,000 arrested as clashes follow another day of mass protests across France",
+      "link": "https://www.bbc.co.uk/news/articles/c95ynd587ynzo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Watch: BBC in Paris as police charge protesters and use tear gas during unrest",
+      "link": "https://www.bbc.co.uk/news/videos/cm89zqw9lx1do?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Met Police says letter with claims about Meghan's father not shared with other law enforcement",
       "link": "https://www.bbc.co.uk/news/articles/c39wz740e0nyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "UK braces for worst of Storm Boelo as amber warnings due to come into force",
+      "title": "Storm Boelo amber warnings kick in as parts of UK brace for 80mph gusts",
       "link": "https://www.bbc.co.uk/news/articles/cmr4ydglq9r3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Between quick wins and big dreams lies Burnham's biggest test",
-      "link": "https://www.bbc.co.uk/news/articles/cwq6n09qpy90o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Mum who died trying to save sons swept away in Bahamas was hero, husband says",
       "link": "https://www.bbc.co.uk/news/articles/cm86z5n0yvy6o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Palestinian families displaced as Israeli forces demolish Hebron homes, local officials say",
-      "link": "https://www.bbc.co.uk/news/articles/cqd09k1k7532o?at_medium=RSS&at_campaign=rss"
+      "title": "Between quick wins and big dreams lies Burnham's biggest test",
+      "link": "https://www.bbc.co.uk/news/articles/cwq6n09qpy90o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Infantino tells BBC Sport he is backed by 'vast majority' of world football",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6q8nd9g9n72o?at_medium=RSS&at_campaign=rss"
+      "title": "Palestinian families displaced as Israeli forces demolish Hebron homes",
+      "link": "https://www.bbc.co.uk/news/articles/cqd09k1k7532o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Before you crank up the thermostat, try these tips to keep you and your home warmer for longer",
@@ -38,10 +42,6 @@
     {
       "title": "California considers imposing 'world's first' tax on billionaires",
       "link": "https://www.bbc.co.uk/news/articles/ck4g1jg4n9dno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "The artist dropping her debut album after a billion streams",
-      "link": "https://www.bbc.co.uk/news/articles/cwj0leg7ng67o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
