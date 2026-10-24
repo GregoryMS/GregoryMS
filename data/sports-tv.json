@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-23T22:12:58.364296+00:00",
+      "checkedAt": "2026-10-24T00:43:24.344752+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
@@ -259,12 +259,20 @@
             "Sky Sports+ HD",
             "Sky Sports+ app"
           ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "Seattle Sounders FC",
+          "start": "2026-11-01T21:30:00+00:00",
+          "channels": [
+            "Apple TV (UK)"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-23T22:12:58.364296+00:00",
+      "checkedAt": "2026-10-24T00:43:24.344752+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
@@ -464,7 +472,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-23T22:12:58.364296+00:00",
+      "checkedAt": "2026-10-24T00:43:24.344752+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
@@ -705,7 +713,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-23T22:12:58.364296+00:00",
+      "checkedAt": "2026-10-24T00:43:24.344752+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
@@ -900,7 +908,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-23T22:12:58.364296+00:00",
+      "checkedAt": "2026-10-24T00:43:24.344752+00:00",
       "listings": [
         {
           "home": "RB Leipzig (W)",
