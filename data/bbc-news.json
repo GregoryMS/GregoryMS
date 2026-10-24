@@ -1,23 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-24T17:00:24+00:00",
-  "fetchedAt": "2026-10-24T17:00:35.586277+00:00",
+  "feedUpdatedAt": "2026-10-24T19:22:47+00:00",
+  "fetchedAt": "2026-10-24T19:22:55.479875+00:00",
   "items": [
     {
       "title": "Met Police says letter with claims about Meghan's father not shared with other law enforcement",
       "link": "https://www.bbc.co.uk/news/articles/c39wz740e0nyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Plan for Northern Olympics to get £7m in Healey's Budget",
-      "link": "https://www.bbc.co.uk/news/articles/cv98z92ekg9zo?at_medium=RSS&at_campaign=rss"
+      "title": "UK braces for worst of Storm Boelo as amber warnings due to come into force",
+      "link": "https://www.bbc.co.uk/news/articles/cmr4ydglq9r3o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Between quick wins and big dreams lies Burnham's biggest test",
       "link": "https://www.bbc.co.uk/news/articles/cwq6n09qpy90o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mum dies after trying to rescue sons swept away at sea in Bahamas",
+      "title": "Mum who died trying to save sons swept away in Bahamas was hero, husband says",
       "link": "https://www.bbc.co.uk/news/articles/cm86z5n0yvy6o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Palestinian families displaced as Israeli forces demolish Hebron homes, local officials say",
+      "link": "https://www.bbc.co.uk/news/articles/cqd09k1k7532o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Infantino tells BBC Sport he is backed by 'vast majority' of world football",
@@ -38,10 +42,6 @@
     {
       "title": "The artist dropping her debut album after a billion streams",
       "link": "https://www.bbc.co.uk/news/articles/cwj0leg7ng67o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "How the UK state pension compares with other countries",
-      "link": "https://www.bbc.co.uk/news/articles/c3gr84w85glyo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
