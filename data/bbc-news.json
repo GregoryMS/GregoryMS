@@ -1,15 +1,11 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-23T22:32:48+00:00",
-  "fetchedAt": "2026-10-23T22:32:50.098264+00:00",
+  "feedUpdatedAt": "2026-10-24T00:59:34+00:00",
+  "fetchedAt": "2026-10-24T00:59:44.220425+00:00",
   "items": [
     {
       "title": "Storm Austen brings power cuts and travel disruption as more wind and rain forecast",
       "link": "https://www.bbc.co.uk/news/articles/cxj0l193y0l8o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Trees ripped up as Storm Austen batters Britain",
-      "link": "https://www.bbc.co.uk/news/videos/c6x2qdpnn35po?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Meghan says she was informed about 'disturbing allegations' against her father in 2018",
@@ -24,12 +20,20 @@
       "link": "https://www.bbc.co.uk/news/articles/c6ev38dj1g8zo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "White House says Melania Trump brokered truce for Ukraine city 'on brink of disaster'",
-      "link": "https://www.bbc.co.uk/news/articles/c6vgxkvl4w5eo?at_medium=RSS&at_campaign=rss"
+      "title": "UK to invest £100m in 'world first' AI Biosecurity Lab",
+      "link": "https://www.bbc.co.uk/news/articles/cqdjv8xllvyyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: Prince William on how he once dreamed of becoming 'DJ Xara'",
-      "link": "https://www.bbc.co.uk/news/videos/c6q8nd7n91eyo?at_medium=RSS&at_campaign=rss"
+      "title": "Father who killed Oregon school shooter describes anguish over children he couldn't save",
+      "link": "https://www.bbc.co.uk/news/articles/crgj9ndwvj9jo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Celebrity Traitors left on a knife edge after a trip to the field of screams",
+      "link": "https://www.bbc.co.uk/news/articles/c6jdmrz00v7lo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "White House says Melania Trump brokered truce for Ukraine city 'on brink of disaster'",
+      "link": "https://www.bbc.co.uk/news/articles/c6vgxkvl4w5eo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Bayern Munich manager Kompany taken to hospital after collapsing at training",
@@ -38,10 +42,6 @@
     {
       "title": "Burnham suggests stocking up on tinned food and bottled water",
       "link": "https://www.bbc.co.uk/news/articles/ckr5yz2pqqppo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "GP says she was forced out of job after raising concerns about gender treatment",
-      "link": "https://www.bbc.co.uk/news/articles/cr5ynl415j79o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
