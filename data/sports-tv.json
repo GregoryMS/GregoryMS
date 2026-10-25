@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
+      "checkedAt": "2026-10-25T20:51:22.892033+00:00",
       "listings": [
         {
           "home": "Colorado Rapids",
@@ -284,12 +284,30 @@
             "HBO Max (UK)",
             "TNT Sports 2"
           ]
+        },
+        {
+          "home": "RB Leipzig",
+          "away": "Manchester City",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 2"
+          ]
+        },
+        {
+          "home": "Slavia Prague",
+          "away": "Arsenal",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 1"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
+      "checkedAt": "2026-10-25T20:51:22.892033+00:00",
       "listings": [
         {
           "home": "Colorado Rapids",
@@ -500,7 +518,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
+      "checkedAt": "2026-10-25T20:51:22.892033+00:00",
       "listings": [
         {
           "home": "Colorado Rapids",
@@ -751,7 +769,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
+      "checkedAt": "2026-10-25T20:51:22.892033+00:00",
       "listings": [
         {
           "home": "Colorado Rapids",
@@ -964,7 +982,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
+      "checkedAt": "2026-10-25T20:51:22.892033+00:00",
       "listings": [
         {
           "home": "Colorado Rapids",
