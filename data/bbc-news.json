@@ -1,27 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-25T12:27:42+00:00",
-  "fetchedAt": "2026-10-25T12:27:53.912828+00:00",
+  "feedUpdatedAt": "2026-10-25T16:43:00+00:00",
+  "fetchedAt": "2026-10-25T16:43:04.433783+00:00",
   "items": [
-    {
-      "title": "Meghan broke contact with father in letter citing abuse claims",
-      "link": "https://www.bbc.co.uk/news/articles/cqzjxg7l19yxo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Musk says SpaceX restricted Ukraine's Starlink connection as service restored",
-      "link": "https://www.bbc.co.uk/news/articles/cvx28ljp8n4xo?at_medium=RSS&at_campaign=rss"
-    },
     {
       "title": "Burnham open to 'honest discussion' on EU free movement",
       "link": "https://www.bbc.co.uk/news/articles/c8e36kyk1qx5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "More than 1,300 arrested as clashes follow another day of mass protests across France",
-      "link": "https://www.bbc.co.uk/news/articles/c95ynd587ynzo?at_medium=RSS&at_campaign=rss"
+      "title": "Couple were celebrating anniversary before Bahamas tragedy",
+      "link": "https://www.bbc.co.uk/news/articles/c623drpx31xzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Voters in Brazil head to polls as Lula goes up against Bolsonaro's son",
-      "link": "https://www.bbc.co.uk/news/articles/cxp8g21j4648o?at_medium=RSS&at_campaign=rss"
+      "title": "Venezuelan opposition leader María Machado returns after months in exile",
+      "link": "https://www.bbc.co.uk/news/articles/cq8ez592pp0eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Why the charts are full of old songs - and so are your playlists",
+      "link": "https://www.bbc.co.uk/news/articles/c6kg50nnj0x4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "The bitter row over military service that could shape Israel's future",
+      "link": "https://www.bbc.co.uk/news/articles/cmvg7w0x742do?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Why the King's Caribbean tour could be 'biggest risk of his reign'",
@@ -36,12 +36,12 @@
       "link": "https://www.bbc.co.uk/news/articles/c65yn9p55np2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Why the charts are full of old songs - and so are your playlists",
-      "link": "https://www.bbc.co.uk/news/articles/c6kg50nnj0x4o?at_medium=RSS&at_campaign=rss"
+      "title": "The penguins are noisy, the people fantastic - what it takes to be an Antarctic postmaster",
+      "link": "https://www.bbc.co.uk/news/articles/c6dxwklr409eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "The bitter row over military service that could shape Israel's future",
-      "link": "https://www.bbc.co.uk/news/articles/cmvg7w0x742do?at_medium=RSS&at_campaign=rss"
+      "title": "Why is Ukraine so reliant on Starlink and can Europe plug the gap?",
+      "link": "https://www.bbc.co.uk/news/articles/c65yn97xe7ypo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
