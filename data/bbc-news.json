@@ -1,8 +1,16 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-25T19:17:20+00:00",
-  "fetchedAt": "2026-10-25T19:17:31.292752+00:00",
+  "feedUpdatedAt": "2026-10-25T21:50:53+00:00",
+  "fetchedAt": "2026-10-25T21:50:59.974717+00:00",
   "items": [
+    {
+      "title": "Man killed by falling tree as Storm Boelo leaves 160,000 properties without power",
+      "link": "https://www.bbc.co.uk/news/articles/cxdd8gr1vje0o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Serbia's Vučić concedes election defeat to student-led protest movement",
+      "link": "https://www.bbc.co.uk/news/articles/cw5yn3xlprpmo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Burnham open to 'honest discussion' on EU free movement",
       "link": "https://www.bbc.co.uk/news/articles/c8e36kyk1qx5o?at_medium=RSS&at_campaign=rss"
@@ -16,10 +24,6 @@
       "link": "https://www.bbc.co.uk/news/articles/cq8ez592pp0eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Carrick future under major threat - can he survive?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/crgj9wnpd1lvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Board of Deputies of British Jews declares Greens to be racist party",
       "link": "https://www.bbc.co.uk/news/articles/ckx2qyd17eqvo?at_medium=RSS&at_campaign=rss"
     },
@@ -28,20 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/c623drpx31xzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Early reports suggest record high turnout in Serbia elections",
-      "link": "https://www.bbc.co.uk/news/articles/c6jdmj1ej715o?at_medium=RSS&at_campaign=rss"
+      "title": "'It wasn't a farewell from me' - but horror start leaves Carrick on brink",
+      "link": "https://www.bbc.co.uk/sport/football/articles/crgj9wnpd1lvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Suspect in deadly Paris suburb shooting sent for psychiatric observation",
-      "link": "https://www.bbc.co.uk/news/articles/c6e3xek2457wo?at_medium=RSS&at_campaign=rss"
+      "title": "Long queues after power surge at Stansted Airport",
+      "link": "https://www.bbc.co.uk/news/articles/c64g14481n7qo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Russia to host first Olympic federation world event since Ukraine invasion",
       "link": "https://www.bbc.co.uk/sport/olympics/articles/cmq5ny00gzy0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Four ways Labour could raise money in the Budget without hiking income tax",
-      "link": "https://www.bbc.co.uk/news/articles/c65yn9p55np2o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
