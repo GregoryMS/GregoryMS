@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-25T14:23:18.716438+00:00",
+      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
       "listings": [
-        {
-          "home": "Chelsea",
-          "away": "Tottenham Hotspur",
-          "start": "2026-10-24T16:30:00+00:00",
-          "channels": [
-            "Sky Sports UHD 1"
-          ]
-        },
         {
           "home": "Colorado Rapids",
           "away": "Vancouver Whitecaps",
@@ -297,16 +289,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-25T14:23:18.716438+00:00",
+      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
       "listings": [
-        {
-          "home": "Chelsea",
-          "away": "Tottenham Hotspur",
-          "start": "2026-10-24T16:30:00+00:00",
-          "channels": [
-            "Fubo Sports CA"
-          ]
-        },
         {
           "home": "Colorado Rapids",
           "away": "Vancouver Whitecaps",
@@ -516,16 +500,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-25T14:23:18.716438+00:00",
+      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
       "listings": [
-        {
-          "home": "Chelsea",
-          "away": "Tottenham Hotspur",
-          "start": "2026-10-24T16:30:00+00:00",
-          "channels": [
-            "Viaplay"
-          ]
-        },
         {
           "home": "Colorado Rapids",
           "away": "Vancouver Whitecaps",
@@ -775,7 +751,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-25T14:23:18.716438+00:00",
+      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
       "listings": [
         {
           "home": "Colorado Rapids",
@@ -988,7 +964,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-25T14:23:18.716438+00:00",
+      "checkedAt": "2026-10-25T17:52:25.881439+00:00",
       "listings": [
         {
           "home": "Colorado Rapids",
