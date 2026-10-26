@@ -3,23 +3,14 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-26T01:17:33.654282+00:00",
+      "checkedAt": "2026-10-26T07:00:09.191198+00:00",
       "listings": [
-        {
-          "home": "Colorado Rapids",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-10-25T02:30:00+00:00",
-          "channels": [
-            "Apple TV (UK)"
-          ]
-        },
         {
           "home": "Crystal Palace (W)",
           "away": "Chelsea (W)",
           "start": "2026-10-25T12:00:00+00:00",
           "channels": [
             "NOW",
-            "Sky Mix",
             "Sky Sports Mix",
             "Sky Sports+ app"
           ]
@@ -61,14 +52,6 @@
           "start": "2026-10-25T14:00:00+00:00",
           "channels": [
             "WSL2 YouTube"
-          ]
-        },
-        {
-          "home": "Freiburg",
-          "away": "Bayern München",
-          "start": "2026-10-25T16:30:00+00:00",
-          "channels": [
-            "Prime Video PPV (UK)"
           ]
         },
         {
@@ -307,7 +290,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-26T01:17:33.654282+00:00",
+      "checkedAt": "2026-10-26T07:00:09.191198+00:00",
       "listings": [
         {
           "home": "Crystal Palace",
@@ -477,7 +460,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-26T01:17:33.654282+00:00",
+      "checkedAt": "2026-10-26T07:00:09.191198+00:00",
       "listings": [
         {
           "home": "Crystal Palace",
@@ -692,7 +675,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-26T01:17:33.654282+00:00",
+      "checkedAt": "2026-10-26T07:00:09.191198+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -853,7 +836,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-26T01:17:33.654282+00:00",
+      "checkedAt": "2026-10-26T07:00:09.191198+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
