@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-26T19:59:40.040407+00:00",
+      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -238,7 +238,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-26T19:59:40.040407+00:00",
+      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -392,7 +392,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-26T19:59:40.040407+00:00",
+      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -583,7 +583,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-26T19:59:40.040407+00:00",
+      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -702,7 +702,16 @@
           "away": "Aston Villa (W)",
           "start": "2026-11-01T12:00:00+00:00",
           "channels": [
+            "TV4 Play Sport",
             "TV4 Sportkanalen"
+          ]
+        },
+        {
+          "home": "London City Lionesses (W)",
+          "away": "Manchester City (W)",
+          "start": "2026-11-01T12:00:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
           ]
         },
         {
@@ -711,6 +720,22 @@
           "start": "2026-11-01T14:00:00+00:00",
           "channels": [
             "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Brighton (W)",
+          "away": "Crystal Palace (W)",
+          "start": "2026-11-01T14:00:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
+          ]
+        },
+        {
+          "home": "Charlton (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-11-01T14:30:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
           ]
         },
         {
@@ -744,7 +769,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-26T19:59:40.040407+00:00",
+      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
