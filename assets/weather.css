@@ -118,7 +118,7 @@
 .weather-alert-list { display:grid; gap:12px; }
 .weather-alert { --alert-colour:#7b8796; --alert-tint:var(--panel); border:1px solid var(--line); border-left:6px solid var(--alert-colour); border-radius:16px; padding:20px 24px; background:var(--alert-tint); overflow-wrap:anywhere; }
 .weather-alert--yellow { --alert-colour:#efc32e; --alert-tint:#fff9e3; }
-.weather-alert--orange { --alert-colour:#ee8328; --alert-tint:#fff0e2; }
+.weather-alert--orange, .weather-alert--amber { --alert-colour:#ee8328; --alert-tint:#fff0e2; }
 .weather-alert--red { --alert-colour:#df434c; --alert-tint:#fff0f0; }
 .weather-alert-badge { display:inline-block; margin:0 0 10px; padding:3px 10px; border-radius:6px; background:var(--alert-colour); color:#131820; font-size:12px; font-weight:700; text-transform:capitalize; }
 .weather-alert--red .weather-alert-badge, .weather-alert--neutral .weather-alert-badge { color:#fff; }
@@ -127,8 +127,14 @@
 .weather-alert-dates { color:var(--muted); font-size:12px; margin:0 0 14px; }
 .weather-alert-link { display:inline-block; min-height:32px; padding:4px 0; font-size:14px; font-weight:500; text-underline-offset:4px; }
 .weather-alert-status { margin-top:8px; }
+.weather-alert-details { margin-top:8px; font-size:14px; }
+.weather-alert-details summary, .weather-alert-source summary { min-height:44px; display:flex; align-items:center; }
+.weather-alert-details h4 { margin:14px 0 6px; }
+.weather-alert-details p { margin:0 0 12px; white-space:pre-line; }
+.weather-alert-source { margin-top:12px; font-size:12px; color:var(--muted); }
+.weather-alert-source p { margin:8px 0; }
 .dark-mode .weather-alert--yellow { --alert-tint:#353123; }
-.dark-mode .weather-alert--orange { --alert-tint:#392f25; }
+.dark-mode .weather-alert--orange, .dark-mode .weather-alert--amber { --alert-tint:#392f25; }
 .dark-mode .weather-alert--red { --alert-tint:#39282b; }
 @media(max-width:600px) { .weather-alerts-heading { align-items:flex-start; flex-direction:column; gap:8px; } .weather-alert { padding:18px; } }
 

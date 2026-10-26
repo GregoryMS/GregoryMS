@@ -18,7 +18,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261025-centred-links">
+  <link rel="stylesheet" href="assets/weather.css?v=20261025-uk-warnings">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261022-rounded-selector">
@@ -60,6 +60,7 @@
     <section id="weatherAlerts" class="weather-alerts" aria-labelledby="weatherAlertsTitle" aria-live="polite" hidden>
       <div class="weather-alerts-heading"><div><p id="weatherAlertLocation" class="eyebrow">Environment Canada</p><h2 id="weatherAlertsTitle">Weather alerts</h2></div><p id="weatherAlertChecked" class="updated"></p></div>
       <div id="weatherAlertList" class="weather-alert-list"></div>
+      <details id="ukWarningSource" class="weather-alert-source" hidden><summary>About UK warnings</summary><p>Met Office Weather Warnings, matched to your selected coordinates. Includes warnings issued for upcoming weather as well as those already in force.</p><p id="ukWarningCopyright"></p><p>Time delays between this website and the metoffice.gov.uk domain are possible. For the most up-to-date awareness information as published by the Met Office, please refer to <a href="https://www.metoffice.gov.uk/">https://www.metoffice.gov.uk/</a></p><p><a href="https://weather.metoffice.gov.uk/warnings-and-advice/uk-warnings">Latest Met Office warnings ↗</a> · <a href="https://www.metoffice.gov.uk/api/assets/file/NSWWSOpenLicencepdf">National Severe Weather Warning Service open licence</a></p></details>
     </section>
     <div class="page-heading">
       <div class="weather-location-title"><p class="eyebrow">A look outside</p><h1 id="cityName">Vancouver</h1><p class="location-meta" id="locationMeta">British Columbia</p></div>
@@ -197,7 +198,7 @@
       </div>
       <p class="history-source">Normals: <a href="https://climate.weather.gc.ca/climate_normals/index_e.html">Environment Canada</a>. Yesterday: <a href="https://open-meteo.com/">Open-Meteo</a> archived weather-model estimates (CC BY 4.0), not station observations.</p>
     </section>
-    <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
+    <footer><div><p id="sourceCredit">Weather by Environment and Climate Change Canada.</p><p id="rangeNote">Highs are daytime; lows are the following night.</p><p class="location-privacy">With location permission, your approximate coordinates are sent to <a href="https://www.bigdatacloud.com/">BigDataCloud</a> to find your city, and to the weather provider. Air quality and previous-day weather also use the selected coordinates with Environment Canada and Open-Meteo. UK warning checks send the selected coordinates to the Met Office’s public Esri ArcGIS service. Your location is not saved. The selected coordinates are sent to the tide provider and included in weather/tide links. City search: <a href="https://open-meteo.com/en/docs/geocoding-api">Open-Meteo / GeoNames</a>.</p></div><a class="source-link" id="officialLink" href="https://weather.gc.ca/en/location/index.html?coords=49.24%2C-123.12">Official forecast & alerts ↗</a></footer>
   </main>
   <script src="assets/weather-mobile.js?v=20261022-mobile-search"></script>
   <script src="assets/weather-core.js?v=20261021-station-coverage"></script>
@@ -205,7 +206,7 @@
   <script src="assets/weather-photography.js?v=20261022-photo-weather-card"></script>
   <script src="assets/weather-details.js?v=20261016-feels"></script>
   <script src="assets/weather-context.js?v=20261022-timeline-24h"></script>
-  <script src="assets/weather-alerts.js?v=20261022-timeline-24h"></script>
+  <script src="assets/weather-alerts.js?v=20261025-uk-warnings"></script>
   <script src="assets/weather-smoke.js?v=20261022-timeline-24h"></script>
   <script src="assets/weather-precip-type.js?v=20261022-timeline-24h"></script>
   <script src="assets/weather-map-layers.js?v=20261010-ptype"></script>

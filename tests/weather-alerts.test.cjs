@@ -1,6 +1,6 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const {activeAlerts, officialURL, createController, REFRESH_MS} = require('../assets/weather-alerts.js');
+const {activeAlerts, officialURL, ukAlerts, ukAlertsURL, createController, REFRESH_MS, UK_REFRESH_MS} = require('../assets/weather-alerts.js');
 const weather = require('../assets/weather-core.js');
 const NOW = Date.parse('2026-10-08T15:00:00Z');
 const iso = time => new Date(time).toISOString();
@@ -105,12 +105,123 @@ test('changing cities clears old cards and late responses cannot restore them',a
   assert.equal(h.node('weatherAlerts').hidden,true);
   assert.match(h.node('weatherAlertLocation').textContent,/Vancouver/);
 });
-test('international selections stop Canadian checks and hide their cards',async()=>{
+test('locations outside Canada and the UK stop checks and hide their cards',async()=>{
   const h=harness(); h.setFetch(async()=>response(feed([alert()])));
   await h.controller.setLocation(victoria);
-  await h.controller.setLocation({name:'London',country:'GB',latitude:51.5,longitude:-.1});
+  await h.controller.setLocation({name:'Oslo',country:'NO',latitude:59.91,longitude:10.75});
   assert.equal(h.calls.length,1); assert.equal(h.timers.size,0);
   assert.equal(h.node('weatherAlerts').hidden,true); assert.equal(h.node('weatherAlertStatus').hidden,true);
+});
+
+// ArcGIS field names and dates are taken from the Met Office's public live layer.
+const ukFields = ['OBJECTID','weathertype','warninglevel','warningheadline','issuedDate','validfromdate','validtodate','affectedAreas','whatToExpect','warningFurtherDetails','warningUpdateDescription'];
+const ukFeed = (warnings = []) => ({objectIdFieldName:'OBJECTID',fields:ukFields.map(name=>({name})), features:warnings.map(attributes=>({attributes}))});
+const ukWarning = (overrides = {}) => ({OBJECTID:4333,weathertype:'WIND',warninglevel:'YELLOW',
+  warningheadline:'Strong winds may lead to damaging gusts and transport disruption.',
+  issuedDate:NOW-3600000,validfromdate:NOW+3600000,validtodate:NOW+7200000,
+  affectedAreas:'London & South East England',whatToExpect:'Longer journey times are possible.',
+  warningFurtherDetails:'A period of strong winds is expected.',warningUpdateDescription:null,...overrides});
+const london={name:'London',country:'GB',latitude:51.5085,longitude:-0.1257,timezone:'Europe/London'};
+test('UK requests select the exact point against the official warning polygons',()=>{
+  const url=new URL(ukAlertsURL(london));
+  assert.equal(url.origin,'https://services.arcgis.com');
+  assert.match(url.pathname,/Met_Office_National_Severe_Weather_Warning_Service_Live\/FeatureServer\/0\/query$/);
+  assert.equal(url.searchParams.get('geometry'),'-0.1257,51.5085');
+  assert.equal(url.searchParams.get('geometryType'),'esriGeometryPoint');
+  assert.equal(url.searchParams.get('inSR'),'4326');
+  assert.equal(url.searchParams.get('spatialRel'),'esriSpatialRelIntersects');
+  assert.equal(url.searchParams.get('returnGeometry'),'false');
+  for(const point of [{}, {...london,latitude:91}, {...london,longitude:-181}, {...london,latitude:null}, {...london,longitude:NaN}]) assert.throws(()=>ukAlertsURL(point));
+});
+test('UK warnings preserve yellow, amber and red, headline, details and upcoming validity',()=>{
+  const parsed=ukAlerts(ukFeed([
+    ukWarning(),ukWarning({warninglevel:'AMBER',warningheadline:'Amber warning headline'}),
+    ukWarning({warninglevel:'RED',warningheadline:'Red warning headline',weathertype:'WIND AND RAIN'})
+  ]),NOW);
+  assert.deepEqual(parsed.map(item=>item.colour),['red','amber','yellow']);
+  assert.equal(parsed[0].weatherType,'WIND AND RAIN');
+  assert.equal(parsed[2].title,ukWarning().warningheadline);
+  assert.equal(parsed[2].starts,NOW+3600000);
+  assert.equal(parsed[2].expires,NOW+7200000);
+  assert.deepEqual(parsed[2].details.map(([title])=>title),['What to expect','Further details','Affected areas']);
+});
+test('UK empty, expired, removed and duplicate warnings are handled without retaining old alerts',()=>{
+  const warning=ukWarning();
+  assert.equal(ukAlerts(ukFeed([warning,warning,ukWarning({validfromdate:NOW-3600000,validtodate:NOW})]),NOW).length,1);
+  assert.deepEqual(ukAlerts(ukFeed(),NOW),[]);
+  // Actual response for London: no field schema is included with an empty result.
+  assert.deepEqual(ukAlerts({objectIdFieldName:'OBJECTID',uniqueIdField:{name:'OBJECTID',isSystemMaintained:true},globalIdFieldName:'GlobalID',features:[]},NOW),[]);
+});
+test('UK service errors, incomplete results, unknown levels and invalid dates never become an all-clear',()=>{
+  for(const data of [{}, {features:[]}, {...ukFeed(),error:{code:500}}, {...ukFeed(),exceededTransferLimit:true},
+    {...ukFeed([ukWarning()]),fields:[]}, {...ukFeed(),features:null}, ukFeed([null]),
+    ukFeed([ukWarning({warninglevel:'PURPLE'})]), ukFeed([ukWarning({warningheadline:''})]),
+    ukFeed([ukWarning({issuedDate:NOW+300001})]), ukFeed([ukWarning({validfromdate:null})]),
+    ukFeed([ukWarning({validtodate:NOW+3600000})]), ukFeed([ukWarning({validtodate:'bad'})]),
+    ukFeed([ukWarning({whatToExpect:{html:'unsafe'}})])]) assert.throws(()=>ukAlerts(data,NOW));
+});
+test('UK cards use the same warning layout, official source, local times and plain-text details',async()=>{
+  const h=harness();h.setFetch(async()=>response(ukFeed([ukWarning({warninglevel:'AMBER',warningheadline:'<img src=x> wind warning',whatToExpect:'<script>unsafe()</script>'})])));
+  await h.controller.setLocation(london);
+  const card=h.node('weatherAlertList').children[0];
+  assert.equal(card.className,'weather-alert weather-alert--amber');
+  assert.equal(card.children[0].textContent,'amber warning · WIND');
+  assert.equal(card.children[1].textContent,'<img src=x> wind warning');
+  assert.equal(card.children[1].innerHTML,'');
+  assert.match(card.children[2].textContent,/Issued .* · Valid .* – /);
+  assert.equal(card.children[3].href,'https://weather.metoffice.gov.uk/warnings-and-advice/uk-warnings');
+  assert.equal(card.children[3].textContent,'Read the Met Office warning ↗');
+  assert.equal(card.children[4].children[2].textContent,'<script>unsafe()</script>');
+  assert.equal(card.children[4].children[2].innerHTML,'');
+  assert.equal(h.node('weatherAlertLocation').textContent,'Met Office Weather Warnings · London');
+  assert.equal(h.node('ukWarningSource').hidden,false);
+  assert.match(h.node('ukWarningCopyright').textContent,/© British Crown copyright 2026, Met Office/);
+  assert.equal(h.node('weatherAlerts').hidden,false);
+  assert.equal(h.node('weatherAlertStatus').hidden,true);
+  assert.ok([...h.timers.values()].some(timer=>timer.ms===UK_REFRESH_MS));
+  assert.ok(h.calls.every(call=>call.url.startsWith('https://services.arcgis.com/')));
+});
+test('UK warnings refresh every two minutes and disappear when withdrawn',async()=>{
+  const h=harness();h.setFetch(async()=>response(ukFeed([ukWarning()])));
+  await h.controller.setLocation(london);
+  h.advance(UK_REFRESH_MS);h.setFetch(async()=>response(ukFeed()));await h.fire(UK_REFRESH_MS);
+  assert.equal(h.node('weatherAlerts').hidden,true);
+  assert.equal(h.node('weatherAlertList').children.length,0);
+  assert.equal(h.node('weatherAlertStatus').hidden,true);
+  assert.ok(h.calls.every(call=>call.cache==='no-store'));
+});
+test('UK failures expose the Met Office fallback and recover on the next check',async()=>{
+  const h=harness();h.setFetch(async()=>response({error:{code:500}}));
+  await h.controller.setLocation(london);
+  assert.equal(h.node('weatherAlerts').hidden,true);
+  assert.equal(h.node('weatherAlertStatus').hidden,false);
+  assert.equal(h.node('weatherAlertStatus').children[1].textContent,'Check Met Office warnings ↗');
+  assert.equal(h.node('weatherAlertStatus').children[1].href,'https://weather.metoffice.gov.uk/warnings-and-advice/uk-warnings');
+  h.setFetch(async()=>response(ukFeed([ukWarning()])));await h.fire(UK_REFRESH_MS);
+  assert.equal(h.node('weatherAlerts').hidden,false);
+  assert.equal(h.node('weatherAlertStatus').hidden,true);
+});
+test('UK expiry removes a warning while an update is stalled, then times out to the official fallback',async()=>{
+  const h=harness();h.setFetch(async()=>response(ukFeed([ukWarning({validfromdate:NOW-60000,validtodate:NOW+60000})])));
+  await h.controller.setLocation(london);h.advance(60000);
+  h.setFetch((url,{signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Error('Timeout')))));
+  const pending=h.fire(60000);assert.equal(h.node('weatherAlerts').hidden,true);
+  h.fire(15000);await pending;assert.equal(h.node('weatherAlertStatus').hidden,false);
+});
+test('switching between countries aborts old warning requests and prevents cross-location banners',async()=>{
+  const h=harness(),pending=[];h.setFetch(()=>new Promise(resolve=>pending.push(resolve)));
+  const canadian=h.controller.setLocation(victoria),british=h.controller.setLocation(london);
+  assert.equal(h.calls[0].signal.aborted,true);
+  pending[1](response(ukFeed([ukWarning()])));await british;
+  pending[0](response(feed([alert()])));await canadian;
+  assert.equal(h.node('weatherAlertLocation').textContent,'Met Office Weather Warnings · London');
+  const oldUK=h.controller.refresh();
+  await h.controller.setLocation({name:'Oslo',country:'NO',latitude:59.91,longitude:10.75});
+  pending[2](response(ukFeed([ukWarning()])));await oldUK;
+  assert.equal(h.node('weatherAlerts').hidden,true);assert.equal(h.timers.size,0);
+  h.setFetch(async()=>response(feed([alert()])));await h.controller.setLocation(victoria);
+  assert.equal(h.node('ukWarningSource').hidden,true);
+  assert.equal(h.node('weatherAlertLocation').textContent,'Environment Canada · Victoria');
 });
 test('hidden pages stop polling and recheck when visible again',async()=>{
   const h=harness(); await h.controller.setLocation(victoria);
