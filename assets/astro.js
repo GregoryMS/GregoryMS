@@ -6,7 +6,10 @@
     vancouver: {name:'Vancouver', region:'British Columbia, Canada', latitude:49.28, longitude:-123.12, timezone:'America/Vancouver', country:'CA'},
     victoria: {name:'Victoria', region:'British Columbia, Canada', latitude:48.43, longitude:-123.37, timezone:'America/Vancouver', country:'CA'},
     chilliwack: {name:'Chilliwack', region:'British Columbia, Canada', latitude:49.16, longitude:-121.95, timezone:'America/Vancouver', country:'CA'},
-    tofino: {name:'Tofino', region:'British Columbia, Canada', latitude:49.153, longitude:-125.907, timezone:'America/Vancouver', country:'CA'}
+    tofino: {name:'Tofino', region:'British Columbia, Canada', latitude:49.153, longitude:-125.907, timezone:'America/Vancouver', country:'CA'},
+    oslo: {name:'Oslo', region:'Norway', latitude:59.9139, longitude:10.7522, timezone:'Europe/Oslo', country:'NO'},
+    london: {name:'London', region:'England, United Kingdom', latitude:51.5085, longitude:-0.1257, timezone:'Europe/London', country:'GB'},
+    stockholm: {name:'Stockholm', region:'Sweden', latitude:59.3294, longitude:18.0687, timezone:'Europe/Stockholm', country:'SE'}
   };
   let place = window.GregleTides.locationFromURL(window.location?.href) || presets.vancouver, forecast = null, forecastController, searchController, selectedSite = null, sitesBrowser;
   let selection = 0, searchVersion = 0, chartVersion = 0, geoVersion = 0, checkedAt = 0;

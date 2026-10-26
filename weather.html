@@ -18,7 +18,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261023-hourly-sun-compact">
+  <link rel="stylesheet" href="assets/weather.css?v=20261025-quick-locations">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261022-rounded-selector">
@@ -79,6 +79,7 @@
       </form>
       <p id="locationStatus" class="location-note" role="status"></p>
       <div id="cityResults" class="city-results" aria-label="City search results"></div>
+      <div class="weather-shortcuts" aria-label="Quick locations"><button class="pill" data-city="victoria" type="button">Victoria</button><button class="pill" data-city="vancouver" type="button">Vancouver</button><button class="pill" data-city="chilliwack" type="button">Chilliwack</button><button class="pill" data-city="tofino" type="button">Tofino</button><button class="pill" data-city="oslo" type="button">Oslo</button><button class="pill" data-city="london" type="button">London</button><button class="pill" data-city="stockholm" type="button">Stockholm</button></div>
     </section>
       </div>
     </div>
@@ -218,7 +219,11 @@
     const LOCATIONS = {
       vancouver: { name:'Vancouver', id:'bc-74', coords:'49.24,-123.12' },
       victoria: { name:'Victoria', id:'bc-75', coords:'48.421,-123.393' },
-      chilliwack: { name:'Chilliwack', id:'bc-24', coords:'49.17,-121.94' }
+      chilliwack: { name:'Chilliwack', id:'bc-24', coords:'49.17,-121.94' },
+      tofino: { name:'Tofino', coords:'49.153,-125.907' },
+      oslo: { name:'Oslo', coords:'59.9139,10.7522', country:'NO', region:'Norway', timezone:'Europe/Oslo' },
+      london: { name:'London', coords:'51.5085,-0.1257', country:'GB', region:'England, United Kingdom', timezone:'Europe/London' },
+      stockholm: { name:'Stockholm', coords:'59.3294,18.0687', country:'SE', region:'Sweden', timezone:'Europe/Stockholm' }
     };
     const $ = id => document.getElementById(id);
     const statusEl = $('status'), forecastGridEl = $('forecastGrid'), retryButton = $('retryWeather');
@@ -462,7 +467,7 @@
       if(!Object.hasOwn(LOCATIONS,key)) return;
       const city=LOCATIONS[key], [latitude,longitude]=city.coords.split(',').map(Number);
       try { localStorage.setItem('gregle-weather-city',key); } catch (_) {}
-      return selectLocation({...city,latitude,longitude,country:'CA',region:'British Columbia, Canada',timezone:'America/Vancouver'},key);
+      return selectLocation({country:'CA',region:'British Columbia, Canada',timezone:'America/Vancouver',...city,latitude,longitude},key);
     }
     function requestLocation() {
       cancelLocationLookup(); const version=locationVersion;
@@ -521,6 +526,7 @@
     });
     $('locateWeather').addEventListener('click',requestLocation);
     $('citySearch').addEventListener('submit',searchCities);
+    document.querySelectorAll('[data-city]').forEach(button=>button.addEventListener('click',()=>selectCity(button.dataset.city)));
     let savedCity;
     try { savedCity=localStorage.getItem('gregle-weather-city'); } catch (_) {}
     const linkedLocation=globalThis.GregleTides.locationFromURL(window.location?.href);
@@ -532,7 +538,6 @@
   </script>
 </body>
 </html>
-
 
 
 
