@@ -295,6 +295,8 @@
 .photo-window-group .photo-window-label { width:100%; }
 
 @media (max-width:700px) {
+  .weather-shortcuts { flex-wrap:nowrap; justify-content:safe center; overflow-x:auto; padding-block:8px; scrollbar-width:thin; }
+  .weather-shortcuts .pill { flex-shrink:0; white-space:nowrap; }
   .topbar { padding:14px 16px; flex-wrap:nowrap; }
   .brand { font-size:28px; }
   .breadcrumb { display:none; }
