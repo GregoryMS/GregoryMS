@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-25T23:36:44+00:00",
-  "fetchedAt": "2026-10-25T23:36:49.790891+00:00",
+  "feedUpdatedAt": "2026-10-26T01:37:44+00:00",
+  "fetchedAt": "2026-10-26T01:37:52.759835+00:00",
   "items": [
+    {
+      "title": "Lula wins fourth term in Brazil but faces hostile Congress and divided country",
+      "link": "https://www.bbc.co.uk/news/articles/cmvg7p001qj9o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Two men killed by falling trees as Storm Boelo leaves 160,000 properties without power",
       "link": "https://www.bbc.co.uk/news/articles/cxdd8gr1vje0o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Serbia's veteran ruler Vučić concedes election to student-led protest movement",
+      "title": "Elation across Serbia after veteran ruler Vučić concedes to student-led protest movement",
       "link": "https://www.bbc.co.uk/news/articles/cw5yn3xlprpmo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Healey's Budget needs to sustain the stronger economy through gathering clouds",
+      "link": "https://www.bbc.co.uk/news/articles/ck87z4ng2l03o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Funding set to double for plan to get rough sleepers off streets by Christmas",
       "link": "https://www.bbc.co.uk/news/articles/c3n04yxn2yqro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Letter making claims about Meghan's father written by his first wife, BBC understands",
-      "link": "https://www.bbc.co.uk/news/articles/c60qk44w9wglo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "End approaching for Carrick but Man Utd fans make clear who they blame",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cwm24jk9743yo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Deeply divided Israel braces for pivotal election",
       "link": "https://www.bbc.co.uk/news/articles/ckpdgy6pl7xlo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Couple were celebrating anniversary before Bahamas tragedy",
-      "link": "https://www.bbc.co.uk/news/articles/c623drpx31xzo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Venezuelan opposition leader María Machado returns after months in exile",
       "link": "https://www.bbc.co.uk/news/articles/cq8ez592pp0eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Burnham open to 'honest discussion' on EU free movement",
-      "link": "https://www.bbc.co.uk/news/articles/c8e36kyk1qx5o?at_medium=RSS&at_campaign=rss"
+      "title": "Letter making claims about Meghan's father written by his first wife, BBC understands",
+      "link": "https://www.bbc.co.uk/news/articles/c60qk44w9wglo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Board of Deputies of British Jews declares Greens to be racist party",
       "link": "https://www.bbc.co.uk/news/articles/ckx2qyd17eqvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Spotify uploads lyrics for Dolly Parton's Welsh version of Jolene in Irish",
+      "link": "https://www.bbc.co.uk/news/articles/cw33xpl5xl8mo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
