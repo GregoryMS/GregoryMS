@@ -1,23 +1,31 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-26T01:37:44+00:00",
-  "fetchedAt": "2026-10-26T01:37:52.759835+00:00",
+  "feedUpdatedAt": "2026-10-26T07:01:55+00:00",
+  "fetchedAt": "2026-10-26T07:02:04.421148+00:00",
   "items": [
     {
-      "title": "Lula wins fourth term in Brazil but faces hostile Congress and divided country",
-      "link": "https://www.bbc.co.uk/news/articles/cmvg7p001qj9o?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: How Lula turned it around to beat former president's son",
+      "link": "https://www.bbc.co.uk/news/videos/cmp8g0x4l11yo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Two men killed by falling trees as Storm Boelo leaves 160,000 properties without power",
+      "title": "Two men killed by falling trees as Storm Boelo leaves 90,000 properties without power",
       "link": "https://www.bbc.co.uk/news/articles/cxdd8gr1vje0o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Elation across Serbia after veteran ruler Vučić concedes to student-led protest movement",
+      "title": "Knighting Sinfield 'easiest decision anyone's had to make,' says Prince William",
+      "link": "https://www.bbc.co.uk/news/articles/c65ynjkrjq4wo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Celebrations in Serbia after veteran ruler Vučić loses election to student-led protest movement",
       "link": "https://www.bbc.co.uk/news/articles/cw5yn3xlprpmo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Healey's Budget needs to sustain the stronger economy through gathering clouds",
+      "title": "Faisal Islam: Healey's Budget needs to sustain the stronger economy through gathering clouds",
       "link": "https://www.bbc.co.uk/news/articles/ck87z4ng2l03o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sharon Osbourne: 'I visit Ozzy's grave every day'",
+      "link": "https://www.bbc.co.uk/news/articles/c6g7xn8p2n0ro?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Funding set to double for plan to get rough sleepers off streets by Christmas",
@@ -34,14 +42,6 @@
     {
       "title": "Letter making claims about Meghan's father written by his first wife, BBC understands",
       "link": "https://www.bbc.co.uk/news/articles/c60qk44w9wglo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Board of Deputies of British Jews declares Greens to be racist party",
-      "link": "https://www.bbc.co.uk/news/articles/ckx2qyd17eqvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Spotify uploads lyrics for Dolly Parton's Welsh version of Jolene in Irish",
-      "link": "https://www.bbc.co.uk/news/articles/cw33xpl5xl8mo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
