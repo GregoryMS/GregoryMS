@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-26T14:05:10+00:00",
-  "fetchedAt": "2026-10-26T14:05:16.964632+00:00",
+  "feedUpdatedAt": "2026-10-26T19:51:37+00:00",
+  "fetchedAt": "2026-10-26T19:51:42.663038+00:00",
   "items": [
     {
-      "title": "Storm Boelo leaves 90,000 without power as Met Office issues new wind warning",
+      "title": "Independent review announced into murder of student Henry Nowak",
+      "link": "https://www.bbc.co.uk/news/articles/cv70pnw784x7o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Israel and the US are both going to the polls - the consequences will be global",
+      "link": "https://www.bbc.co.uk/news/articles/crlykey9jywqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Drivers who killed mum and girl while racing jailed",
+      "link": "https://www.bbc.co.uk/news/articles/cqy0r3n17gjyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Storm Boelo leaves 22,000 without power as Met Office issues new wind warning",
       "link": "https://www.bbc.co.uk/news/articles/cqm264jxxnxzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Healey to shield low-income pensioners from income tax in the Budget",
-      "link": "https://www.bbc.co.uk/news/articles/ck98zp7zeq65o?at_medium=RSS&at_campaign=rss"
+      "title": "How 'Lula's Army' WhatsApp channel helped turn Brazil election around",
+      "link": "https://www.bbc.co.uk/news/articles/cwz0vg4v3ndeo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Daughter wins £127k claim for caring for mum at home",
-      "link": "https://www.bbc.co.uk/news/articles/cr93zp78g580o?at_medium=RSS&at_campaign=rss"
+      "title": "Anthropic warns of 'catastrophic risk' to humankind ahead of blockbuster share listing",
+      "link": "https://www.bbc.co.uk/news/articles/cq398p1wd1evo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "What is walking down the newly pedestrianised Oxford Street like?",
       "link": "https://www.bbc.co.uk/news/videos/c5pvg8y8lk2mo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Kane, Yamal or Kvaratskhelia? BBC Sport pundits on who should win the men's Ballon d'Or",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqjdmn0ndxjxo?at_medium=RSS&at_campaign=rss"
+      "title": "Healey to shield low-income pensioners from income tax in the Budget",
+      "link": "https://www.bbc.co.uk/news/articles/ck98zp7zeq65o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Consultant doctors in England to strike next month",
-      "link": "https://www.bbc.co.uk/news/articles/c69wzxw2pvv0o?at_medium=RSS&at_campaign=rss"
+      "title": "Russell Brand asked assistant for female fan phone numbers, court hears",
+      "link": "https://www.bbc.co.uk/news/articles/cwly02l45ny3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Celebrations in Serbia after veteran ruler Vučić loses election to student-led protest movement",
-      "link": "https://www.bbc.co.uk/news/articles/cw5yn3xlprpmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Burnham leaves door open to referendum on EU free movement",
+      "title": "No 10 appears to backtrack on PM's freedom of movement referendum suggestion",
       "link": "https://www.bbc.co.uk/news/articles/cx240dpzv009o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "AI giant Anthropic unveils plans for blockbuster share listing",
-      "link": "https://www.bbc.co.uk/news/articles/cq398p1wd1evo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Crowds welcome Venezuela's María Machado after months in exile",
-      "link": "https://www.bbc.co.uk/news/videos/cwgkv8kmly4zo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
