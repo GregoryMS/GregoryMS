@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
+      "checkedAt": "2026-10-27T20:42:12.129959+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -233,12 +233,21 @@
             "HBO Max (UK)",
             "TNT Sports 1"
           ]
+        },
+        {
+          "home": "Getafe",
+          "away": "Brighton & Hove Albion",
+          "start": "2026-11-05T20:00:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 2"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
+      "checkedAt": "2026-10-27T20:42:12.129959+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -425,7 +434,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
+      "checkedAt": "2026-10-27T20:42:12.129959+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -625,7 +634,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
+      "checkedAt": "2026-10-27T20:42:12.129959+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -820,7 +829,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
+      "checkedAt": "2026-10-27T20:42:12.129959+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
