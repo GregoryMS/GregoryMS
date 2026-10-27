@@ -79,8 +79,9 @@ The sports dashboard uses the same validated generator with `--feed sport` and
 BBC Sport’s official `https://feeds.bbci.co.uk/sport/rss.xml` feed. The separate
 `bbc-sport.yml` workflow refreshes `data/bbc-sport.json` every 15 minutes and
 requests a Pages rebuild. The sports ticker polls every five minutes while
-visible, pauses on hover/focus, offers a pause button with manual horizontal
-scrolling, and respects reduced motion. Failed or expired feeds link to BBC
+visible, pauses on hover/focus, and respects reduced motion with manual
+horizontal scrolling. Its neutral background and rounded BBC blocks match the
+homepage ticker, with yellow branding for Sport. Failed or expired feeds link to BBC
 Sport; usable recent headlines survive temporary outages.
 
 The sports page provides team/category filters, a team or competition search,

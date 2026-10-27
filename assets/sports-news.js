@@ -17,21 +17,21 @@
   }
   if (typeof module !== 'undefined' && module.exports) { module.exports = { usable }; return; }
   const $ = id => document.getElementById(id);
-  const track = $('sport-news-track'), viewport = $('sport-news-window'), pause = $('sport-news-pause');
-  if (!track || !viewport || !pause) return;
+  const track = $('sport-news-track'), viewport = $('sport-news-window');
+  if (!track || !viewport) return;
   const ticker = viewport.closest('.sport-ticker'), reduced = root.matchMedia('(prefers-reduced-motion: reduce)');
   const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  let saved = null, loading = false, paused = false, hover = false, focus = false, frame = null, last = 0, offset = 0, signature = '';
+  let saved = null, loading = false, hover = false, focus = false, frame = null, last = 0, offset = 0, signature = '';
   function motion() {
     if (frame) cancelAnimationFrame(frame);
     frame = null; last = 0;
-    const still = paused || reduced.matches || focus || (track.firstElementChild?.scrollWidth || 0) <= viewport.clientWidth;
+    const still = reduced.matches || focus || (track.firstElementChild?.scrollWidth || 0) <= viewport.clientWidth;
     ticker.classList.toggle('is-static', still);
     if (still) { offset = 0; track.style.transform = 'translateX(0px)'; return; }
     if (hover || document.hidden) return;
     function step(time) {
       const width = track.firstElementChild?.scrollWidth || 0;
-      if (last && width) offset = (offset - Math.min(time - last, 100) * 0.045) % width;
+      if (last && width) offset = (offset - Math.min(time - last, 100) * 0.12) % width;
       last = time;
       track.style.transform = 'translateX(' + offset + 'px)';
       frame = requestAnimationFrame(step);
@@ -63,11 +63,6 @@
       $('sport-news-status').textContent = previous.length ? 'BBC Sport refresh unavailable; recent headlines retained.' : 'BBC Sport headlines unavailable. Use the BBC Sport link.';
     } finally { clearTimeout(timer); loading = false; }
   }
-  pause.addEventListener('click', () => {
-    paused = !paused; pause.setAttribute('aria-pressed', String(paused));
-    pause.setAttribute('aria-label', paused ? 'Resume headlines' : 'Pause headlines');
-    pause.innerHTML = '<span aria-hidden="true">' + (paused ? '▶' : 'Ⅱ') + '</span>'; motion();
-  });
   viewport.addEventListener('mouseenter', () => { hover = true; motion(); });
   viewport.addEventListener('mouseleave', () => { hover = false; motion(); });
   viewport.addEventListener('focusin', () => { focus = true; motion(); });

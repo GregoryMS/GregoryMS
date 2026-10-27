@@ -15,7 +15,7 @@ function harness(options = {}) {
   const timers = new Map(), intervals = [], classes = new Set();
   const ticker = { classList:{toggle(name,on){ on ? classes.add(name) : classes.delete(name); }} };
   const node = () => ({innerHTML:'',textContent:'',attributes:{},style:{},listeners:{},setAttribute(k,v){this.attributes[k]=v;},addEventListener(k,v){this.listeners[k]=v;}});
-  const nodes = Object.fromEntries(['sport-news-track','sport-news-window','sport-news-pause','sport-news-status'].map(id=>[id,node()]));
+  const nodes = Object.fromEntries(['sport-news-track','sport-news-window','sport-news-status'].map(id=>[id,node()]));
   nodes['sport-news-window'].closest = () => ticker; nodes['sport-news-window'].contains = () => false;
   nodes['sport-news-track'].firstElementChild = {scrollWidth:2000};
   let fail=false, payload=fresh(options.title), timer=0, calls=0, frames=0;
@@ -38,10 +38,12 @@ test('ticker retains fresh headlines through an outage, expires them, and recove
   expired.feedUpdatedAt=new Date(NOW-7*3600000).toISOString(); h.setFail(true); h.intervals[0](); await h.settle(); assert.match(h.nodes['sport-news-track'].innerHTML,/Headlines unavailable/);
   h.setFail(false); h.setPayload(fresh('Recovered')); h.intervals[0](); await h.settle(); assert.match(h.nodes['sport-news-track'].innerHTML,/Recovered/);
 });
-test('pause exposes a static ticker and reduced motion never starts animation', async () => {
-  const h=harness(); await h.settle(); const pause=h.nodes['sport-news-pause'];
-  pause.listeners.click(); assert.equal(pause.attributes['aria-label'],'Resume headlines'); assert(h.classes.has('is-static'));
-  pause.listeners.click(); assert.equal(pause.attributes['aria-pressed'],'false'); assert(!h.classes.has('is-static'));
+test('ticker works without a pause button and stops for hover, focus and reduced motion', async () => {
+  const h=harness(); await h.settle(); const viewport=h.nodes['sport-news-window'];
+  const frames=h.frames(); viewport.listeners.mouseenter(); assert.equal(h.frames(),frames);
+  viewport.listeners.mouseleave(); assert(h.frames()>frames);
+  viewport.listeners.focusin(); assert(h.classes.has('is-static'));
+  viewport.listeners.focusout({relatedTarget:null}); assert(!h.classes.has('is-static'));
   const reduced=harness({reduced:true}); await reduced.settle(); assert.equal(reduced.frames(),0); assert(reduced.classes.has('is-static'));
 });
 test('stalled requests time out and retry without duplicate requests', async () => {

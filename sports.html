@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/sports-app/favicon-32.png?v=20261012-football">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/sports-app/icon-192.png?v=20261012-football">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/sports.css?v=20261027-dashboard">
+  <link rel="stylesheet" href="assets/sports.css?v=20261027-home-ticker">
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/sports-core.js?v=20261027-dashboard" defer></script>
@@ -26,7 +26,7 @@
   <script src="assets/sports.js?v=20261027-dashboard" defer></script>
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
-  <script src="assets/sports-news.js?v=20261027" defer></script>
+  <script src="assets/sports-news.js?v=20261027-home-ticker" defer></script>
   <link rel="canonical" href="https://sports.gregle.uk/">
 </head>
 <body class="sports-body">
@@ -62,9 +62,8 @@
       <div class="heading-actions"><p id="dashboard-date" class="dashboard-date"></p><button class="pill refresh-button" id="refresh" type="button"><span aria-hidden="true">↻</span> Refresh scores</button></div>
     </div>
     <section class="sport-ticker" aria-label="BBC Sport headlines">
-      <a class="sport-ticker-brand" href="https://www.bbc.com/sport"><span class="bbc-blocks" aria-label="BBC"><b>B</b><b>B</b><b>C</b></span><strong>SPORT</strong></a>
+      <a class="sport-ticker-brand" href="https://www.bbc.com/sport"><span class="bbc-blocks" aria-label="BBC"><span class="bbc-block">B</span><span class="bbc-block">B</span><span class="bbc-block">C</span></span><strong>Sport</strong></a>
       <div class="sport-ticker-window" id="sport-news-window"><div class="sport-ticker-track" id="sport-news-track"><div class="sport-ticker-group"><a href="https://www.bbc.com/sport">Loading BBC Sport headlines…</a></div></div></div>
-      <button class="ticker-pause" id="sport-news-pause" type="button" aria-label="Pause headlines" aria-pressed="false"><span aria-hidden="true">Ⅱ</span></button>
     </section>
     <p class="sr-only" id="sport-news-status" role="status"></p>
     <noscript><p>Enable JavaScript to load fixtures and tables, or visit <a href="https://www.espn.com/soccer/scoreboard">ESPN football</a> and <a href="https://www.bbc.com/sport">BBC Sport</a>.</p></noscript>
