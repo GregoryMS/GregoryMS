@@ -41,7 +41,7 @@
 .sport-ticker.is-static .sport-ticker-track { transform:none !important; }
 .sport-ticker.is-static .ticker-copy { display:none; }
 .sport-ticker a:focus-visible { outline:2px solid var(--sports-accent); outline-offset:-4px; }
-:root.dark-mode .sport-ticker-brand strong { color:#fff; }
+:root.dark-mode .sport-ticker-brand strong { color:#ffdf4f; }
 :root.dark-mode .sport-ticker-group a:hover { background:rgba(255,255,255,.08); color:#ffdf4f; }
 @media(max-width:800px) { .sport-ticker-brand { padding:0 10px; } .sport-ticker-brand strong { display:none; } }
 .dashboard-bar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:20px 0; padding-bottom:16px; border-bottom:1px solid var(--line); }
