@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-27T10:34:55.758558+00:00",
+      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -238,7 +238,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-27T10:34:55.758558+00:00",
+      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -246,6 +246,14 @@
           "start": "2026-10-27T20:00:00+00:00",
           "channels": [
             "DAZN Canada"
+          ]
+        },
+        {
+          "home": "Chelsea (W)",
+          "away": "Roma (W)",
+          "start": "2026-10-28T17:45:00+00:00",
+          "channels": [
+            "OneSoccer"
           ]
         },
         {
@@ -262,6 +270,14 @@
           "start": "2026-10-28T19:45:00+00:00",
           "channels": [
             "DAZN Canada"
+          ]
+        },
+        {
+          "home": "Arsenal (W)",
+          "away": "Benfica (W)",
+          "start": "2026-10-28T20:00:00+00:00",
+          "channels": [
+            "OneSoccer"
           ]
         },
         {
@@ -289,6 +305,14 @@
           "start": "2026-10-29T19:45:00+00:00",
           "channels": [
             "DAZN Canada"
+          ]
+        },
+        {
+          "home": "Manchester City (W)",
+          "away": "Paris Saint Germain (W)",
+          "start": "2026-10-29T20:00:00+00:00",
+          "channels": [
+            "OneSoccer"
           ]
         },
         {
@@ -323,7 +347,8 @@
           "away": "Borussia Dortmund",
           "start": "2026-10-31T17:30:00+00:00",
           "channels": [
-            "DAZN Canada"
+            "DAZN Canada",
+            "OneSoccer"
           ]
         },
         {
@@ -400,7 +425,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-27T10:34:55.758558+00:00",
+      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -452,6 +477,7 @@
           "start": "2026-10-28T20:00:00+00:00",
           "channels": [
             "Disney+ Norge",
+            "TV 2 Play (NO)",
             "TV 2 Sport 1"
           ]
         },
@@ -599,7 +625,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-27T10:34:55.758558+00:00",
+      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -794,7 +820,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-27T10:34:55.758558+00:00",
+      "checkedAt": "2026-10-27T16:01:33.290467+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
