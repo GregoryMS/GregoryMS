@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const S = require('../assets/sports-core.js');
+const L = require('../assets/sports-live-core.js');
 const NOW = Date.parse('2026-10-12T13:15:00Z');
 function event(id = 'match', state = 'pre', ids = ['359', '382']) {
   return { id, date: '2026-10-13T19:00:00Z', league: { name: 'Premier League' }, links: [{ href: 'https://www.espn.com/soccer/match/_/gameId/1', rel: ['summary'] }], competitions: [{ dateValid: true, status: { displayClock: '42′', type: { state, name: state === 'post' ? 'STATUS_FULL_TIME' : 'STATUS_SCHEDULED', completed: state === 'post', description: state === 'post' ? 'Full Time' : 'Scheduled', shortDetail: state === 'post' ? 'FT' : '' } }, competitors: ids.map((id, i) => ({ homeAway: i ? 'away' : 'home', team: { id, displayName: i ? 'Manchester City' : 'Arsenal', abbreviation: i ? 'MCI' : 'ARS' }, score: { value: i ? 2 : 0, displayValue: String(i ? 2 : 0) } })) }] };
@@ -60,28 +61,36 @@ test('nested conference tables preserve provider ranks, zero points and missing 
   assert.equal(groups[0].rows[1].points, '0'); assert.equal(groups[0].rows[1].played, '0'); assert.equal(groups[0].rows[1].gf, '—');
   assert.equal(groups[0].season, '2026 MLS');
 });
+function tvSnapshot(checkedAt = NOW) {
+  return { version: 1, countries: Object.fromEntries(L.countries.map(c => [c.code, {
+    checkedAt: new Date(checkedAt).toISOString(), listings: [
+      { home: 'Arsenal', away: 'Man City', start: event().date, channels: [c.name + ' TV'] },
+      { home: 'Arsenal (W)', away: 'Manchester City (W)', start: event().date, channels: ['Women-only TV'] }
+    ]
+  }])) };
+}
 function harness(options = {}) {
   const nodes = new Map(), listeners = {}, intervals = [], requests = [];
   const get = id => { if (!nodes.has(id)) nodes.set(id, { value: '', textContent: '', innerHTML: '', attributes: {}, hidden: false, disabled: false, listeners: {}, setAttribute(k, v) { this.attributes[k] = v; }, addEventListener(k, v) { this.listeners[k] = v; }, scrollIntoView() {} }); return nodes.get(id); };
   const document = { hidden: false, getElementById: get, querySelectorAll: () => [], addEventListener(k, v) { listeners[k] = v; } };
-  let fail = options.fail || (() => false), active = 0, maxActive = 0;
-  const context = { document, console, Intl, URL, AbortController, setTimeout, clearTimeout, setInterval: fn => intervals.push(fn), Date: class extends Date { static now() { return NOW; } },
-    localStorage: { getItem() { if (options.storageThrows) throw Error('Unavailable'); return options.saved || null; }, setItem() { if (options.storageThrows) throw Error('Unavailable'); } },
+  let fail = options.fail || (() => false), active = 0, maxActive = 0, now = NOW, tvData = options.tv === undefined ? tvSnapshot() : options.tv, savedFilters = null;
+  const context = { document, console, Intl, URL, AbortController, setTimeout, clearTimeout, setInterval: fn => intervals.push(fn), Date: class extends Date { static now() { return now; } },
+    localStorage: { getItem() { if (options.storageThrows) throw Error('Unavailable'); return options.saved || null; }, setItem(key, value) { if (options.storageThrows) throw Error('Unavailable'); savedFilters = value; } },
     fetch: async url => {
       requests.push(url); active++; maxActive = Math.max(maxActive, active);
       try {
         await new Promise(resolve => setImmediate(resolve));
         if (fail(url)) throw Error('Offline');
         const id = url.match(/teams\/(\d+)\//)?.[1];
-        const data = id ? { team: { id }, events: id === '359' ? [event('arsenal-' + (url.endsWith('false') ? 'result' : 'next'), url.endsWith('false') ? 'post' : 'pre')] : [] } : table();
+        const data = url === 'data/sports-tv.json' ? tvData : id ? { team: { id }, events: id === '359' ? options.fixture && url.endsWith('true') ? [options.fixture] : [event('arsenal-' + (url.endsWith('false') ? 'result' : 'next'), url.endsWith('false') ? 'post' : 'pre')] : [] } : table();
         return { ok: true, json: async () => data };
       } finally { active--; }
     }
   };
   context.window = context;
   vm.createContext(context);
-  for (const script of ['sports-core.js', 'sports.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/', script), 'utf8'), context);
-  return { get, document, requests, listeners, intervals, maxActive: () => maxActive, setFail: fn => { fail = fn; } };
+  for (const script of ['sports-core.js', 'sports-live-core.js', 'sports.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/', script), 'utf8'), context);
+  return { get, document, requests, listeners, intervals, maxActive: () => maxActive, setFail: fn => { fail = fn; }, setTime: value => { now = value; }, setTV: value => { tvData = value; }, saved: () => savedFilters };
 }
 async function settled(h) {
   for (let i = 0; i < 100 && h.get('refresh').disabled; i++) await new Promise(resolve => setImmediate(resolve));
@@ -154,4 +163,86 @@ test('match search, dates and reset controls update the rendered list', async ()
   assert.match(h.get('match-list').innerHTML, /No matches fit these filters/);
   h.get('reset-filters').listeners.click();
   assert.equal(h.get('date-filter').value, 'all');
+});
+
+const chooseView = (h, view) => h.get('match-tabs').listeners.click({ target: { closest: () => ({ dataset: { view } }) } });
+const tvRequests = h => h.requests.filter(url => url === 'data/sports-tv.json').length;
+
+test('TV view loads listings on demand, matches gender, and reuses the snapshot', async () => {
+  const h = harness(); await settled(h);
+  assert.equal(tvRequests(h), 0);
+  await chooseView(h, 'tv');
+  assert.equal(tvRequests(h), 1);
+  assert.equal(h.get('tv-controls').hidden, false);
+  for (const country of L.countries) assert(h.get('match-list').innerHTML.includes(country.name + ' TV'));
+  assert(!h.get('match-list').innerHTML.includes('Women-only TV'));
+  assert.match(h.get('matches-meta').textContent, /TV & streaming/);
+  assert.match(h.get('tv-guide-links').innerHTML, /tv-guide\/ca/);
+  chooseView(h, 'recent'); assert.equal(h.get('tv-controls').hidden, true);
+  assert(!h.get('match-list').innerHTML.includes('Canada TV'));
+  await chooseView(h, 'tv'); assert.equal(tvRequests(h), 1);
+});
+
+test('TV country selection stays separate and composes with existing match filters', async () => {
+  const h = harness(); await settled(h); await chooseView(h, 'tv');
+  h.get('tv-country').value = 'CA'; h.get('tv-country').listeners.change();
+  assert.match(h.get('match-list').innerHTML, /Canada TV/);
+  assert(!h.get('match-list').innerHTML.includes('UK TV'));
+  assert.equal(JSON.parse(h.saved()).country, 'CA');
+  h.get('match-search').value = 'not a team'; h.get('match-search').listeners.input();
+  assert.match(h.get('match-list').innerHTML, /No matches fit these filters/);
+  h.get('reset-filters').listeners.click();
+  assert.match(h.get('match-list').innerHTML, /Canada TV/);
+  assert.equal(h.get('tv-country').value, 'CA');
+  const saved = harness({ saved: JSON.stringify({ country: 'DE' }) }); await settled(saved);
+  assert.equal(saved.get('tv-country').value, 'DE');
+});
+
+test('TV refresh failures retain only fresh channels, then recover', async () => {
+  const h = harness(); await settled(h); await chooseView(h, 'tv');
+  h.setFail(url => url === 'data/sports-tv.json');
+  await h.get('refresh').listeners.click(); await settled(h);
+  assert.match(h.get('match-list').innerHTML, /Canada TV/);
+  assert.match(h.get('match-list').innerHTML, /Refresh unavailable; recent listing retained/);
+  h.setTime(NOW + 7 * 3600000);
+  await h.get('refresh').listeners.click(); await settled(h);
+  assert(!h.get('match-list').innerHTML.includes('Canada TV'));
+  assert.match(h.get('match-list').innerHTML, /TV listings are currently unavailable/);
+  h.setFail(() => false); h.setTV(tvSnapshot(NOW + 7 * 3600000));
+  await h.get('refresh').listeners.click(); await settled(h);
+  assert.match(h.get('match-list').innerHTML, /Canada TV/);
+  assert.match(h.get('tv-status').textContent, /^Confirmed TV and streaming/);
+});
+
+test('missing TV coverage and malformed snapshots do not claim broadcast channels', async () => {
+  for (const data of [null, {version: 2, countries: {}}, {version: 1, countries: []}, {version: 1, countries: {GB: {checkedAt: new Date(NOW).toISOString(), listings: []}}}]) {
+    const h = harness({tv: data}); await settled(h); await chooseView(h, 'tv');
+    assert(!h.get('match-list').innerHTML.includes('UK TV'));
+    assert.match(h.get('match-list').innerHTML, /TV listings are unavailable|No confirmed broadcast published/);
+  }
+});
+
+test('TV polling pauses while hidden or outside TV view and escapes channel names', async () => {
+  const data = tvSnapshot(); data.countries.GB.listings[0].channels = ['<img src=x onerror=alert(1)>'];
+  const h = harness({tv: data}); await settled(h);
+  h.intervals[1](); assert.equal(tvRequests(h), 0);
+  await chooseView(h, 'tv');
+  assert.match(h.get('match-list').innerHTML, /&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert(!h.get('match-list').innerHTML.includes('<img src=x'));
+  h.setTime(NOW + 60000); h.intervals[0](); await settled(h); assert.equal(tvRequests(h), 1);
+  h.setTime(NOW + 6 * 60000); h.document.hidden = true; h.intervals[1]();
+  assert.equal(tvRequests(h), 1);
+  h.document.hidden = false; h.intervals[1](); await new Promise(resolve => setImmediate(resolve)); await new Promise(resolve => setImmediate(resolve));
+  assert.equal(tvRequests(h), 2);
+  chooseView(h, 'recent'); h.setTime(NOW + 12 * 60000); h.intervals[1](); assert.equal(tvRequests(h), 2);
+});
+
+test('unconfirmed kick-offs and postponed games do not show broadcast claims', async () => {
+  const tbc = event('arsenal-next'); tbc.competitions[0].dateValid = false;
+  const postponed = event('arsenal-next'); postponed.competitions[0].status.type.name = 'STATUS_POSTPONED'; postponed.competitions[0].status.type.description = 'Postponed';
+  for (const fixture of [tbc, postponed]) {
+    const h = harness({fixture}); await settled(h); await chooseView(h, 'tv');
+    assert(!h.get('match-list').innerHTML.includes('Canada TV'));
+    assert.match(h.get('match-list').innerHTML, /Kick-off time is unconfirmed|broadcast coverage needs confirmation/);
+  }
 });

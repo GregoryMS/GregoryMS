@@ -46,6 +46,7 @@ test('expired or malformed TV data and unconfirmed kick-off times do not produce
   const snapshot = tv(); snapshot.countries.GB.listings = [null, { channels: 'wrong' }];
   assert.equal(L.broadcastListings(snapshot, match, S, NOW)[0].channels.length, 0);
   assert.equal(L.identity('Bayern München (W)').key, L.identity('Bayern Munich').key);
+  assert.equal(L.identity('1. FC Magdeburg').key, L.identity('Magdeburg').key);
 });
 function app(options = {}) {
   const nodes = new Map(), requests = [], intervals = [], listeners = {};

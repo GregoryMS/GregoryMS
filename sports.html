@@ -17,13 +17,13 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/sports-app/favicon-32.png?v=20261012-football">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/sports-app/icon-192.png?v=20261012-football">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/sports.css?v=20261027-heading-label">
+  <link rel="stylesheet" href="assets/sports.css?v=20261027-tv-guide">
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/sports-core.js?v=20261027-dashboard" defer></script>
-  <script src="assets/sports-live-core.js?v=20261012-teams" defer></script>
+  <script src="assets/sports-live-core.js?v=20261027-tv-guide" defer></script>
   <script src="assets/sports-live.js?v=20261012-live-layout" defer></script>
-  <script src="assets/sports.js?v=20261027-western-first" defer></script>
+  <script src="assets/sports.js?v=20261027-tv-guide" defer></script>
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <script src="assets/sports-news.js?v=20261027-home-ticker" defer></script>
@@ -91,7 +91,12 @@
     <div class="sports-dashboard">
       <section class="matches-section" aria-labelledby="matches-heading">
         <div class="section-heading"><div><p class="eyebrow">The schedule</p><h2 id="matches-heading" tabindex="-1">Match centre</h2></div><span class="section-number" id="match-total">—</span></div>
-        <div id="match-tabs" class="match-tabs" role="group" aria-label="Match view"><button class="chip" type="button" data-view="upcoming" aria-pressed="true">Upcoming</button><button class="chip" type="button" data-view="recent" aria-pressed="false">Results</button><button class="chip" type="button" data-view="live" aria-pressed="false"><span class="live-dot" aria-hidden="true"></span> Live <span id="live-count">0</span></button></div>
+        <div id="match-tabs" class="match-tabs" role="group" aria-label="Match view"><button class="chip" type="button" data-view="upcoming" aria-pressed="true">Upcoming</button><button class="chip" type="button" data-view="recent" aria-pressed="false">Results</button><button class="chip" type="button" data-view="live" aria-pressed="false"><span class="live-dot" aria-hidden="true"></span> Live <span id="live-count">0</span></button><button class="chip" type="button" data-view="tv" aria-pressed="false">TV</button></div>
+        <section class="tv-controls" id="tv-controls" aria-label="TV coverage" hidden>
+          <div class="tv-country-filter"><label for="tv-country">Broadcast region</label><select id="tv-country"><option value="all">All regions</option></select></div>
+          <p id="tv-status" class="meta" role="status">Choose a region to see upcoming TV and streaming coverage.</p>
+          <nav class="tv-guide-links" id="tv-guide-links" aria-label="Full regional football TV guides"></nav>
+        </section>
         <div class="match-tools"><label class="match-search"><span aria-hidden="true">⌕</span><span class="sr-only">Search teams or competitions</span><input id="match-search" type="search" placeholder="Team or competition…" autocomplete="off"></label><label><span class="sr-only">Match dates</span><select id="date-filter"><option value="all">All dates</option><option value="today">Today</option><option value="week">Next 7 days</option></select></label><button class="reset-filters" id="reset-filters" type="button" hidden>Clear filters</button></div>
         <p id="matches-meta" class="meta" role="status">All competitions · loading…</p>
         <div id="match-list" class="match-list" aria-busy="true"><p class="empty">Loading your matches…</p></div>

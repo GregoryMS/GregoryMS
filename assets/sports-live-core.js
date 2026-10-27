@@ -23,7 +23,7 @@
   function identity(name) {
     const women = /\(w\)|\bwomen(?:'s)?\b|\bladies\b/i.test(name || '');
     let key = String(name || '').replace(/\(w\)|\bwomen(?:'s)?\b|\bladies\b/gi, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const aliases = { hull: 'hullcity', newcastle: 'newcastleunited', brightonhovealbion: 'brighton', brightonandhovealbion: 'brighton', bayernmunich: 'bayernmunchen', fcbayernmunchen: 'bayernmunchen', mancity: 'manchestercity', vancouverwhitecapsfc: 'vancouverwhitecaps', whitecaps: 'vancouverwhitecaps', czechrepublic: 'czechia', stlouiscitysc: 'stlouiscity', nottmforest: 'nottinghamforest', manunited: 'manchesterunited' };
+    const aliases = { hull: 'hullcity', newcastle: 'newcastleunited', brightonhovealbion: 'brighton', brightonandhovealbion: 'brighton', bayernmunich: 'bayernmunchen', fcbayernmunchen: 'bayernmunchen', mancity: 'manchestercity', vancouverwhitecapsfc: 'vancouverwhitecaps', whitecaps: 'vancouverwhitecaps', czechrepublic: 'czechia', stlouiscitysc: 'stlouiscity', '1fcmagdeburg': 'magdeburg', nottmforest: 'nottinghamforest', manunited: 'manchesterunited' };
     key = aliases[key] || key;
     return { key, women };
   }

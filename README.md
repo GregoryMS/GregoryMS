@@ -478,6 +478,16 @@ The **Live now** section appears only when the schedule feeds report a followed 
 
 Each live match has a compact UK, Canada, Norway, Sweden and Germany TV/streaming guide. `scripts/update_sports_tv.py` fetches FotMob’s public country-specific TV listings into `data/sports-tv.json`; `.github/workflows/sports-tv.yml` refreshes them every 30 minutes and requests a Pages rebuild, matching the existing data-update workflows. The browser reloads that snapshot every five minutes during live games. Listings retain their country, home/away names, women’s-team markers and programme start time. Matching requires both teams, sides, gender and a start within 90 minutes of kick-off (to allow pre-match programmes). No general rights-holder guesses are used. Listings more than six hours old, unmatched games, and unconfirmed kick-off times show an unavailable/no-confirmed-listing message with a country guide link. Partial refresh failures retain each country’s original check time. Provider coverage and listings can change.
 
+The Match centre **TV** view adds broadcast channels to upcoming fixtures for
+the UK, Canada, Norway, Sweden and Germany. Its region selector defaults to all
+regions and remembers a selected region on the device. Existing team, date and
+search filters also apply. It uses the same match-specific listings and
+six-hour freshness limit as the live guide; unconfirmed or unavailable listings
+are labelled explicitly and link to the regional guides. The TV snapshot loads
+when the TV view is opened, refreshes every five minutes while that view is
+visible, and retries with Refresh scores. Valid recent listings survive a
+refresh failure, with a warning; expired channel names are hidden.
+
 Run `node --test tests/sports*.test.cjs` and `python3 -m unittest discover -s tests -p 'test_sports_tv.py'` for the sports checks.
 
 

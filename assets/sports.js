@@ -1,16 +1,19 @@
 (() => {
   'use strict';
   const S = window.GregleSports;
+  const L = window.GregleSportsLiveCore;
   if (!S) return;
   const $ = id => document.getElementById(id);
   const E = S.escape;
-  const state = { group: 'all', team: 'all', view: 'upcoming', league: 'eng.1', search: '', date: 'all', limit: 12, loading: false, done: 0, schedules: new Map(), tables: new Map(), events: [] };
+  const state = { group: 'all', team: 'all', view: 'upcoming', league: 'eng.1', country: 'all', search: '', date: 'all', limit: 12, loading: false, done: 0, schedules: new Map(), tables: new Map(), events: [] };
+  const tv = { data: null, loading: false, error: false, attemptAt: null };
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-sports-filters') || 'null');
     if (saved) {
       if (saved.group === 'all' || S.groups[saved.group]) state.group = saved.group;
       if (S.teams.some(t => t.id === saved.team && (state.group === 'all' || t.group === state.group))) state.team = saved.team;
       if (S.leagues.some(l => l.id === saved.league)) state.league = saved.league;
+      if (L?.countries.some(c => c.code === saved.country)) state.country = saved.country;
     }
   } catch (_) {}
   const dateFormat = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
@@ -20,7 +23,7 @@
   $('dashboard-date').textContent = dateFormat.format(Date.now());
   $('timezone').textContent = 'Kick-offs: ' + zone.replace(/_/g, ' ');
   function saveFilters() {
-    try { localStorage.setItem('gregle-sports-filters', JSON.stringify({ group: state.group, team: state.team, league: state.league })); } catch (_) {}
+    try { localStorage.setItem('gregle-sports-filters', JSON.stringify({ group: state.group, team: state.team, league: state.league, country: state.country })); } catch (_) {}
   }
   const eligibleTeams = () => S.teams.filter(t => state.group === 'all' || t.group === state.group);
   const selectedTeams = () => eligibleTeams().filter(t => state.team === 'all' || t.id === state.team);
@@ -57,13 +60,31 @@
     $('team-filter').value = state.team;
     document.querySelectorAll('[data-group]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.group === state.group)));
   }
+  function broadcastMarkup(e) {
+    if (!L) return '<p class="tv-message">TV listings are unavailable. Please refresh the page.</p>';
+    if (e.special) return '<p class="tv-message">' + E(e.status || 'Match status changed') + ' · broadcast coverage needs confirmation. Check the regional TV guides.</p>';
+    if (e.timeTBD) return '<p class="tv-message">Kick-off time is unconfirmed. Check the regional TV guides for coverage.</p>';
+    if (!tv.data) return '<p class="tv-message">' + (tv.error ? 'TV listings are unavailable. Check the regional TV guides.' : 'Checking TV listings…') + '</p>';
+    const rows = L.broadcastListings(tv.data, e, S).filter(c => state.country === 'all' || c.code === state.country);
+    const confirmed = rows.filter(c => c.channels.length);
+    if (!confirmed.length) return '<p class="tv-message">' + (rows.some(c => c.fresh) ? 'No confirmed broadcast published for this match in ' + (state.country === 'all' ? 'these regions' : E(rows[0]?.name || 'this region')) + ' yet.' : 'TV listings are currently unavailable for ' + (state.country === 'all' ? 'these regions' : E(rows[0]?.name || 'this region')) + '.') + ' Check the regional TV guides.</p>';
+    return confirmed.map(c => '<div class="tv-broadcast"><a class="tv-region" href="' + c.source + '" aria-label="Open ' + E(c.name) + ' football TV guide">' + E(c.name) + ' ↗</a><div><div class="tv-channels">' + c.channels.map(channel => '<span class="tv-channel">' + E(channel) + '</span>').join('') + '</div><p class="tv-checked">Checked ' + E(stampFormat.format(c.checkedAt)) + (c.error || tv.error ? ' · Refresh unavailable; recent listing retained' : '') + '</p></div></div>').join('');
+  }
+  function renderTVControls() {
+    $('tv-controls').hidden = state.view !== 'tv';
+    if (state.view !== 'tv') return;
+    const regions = (L?.countries || []).filter(c => state.country === 'all' || c.code === state.country);
+    $('tv-guide-links').innerHTML = regions.map(c => '<a href="https://www.fotmob.com/tv-guide/' + c.code.toLowerCase() + '">' + E(c.name) + ' guide ↗</a>').join('');
+    const status = !L ? 'TV listings are unavailable. Please refresh the page.' : tv.loading ? 'Checking TV and streaming listings…' : tv.error ? 'TV refresh unavailable. Recent listings are retained where valid; check the regional guides for updates.' : 'Confirmed TV and streaming channels by region. Missing listings do not mean a match is unavailable; coverage can change.';
+    if ($('tv-status').textContent !== status) $('tv-status').textContent = status;
+  }
   function fixtureRow(e) {
     const showScore = e.completed || e.live;
     const status = e.live ? e.detail || 'In play' : e.completed ? e.detail || 'FT' : e.special ? e.status : '';
     const time = e.timeTBD ? 'TBC' : timeFormat.format(e.timestamp);
     const side = (team, label) => '<div class="fixture-team' + (followed(team.id) ? ' followed' : '') + '">' + logo(team) + '<span class="fixture-name"><span class="sr-only">' + label + ': </span>' + E(team.name) + '</span>' + (showScore ? '<strong class="fixture-score">' + E(team.score) + '</strong>' : '') + '</div>';
     const penalties = e.home.penalties !== null && e.away.penalties !== null ? '<p class="fixture-note">Penalties: ' + E(e.home.penalties) + '–' + E(e.away.penalties) + '</p>' : '';
-    return '<article class="fixture-row' + (e.live ? ' is-live' : '') + '"><div class="fixture-time">' + (e.live ? '<span class="fixture-live">Live</span>' : '') + (status ? '<span class="fixture-status">' + E(status) + '</span>' : '<time datetime="' + E(e.date) + '">' + E(time) + '</time><span class="fixture-time-label">' + (e.timeTBD ? 'Time to be confirmed' : 'Kick-off') + '</span>') + '</div><div class="fixture-teams">' + side(e.home, 'Home') + side(e.away, 'Away') + penalties + '</div><div class="fixture-context"><span class="fixture-category">' + E(eventCategory(e)) + '</span><span class="fixture-competition">' + E(e.competition) + '</span>' + (e.venue ? '<span class="fixture-venue">' + E(e.venue) + '</span>' : '') + '</div>' + (e.link ? '<a class="fixture-link" href="' + E(e.link) + '" aria-label="Match details: ' + E(e.home.name) + ' versus ' + E(e.away.name) + '"><span class="detail-label">Details</span><span aria-hidden="true">↗</span></a>' : '') + (feedProblem(e) ? '<p class="fixture-warning">Refresh unavailable · previously loaded match</p>' : '') + '</article>';
+    return '<article class="fixture-row' + (e.live ? ' is-live' : '') + '"><div class="fixture-time">' + (e.live ? '<span class="fixture-live">Live</span>' : '') + (status ? '<span class="fixture-status">' + E(status) + '</span>' : '<time datetime="' + E(e.date) + '">' + E(time) + '</time><span class="fixture-time-label">' + (e.timeTBD ? 'Time to be confirmed' : 'Kick-off') + '</span>') + '</div><div class="fixture-teams">' + side(e.home, 'Home') + side(e.away, 'Away') + penalties + '</div><div class="fixture-context"><span class="fixture-category">' + E(eventCategory(e)) + '</span><span class="fixture-competition">' + E(e.competition) + '</span>' + (e.venue ? '<span class="fixture-venue">' + E(e.venue) + '</span>' : '') + '</div>' + (e.link ? '<a class="fixture-link" href="' + E(e.link) + '" aria-label="Match details: ' + E(e.home.name) + ' versus ' + E(e.away.name) + '"><span class="detail-label">Details</span><span aria-hidden="true">↗</span></a>' : '') + (feedProblem(e) ? '<p class="fixture-warning">Refresh unavailable · previously loaded match</p>' : '') + (state.view === 'tv' ? '<div class="fixture-tv" aria-label="Broadcast channels">' + broadcastMarkup(e) + '</div>' : '') + '</article>';
   }
   function matchDays(events) {
     const days = new Map();
@@ -80,6 +101,7 @@
     state.events = S.combineEvents(feeds);
   }
   function renderMatches() {
+    renderTVControls();
     const ids = selectedTeams().map(t => t.id);
     const upcoming = S.selectEvents(state.events, ids, 'upcoming');
     const recent = S.selectEvents(state.events, ids, 'recent');
@@ -95,7 +117,7 @@
     $('live-count').textContent = live.length;
     $('match-total').textContent = state.loading && missing ? '…' : events.length;
     $('reset-filters').hidden = !state.search && state.date === 'all' && state.team === 'all' && state.group === 'all';
-    $('matches-meta').textContent = 'All competitions · ' + events.length + (state.view === 'recent' ? ' results' : state.view === 'live' ? ' live matches' : ' upcoming matches') + (failed.length ? ' · Partial coverage: ' + failed.map(teamLabel).join(', ') : missing ? ' · Loading remaining teams…' : '') + (events.length > visible.length ? ' · Showing ' + visible.length : '');
+    $('matches-meta').textContent = 'All competitions · ' + events.length + (state.view === 'recent' ? ' results' : state.view === 'live' ? ' live matches' : state.view === 'tv' ? ' upcoming matches · TV & streaming' : ' upcoming matches') + (failed.length ? ' · Partial coverage: ' + failed.map(teamLabel).join(', ') : missing ? ' · Loading remaining teams…' : '') + (events.length > visible.length ? ' · Showing ' + visible.length : '');
     $('match-list').innerHTML = visible.length ? matchDays(visible) : '<p class="empty">' + (state.loading && missing ? 'Loading your matches…' : failed.length ? 'Match feeds are unavailable for some selected teams. Try Refresh or use the ESPN team links below.' : state.search || state.date !== 'all' ? 'No matches fit these filters. Try another date or clear your filters.' : state.view === 'live' ? 'None of your selected teams are playing live right now.' : state.view === 'recent' ? 'No results published in the current schedule feeds.' : 'No upcoming fixtures published for your selected teams.') + '</p>';
     $('match-list').setAttribute('aria-busy', String(state.loading));
     $('show-more').hidden = visible.length >= events.length;
@@ -160,6 +182,16 @@
       return await response.json();
     } finally { clearTimeout(timer); }
   }
+  async function loadTV(force = false) {
+    if (!L || tv.loading || (!force && tv.attemptAt !== null && Date.now() - tv.attemptAt < 5 * 60000)) return;
+    tv.loading = true; tv.attemptAt = Date.now(); renderMatches();
+    try {
+      const data = await request('data/sports-tv.json');
+      if (data?.version !== 1 || !data.countries || typeof data.countries !== 'object' || Array.isArray(data.countries)) throw new Error('Invalid TV guide');
+      tv.data = data; tv.error = false;
+    } catch (_) { tv.error = true; }
+    finally { tv.loading = false; renderMatches(); }
+  }
   async function loadTeam(team, key) {
     const feeds = state.schedules.get(team.id) || {};
     state.schedules.set(team.id, feeds);
@@ -176,15 +208,16 @@
       state.tables.set(league.id, { data: S.standings(payload), at: Date.now(), error: false });
     } catch (_) { state.tables.set(league.id, { ...state.tables.get(league.id), error: true }); }
   }
-  async function refresh() {
+  async function refresh(forceTV = false) {
     if (state.loading) return;
     window.GregleSportsLive?.refresh();
     state.loading = true; state.done = 0; render();
     const jobs = [...S.leagues.map(l => () => loadTable(l)), ...S.teams.flatMap(t => ['fixtures', 'results'].map(key => () => loadTeam(t, key)))];
     let index = 0;
-    await Promise.all(Array.from({ length: 6 }, async () => {
+    const tvRefresh = state.view === 'tv' ? loadTV(forceTV) : Promise.resolve();
+    await Promise.all([tvRefresh, ...Array.from({ length: 6 }, async () => {
       while (index < jobs.length) { await jobs[index++](); state.done++; queueRender(); }
-    }));
+    })]);
     state.loading = false; render();
   }
   $('group-filters').addEventListener('click', e => {
@@ -204,8 +237,9 @@
     $('matches-heading').scrollIntoView({ behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   });
   $('match-tabs').addEventListener('click', e => {
-    const b = e.target.closest('[data-view]'); if (!b || !['upcoming', 'recent', 'live'].includes(b.dataset.view)) return;
+    const b = e.target.closest('[data-view]'); if (!b || !['upcoming', 'recent', 'live', 'tv'].includes(b.dataset.view)) return;
     state.view = b.dataset.view; state.limit = 12; renderMatches();
+    if (state.view === 'tv') return loadTV();
   });
   $('league-tabs').addEventListener('click', e => {
     const b = e.target.closest('[data-league]'); if (!b || !S.leagues.some(l => l.id === b.dataset.league)) return;
@@ -224,10 +258,22 @@
     button.setAttribute('aria-pressed', String(expanded)); button.textContent = expanded ? 'Fewer stats' : 'More stats';
     document.querySelector('.standings-section').classList.toggle('expanded-stats', expanded);
   });
-  $('refresh').addEventListener('click', refresh);
+  $('tv-country').addEventListener('change', () => {
+    const value = $('tv-country').value;
+    if (value !== 'all' && !L?.countries.some(c => c.code === value)) return;
+    state.country = value; saveFilters(); renderMatches();
+  });
+  $('refresh').addEventListener('click', () => refresh(true));
   let lastAuto = Date.now();
   setInterval(() => { if (!document.hidden) { lastAuto = Date.now(); refresh(); } }, 60000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastAuto >= 60000) { lastAuto = Date.now(); refresh(); } });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    if (Date.now() - lastAuto >= 60000) { lastAuto = Date.now(); refresh(); }
+    if (state.view === 'tv') loadTV();
+  });
+  setInterval(() => { if (!document.hidden && state.view === 'tv') loadTV(); }, 5 * 60000);
+  $('tv-country').innerHTML = '<option value="all">All regions</option>' + (L?.countries || []).map(c => '<option value="' + c.code + '">' + E(c.name) + '</option>').join('');
+  $('tv-country').value = state.country;
   renderFilters(); render(); refresh();
 })();
 
