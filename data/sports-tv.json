@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
+      "checkedAt": "2026-10-27T05:05:39.015115+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -238,7 +238,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
+      "checkedAt": "2026-10-27T05:05:39.015115+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -387,12 +387,20 @@
             "DAZN Canada",
             "Fubo Sports CA"
           ]
+        },
+        {
+          "home": "Atlético Madrid",
+          "away": "Bayern München",
+          "start": "2026-11-03T20:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
+      "checkedAt": "2026-10-27T05:05:39.015115+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -578,12 +586,20 @@
             "V sport Premier League NO",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Atlético Madrid",
+          "away": "Bayern München",
+          "start": "2026-11-03T20:00:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
+      "checkedAt": "2026-10-27T05:05:39.015115+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -764,12 +780,21 @@
             "V Sport Premium",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Atlético Madrid",
+          "away": "Bayern München",
+          "start": "2026-11-03T20:00:00+00:00",
+          "channels": [
+            "V Sport Football",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-26T23:53:36.817559+00:00",
+      "checkedAt": "2026-10-27T05:05:39.015115+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -942,6 +967,14 @@
             "Sky Sport Premier League",
             "Sky Top Event",
             "WOW"
+          ]
+        },
+        {
+          "home": "Atlético Madrid",
+          "away": "Bayern München",
+          "start": "2026-11-03T20:00:00+00:00",
+          "channels": [
+            "Prime Video (DE)"
           ]
         }
       ],
