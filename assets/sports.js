@@ -4,7 +4,7 @@
   if (!S) return;
   const $ = id => document.getElementById(id);
   const E = S.escape;
-  const state = { group: 'all', team: 'all', view: 'upcoming', league: 'eng.1', limit: 18, loading: false, done: 0, schedules: new Map(), tables: new Map(), events: [] };
+  const state = { group: 'all', team: 'all', view: 'upcoming', league: 'eng.1', search: '', date: 'all', limit: 12, loading: false, done: 0, schedules: new Map(), tables: new Map(), events: [] };
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-sports-filters') || 'null');
     if (saved) {
@@ -17,6 +17,7 @@
   const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' });
   const stampFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Device local time';
+  $('dashboard-date').textContent = dateFormat.format(Date.now());
   $('timezone').textContent = 'Kick-offs: ' + zone.replace(/_/g, ' ');
   function saveFilters() {
     try { localStorage.setItem('gregle-sports-filters', JSON.stringify({ group: state.group, team: state.team, league: state.league })); } catch (_) {}
@@ -62,7 +63,7 @@
     const time = e.timeTBD ? 'TBC' : timeFormat.format(e.timestamp);
     const side = (team, label) => '<div class="fixture-team' + (followed(team.id) ? ' followed' : '') + '">' + logo(team) + '<span class="fixture-name"><span class="sr-only">' + label + ': </span>' + E(team.name) + '</span>' + (showScore ? '<strong class="fixture-score">' + E(team.score) + '</strong>' : '') + '</div>';
     const penalties = e.home.penalties !== null && e.away.penalties !== null ? '<p class="fixture-note">Penalties: ' + E(e.home.penalties) + '–' + E(e.away.penalties) + '</p>' : '';
-    return '<article class="fixture-row' + (e.live ? ' is-live' : '') + '"><div class="fixture-time">' + (e.live ? '<span class="fixture-live">Live</span>' : '') + (status ? '<span class="fixture-status">' + E(status) + '</span>' : '<time datetime="' + E(e.date) + '">' + E(time) + '</time><span class="fixture-time-label">' + (e.timeTBD ? 'Time to be confirmed' : 'Kick-off') + '</span>') + '</div><div class="fixture-teams">' + side(e.home, 'Home') + side(e.away, 'Away') + penalties + '</div><div class="fixture-context"><span class="fixture-category">' + E(eventCategory(e)) + '</span><span class="fixture-competition">' + E(e.competition) + '</span>' + (e.venue ? '<span class="fixture-venue">' + E(e.venue) + '</span>' : '') + '</div>' + (e.link ? '<a class="fixture-link" href="' + E(e.link) + '" aria-label="Match details: ' + E(e.home.name) + ' versus ' + E(e.away.name) + '">Details <span aria-hidden="true">↗</span></a>' : '') + (feedProblem(e) ? '<p class="fixture-warning">Refresh unavailable · previously loaded match</p>' : '') + '</article>';
+    return '<article class="fixture-row' + (e.live ? ' is-live' : '') + '"><div class="fixture-time">' + (e.live ? '<span class="fixture-live">Live</span>' : '') + (status ? '<span class="fixture-status">' + E(status) + '</span>' : '<time datetime="' + E(e.date) + '">' + E(time) + '</time><span class="fixture-time-label">' + (e.timeTBD ? 'Time to be confirmed' : 'Kick-off') + '</span>') + '</div><div class="fixture-teams">' + side(e.home, 'Home') + side(e.away, 'Away') + penalties + '</div><div class="fixture-context"><span class="fixture-category">' + E(eventCategory(e)) + '</span><span class="fixture-competition">' + E(e.competition) + '</span>' + (e.venue ? '<span class="fixture-venue">' + E(e.venue) + '</span>' : '') + '</div>' + (e.link ? '<a class="fixture-link" href="' + E(e.link) + '" aria-label="Match details: ' + E(e.home.name) + ' versus ' + E(e.away.name) + '"><span class="detail-label">Details</span><span aria-hidden="true">↗</span></a>' : '') + (feedProblem(e) ? '<p class="fixture-warning">Refresh unavailable · previously loaded match</p>' : '') + '</article>';
   }
   function matchDays(events) {
     const days = new Map();
@@ -87,13 +88,15 @@
     $('next-heading').textContent = live.length ? 'On the pitch now' : 'Next up';
     $('next-match').innerHTML = next ? matchMarkup(next) : '<p class="muted">' + (state.loading ? 'Checking your fixtures…' : 'No upcoming fixture in the available feeds.') + '</p>';
     $('latest-match').innerHTML = recent[0] ? matchMarkup(recent[0]) : '<p class="muted">' + (state.loading ? 'Checking your results…' : 'No recent result in the available feeds.') + '</p>';
-    const events = state.view === 'recent' ? recent : state.view === 'live' ? live : upcoming;
+    const events = S.filterMatches(state.view === 'recent' ? recent : state.view === 'live' ? live : upcoming, state);
     const visible = events.slice(0, state.limit);
     const failed = selectedTeams().filter(t => ['fixtures', 'results'].some(key => state.schedules.get(t.id)?.[key]?.error));
     const missing = selectedTeams().some(t => !state.schedules.get(t.id)?.fixtures || !state.schedules.get(t.id)?.results);
     $('live-count').textContent = live.length;
+    $('match-total').textContent = state.loading && missing ? '…' : events.length;
+    $('reset-filters').hidden = !state.search && state.date === 'all' && state.team === 'all' && state.group === 'all';
     $('matches-meta').textContent = 'All competitions · ' + events.length + (state.view === 'recent' ? ' results' : state.view === 'live' ? ' live matches' : ' upcoming matches') + (failed.length ? ' · Partial coverage: ' + failed.map(teamLabel).join(', ') : missing ? ' · Loading remaining teams…' : '') + (events.length > visible.length ? ' · Showing ' + visible.length : '');
-    $('match-list').innerHTML = visible.length ? matchDays(visible) : '<p class="empty">' + (state.loading && missing ? 'Loading your matches…' : failed.length ? 'Match feeds are unavailable for some selected teams. Try Refresh or use the ESPN team links below.' : state.view === 'live' ? 'None of your selected teams are playing live right now.' : state.view === 'recent' ? 'No results published in the current schedule feeds.' : 'No upcoming fixtures published for your selected teams.') + '</p>';
+    $('match-list').innerHTML = visible.length ? matchDays(visible) : '<p class="empty">' + (state.loading && missing ? 'Loading your matches…' : failed.length ? 'Match feeds are unavailable for some selected teams. Try Refresh or use the ESPN team links below.' : state.search || state.date !== 'all' ? 'No matches fit these filters. Try another date or clear your filters.' : state.view === 'live' ? 'None of your selected teams are playing live right now.' : state.view === 'recent' ? 'No results published in the current schedule feeds.' : 'No upcoming fixtures published for your selected teams.') + '</p>';
     $('match-list').setAttribute('aria-busy', String(state.loading));
     $('show-more').hidden = visible.length >= events.length;
     document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
@@ -110,7 +113,7 @@
       return;
     }
     $('table-status').textContent = name + ' · ' + (entry.data[0].season || 'Current provider season') + ' · Checked ' + stampFormat.format(entry.at) + (entry.error ? ' · Refresh failed; previously loaded table shown.' : '');
-    $('league-tables').innerHTML = entry.data.map(group => '<div class="table-panel"><div class="table-heading"><h3>' + E(group.name) + '</h3><a href="' + source + '">ESPN table ↗</a></div><div class="table-scroll" tabindex="0" role="region" aria-label="' + E(group.name) + ' table, scroll horizontally for more columns"><table><caption class="sr-only">' + E(group.name) + '; your followed clubs are highlighted.</caption><thead><tr><th scope="col">#</th><th class="team-cell" scope="col">Team</th><th scope="col">P</th><th scope="col">W</th><th scope="col">D</th><th scope="col">L</th><th scope="col">GF</th><th scope="col">GA</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead><tbody>' + group.rows.map(r => '<tr' + (followed(r.id) ? ' class="followed"' : '') + '><td>' + E(r.rank) + '</td><th class="team-cell" scope="row"><span class="table-team">' + logo(r) + '<span>' + E(r.name) + (followed(r.id) ? '<span class="sr-only"> · Followed team</span>' : '') + '</span></span></th>' + ['played', 'wins', 'draws', 'losses', 'gf', 'ga', 'gd', 'points'].map(key => '<td' + (key === 'points' ? ' class="points"' : '') + '>' + E(r[key]) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div></div>').join('');
+    $('league-tables').innerHTML = entry.data.map(group => '<div class="table-panel"><div class="table-heading"><h3>' + E(group.name) + '</h3><a href="' + source + '">ESPN table ↗</a></div><div class="table-scroll" tabindex="0" role="region" aria-label="' + E(group.name) + ' table, scroll horizontally for more columns"><table><caption class="sr-only">' + E(group.name) + '; your followed clubs are highlighted.</caption><thead><tr><th scope="col">#</th><th class="team-cell" scope="col">Team</th><th scope="col">P</th><th class="extra-stat" scope="col">W</th><th class="extra-stat" scope="col">D</th><th class="extra-stat" scope="col">L</th><th class="extra-stat" scope="col">GF</th><th class="extra-stat" scope="col">GA</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead><tbody>' + group.rows.map(r => '<tr' + (followed(r.id) ? ' class="followed"' : '') + '><td>' + E(r.rank) + '</td><th class="team-cell" scope="row"><span class="table-team">' + logo(r) + '<span>' + E(r.name) + (followed(r.id) ? '<span class="sr-only"> · Followed team</span>' : '') + '</span></span></th>' + ['played', 'wins', 'draws', 'losses', 'gf', 'ga', 'gd', 'points'].map(key => '<td' + (key === 'points' ? ' class="points"' : ['wins', 'draws', 'losses', 'gf', 'ga'].includes(key) ? ' class="extra-stat"' : '') + '>' + E(r[key]) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div></div>').join('');
   }
   function renderTeams() {
     $('team-count').textContent = eligibleTeams().length + ' followed teams';
@@ -173,7 +176,7 @@
   async function refresh() {
     if (state.loading) return;
     window.GregleSportsLive?.refresh();
-    state.loading = true; state.done = 0; renderStatus();
+    state.loading = true; state.done = 0; render();
     const jobs = [...S.leagues.map(l => () => loadTable(l)), ...S.teams.flatMap(t => ['fixtures', 'results'].map(key => () => loadTeam(t, key)))];
     let index = 0;
     await Promise.all(Array.from({ length: 6 }, async () => {
@@ -184,28 +187,40 @@
   $('group-filters').addEventListener('click', e => {
     const button = e.target.closest('[data-group]');
     if (!button || !(button.dataset.group === 'all' || S.groups[button.dataset.group])) return;
-    state.group = button.dataset.group; state.team = 'all'; state.limit = 18;
+    state.group = button.dataset.group; state.team = 'all'; state.limit = 12;
     renderFilters(); saveFilters(); render();
   });
   $('team-filter').addEventListener('change', () => {
     const value = $('team-filter').value;
     if (value !== 'all' && !eligibleTeams().some(t => t.id === value)) return;
-    state.team = value; state.limit = 18; saveFilters(); render();
+    state.team = value; state.limit = 12; saveFilters(); render();
   });
   $('team-cards').addEventListener('click', e => {
     const b = e.target.closest('[data-team]'); if (!b || !eligibleTeams().some(t => t.id === b.dataset.team)) return;
-    state.team = b.dataset.team; state.limit = 18; $('team-filter').value = state.team; saveFilters(); render();
+    state.team = b.dataset.team; state.limit = 12; $('team-filter').value = state.team; saveFilters(); render();
     $('matches-heading').scrollIntoView({ behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   });
   $('match-tabs').addEventListener('click', e => {
     const b = e.target.closest('[data-view]'); if (!b || !['upcoming', 'recent', 'live'].includes(b.dataset.view)) return;
-    state.view = b.dataset.view; state.limit = 18; renderMatches();
+    state.view = b.dataset.view; state.limit = 12; renderMatches();
   });
   $('league-tabs').addEventListener('click', e => {
     const b = e.target.closest('[data-league]'); if (!b || !S.leagues.some(l => l.id === b.dataset.league)) return;
     state.league = b.dataset.league; saveFilters(); renderTable();
   });
   $('show-more').addEventListener('click', () => { state.limit += 18; renderMatches(); });
+  $('match-search').addEventListener('input', () => { state.search = $('match-search').value; state.limit = 12; renderMatches(); });
+  $('date-filter').addEventListener('change', () => { state.date = $('date-filter').value; state.limit = 12; renderMatches(); });
+  $('reset-filters').addEventListener('click', () => {
+    state.search = ''; state.date = 'all'; state.group = 'all'; state.team = 'all'; state.limit = 12;
+    $('match-search').value = ''; $('date-filter').value = 'all'; renderFilters(); saveFilters(); render();
+  });
+  $('table-detail-toggle').addEventListener('click', () => {
+    const button = $('table-detail-toggle');
+    const expanded = button.getAttribute('aria-pressed') !== 'true';
+    button.setAttribute('aria-pressed', String(expanded)); button.textContent = expanded ? 'Fewer stats' : 'More stats';
+    document.querySelector('.standings-section').classList.toggle('expanded-stats', expanded);
+  });
   $('refresh').addEventListener('click', refresh);
   let lastAuto = Date.now();
   setInterval(() => { if (!document.hidden) { lastAuto = Date.now(); refresh(); } }, 60000);

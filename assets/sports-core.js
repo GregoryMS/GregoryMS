@@ -99,7 +99,14 @@
     walk(payload);
     return result;
   }
-  const api = { teams, leagues, groups, escape, safeURL, event, combineEvents, selectEvents, standings };
+  function filterMatches(events, options = {}, now = Date.now()) {
+    const query = String(options.search || '').trim().toLocaleLowerCase();
+    const start = new Date(now); start.setHours(0, 0, 0, 0);
+    const end = new Date(start); end.setDate(end.getDate() + (options.date === 'week' ? 7 : 1));
+    return events.filter(e => (!query || [e.home.name, e.away.name, e.competition, e.venue].join(' ').toLocaleLowerCase().includes(query)) &&
+      (!['today', 'week'].includes(options.date) || e.timestamp >= start.getTime() && e.timestamp < end.getTime()));
+  }
+  const api = { teams, leagues, groups, escape, safeURL, event, combineEvents, selectEvents, standings, filterMatches };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.GregleSports = api;
 })(globalThis);

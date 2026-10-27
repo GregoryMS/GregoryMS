@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Follow Brighton, Bayern, Vancouver Whitecaps, Arsenal, Manchester City, Hull City, Newcastle United, Chelsea Women, Bayern Women, Brighton Women and your national teams, with fixtures, results and current league tables.">
   <title>Sports · Gregle</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <meta name="application-name" content="Gregle Sports">
   <meta name="apple-mobile-web-app-title" content="Sports">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,18 +17,20 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/sports-app/favicon-32.png?v=20261012-football">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/sports-app/icon-192.png?v=20261012-football">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/sports.css?v=20261013-fotmob-40">
+  <link rel="stylesheet" href="assets/sports.css?v=20261027-dashboard">
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
-  <script src="assets/sports-core.js?v=20261012-women-clubs" defer></script>
+  <script src="assets/sports-core.js?v=20261027-dashboard" defer></script>
   <script src="assets/sports-live-core.js?v=20261012-teams" defer></script>
   <script src="assets/sports-live.js?v=20261012-live-layout" defer></script>
-  <script src="assets/sports.js?v=20261012-match-centre" defer></script>
+  <script src="assets/sports.js?v=20261027-dashboard" defer></script>
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
+  <script src="assets/sports-news.js?v=20261027" defer></script>
   <link rel="canonical" href="https://sports.gregle.uk/">
 </head>
-<body>
+<body class="sports-body">
+  <a class="skip-link" href="#matches-heading">Skip to matches</a>
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Sports</span></div>
     <div class="top-actions"><a class="pill fotmob-link" href="https://www.fotmob.com/" aria-label="FotMob" title="FotMob"><img src="assets/fotmob-logo.svg" alt="" width="30" height="30"></a><!-- Gregle app menu -->
@@ -55,15 +57,19 @@
 <!-- /Gregle app menu --></div>
   </header>
   <main class="page sports-page">
-    <div class="sports-heading"><div><p class="eyebrow">Football · The best teams</p><h1>Sports</h1></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
-    <noscript><p>Enable JavaScript to load fixtures and tables, or visit <a href="https://www.espn.com/soccer/scoreboard">ESPN football</a>.</p></noscript>
-    <div class="feed-status"><p id="feed-status" role="status">Loading fixtures, results and league tables…</p><span id="timezone"></span></div>
-    <section class="live-section" id="live-section" aria-labelledby="live-heading" hidden>
-      <div class="section-heading"><div><p class="eyebrow">On the pitch</p><h2 id="live-heading">Live now</h2><p class="meta" id="live-section-count"></p></div><button class="pill" id="live-refresh" type="button">↻ Update live</button></div>
-      <div id="live-matches"></div>
-      <p class="meta">Scores and available stats update every 30 seconds while visible. TV listings are checked periodically; coverage can change.</p>
+    <div class="sports-heading">
+      <div><p class="eyebrow">Your personal football dashboard</p><h1>Football, in focus<span>.</span></h1><p class="intro">Your teams. Every fixture. The whole picture.</p></div>
+      <div class="heading-actions"><p id="dashboard-date" class="dashboard-date"></p><button class="pill refresh-button" id="refresh" type="button"><span aria-hidden="true">↻</span> Refresh scores</button></div>
+    </div>
+    <section class="sport-ticker" aria-label="BBC Sport headlines">
+      <a class="sport-ticker-brand" href="https://www.bbc.com/sport"><span class="bbc-blocks" aria-label="BBC"><b>B</b><b>B</b><b>C</b></span><strong>SPORT</strong></a>
+      <div class="sport-ticker-window" id="sport-news-window"><div class="sport-ticker-track" id="sport-news-track"><div class="sport-ticker-group"><a href="https://www.bbc.com/sport">Loading BBC Sport headlines…</a></div></div></div>
+      <button class="ticker-pause" id="sport-news-pause" type="button" aria-label="Pause headlines" aria-pressed="false"><span aria-hidden="true">Ⅱ</span></button>
     </section>
-    <section aria-label="Team filters" class="filter-panel">
+    <p class="sr-only" id="sport-news-status" role="status"></p>
+    <noscript><p>Enable JavaScript to load fixtures and tables, or visit <a href="https://www.espn.com/soccer/scoreboard">ESPN football</a> and <a href="https://www.bbc.com/sport">BBC Sport</a>.</p></noscript>
+    <div class="dashboard-bar"><nav class="section-nav" aria-label="Sports sections"><a href="#matches-heading">Match centre</a><a href="#standings-heading">Standings</a><a href="#teams-heading">Your teams</a></nav><span id="timezone" class="meta"></span></div>
+    <section class="filter-panel" aria-label="Team filters">
       <div class="chips" id="group-filters" role="group" aria-label="Team category">
         <button type="button" class="chip" data-group="all" aria-pressed="true">All teams</button>
         <button type="button" class="chip" data-group="men-clubs" aria-pressed="false">Men’s clubs</button>
@@ -71,29 +77,39 @@
         <button type="button" class="chip" data-group="men-nations" aria-pressed="false">Men’s nations</button>
         <button type="button" class="chip" data-group="women-nations" aria-pressed="false">Women’s nations</button>
       </div>
-      <label class="team-filter">Team <select id="team-filter"><option value="all">All followed teams</option></select></label>
+      <label class="team-filter"><span class="sr-only">Focus on a team</span><select id="team-filter"><option value="all">All followed teams</option></select></label>
     </section>
     <div class="spotlights">
-      <section class="spotlight next" aria-labelledby="next-heading"><p class="eyebrow" id="next-heading">Next up</p><div id="next-match"><p class="muted">Checking the fixture list…</p></div></section>
-      <section class="spotlight" aria-labelledby="latest-heading"><p class="eyebrow" id="latest-heading">Latest result</p><div id="latest-match"><p class="muted">Checking recent results…</p></div></section>
+      <section class="spotlight next" aria-labelledby="next-heading"><div class="spotlight-label"><p class="eyebrow" id="next-heading">Next up</p><span aria-hidden="true">↗</span></div><div id="next-match"><p class="muted">Checking the fixture list…</p></div></section>
+      <section class="spotlight" aria-labelledby="latest-heading"><div class="spotlight-label"><p class="eyebrow" id="latest-heading">Latest result</p><span aria-hidden="true">↙</span></div><div id="latest-match"><p class="muted">Checking recent results…</p></div></section>
     </div>
-    <section class="matches-section" aria-labelledby="matches-heading">
-      <div class="section-heading"><h2 id="matches-heading">Match centre</h2><div id="match-tabs" class="chips" role="group" aria-label="Match view"><button class="chip" type="button" data-view="upcoming" aria-pressed="true">Upcoming</button><button class="chip" type="button" data-view="recent" aria-pressed="false">Results</button><button class="chip" type="button" data-view="live" aria-pressed="false">Live <span id="live-count">0</span></button></div></div>
-      <div class="match-centre-meta"><p id="matches-meta" class="meta" role="status">All competitions · loading…</p><p class="meta">Home team first · Kick-offs in your local time</p></div>
-      <div id="match-list" class="match-list" aria-busy="true"><p class="empty">Loading your matches…</p></div>
-      <button id="show-more" class="pill show-more" type="button" hidden>Show more matches</button>
+    <div class="feed-status"><p id="feed-status" role="status">Loading fixtures, results and league tables…</p><span>Auto-refresh · 60 seconds</span></div>
+    <section class="live-section" id="live-section" aria-labelledby="live-heading" hidden>
+      <div class="section-heading"><div><p class="eyebrow">On the pitch</p><h2 id="live-heading">Live now</h2><p class="meta" id="live-section-count"></p></div><button class="pill" id="live-refresh" type="button">↻ Update live</button></div>
+      <div id="live-matches"></div>
+      <p class="meta">Scores and available stats update every 30 seconds while visible. TV coverage can change.</p>
     </section>
-    <section class="standings-section" aria-labelledby="standings-heading">
-      <div class="section-heading"><div><p class="eyebrow">The bigger picture</p><h2 id="standings-heading">League standings</h2></div><span class="followed-key"><i></i>Your teams</span></div>
-      <div class="chips league-chips" id="league-tabs" role="group" aria-label="League table">
-        <button class="chip" type="button" data-league="eng.1" aria-pressed="true">Premier League</button><button class="chip" type="button" data-league="ger.1" aria-pressed="false">Bundesliga</button><button class="chip" type="button" data-league="usa.1" aria-pressed="false">MLS</button><button class="chip" type="button" data-league="eng.w.1" aria-pressed="false">Women’s Super League</button>
-      </div>
-      <p id="table-status" class="meta" role="status">Loading the current table…</p><div id="league-tables" aria-busy="true"></div>
-      <p class="table-help">P: played · W/D/L: won/drawn/lost · GF/GA: goals for/against · GD: goal difference · Pts: points. MLS shows each conference separately.</p>
-    </section>
-    <section aria-labelledby="teams-heading" class="teams-section"><div class="section-heading"><h2 id="teams-heading">Your teams</h2><span id="team-count" class="meta">22 followed teams</span></div><p class="meta">Select a team to focus its matches. National teams include men and women; their fixtures span international competitions and friendlies.</p><div id="team-cards" class="team-grid"></div></section>
-    <footer><div><p>Scores, stats &amp; crests: <a href="https://www.espn.com/soccer/">ESPN</a> · TV listings: <a href="https://www.fotmob.com/tv-guide/gb">FotMob</a>. Times use your device’s time zone.</p><p>Fixtures and tables refresh every minute while visible. Live stats refresh every 30 seconds. Fixtures, kick-off times and coverage may change. Feed failures are shown beside affected teams or tables.</p></div></footer>
+    <div class="sports-dashboard">
+      <section class="matches-section" aria-labelledby="matches-heading">
+        <div class="section-heading"><div><p class="eyebrow">The schedule</p><h2 id="matches-heading" tabindex="-1">Match centre</h2></div><span class="section-number" id="match-total">—</span></div>
+        <div id="match-tabs" class="match-tabs" role="group" aria-label="Match view"><button class="chip" type="button" data-view="upcoming" aria-pressed="true">Upcoming</button><button class="chip" type="button" data-view="recent" aria-pressed="false">Results</button><button class="chip" type="button" data-view="live" aria-pressed="false"><span class="live-dot" aria-hidden="true"></span> Live <span id="live-count">0</span></button></div>
+        <div class="match-tools"><label class="match-search"><span aria-hidden="true">⌕</span><span class="sr-only">Search teams or competitions</span><input id="match-search" type="search" placeholder="Team or competition…" autocomplete="off"></label><label><span class="sr-only">Match dates</span><select id="date-filter"><option value="all">All dates</option><option value="today">Today</option><option value="week">Next 7 days</option></select></label><button class="reset-filters" id="reset-filters" type="button" hidden>Clear filters</button></div>
+        <p id="matches-meta" class="meta" role="status">All competitions · loading…</p>
+        <div id="match-list" class="match-list" aria-busy="true"><p class="empty">Loading your matches…</p></div>
+        <button id="show-more" class="pill show-more" type="button" hidden>Show more matches</button>
+        <p class="match-help">Home team first · Kick-offs in your local time</p>
+      </section>
+      <aside class="standings-section" aria-labelledby="standings-heading">
+        <div class="section-heading"><div><p class="eyebrow">The bigger picture</p><h2 id="standings-heading">Standings</h2></div><span class="followed-key"><i></i>Your teams</span></div>
+        <div class="chips league-chips" id="league-tabs" role="group" aria-label="League table"><button class="chip" type="button" data-league="eng.1" aria-pressed="true">Premier League</button><button class="chip" type="button" data-league="ger.1" aria-pressed="false">Bundesliga</button><button class="chip" type="button" data-league="usa.1" aria-pressed="false">MLS</button><button class="chip" type="button" data-league="eng.w.1" aria-pressed="false">Women’s Super League</button></div>
+        <div class="table-toolbar"><p id="table-status" class="meta" role="status">Loading the current table…</p><button id="table-detail-toggle" class="text-button" type="button" aria-pressed="false">More stats</button></div>
+        <div id="league-tables" aria-busy="true"></div>
+        <p class="table-help">P: played · GD: goal difference · Pts: points. More stats adds wins, draws, losses and goals. MLS shows each conference.</p>
+        <a class="sports-source-link" href="https://www.fotmob.com/">Explore football on FotMob <span aria-hidden="true">↗</span></a>
+      </aside>
+    </div>
+    <section aria-labelledby="teams-heading" class="teams-section"><div class="section-heading"><div><p class="eyebrow">Your touchline</p><h2 id="teams-heading">Your teams</h2></div><span id="team-count" class="meta">22 followed teams</span></div><p class="meta">Select a team to focus its matches. Your team and league selections are remembered on this device.</p><div id="team-cards" class="team-grid"></div></section>
+    <footer><div><p>Scores, stats &amp; crests: <a href="https://www.espn.com/soccer/">ESPN</a> · TV listings: <a href="https://www.fotmob.com/tv-guide/gb">FotMob</a> · Headlines: <a href="https://www.bbc.com/sport">BBC Sport</a>.</p><p>Fixtures and tables refresh every minute while visible; live stats every 30 seconds. BBC headlines refresh periodically. Kick-offs and coverage may change; feed failures are shown with the affected data.</p></div><a href="https://gregle.uk/">Back to Gregle ↗</a></footer>
   </main>
 </body>
 </html>
-

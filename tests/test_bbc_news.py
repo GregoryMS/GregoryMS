@@ -55,6 +55,23 @@ class BBCNewsTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertEqual(output.read_text(), 'last good data')
 
+class BBCSportTests(unittest.TestCase):
+    def test_sport_snapshot_identifies_official_sports_feed(self):
+        data = news.build(feed(item('Sport', 'https://www.bbc.co.uk/sport/football/articles/example')), NOW,
+                          feed_url=news.SPORT_FEED_URL)
+        self.assertEqual(data['source'], 'https://feeds.bbci.co.uk/sport/rss.xml')
+        self.assertEqual(data['items'][0]['title'], 'Sport')
+
+    def test_sport_cli_writes_the_requested_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source, output = Path(directory) / 'sport.xml', Path(directory) / 'bbc-sport.json'
+            current = dt.datetime.now(dt.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
+            source.write_text(feed(item(link='https://www.bbc.com/sport/football/articles/example'), current))
+            result = subprocess.run([sys.executable, str(SCRIPT), '--feed', 'sport', '--input', str(source), '--output', str(output)], capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            import json
+            self.assertEqual(json.loads(output.read_text())['source'], news.SPORT_FEED_URL)
+
 
 if __name__ == '__main__':
     unittest.main()

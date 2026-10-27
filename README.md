@@ -75,6 +75,21 @@ link when the feed is more than six hours old. It no longer uses rss2json.
 Run `node --test tests/bbc-news.test.cjs` and
 `python3 -m unittest discover -s tests -p 'test_bbc_news.py'` for focused checks.
 
+The sports dashboard uses the same validated generator with `--feed sport` and
+BBC Sport’s official `https://feeds.bbci.co.uk/sport/rss.xml` feed. The separate
+`bbc-sport.yml` workflow refreshes `data/bbc-sport.json` every 15 minutes and
+requests a Pages rebuild. The sports ticker polls every five minutes while
+visible, pauses on hover/focus, offers a pause button with manual horizontal
+scrolling, and respects reduced motion. Failed or expired feeds link to BBC
+Sport; usable recent headlines survive temporary outages.
+
+The sports page provides team/category filters, a team or competition search,
+Today/Next 7 days filters, a clear-filters control, fixtures/results/live views,
+and compact standings with a More stats control. All 22 followed teams, live
+stats and TV listings remain available. Search and date filters affect the
+match list; team/category filters also update the two spotlight cards. Standings
+always show the selected league in full.
+
 ## Search suggestions
 
 Typing in the homepage search box requests up to eight suggestions from Google's autocomplete feed after a short pause. Queries are sent to Google for suggestions; selecting one (by click, tap, or arrow keys and Enter) searches Brave. The Search Gregle button continues to use Gregle. Escape, Tab, or leaving the field dismisses suggestions. Matching recent searches appear immediately and remain available if the external service fails. Suggestions are cached only in memory for the current page visit; recent searches continue to use local browser storage.

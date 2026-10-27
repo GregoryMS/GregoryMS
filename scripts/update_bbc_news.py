@@ -9,10 +9,11 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 FEED_URL = 'https://feeds.bbci.co.uk/news/rss.xml'
+SPORT_FEED_URL = 'https://feeds.bbci.co.uk/sport/rss.xml'
 UTC = dt.timezone.utc
 
 
-def build(xml, now=None):
+def build(xml, now=None, feed_url=FEED_URL):
     now = now or dt.datetime.now(UTC)
     channel = ET.fromstring(xml).find('channel')
     if channel is None:
@@ -38,19 +39,22 @@ def build(xml, now=None):
             break
     if not items:
         raise ValueError('No usable BBC headlines; keeping the previous snapshot')
-    return {'source': FEED_URL, 'feedUpdatedAt': updated.astimezone(UTC).isoformat(),
+    return {'source': feed_url, 'feedUpdatedAt': updated.astimezone(UTC).isoformat(),
             'fetchedAt': now.isoformat(), 'items': items}
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--feed', choices=['news', 'sport'], default='news')
     parser.add_argument('--input', type=Path, help='Optional saved RSS file for offline checks')
-    parser.add_argument('--output', type=Path, default=Path(__file__).resolve().parents[1] / 'data' / 'bbc-news.json')
+    parser.add_argument('--output', type=Path)
     args = parser.parse_args()
+    feed_url = SPORT_FEED_URL if args.feed == 'sport' else FEED_URL
+    args.output = args.output or Path(__file__).resolve().parents[1] / 'data' / ('bbc-sport.json' if args.feed == 'sport' else 'bbc-news.json')
     if args.input:
         xml = args.input.read_bytes()
     else:
-        request = urllib.request.Request(FEED_URL, headers={
+        request = urllib.request.Request(feed_url, headers={
             'Accept': 'application/rss+xml, application/xml, text/xml',
             'User-Agent': 'GregleHeadlines/1.0 (+https://gregle.uk/)'
         })
@@ -58,7 +62,7 @@ def main():
             xml = response.read(2_000_001)
         if len(xml) > 2_000_000:
             raise ValueError('Unexpectedly large RSS feed')
-    snapshot = build(xml)
+    snapshot = build(xml, feed_url=feed_url)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.output.with_suffix('.tmp')
     temporary.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

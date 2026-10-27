@@ -129,3 +129,29 @@ test('sports page is linked from Tools and uses the shared theme and local scrip
   assert.match(html, /id="themeToggle"/);
   for (const [, file] of html.matchAll(/(?:src|href)="(assets\/[^"?]+)(?:\?[^\"]*)?"/g)) assert(fs.existsSync(path.join(root, file)), file);
 });
+
+test('search and date filters use local calendar boundaries and combine with team selection', () => {
+  const day = new Date(2026, 9, 27, 12).getTime();
+  const make = (date, home = 'Arsenal', competition = 'Premier League') => ({ timestamp: date, home: { name: home }, away: { name: 'Brighton' }, competition });
+  const at = (offset, hour = 12) => new Date(2026, 9, 27 + offset, hour).getTime();
+  const events = [make(at(-1)), make(at(0, 0)), make(at(6, 23)), make(at(7)), make(at(0), 'Chelsea', 'Champions League')];
+  assert.equal(S.filterMatches(events, { date: 'today' }, day).length, 2);
+  assert.equal(S.filterMatches(events, { date: 'week' }, day).length, 3);
+  assert.equal(S.filterMatches(events, { search: '  CHAMPIONS ', date: 'today' }, day).length, 1);
+  assert.equal(S.filterMatches(events, { search: 'unknown' }, day).length, 0);
+});
+
+test('match search, dates and reset controls update the rendered list', async () => {
+  const h = harness(); await settled(h);
+  h.get('match-search').value = 'not a real team'; h.get('match-search').listeners.input();
+  assert.match(h.get('match-list').innerHTML, /No matches fit these filters/);
+  assert.equal(h.get('reset-filters').hidden, false);
+  h.get('reset-filters').listeners.click();
+  assert.match(h.get('match-list').innerHTML, /Arsenal/);
+  assert.equal(h.get('match-search').value, '');
+  assert.equal(h.get('reset-filters').hidden, true);
+  h.get('date-filter').value = 'today'; h.get('date-filter').listeners.change();
+  assert.match(h.get('match-list').innerHTML, /No matches fit these filters/);
+  h.get('reset-filters').listeners.click();
+  assert.equal(h.get('date-filter').value, 'all');
+});
