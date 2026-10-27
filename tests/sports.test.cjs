@@ -71,7 +71,7 @@ function tvSnapshot(checkedAt = NOW) {
 }
 function harness(options = {}) {
   const nodes = new Map(), listeners = {}, intervals = [], requests = [];
-  const get = id => { if (!nodes.has(id)) nodes.set(id, { value: '', textContent: '', innerHTML: '', attributes: {}, hidden: false, disabled: false, listeners: {}, setAttribute(k, v) { this.attributes[k] = v; }, addEventListener(k, v) { this.listeners[k] = v; }, scrollIntoView() {} }); return nodes.get(id); };
+  const get = id => { if (!nodes.has(id)) nodes.set(id, { value: '', textContent: '', innerHTML: '', attributes: {}, hidden: false, disabled: false, listeners: {}, setAttribute(k, v) { this.attributes[k] = v; }, addEventListener(k, v) { this.listeners[k] = v; }, scrollIntoView() {}, focus() { this.focused = true; } }); return nodes.get(id); };
   const document = { hidden: false, getElementById: get, querySelectorAll: () => [], addEventListener(k, v) { listeners[k] = v; } };
   let fail = options.fail || (() => false), active = 0, maxActive = 0, now = NOW, tvData = options.tv === undefined ? tvSnapshot() : options.tv, savedFilters = null;
   const context = { document, console, Intl, URL, AbortController, setTimeout, clearTimeout, setInterval: fn => intervals.push(fn), Date: class extends Date { static now() { return now; } },
@@ -271,4 +271,53 @@ test('a fully failed refresh is dated as an attempt rather than fresh data', asy
   assert.match(h.get('dashboard-date').textContent, /^Last attempt: /);
   assert.match(h.get('dashboard-date').textContent, /2026.*\d{2}:\d{2}:\d{2}/);
   assert.match(h.get('feed-status').textContent, /48 unavailable/);
+});
+
+const chooseTeamsGender = (h, gender) => h.get('teams-tabs').listeners.click({target:{closest:()=>({dataset:{teamsGender:gender}})}});
+
+test('Your teams tabs show separate club and national lists without changing match filters', async () => {
+  const h = harness(); await settled(h);
+  assert.equal(h.get('teams-men-tab').attributes['aria-selected'], 'true');
+  assert.equal(h.get('teams-women-tab').attributes['aria-selected'], 'false');
+  assert.equal(h.get('teams-men-count').textContent, 12); assert.equal(h.get('teams-women-count').textContent, 10);
+  assert.match(h.get('team-cards').innerHTML, /data-team="331"/);
+  assert.match(h.get('team-cards').innerHTML, /data-team="206"/);
+  assert(!h.get('team-cards').innerHTML.includes('data-team="19970"'));
+  const matches = h.get('match-list').innerHTML, requests = h.requests.length;
+  chooseTeamsGender(h, 'women');
+  assert.equal(h.get('teams-women-tab').attributes['aria-selected'], 'true');
+  assert.equal(h.get('team-cards').attributes['aria-labelledby'], 'teams-women-tab');
+  assert.match(h.get('team-cards').innerHTML, /data-team="19970"/);
+  assert.match(h.get('team-cards').innerHTML, /data-team="2753"/);
+  assert(!h.get('team-cards').innerHTML.includes('data-team="331"'));
+  assert.equal(h.get('match-list').innerHTML, matches); assert.equal(h.requests.length, requests);
+  assert.equal(JSON.parse(h.saved()).teamsGender, 'women');
+  assert.equal(h.get('team-count').textContent, '10 followed teams');
+  chooseTeamsGender(h, 'men'); assert.match(h.get('team-cards').innerHTML, /data-team="331"/);
+});
+
+test('selecting a team from either tab updates incompatible match filters and keeps the team selectable', async () => {
+  const h = harness(); await settled(h);
+  h.get('group-filters').listeners.click({target:{closest:()=>({dataset:{group:'men-clubs'}})}});
+  chooseTeamsGender(h, 'women');
+  assert.equal(JSON.parse(h.saved()).group, 'men-clubs');
+  h.get('team-cards').listeners.click({target:{closest:()=>({dataset:{team:'19970'}})}});
+  const selected = JSON.parse(h.saved());
+  assert.equal(selected.team, '19970'); assert.equal(selected.group, 'women-clubs');
+  assert.equal(h.get('team-filter').value, '19970');
+  assert.match(h.get('team-filter').innerHTML, /Chelsea/);
+  assert.match(h.get('match-list').innerHTML, /No upcoming fixtures/);
+});
+
+test('Your teams tabs restore the saved choice and support arrow and Home/End navigation', async () => {
+  const h = harness({saved:JSON.stringify({teamsGender:'women'})}); await settled(h);
+  assert.equal(h.get('teams-women-tab').attributes.tabindex, '0');
+  assert.equal(h.get('teams-men-tab').attributes.tabindex, '-1');
+  let prevented = false;
+  h.get('teams-tabs').listeners.keydown({key:'ArrowLeft',target:{closest:()=>({dataset:{teamsGender:'women'}})},preventDefault(){prevented=true;}});
+  assert(prevented); assert.equal(h.get('teams-men-tab').attributes['aria-selected'], 'true'); assert(h.get('teams-men-tab').focused);
+  h.get('teams-tabs').listeners.keydown({key:'End',target:{closest:()=>({dataset:{teamsGender:'men'}})},preventDefault(){}});
+  assert.equal(h.get('teams-women-tab').attributes['aria-selected'], 'true');
+  h.get('teams-tabs').listeners.keydown({key:'Home',target:{closest:()=>({dataset:{teamsGender:'women'}})},preventDefault(){}});
+  assert.equal(h.get('teams-men-tab').attributes['aria-selected'], 'true');
 });

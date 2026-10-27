@@ -5,7 +5,7 @@
   if (!S) return;
   const $ = id => document.getElementById(id);
   const E = S.escape;
-  const state = { group: 'all', team: 'all', view: 'upcoming', league: 'eng.1', country: 'all', search: '', date: 'all', limit: 12, loading: false, done: 0, refreshedAt: null, schedules: new Map(), tables: new Map(), events: [] };
+  const state = { group: 'all', team: 'all', teamsGender: 'men', view: 'upcoming', league: 'eng.1', country: 'all', search: '', date: 'all', limit: 12, loading: false, done: 0, refreshedAt: null, schedules: new Map(), tables: new Map(), events: [] };
   const tv = { data: null, loading: false, error: false, attemptAt: null };
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-sports-filters') || 'null');
@@ -14,6 +14,8 @@
       if (S.teams.some(t => t.id === saved.team && (state.group === 'all' || t.group === state.group))) state.team = saved.team;
       if (S.leagues.some(l => l.id === saved.league)) state.league = saved.league;
       if (L?.countries.some(c => c.code === saved.country)) state.country = saved.country;
+      if (['men', 'women'].includes(saved.teamsGender)) state.teamsGender = saved.teamsGender;
+      else if (S.teams.find(t => t.id === state.team)?.group.startsWith('women')) state.teamsGender = 'women';
     }
   } catch (_) {}
   const dateFormat = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
@@ -23,8 +25,9 @@
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Device local time';
   $('timezone').textContent = 'Kick-offs: ' + zone.replace(/_/g, ' ');
   function saveFilters() {
-    try { localStorage.setItem('gregle-sports-filters', JSON.stringify({ group: state.group, team: state.team, league: state.league, country: state.country })); } catch (_) {}
+    try { localStorage.setItem('gregle-sports-filters', JSON.stringify({ group: state.group, team: state.team, teamsGender: state.teamsGender, league: state.league, country: state.country })); } catch (_) {}
   }
+  const teamGender = team => team.group.startsWith('women') ? 'women' : 'men';
   const eligibleTeams = () => S.teams.filter(t => state.group === 'all' || t.group === state.group);
   const selectedTeams = () => eligibleTeams().filter(t => state.team === 'all' || t.id === state.team);
   const followed = id => S.teams.some(t => t.id === id);
@@ -141,8 +144,16 @@
     $('league-tables').innerHTML = groups.map(group => '<div class="table-panel"><div class="table-heading"><h3>' + E(group.name) + '</h3><a href="' + source + '">ESPN table ↗</a></div><div class="table-scroll" tabindex="0" role="region" aria-label="' + E(group.name) + ' table, scroll horizontally for more columns"><table><caption class="sr-only">' + E(group.name) + '; your followed clubs are highlighted.</caption><thead><tr><th scope="col">#</th><th class="team-cell" scope="col">Team</th><th scope="col">P</th><th class="extra-stat" scope="col">W</th><th class="extra-stat" scope="col">D</th><th class="extra-stat" scope="col">L</th><th class="extra-stat" scope="col">GF</th><th class="extra-stat" scope="col">GA</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead><tbody>' + group.rows.map(r => '<tr' + (followed(r.id) ? ' class="followed"' : '') + '><td>' + E(r.rank) + '</td><th class="team-cell" scope="row"><span class="table-team">' + logo(r) + '<span>' + E(r.name) + (followed(r.id) ? '<span class="sr-only"> · Followed team</span>' : '') + '</span></span></th>' + ['played', 'wins', 'draws', 'losses', 'gf', 'ga', 'gd', 'points'].map(key => '<td' + (key === 'points' ? ' class="points"' : ['wins', 'draws', 'losses', 'gf', 'ga'].includes(key) ? ' class="extra-stat"' : '') + '>' + E(r[key]) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div></div>').join('');
   }
   function renderTeams() {
-    $('team-count').textContent = eligibleTeams().length + ' followed teams';
-    $('team-cards').innerHTML = eligibleTeams().map(t => {
+    const teams = S.teams.filter(t => teamGender(t) === state.teamsGender);
+    for (const gender of ['men', 'women']) {
+      const selected = gender === state.teamsGender;
+      $('teams-' + gender + '-tab').setAttribute('aria-selected', String(selected));
+      $('teams-' + gender + '-tab').setAttribute('tabindex', selected ? '0' : '-1');
+      $('teams-' + gender + '-count').textContent = S.teams.filter(t => teamGender(t) === gender).length;
+    }
+    $('team-cards').setAttribute('aria-labelledby', 'teams-' + state.teamsGender + '-tab');
+    $('team-count').textContent = teams.length + ' followed teams';
+    $('team-cards').innerHTML = teams.map(t => {
       const feeds = state.schedules.get(t.id);
       const next = S.selectEvents(state.events, [t.id], 'live')[0] || S.selectEvents(state.events, [t.id], 'upcoming').find(e => !e.special);
       const recent = S.selectEvents(state.events, [t.id], 'recent')[0];
@@ -230,12 +241,32 @@
   $('team-filter').addEventListener('change', () => {
     const value = $('team-filter').value;
     if (value !== 'all' && !eligibleTeams().some(t => t.id === value)) return;
-    state.team = value; state.limit = 12; saveFilters(); render();
+    state.team = value; state.limit = 12;
+    if (value !== 'all') state.teamsGender = teamGender(S.teams.find(t => t.id === value));
+    saveFilters(); render();
   });
   $('team-cards').addEventListener('click', e => {
-    const b = e.target.closest('[data-team]'); if (!b || !eligibleTeams().some(t => t.id === b.dataset.team)) return;
-    state.team = b.dataset.team; state.limit = 12; $('team-filter').value = state.team; saveFilters(); render();
+    const b = e.target.closest('[data-team]');
+    const team = b && S.teams.find(t => t.id === b.dataset.team); if (!team) return;
+    if (state.group !== 'all' && state.group !== team.group) state.group = team.group;
+    state.team = team.id; state.teamsGender = teamGender(team); state.limit = 12;
+    renderFilters(); saveFilters(); render();
     $('matches-heading').scrollIntoView({ behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+  });
+  function selectTeamsGender(gender, focus = false) {
+    if (!['men', 'women'].includes(gender)) return;
+    state.teamsGender = gender; saveFilters(); renderTeams();
+    if (focus) $('teams-' + gender + '-tab').focus();
+  }
+  $('teams-tabs').addEventListener('click', e => {
+    const tab = e.target.closest('[data-teams-gender]');
+    if (tab) selectTeamsGender(tab.dataset.teamsGender);
+  });
+  $('teams-tabs').addEventListener('keydown', e => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    const tab = e.target.closest('[data-teams-gender]'); if (!tab) return;
+    e.preventDefault();
+    selectTeamsGender(e.key === 'Home' ? 'men' : e.key === 'End' ? 'women' : tab.dataset.teamsGender === 'men' ? 'women' : 'men', true);
   });
   $('match-tabs').addEventListener('click', e => {
     const b = e.target.closest('[data-view]'); if (!b || !['upcoming', 'recent', 'live', 'tv'].includes(b.dataset.view)) return;

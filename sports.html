@@ -17,13 +17,13 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/sports-app/favicon-32.png?v=20261012-football">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/sports-app/icon-192.png?v=20261012-football">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/sports.css?v=20261027-inline-refresh">
+  <link rel="stylesheet" href="assets/sports.css?v=20261027-team-tabs">
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/sports-core.js?v=20261027-dashboard" defer></script>
   <script src="assets/sports-live-core.js?v=20261027-tv-guide" defer></script>
   <script src="assets/sports-live.js?v=20261012-live-layout" defer></script>
-  <script src="assets/sports.js?v=20261027-inline-refresh" defer></script>
+  <script src="assets/sports.js?v=20261027-team-tabs" defer></script>
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <script src="assets/sports-news.js?v=20261027-home-ticker" defer></script>
@@ -114,7 +114,15 @@
         <a class="sports-source-link" href="https://www.fotmob.com/">Explore football on FotMob <span aria-hidden="true">↗</span></a>
       </aside>
     </div>
-    <section aria-labelledby="teams-heading" class="teams-section"><div class="section-heading"><div><p class="eyebrow">Your touchline</p><h2 id="teams-heading">Your teams</h2></div><span id="team-count" class="meta">22 followed teams</span></div><p class="meta">Select a team to focus its matches. Your team and league selections are remembered on this device.</p><div id="team-cards" class="team-grid"></div></section>
+    <section aria-labelledby="teams-heading" class="teams-section">
+      <div class="section-heading"><div><p class="eyebrow">Your touchline</p><h2 id="teams-heading">Your teams</h2></div><span id="team-count" class="meta">12 followed teams</span></div>
+      <p class="meta">Club and national teams. Select a team to focus its matches. Your selections are remembered on this device.</p>
+      <div class="teams-tabs" id="teams-tabs" role="tablist" aria-label="Your teams">
+        <button class="chip teams-tab" id="teams-men-tab" type="button" role="tab" data-teams-gender="men" aria-selected="true" aria-controls="team-cards" tabindex="0">Men’s teams <span id="teams-men-count" aria-hidden="true">12</span></button>
+        <button class="chip teams-tab" id="teams-women-tab" type="button" role="tab" data-teams-gender="women" aria-selected="false" aria-controls="team-cards" tabindex="-1">Women’s teams <span id="teams-women-count" aria-hidden="true">10</span></button>
+      </div>
+      <div id="team-cards" class="team-grid" role="tabpanel" aria-labelledby="teams-men-tab"></div>
+    </section>
     <footer><div><p>Scores, stats &amp; crests: <a href="https://www.espn.com/soccer/">ESPN</a> · TV listings: <a href="https://www.fotmob.com/tv-guide/gb">FotMob</a> · Headlines: <a href="https://www.bbc.com/sport">BBC Sport</a>.</p><p>Fixtures and tables refresh every minute while visible; live stats every 30 seconds. BBC headlines refresh periodically. Kick-offs and coverage may change; feed failures are shown with the affected data.</p></div><a href="https://gregle.uk/">Back to Gregle ↗</a></footer>
   </main>
 </body>
