@@ -5,7 +5,7 @@
   if (!S) return;
   const $ = id => document.getElementById(id);
   const E = S.escape;
-  const state = { group: 'all', team: 'all', view: 'upcoming', league: 'eng.1', country: 'all', search: '', date: 'all', limit: 12, loading: false, done: 0, schedules: new Map(), tables: new Map(), events: [] };
+  const state = { group: 'all', team: 'all', view: 'upcoming', league: 'eng.1', country: 'all', search: '', date: 'all', limit: 12, loading: false, done: 0, refreshedAt: null, schedules: new Map(), tables: new Map(), events: [] };
   const tv = { data: null, loading: false, error: false, attemptAt: null };
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-sports-filters') || 'null');
@@ -19,8 +19,8 @@
   const dateFormat = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
   const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' });
   const stampFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const refreshFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Device local time';
-  $('dashboard-date').textContent = dateFormat.format(Date.now());
   $('timezone').textContent = 'Kick-offs: ' + zone.replace(/_/g, ' ');
   function saveFilters() {
     try { localStorage.setItem('gregle-sports-filters', JSON.stringify({ group: state.group, team: state.team, league: state.league, country: state.country })); } catch (_) {}
@@ -164,7 +164,8 @@
     let failures = 0;
     for (const feeds of state.schedules.values()) for (const key of ['fixtures', 'results']) if (feeds[key]?.error) failures++;
     for (const table of state.tables.values()) if (table.error) failures++;
-    $('feed-status').textContent = state.loading ? 'Refreshing… ' + state.done + '/' + (S.teams.length * 2 + S.leagues.length) + ' feeds checked' : failures ? 'Updated available feeds · ' + failures + ' unavailable. See affected teams and tables.' : 'Fixtures, results & tables checked ' + stampFormat.format(Date.now());
+    $('feed-status').textContent = state.loading ? 'Refreshing… ' + state.done + '/' + (S.teams.length * 2 + S.leagues.length) + ' feeds checked' : failures ? 'Updated available feeds · ' + failures + ' unavailable. See affected teams and tables.' : state.refreshedAt !== null ? 'Fixtures, results & tables checked ' + stampFormat.format(state.refreshedAt) : 'Waiting for the first refresh…';
+    $('dashboard-date').textContent = state.refreshedAt === null ? (state.loading ? 'Refreshing scores…' : 'Not refreshed yet') : (failures === S.teams.length * 2 + S.leagues.length ? 'Last attempt: ' : 'Last refresh: ') + refreshFormat.format(state.refreshedAt);
     $('refresh').disabled = state.loading;
   }
   function render() {
@@ -218,7 +219,7 @@
     await Promise.all([tvRefresh, ...Array.from({ length: 6 }, async () => {
       while (index < jobs.length) { await jobs[index++](); state.done++; queueRender(); }
     })]);
-    state.loading = false; render();
+    state.refreshedAt = Date.now(); state.loading = false; render();
   }
   $('group-filters').addEventListener('click', e => {
     const button = e.target.closest('[data-group]');

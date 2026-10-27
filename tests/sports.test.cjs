@@ -246,3 +246,29 @@ test('unconfirmed kick-offs and postponed games do not show broadcast claims', a
     assert.match(h.get('match-list').innerHTML, /Kick-off time is unconfirmed|broadcast coverage needs confirmation/);
   }
 });
+
+test('last refresh includes date and time, changes only after completion, and stays fixed during filtering', async () => {
+  const h = harness(); await settled(h);
+  const format = new Intl.DateTimeFormat('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const original = h.get('dashboard-date').textContent;
+  assert.equal(original, 'Last refresh: ' + format.format(NOW));
+  const feedStamp = h.get('feed-status').textContent;
+  h.setTime(NOW + 30000);
+  h.get('group-filters').listeners.click({target:{closest:()=>({dataset:{group:'all'}})}});
+  assert.equal(h.get('dashboard-date').textContent, original);
+  assert.equal(h.get('feed-status').textContent, feedStamp);
+  h.setTime(NOW + 60000);
+  const pending = h.get('refresh').listeners.click();
+  assert.equal(h.get('dashboard-date').textContent, original);
+  await pending; await settled(h);
+  assert.equal(h.get('dashboard-date').textContent, 'Last refresh: ' + format.format(NOW + 60000));
+});
+
+test('a fully failed refresh is dated as an attempt rather than fresh data', async () => {
+  const h = harness(); await settled(h);
+  h.setTime(NOW + 120000); h.setFail(() => true);
+  await h.get('refresh').listeners.click(); await settled(h);
+  assert.match(h.get('dashboard-date').textContent, /^Last attempt: /);
+  assert.match(h.get('dashboard-date').textContent, /2026.*\d{2}:\d{2}:\d{2}/);
+  assert.match(h.get('feed-status').textContent, /48 unavailable/);
+});
