@@ -39,6 +39,14 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/bbc-sport.json
           git commit -m "Refresh BBC Sport headlines"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          saved=0
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main
+            if git push origin HEAD:main; then
+              saved=1
+              break
+            fi
+            sleep "$((attempt * 2))"
+          done
+          test "$saved" = 1
           gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
