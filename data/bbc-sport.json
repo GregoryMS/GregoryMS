@@ -1,15 +1,35 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-28T15:39:32+00:00",
-  "fetchedAt": "2026-10-28T15:39:35.521336+00:00",
+  "feedUpdatedAt": "2026-10-28T20:35:20+00:00",
+  "fetchedAt": "2026-10-28T20:35:24.419379+00:00",
   "items": [
+    {
+      "title": "Sesko ruled out until January with shin injury",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cq33xl50vyj2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Labuschagne's form hits record low but Australia hint at future",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cxyvr1my94m4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Red Roses make six changes but Kildunne on bench again",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cq1m4kn84gk2o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Carrick and Fernandes hold clear-the-air talks",
       "link": "https://www.bbc.co.uk/sport/football/articles/cje36dn5nx36o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Arsenal to appeal against Dowman red card",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c3dxwdnjqj17o?at_medium=RSS&at_campaign=rss"
+      "title": "Djokovic celebrates 'big win' on return to Basel",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/cmd93vlz4k11o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Perez signs multi-year extension with Cadillac",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cqde852ww04ko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Prem eyes English expansion despite Welsh interest",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c54g1x0z4rygo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Goodbye to Wawrinka - an everyman who gatecrashed the greats",
@@ -20,28 +40,8 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/cm369r0n0zk5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Liverpool gambled on Jacquet and it is paying off",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqgkv216dx2no?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Serrano to end career in Puerto Rico in January",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/cqn8denld133o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'Biggest night in club's history' for fearless Fleetwood",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqgkv2vxeengo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'I earned my spot' - Lewis can be England hero after controversial selection",
-      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/c5djv7e49lwmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Why Hurts played with blood clot and what it means for NFL",
-      "link": "https://www.bbc.co.uk/sport/american-football/articles/cm0qk37933nno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Chair skills, quick brain - how O'Neill adapted to wheelchair rugby league",
-      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/c5lyer2wvd3xo?at_medium=RSS&at_campaign=rss"
+      "title": "All Spanish cup matches suspended after Madrid train collision",
+      "link": "https://www.bbc.co.uk/sport/football/articles/crgj902p68gno?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
