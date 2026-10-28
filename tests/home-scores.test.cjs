@@ -48,8 +48,12 @@ test('homepage uses all followed teams, deduplicates games and excludes untracke
   await flush();
   assert.equal(h.scores.hidden, false);
   assert.equal(h.scores.children.length, 2);
-  assert.match(h.scores.innerHTML, /ARS<\/span><strong>0–1<\/strong>/);
-  assert.match(h.scores.innerHTML, /MCI · W/);
+  assert.match(h.scores.innerHTML, /soccer\/500\/359\.png/);
+  assert.match(h.scores.innerHTML, /soccer\/500\/382\.png/);
+  assert.match(h.scores.innerHTML, /soccer\/500\/19973\.png/);
+  assert.match(h.scores.innerHTML, /<strong>0–1<\/strong>/);
+  assert.match(h.scores.innerHTML, /W · LIVE/);
+  assert(!h.scores.innerHTML.includes('>ARS<')); assert(!h.scores.innerHTML.includes('>MCI<'));
   assert.match(h.scores.innerHTML, /href="https:\/\/sports.gregle.uk\/"/);
   const schedules = h.requests.filter(r => r.url.includes('/schedule?'));
   assert.equal(schedules.length, S.teams.length * 2);
@@ -98,7 +102,8 @@ test('provider strings are escaped before insertion in score links', async () =>
   const raw = event(); raw.competitions[0].competitors[0].team.displayName = '<img src=x onerror=alert(1)>';
   raw.competitions[0].competitors[1].score = '<script>bad()</script>';
   const h = app({ events: [raw] }); await flush();
-  assert(!h.scores.innerHTML.includes('<img')); assert(!h.scores.innerHTML.includes('<script>'));
+  assert(!h.scores.innerHTML.includes('<img src=x')); assert(!h.scores.innerHTML.includes('<script>'));
+  assert.match(h.scores.innerHTML, /&lt;img src=x onerror=alert\(1\)&gt;/);
   assert.match(h.scores.innerHTML, /&lt;script&gt;/);
 });
 test('unavailable media queries leave scores hidden and older media listeners still work', async () => {
@@ -106,4 +111,20 @@ test('unavailable media queries leave scores hidden and older media listeners st
   assert.equal(unavailable.requests.length, 0); assert.equal(unavailable.scores.hidden, true);
   const older = app({ oldMedia: true, desktop: false, events: [event()] }); await flush();
   older.media.matches = true; older.media.change(); await flush(); assert.equal(older.scores.hidden, false);
+});
+test('emblems use national flags and safe opponent crests, with a graphic fallback on image failure', async () => {
+  const match = event('201', ['206', '9991']);
+  match.competitions[0].competitors[1].team.logo = 'https://a.espncdn.com/i/teamlogos/soccer/500/opponent.png';
+  const h = app({ events: [match] }); await flush();
+  assert.match(h.scores.innerHTML, /countries\/500\/can\.png/);
+  assert.match(h.scores.innerHTML, /soccer\/500\/opponent\.png/);
+  assert.match(h.scores.innerHTML, /<svg class="score-chip-emblem"[^>]+ hidden>/);
+  const fallback = { hidden: true };
+  const image = { tagName: 'IMG', hidden: false, nextElementSibling: fallback, classList: { contains: name => name === 'score-chip-emblem' } };
+  h.listeners.error({ target: image }); assert.equal(image.hidden, true); assert.equal(fallback.hidden, false);
+  const unrelated = { tagName: 'IMG', hidden: false, classList: { contains: () => false } };
+  h.listeners.error({ target: unrelated }); assert.equal(unrelated.hidden, false);
+  match.competitions[0].competitors[1].team.logo = 'https://evil.test/logo.png';
+  const unsafe = app({ events: [match] }); await flush();
+  assert(!unsafe.scores.innerHTML.includes('evil.test')); assert.match(unsafe.scores.innerHTML, /soccer\/500\/9991\.png/);
 });
