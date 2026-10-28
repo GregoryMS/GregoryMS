@@ -12,7 +12,7 @@ function event(id = '101', ids = ['359', '382'], state = 'in', name = 'STATUS_IN
   }] };
 }
 function app(options = {}) {
-  const requests = [], listeners = {}, intervals = [], media = { matches: options.desktop !== false, addEventListener(_, fn) { this.change = fn; } };
+  const requests = [], listeners = {}, intervals = [], media = { matches: options.viewport !== false, addEventListener(_, fn) { this.change = fn; } };
   let now = NOW, events = options.events || [], fail = false, summary = options.summary;
   const scores = { hidden: true, children: [], clientWidth: 900, parentElement: {}, _html: '',
     set innerHTML(value) { this._html = value; this.children = [...value.matchAll(/<a class="score-chip"/g)].map(() => ({ hidden: false, getBoundingClientRect: () => ({ width: 190 }) })); },
@@ -63,8 +63,8 @@ test('no live games leaves no empty pill or reserved scores area', async () => {
   const h = app({ events: [event('101', ['359', '382'], 'pre')] }); await flush();
   assert.equal(h.scores.hidden, true); assert.equal(h.scores.children.length, 0);
 });
-test('mobile and hidden pages do not request scores; entering desktop starts retrieval', async () => {
-  const h = app({ desktop: false, events: [event()] }); await flush();
+test('zero-width and hidden pages do not request scores; restoring viewport space starts retrieval', async () => {
+  const h = app({ viewport: false, events: [event()] }); await flush();
   h.tick(); assert.equal(h.requests.length, 0); assert.equal(h.scores.hidden, true);
   h.media.matches = true; h.media.change(); await flush(); assert.equal(h.scores.hidden, false);
   h.media.matches = false; h.media.change(); assert.equal(h.scores.hidden, true);
@@ -76,6 +76,7 @@ test('all games fit on a wide header, otherwise only the first is shown, and res
   assert(h.scores.children.every(chip => !chip.hidden));
   h.scores.clientWidth = 400; h.listeners.resize();
   assert.deepEqual(h.scores.children.map(chip => chip.hidden), [false, true, true]);
+  h.scores.clientWidth = 180; h.listeners.resize(); assert(h.scores.children.every(chip => chip.hidden));
   h.scores.clientWidth = 900; h.listeners.resize(); assert(h.scores.children.every(chip => !chip.hidden));
 });
 test('fresh summaries update scores every 30 seconds and full time stays hidden despite lagging schedules', async () => {
@@ -91,7 +92,7 @@ test('failed refreshes cannot keep stale scores visible indefinitely', async () 
   const h = app({ events: [event()] }); await flush(); assert.equal(h.scores.hidden, false);
   h.fail(); h.setTime(NOW + 91000); h.tick(); await flush(); assert.equal(h.scores.hidden, true);
 });
-test('a late response cannot restore scores after leaving desktop', async () => {
+test('a late response cannot restore scores after losing viewport space', async () => {
   let resolve; const deferred = new Promise(done => { resolve = done; });
   const h = app({ events: [event()], deferSummary: deferred }); await flush();
   h.media.matches = false; h.media.change();
@@ -109,7 +110,7 @@ test('provider strings are escaped before insertion in score links', async () =>
 test('unavailable media queries leave scores hidden and older media listeners still work', async () => {
   const unavailable = app({ noMedia: true, events: [event()] }); await flush();
   assert.equal(unavailable.requests.length, 0); assert.equal(unavailable.scores.hidden, true);
-  const older = app({ oldMedia: true, desktop: false, events: [event()] }); await flush();
+  const older = app({ oldMedia: true, viewport: false, events: [event()] }); await flush();
   older.media.matches = true; older.media.change(); await flush(); assert.equal(older.scores.hidden, false);
 });
 test('emblems use national flags and safe opponent crests, with a graphic fallback on image failure', async () => {

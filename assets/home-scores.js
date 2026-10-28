@@ -3,11 +3,11 @@
   const S = window.GregleSports;
   const scores = document.getElementById('homeScores');
   if (!S || !scores || typeof window.matchMedia !== 'function') return;
-  const desktop = window.matchMedia('(min-width: 801px)');
+  const viewport = window.matchMedia('(min-width: 1px)');
   const ids = S.teams.map(team => team.id);
   const schedules = new Map(), details = new Map(), stopped = new Set(), pending = new Set(), controllers = new Set();
   let loading = false, generation = 0, lastSchedule = null, rendered = '';
-  const enabled = () => desktop.matches && !document.hidden;
+  const enabled = () => viewport.matches && !document.hidden;
   const fresh = entry => entry && Date.now() - entry.at < 90000;
   const live = match => match.live && !match.completed && !match.special;
   function matches() {
@@ -25,7 +25,7 @@
     chips.forEach(chip => { chip.hidden = false; });
     const gap = parseFloat(getComputedStyle(scores).columnGap) || 0;
     const total = chips.reduce((width, chip) => width + chip.getBoundingClientRect().width, 0) + gap * (chips.length - 1);
-    if (total > scores.clientWidth) chips.forEach((chip, index) => { chip.hidden = index > 0; });
+    if (total > scores.clientWidth) chips.forEach((chip, index) => { chip.hidden = index > 0 || chip.getBoundingClientRect().width > scores.clientWidth; });
   }
   function emblem(team) {
     const known = S.teams.find(item => item.id === team.id);
@@ -114,8 +114,8 @@
     if (!enabled()) suspend();
     else void refresh();
   }
-  if (desktop.addEventListener) desktop.addEventListener('change', visibility);
-  else desktop.addListener?.(visibility);
+  if (viewport.addEventListener) viewport.addEventListener('change', visibility);
+  else viewport.addListener?.(visibility);
   document.addEventListener('visibilitychange', visibility);
   window.addEventListener('pagehide', suspend);
   window.addEventListener('pageshow', visibility);

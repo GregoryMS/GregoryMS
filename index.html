@@ -242,12 +242,9 @@
     .score-chip-status { font-size: 0.72rem; }
     .score-chip:focus-visible { outline: 3px solid #9850ff; outline-offset: 3px; }
     .score-chip:hover { border-color: var(--muted); }
-    @media (min-width: 801px) {
-      .topbar { flex-wrap: nowrap; }
-      .left-tools { flex: 1 1 0; min-width: 0; flex-wrap: nowrap; }
-      .left-tools > .weather-chip, .left-tools > .utc-chip, .nav-tools { flex-shrink: 0; }
-      .home-scores { display: flex; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0; overflow: hidden; }
-    }
+    .left-tools { flex: 1 1 220px; min-width: 0; flex-wrap: nowrap; }
+    .left-tools > .weather-chip, .left-tools > .utc-chip, .nav-tools { flex-shrink: 0; }
+    .home-scores { display: flex; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0; overflow: hidden; }
 
     .ticker-wrap {
       width: min(92vw, 980px);
@@ -799,7 +796,7 @@
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <script src="assets/sports-core.js?v=20261028-home-scores" defer></script>
-  <script src="assets/home-scores.js?v=20261028-emblems" defer></script>
+  <script src="assets/home-scores.js?v=20261028-mobile-fit" defer></script>
   <link rel="canonical" href="https://gregle.uk/">
 </head>
 <body>
