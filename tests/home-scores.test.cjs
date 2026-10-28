@@ -35,6 +35,8 @@ function app(options = {}) {
       return { ok: true, json: async () => ({ team: { id }, events: events.filter(e => options.includeUnrelated || e.competitions[0].competitors.some(c => c.team.id === id)) }) };
     }
   };
+  if (options.noMedia) context.matchMedia = undefined;
+  if (options.oldMedia) { delete media.addEventListener; media.addListener = fn => { media.change = fn; }; }
   context.window = context; vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/sports-core.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/home-scores.js'), 'utf8'), context);
@@ -98,4 +100,10 @@ test('provider strings are escaped before insertion in score links', async () =>
   const h = app({ events: [raw] }); await flush();
   assert(!h.scores.innerHTML.includes('<img')); assert(!h.scores.innerHTML.includes('<script>'));
   assert.match(h.scores.innerHTML, /&lt;script&gt;/);
+});
+test('unavailable media queries leave scores hidden and older media listeners still work', async () => {
+  const unavailable = app({ noMedia: true, events: [event()] }); await flush();
+  assert.equal(unavailable.requests.length, 0); assert.equal(unavailable.scores.hidden, true);
+  const older = app({ oldMedia: true, desktop: false, events: [event()] }); await flush();
+  older.media.matches = true; older.media.change(); await flush(); assert.equal(older.scores.hidden, false);
 });
