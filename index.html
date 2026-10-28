@@ -56,7 +56,7 @@
       color-scheme: dark;
     }
 
-    a, button, input, .ticker-wrap, .menu-panel, .search-input, .weather-chip, .utc-chip {
+    a, button, input, .ticker-wrap, .menu-panel, .search-input, .weather-chip, .utc-chip, .score-chip {
       transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.18s ease;
     }
 
@@ -200,7 +200,8 @@
     }
 
     .utc-chip,
-    .weather-chip {
+    .weather-chip,
+    .score-chip {
       min-height: 42px;
       display: inline-flex;
       align-items: center;
@@ -226,9 +227,23 @@
     body.dark-mode .weather-chip .rain-stroke { stroke:#a6c8e3; }
 
     .weather-chip strong,
-    .utc-chip strong {
+    .utc-chip strong,
+    .score-chip strong {
       color: var(--text);
       font-weight: 600;
+    }
+
+    .home-scores { display: none; }
+    .score-chip { flex: 0 0 auto; gap: 8px; font-variant-numeric: tabular-nums; }
+    .score-chip[hidden], .home-scores[hidden] { display: none; }
+    .score-chip-status { font-size: 0.72rem; }
+    .score-chip:focus-visible { outline: 3px solid #9850ff; outline-offset: 3px; }
+    .score-chip:hover { border-color: var(--muted); }
+    @media (min-width: 801px) {
+      .topbar { flex-wrap: nowrap; }
+      .left-tools { flex: 1 1 0; min-width: 0; flex-wrap: nowrap; }
+      .left-tools > .weather-chip, .left-tools > .utc-chip, .nav-tools { flex-shrink: 0; }
+      .home-scores { display: flex; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0; overflow: hidden; }
     }
 
     .ticker-wrap {
@@ -780,6 +795,8 @@
   </style>
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
+  <script src="assets/sports-core.js?v=20261028-home-scores" defer></script>
+  <script src="assets/home-scores.js?v=20261028" defer></script>
   <link rel="canonical" href="https://gregle.uk/">
 </head>
 <body>
@@ -787,6 +804,7 @@
     <div class="left-tools">
       <a class="weather-chip" id="weatherChip" href="https://weather.gregle.uk/?lat=48.4284&amp;lon=-123.3656&amp;name=Victoria&amp;country=CA&amp;tz=America%2FVancouver" aria-label="Open weather forecast for Victoria"><span class="weather-chip-icon" aria-hidden="true"></span><span>--°C</span></a>
       <div class="utc-chip" id="utcClock"><strong>UTC</strong>&nbsp; --:--</div>
+      <div class="home-scores" id="homeScores" aria-label="Live scores for followed teams" hidden></div>
     </div>
 
     <div class="nav-tools">
@@ -1497,5 +1515,6 @@
   </script>
 </body>
 </html>
+
 
 
