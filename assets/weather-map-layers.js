@@ -62,7 +62,7 @@
   };
   document.addEventListener('DOMContentLoaded',()=>{
     ready=true;
-    for(const name of ['radar','ptype','wind','clouds','smoke','fog']) {
+    for(const name of ['radar','ptype','wind','clouds','smoke','fog','satellite']) {
       const input=$(`radarLayer-${name}`);input.disabled=false;
       input.addEventListener('change',()=>{if(input.checked)select(name);});
     }
