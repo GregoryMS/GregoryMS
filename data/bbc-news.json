@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-28T15:28:54+00:00",
-  "fetchedAt": "2026-10-28T15:29:01.214560+00:00",
+  "feedUpdatedAt": "2026-10-28T20:28:52+00:00",
+  "fetchedAt": "2026-10-28T20:28:55.531725+00:00",
   "items": [
+    {
+      "title": "Healey unveils £100 for energy bills and bank tax in first Budget",
+      "link": "https://www.bbc.co.uk/news/articles/cqpvgxz3y49go?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Key points at a glance",
       "link": "https://www.bbc.co.uk/news/articles/c6x2zrjl7kjno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Chris Mason: Budget felt cautious despite its range of small measures",
+      "link": "https://www.bbc.co.uk/news/articles/cm78pljvqvxeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "The main announcements from the Budget - and how they will be funded",
+      "link": "https://www.bbc.co.uk/news/videos/ck0j06zl28wzo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How the Budget affects you",
       "link": "https://www.bbc.co.uk/news/articles/cr0j05vxlwjzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Chris Mason on the standout points from the Budget",
-      "link": "https://www.bbc.co.uk/news/videos/cmdx3kne9r6go?at_medium=RSS&at_campaign=rss"
+      "title": "What the Budget offers for under 25s - and what it leaves out",
+      "link": "https://www.bbc.co.uk/news/articles/c60e05yn3w9zo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Chancellor takes to the despatch box",
-      "link": "https://www.bbc.co.uk/news/videos/cqn49vy2jlx0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Overturned carriages and makeshift medical tents at crash site",
-      "link": "https://www.bbc.co.uk/news/videos/cv8ezjdkle59o?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: At the scene of Spain's deadly train crash",
+      "link": "https://www.bbc.co.uk/news/videos/cw5ynjgy3vvgo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "What we know about the crash so far",
       "link": "https://www.bbc.co.uk/news/articles/cm8xz7pkd0jjo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Russell Brand tells court allegations made friends and colleagues turn against him",
-      "link": "https://www.bbc.co.uk/news/articles/cmvgxl5kdgrzo?at_medium=RSS&at_campaign=rss"
+      "title": "Flávio Bolsonaro lands in Miami after defeat in Brazil's presidential election",
+      "link": "https://www.bbc.co.uk/news/articles/c6kglwe4lxwzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Tommy Robinson guilty of harassing two Daily Mail journalists",
-      "link": "https://www.bbc.co.uk/news/articles/cq2d6z36pp53o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Luxury cruise passengers stranded in Cambodia due to soaring fuel costs",
-      "link": "https://www.bbc.co.uk/news/articles/cwj342k62exyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Trump says US voter fraud is 'rampant' - evidence suggests it is extremely rare",
-      "link": "https://www.bbc.co.uk/news/articles/ckeq3vezxlx1o?at_medium=RSS&at_campaign=rss"
+      "title": "Netanyahu's bloc leading Israel election but short of majority, partial results show",
+      "link": "https://www.bbc.co.uk/news/articles/cmdx3knq1xexo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
