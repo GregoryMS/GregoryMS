@@ -2,8 +2,8 @@
   'use strict';
   const S = window.GregleSports;
   const scores = document.getElementById('homeScores');
+  if (!S || !scores || typeof window.matchMedia !== 'function') return;
   const desktop = window.matchMedia('(min-width: 801px)');
-  if (!S || !scores) return;
   const ids = S.teams.map(team => team.id);
   const schedules = new Map(), details = new Map(), stopped = new Set(), pending = new Set(), controllers = new Set();
   let loading = false, generation = 0, lastSchedule = null, rendered = '';
@@ -101,7 +101,8 @@
     if (!enabled()) suspend();
     else void refresh();
   }
-  desktop.addEventListener?.('change', visibility);
+  if (desktop.addEventListener) desktop.addEventListener('change', visibility);
+  else desktop.addListener?.(visibility);
   document.addEventListener('visibilitychange', visibility);
   window.addEventListener('pagehide', suspend);
   window.addEventListener('pageshow', visibility);
