@@ -236,6 +236,9 @@
     .home-scores { display: none; }
     .score-chip { flex: 0 0 auto; gap: 8px; font-variant-numeric: tabular-nums; }
     .score-chip[hidden], .home-scores[hidden] { display: none; }
+    .score-chip-team { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 24px; }
+    .score-chip-emblem { display: block; width: 24px; height: 24px; object-fit: contain; }
+    .score-chip-emblem[hidden] { display: none; }
     .score-chip-status { font-size: 0.72rem; }
     .score-chip:focus-visible { outline: 3px solid #9850ff; outline-offset: 3px; }
     .score-chip:hover { border-color: var(--muted); }
@@ -796,7 +799,7 @@
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <script src="assets/sports-core.js?v=20261028-home-scores" defer></script>
-  <script src="assets/home-scores.js?v=20261028" defer></script>
+  <script src="assets/home-scores.js?v=20261028-emblems" defer></script>
   <link rel="canonical" href="https://gregle.uk/">
 </head>
 <body>
