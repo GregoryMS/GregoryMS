@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
+      "checkedAt": "2026-10-28T17:24:25.655456+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -248,7 +248,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
+      "checkedAt": "2026-10-28T17:24:25.655456+00:00",
       "listings": [
         {
           "home": "Chelsea (W)",
@@ -443,7 +443,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
+      "checkedAt": "2026-10-28T17:24:25.655456+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -658,7 +658,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
+      "checkedAt": "2026-10-28T17:24:25.655456+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -863,7 +863,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
+      "checkedAt": "2026-10-28T17:24:25.655456+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
