@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
+      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -248,7 +248,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
+      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
       "listings": [
         {
           "home": "Chelsea (W)",
@@ -443,7 +443,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
+      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -580,6 +580,14 @@
           ]
         },
         {
+          "home": "Bayern München (W)",
+          "away": "Bayer Leverkusen (W)",
+          "start": "2026-11-01T14:00:00+00:00",
+          "channels": [
+            "Viaplay NO"
+          ]
+        },
+        {
           "home": "Brighton (W)",
           "away": "Crystal Palace (W)",
           "start": "2026-11-01T14:00:00+00:00",
@@ -650,7 +658,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
+      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -855,7 +863,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
+      "checkedAt": "2026-10-28T11:40:14.142609+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -863,7 +871,7 @@
           "start": "2026-10-28T17:45:00+00:00",
           "channels": [
             "Disney+ (DE)",
-            "ZDF"
+            "ZDF Livestream"
           ]
         },
         {
