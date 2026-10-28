@@ -27,15 +27,28 @@
     const total = chips.reduce((width, chip) => width + chip.getBoundingClientRect().width, 0) + gap * (chips.length - 1);
     if (total > scores.clientWidth) chips.forEach((chip, index) => { chip.hidden = index > 0; });
   }
+  function emblem(team) {
+    const known = S.teams.find(item => item.id === team.id);
+    const url = known?.group.endsWith('nations') ? 'https://a.espncdn.com/i/teamlogos/countries/500/' + known.abbreviation.toLowerCase() + '.png' :
+      S.safeURL(team.logo, true) || (/^\d+$/.test(team.id) ? 'https://a.espncdn.com/i/teamlogos/soccer/500/' + team.id + '.png' : '');
+    const image = url ? '<img class="score-chip-emblem" src="' + S.escape(url) + '" alt="" width="24" height="24" decoding="async">' : '';
+    const fallback = '<svg class="score-chip-emblem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"' + (url ? ' hidden' : '') + '><circle cx="12" cy="12" r="9"/><path d="m12 7 5 4-2 6H9l-2-6Z"/></svg>';
+    return '<span class="score-chip-team" aria-hidden="true">' + image + fallback + '</span>';
+  }
+  document.addEventListener('error', event => {
+    const image = event.target;
+    if (image?.tagName !== 'IMG' || !image.classList?.contains('score-chip-emblem')) return;
+    image.hidden = true;
+    if (image.nextElementSibling) image.nextElementSibling.hidden = false;
+  }, true);
   function render() {
     const active = enabled() ? matches() : [];
     const html = active.map(match => {
       const followed = S.teams.find(team => team.id === match.home.id || team.id === match.away.id);
       const gender = followed?.group.startsWith('women') ? 'Women' : 'Men';
-      const short = team => (S.teams.find(known => known.id === team.id)?.abbreviation || team.abbreviation || team.name.slice(0, 3)).slice(0, 5);
       const label = gender + ': ' + match.home.name + ' ' + match.home.score + ', ' + match.away.name + ' ' + match.away.score + '. Live, ' + match.detail + '. Open Sports';
       const E = S.escape;
-      return '<a class="score-chip" href="https://sports.gregle.uk/" aria-label="' + E(label) + '" title="' + E(label) + '"><span>' + E(short(match.home)) + '</span><strong>' + E(match.home.score) + '–' + E(match.away.score) + '</strong><span>' + E(short(match.away)) + (gender === 'Women' ? ' · W' : '') + '</span><span class="score-chip-status">LIVE · ' + E(String(match.detail).slice(0, 14)) + '</span></a>';
+      return '<a class="score-chip" href="https://sports.gregle.uk/" aria-label="' + E(label) + '" title="' + E(label) + '">' + emblem(match.home) + '<strong>' + E(match.home.score) + '–' + E(match.away.score) + '</strong>' + emblem(match.away) + '<span class="score-chip-status">' + (gender === 'Women' ? 'W · ' : '') + 'LIVE · ' + E(String(match.detail).slice(0, 14)) + '</span></a>';
     }).join('');
     if (html !== rendered) { scores.innerHTML = html; rendered = html; }
     scores.hidden = !active.length;
