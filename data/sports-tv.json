@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-28T00:01:59.598523+00:00",
+      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
       "listings": [
         {
           "home": "Fleetwood Town",
@@ -231,7 +231,8 @@
           "start": "2026-11-04T20:00:00+00:00",
           "channels": [
             "HBO Max (UK)",
-            "TNT Sports 1"
+            "TNT Sports 1",
+            "TNT Sports 10"
           ]
         },
         {
@@ -247,16 +248,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-28T00:01:59.598523+00:00",
+      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
       "listings": [
-        {
-          "home": "Fleetwood Town",
-          "away": "Arsenal",
-          "start": "2026-10-27T20:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Chelsea (W)",
           "away": "Roma (W)",
@@ -429,23 +422,29 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "RB Leipzig",
+          "away": "Manchester City",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
+        },
+        {
+          "home": "Slavia Prague",
+          "away": "Arsenal",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-28T00:01:59.598523+00:00",
+      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
       "listings": [
-        {
-          "home": "Fleetwood Town",
-          "away": "Arsenal",
-          "start": "2026-10-27T20:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "V sport 1 NO",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Bayern München (W)",
           "away": "Real Madrid (W)",
@@ -627,6 +626,23 @@
           "away": "Bayern München",
           "start": "2026-11-03T20:00:00+00:00",
           "channels": [
+            "TV 2 Play (NO)",
+            "TV 2 Sport 1"
+          ]
+        },
+        {
+          "home": "RB Leipzig",
+          "away": "Manchester City",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)"
+          ]
+        },
+        {
+          "home": "Slavia Prague",
+          "away": "Arsenal",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
             "TV 2 Play (NO)"
           ]
         }
@@ -634,17 +650,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-28T00:01:59.598523+00:00",
+      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
       "listings": [
-        {
-          "home": "Fleetwood Town",
-          "away": "Arsenal",
-          "start": "2026-10-27T20:00:00+00:00",
-          "channels": [
-            "Viaplay SE",
-            "Viaplay Sport"
-          ]
-        },
         {
           "home": "Bayern München (W)",
           "away": "Real Madrid (W)",
@@ -824,12 +831,31 @@
             "V Sport Football",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "RB Leipzig",
+          "away": "Manchester City",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "V Sport Football",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Slavia Prague",
+          "away": "Arsenal",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "V Ultra HD",
+            "Viaplay SE",
+            "Viaplay Sport"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-28T00:01:59.598523+00:00",
+      "checkedAt": "2026-10-28T05:42:42.548651+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -1010,6 +1036,22 @@
           "start": "2026-11-03T20:00:00+00:00",
           "channels": [
             "Prime Video (DE)"
+          ]
+        },
+        {
+          "home": "RB Leipzig",
+          "away": "Manchester City",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "DAZN Deutschland"
+          ]
+        },
+        {
+          "home": "Slavia Prague",
+          "away": "Arsenal",
+          "start": "2026-11-04T20:00:00+00:00",
+          "channels": [
+            "DAZN Deutschland"
           ]
         }
       ],
