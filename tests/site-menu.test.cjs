@@ -9,7 +9,7 @@ const routes = require('../assets/site-routes.json');
 const destination = page => `https://${routes[page]}/`;
 
 test('every content page has the same valid app destinations and working icons', () => {
-  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html', 'sports.html', 'news.html', 'finance.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk']);
+  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html', 'sports.html', 'news.html', 'finance.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/files/files', 'https://cloud.gregle.uk/apps/calendar/']);
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -20,7 +20,8 @@ test('every content page has the same valid app destinations and working icons',
     assert(!source.includes('id="brandToggle"'), file);
     const apps = [...menu.matchAll(/<a class="gregle-app" href="([^"]+)"[^>]*><img src="([^"]+)"/g)];
     assert.deepEqual(apps.map(a => a[1]), expected, file);
-    assert.match(menu, /href="https:\/\/cloud\.gregle\.uk" data-gregle-app-id="docs"><img src="\/assets\/docs-app\/icon\.svg"[^>]*><span>Docs<\/span>/, file);
+    assert.match(menu, /href="https:\/\/cloud\.gregle\.uk\/apps\/files\/files" data-gregle-app-id="docs"><img src="\/assets\/docs-app\/icon\.svg"[^>]*><span>Docs<\/span>/, file);
+    assert.match(menu, /href="https:\/\/cloud\.gregle\.uk\/apps\/calendar\/" data-gregle-app-id="calendar"><img src="\/assets\/calendar-app\/icon\.svg"[^>]*><span>Calendar<\/span>/, file);
     for (const [,href,icon] of apps) {
       const host = new URL(href).hostname;
       assert(host === 'cloud.gregle.uk' || Object.values(routes).includes(host), href);

@@ -30,7 +30,8 @@ APPS = [
     ('Dictionary', '/dictionary.html', 'assets/dictionary-app/icon-192.png'),
     ('Maps', '/maps.html', 'assets/maps-app/icon.svg'),
     ('Cloud', 'https://cloud.gregle.uk', 'assets/cloud-app/icon.svg'),
-    ('Docs', 'https://cloud.gregle.uk', 'assets/docs-app/icon.svg'),
+    ('Docs', 'https://cloud.gregle.uk/apps/files/files', 'assets/docs-app/icon.svg'),
+    ('Calendar', 'https://cloud.gregle.uk/apps/calendar/', 'assets/calendar-app/icon.svg'),
 ]
 EXTRAS = [
     ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),
@@ -57,7 +58,7 @@ def menu(page):
     links = []
     for label, href, icon in APPS:
         current = ' aria-current="page"' if href == ('/' if page == 'index.html' else '/' + page) else ''
-        app_id = 'docs' if label == 'Docs' else href
+        app_id = {'Docs': 'docs', 'Calendar': 'calendar'}.get(label, href)
         identity = f' data-gregle-app-id="{app_id}"'
         href = canonical(href)
         links.append(f'<a class="gregle-app" href="{href}"{current}{identity}><img src="/{icon}" width="44" height="44" alt="" loading="lazy" decoding="async"><span>{label}</span></a>')

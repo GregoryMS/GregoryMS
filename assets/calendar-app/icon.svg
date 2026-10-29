@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <title>Calendar</title>
+  <rect width="192" height="192" rx="46" fill="#232323"/>
+  <rect x="34" y="43" width="124" height="119" rx="14" fill="#faf9f6"/>
+  <path d="M48 43h96a14 14 0 0 1 14 14v25H34V57a14 14 0 0 1 14-14Z" fill="#9850ff"/>
+  <path d="M65 32v25m62-25v25" fill="none" stroke="#faf9f6" stroke-width="10" stroke-linecap="round"/>
+  <g fill="#9850ff">
+    <rect x="58" y="96" width="14" height="14" rx="3"/>
+    <rect x="89" y="96" width="14" height="14" rx="3"/>
+    <rect x="120" y="96" width="14" height="14" rx="3"/>
+    <rect x="58" y="127" width="14" height="14" rx="3"/>
+    <rect x="89" y="127" width="14" height="14" rx="3"/>
+    <rect x="120" y="127" width="14" height="14" rx="3"/>
+  </g>
+</svg>
