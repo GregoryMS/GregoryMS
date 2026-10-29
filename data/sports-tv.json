@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-29T01:48:16.867745+00:00",
+      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -50,7 +50,7 @@
         {
           "home": "Vancouver Whitecaps",
           "away": "San Diego FC",
-          "start": "2026-10-29T02:30:00+00:00",
+          "start": "2026-10-29T02:40:00+00:00",
           "channels": [
             "Apple TV (UK)"
           ]
@@ -228,12 +228,12 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-29T01:48:16.867745+00:00",
+      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
           "away": "San Diego FC",
-          "start": "2026-10-29T02:30:00+00:00",
+          "start": "2026-10-29T02:40:00+00:00",
           "channels": [
             "Apple TV (US)",
             "TSN",
@@ -383,12 +383,12 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-29T01:48:16.867745+00:00",
+      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
           "away": "San Diego FC",
-          "start": "2026-10-29T02:30:00+00:00",
+          "start": "2026-10-29T02:40:00+00:00",
           "channels": [
             "Apple TV (NO)"
           ]
@@ -555,12 +555,12 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-29T01:48:16.867745+00:00",
+      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
           "away": "San Diego FC",
-          "start": "2026-10-29T02:30:00+00:00",
+          "start": "2026-10-29T02:40:00+00:00",
           "channels": [
             "Apple TV (SE)"
           ]
@@ -726,12 +726,12 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-29T01:48:16.867745+00:00",
+      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
           "away": "San Diego FC",
-          "start": "2026-10-29T02:30:00+00:00",
+          "start": "2026-10-29T02:40:00+00:00",
           "channels": [
             "Apple TV (DE)"
           ]
