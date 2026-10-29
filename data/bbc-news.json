@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-29T18:39:41+00:00",
-  "fetchedAt": "2026-10-29T18:39:48.253079+00:00",
+  "feedUpdatedAt": "2026-10-29T22:59:18+00:00",
+  "fetchedAt": "2026-10-29T22:59:26.418930+00:00",
   "items": [
+    {
+      "title": "Watch: Life and career of iconic actor Sir Patrick Stewart",
+      "link": "https://www.bbc.co.uk/news/videos/c6qxnlxn0n15o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Burnham says he wants to cut welfare bill 'as soon as we possibly can'",
       "link": "https://www.bbc.co.uk/news/articles/c6x2w4zy15nwo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'Painful' years ahead, think tanks warn, as living standards set to fall",
-      "link": "https://www.bbc.co.uk/news/articles/c6z7x8214np7o?at_medium=RSS&at_campaign=rss"
+      "title": "Young athlete and former minister among victims of Spain train crash",
+      "link": "https://www.bbc.co.uk/news/articles/cr78plp1p9yvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Audio reveals exchanges between Spain train operators and drivers moments before deadly crash",
-      "link": "https://www.bbc.co.uk/news/articles/cmqxnl312v34o?at_medium=RSS&at_campaign=rss"
+      "title": "'Continue your journey': Key moments of leaked Spain train crash audio",
+      "link": "https://www.bbc.co.uk/news/videos/c6vgjeg0myzgo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Met refers itself to police watchdog over letter about Meghan's father",
-      "link": "https://www.bbc.co.uk/news/articles/ck30e91r9z0jo?at_medium=RSS&at_campaign=rss"
+      "title": "Israeli opposition accuses Netanyahu of trying to 'delegitimise' election",
+      "link": "https://www.bbc.co.uk/news/articles/ckdd8qdl9e0eo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Jury shown CCTV of Huntingdon train staff using frying pan in defence",
       "link": "https://www.bbc.co.uk/news/articles/ckdd8qpdeym4o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Met refers itself to police watchdog over letter about Meghan's father",
+      "link": "https://www.bbc.co.uk/news/articles/ck30e91r9z0jo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Burnham 'ready to support' Poundland staff as retailer faces collapse",
+      "link": "https://www.bbc.co.uk/news/articles/cqrky1p4dlm7o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Hundreds of GP practices lose online services after collapse of tech firm",
       "link": "https://www.bbc.co.uk/news/articles/cq146562ld3no?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Russell Brand's wife tells his rape trial he is 'kind and a wonderful father'",
-      "link": "https://www.bbc.co.uk/news/articles/cky93127nyepo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Flávio Bolsonaro calls himself 'leader of Brazil' after election loss",
-      "link": "https://www.bbc.co.uk/news/articles/c3x2w4109pj8o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "George Michael's Faith guitar sells for £180k after auction row",
-      "link": "https://www.bbc.co.uk/news/articles/cmr4y51gd5yro?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Lib Dems and Reform UK in war of words over alleged shove",
-      "link": "https://www.bbc.co.uk/news/articles/cwg7x3kegymvo?at_medium=RSS&at_campaign=rss"
+      "title": "King Charles arrives in Guyana as Bahamas visit declared 'diplomatic success'",
+      "link": "https://www.bbc.co.uk/news/articles/c893zev54341o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
