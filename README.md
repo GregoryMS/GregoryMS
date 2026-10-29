@@ -104,8 +104,18 @@ remove them, or Save beside a search result to add one. The currency view keeps
 the CAD ticker, currency lists and a From/To selector for opening a pair's chart.
 Provider failures retain a retry button and a direct TradingView link.
 
-Run `node --test tests/finance.test.cjs tests/finance-ui.test.cjs` for lookup,
-storage, tab navigation, deep links, theme changes and widget fallback checks.
+The Calculator button opens a non-modal panel above the page. Drag its title
+with a mouse or touch, or focus the title and use arrow keys (Shift moves farther;
+Home resets the position). It stays visible while scrolling, keeps its position
+and calculation until the page reloads, and stays inside the visible viewport
+after resizing. Close it with its close button, the Calculator button or Escape.
+Numbers and operators work from the keyboard while the panel has focus; Enter
+calculates, Backspace deletes a digit, and C or Delete clears. Arithmetic runs in
+the order entered; percentages support additions such as 200 + 10% = 220. The
+calculator runs locally and follows the page's light/dark theme.
+
+Run `node --test tests/finance*.test.cjs` for lookup, storage, tab navigation,
+deep links, theme changes, widget fallbacks and calculator interaction checks.
 
 ## Search suggestions
 

@@ -9,6 +9,9 @@ html { scroll-behavior:smooth; }
 .skip-link { position:absolute; top:-100px; left:20px; z-index:1200; padding:12px 18px; border-radius:12px; background:var(--panel); }
 .skip-link:focus { top:16px; }
 .finance-hero { margin:30px 0 28px; }
+.finance-hero-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.calculator-launcher { flex-shrink:0; color:var(--finance-accent); gap:8px; }
+.calculator-launcher[aria-expanded="true"] { background:var(--finance-tint); border-color:var(--finance-accent); }
 .finance-hero h1 { font-size:clamp(42px,5vw,56px); margin:0 0 10px; }
 .finance-hero h1 span { color:var(--finance-accent); }
 .finance-hero .subtitle { margin:0; max-width:none; font-size:15px; }
@@ -92,10 +95,37 @@ html { scroll-behavior:smooth; }
 .finance-footer summary { padding:4px 0; }
 .finance-footer details[open] { flex-basis:100%; }
 .finance-footer details p { font-size:12px; line-height:1.8; max-width:720px; margin:12px 0 0; }
+.finance-calculator { position:fixed; z-index:1050; top:100px; right:24px; width:304px; max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); overflow:auto; border:1px solid var(--line); border-radius:22px; background:var(--panel); color:var(--text); box-shadow:0 18px 64px rgba(20,12,40,.22),0 3px 12px rgba(20,12,40,.08); overscroll-behavior:contain; }
+.finance-calculator[hidden] { display:none !important; }
+.finance-calculator:focus { outline:none; }
+.finance-calculator:focus-visible { outline:3px solid var(--finance-accent); outline-offset:3px; }
+.calculator-header { display:flex; align-items:center; gap:4px; position:sticky; top:0; z-index:1; padding:6px 8px; background:var(--panel); border-bottom:1px solid var(--line); }
+.calculator-handle { flex:1; min-width:0; display:flex; align-items:center; gap:10px; min-height:44px; padding:8px; background:transparent; color:var(--text); border:0; border-radius:12px; text-align:left; font-size:13px; font-weight:500; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; }
+.calculator-handle svg { color:var(--muted); flex-shrink:0; }
+.calculator-handle:hover,.calculator-close:hover { background:var(--soft); }
+.finance-calculator.is-dragging .calculator-handle { cursor:grabbing; }
+.calculator-close { display:grid; place-items:center; flex-shrink:0; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--muted); }
+.calculator-screen { padding:16px 20px 14px; text-align:right; }
+.calculator-expression { min-height:20px; margin:0 0 6px; color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+.calculator-display { display:block; min-height:48px; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:36px; font-variant-numeric:tabular-nums; line-height:1.3; overflow-wrap:anywhere; }
+.calculator-display.is-long { font-size:22px; padding-top:9px; }
+.calculator-keys { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; padding:0 14px; }
+.calculator-keys button { min-width:0; min-height:48px; padding:8px 4px; border:1px solid transparent; border-radius:12px; background:var(--soft); color:var(--text); font-size:19px; font-variant-numeric:tabular-nums; touch-action:manipulation; }
+.calculator-keys button:hover { border-color:var(--finance-accent); }
+.calculator-keys button:active { background:var(--line); }
+.calculator-keys .calculator-function { color:var(--muted); font-size:16px; }
+.calculator-keys .calculator-operator { background:var(--finance-tint); color:var(--finance-accent); font-size:24px; }
+.calculator-keys .calculator-operator[aria-pressed="true"],.calculator-keys .calculator-equals { background:var(--finance-accent); color:var(--finance-button-text); }
+.calculator-hint { padding:12px 14px 14px; margin:0; color:var(--muted); text-align:center; font-size:11px; }
+@media(max-width:360px) {
+  .finance-hero-heading { gap:8px; }
+  .calculator-launcher svg { display:none; }
+}
 @media(max-width:700px) {
   .finance-body .topbar { padding:20px; }
   .finance-page { padding:0 20px 28px; }
   .finance-hero { margin:22px 0 24px; }
+  .calculator-launcher { min-height:44px; padding:9px 12px; font-size:12px; }
   .finance-hero .subtitle { font-size:14px; }
   .lookup-panel .search-row { min-height:56px; gap:8px; padding-left:18px; }
   .lookup-panel .search-row input { padding:9px 0; }

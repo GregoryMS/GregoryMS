@@ -17,10 +17,11 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/finance-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/finance-app/icon-192.png?v=20261002-radio">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/finance.css?v=20261029-finance-refresh">
+  <link rel="stylesheet" href="assets/finance.css?v=20261029-floating-calculator">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/finance-core.js" defer></script>
   <script src="assets/finance.js?v=20261029-finance-refresh" defer></script>
+  <script src="assets/finance-calculator.js?v=20261029-floating-calculator" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
@@ -55,7 +56,10 @@
   </header>
   <main class="page finance-page">
     <section class="finance-hero" aria-labelledby="pageTitle">
-      <h1 id="pageTitle" tabindex="-1">Finance<span>.</span></h1>
+      <div class="finance-hero-heading">
+        <h1 id="pageTitle" tabindex="-1">Finance<span>.</span></h1>
+        <button id="calculatorToggle" class="pill calculator-launcher" type="button" aria-controls="financeCalculator" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M8 6h8M8 10h2m4 0h2M8 14h2m4 0h2M8 18h2m4 0h2"/></svg>Calculator</button>
+      </div>
       <p class="subtitle">Markets, stocks and currencies.</p>
     </section>
     <section class="lookup-panel" aria-labelledby="lookupTitle">
@@ -107,5 +111,30 @@
     <noscript><p class="panel-note">Enable JavaScript to load charts and search. You can also <a href="https://www.tradingview.com/markets/">view markets on TradingView</a>.</p></noscript>
     <footer class="finance-footer"><p>Data by TradingView · Quotes may be delayed.</p><details><summary>About data &amp; favourites</summary><p>Charts and quotes are supplied by <a href="https://www.tradingview.com/widget/" target="_blank" rel="noopener noreferrer">TradingView</a>. Availability and delays depend on the exchange and data feed. Check each widget’s timestamps and market status; a closed market can show its last traded price. Index CFDs and ETFs are labelled separately from indices. Favourites are saved only in this browser. Quick-search suggestions cover a small built-in directory; the chart’s own symbol search covers TradingView’s available listings. An internet connection and access to TradingView are required.</p></details></footer>
   </main>
+  <section id="financeCalculator" class="finance-calculator" role="dialog" aria-labelledby="calculatorTitle" aria-describedby="calculatorHelp" tabindex="-1" hidden>
+    <div class="calculator-header">
+      <button id="calculatorHandle" class="calculator-handle" type="button" aria-label="Move calculator: drag or use arrow keys" title="Drag to move, or focus and use arrow keys"><svg viewBox="0 0 12 20" width="12" height="20" fill="currentColor" aria-hidden="true"><circle cx="3" cy="5" r="1.2"/><circle cx="9" cy="5" r="1.2"/><circle cx="3" cy="10" r="1.2"/><circle cx="9" cy="10" r="1.2"/><circle cx="3" cy="15" r="1.2"/><circle cx="9" cy="15" r="1.2"/></svg><span id="calculatorTitle">Calculator</span></button>
+      <button id="calculatorClose" class="calculator-close" type="button" aria-label="Close calculator" title="Close calculator"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="calculator-screen">
+      <p id="calculatorExpression" class="calculator-expression" aria-live="off"></p>
+      <output id="calculatorDisplay" class="calculator-display" aria-label="Calculator result" aria-live="polite" aria-atomic="true">0</output>
+    </div>
+    <div class="calculator-keys" role="group" aria-label="Calculator keypad">
+      <button type="button" data-calc="clear" class="calculator-function" aria-label="Clear all">AC</button>
+      <button type="button" data-calc="backspace" class="calculator-function" aria-label="Delete last digit">⌫</button>
+      <button type="button" data-calc="percent" class="calculator-function" aria-label="Percent">%</button>
+      <button type="button" data-calc="/" class="calculator-operator" aria-label="Divide" aria-pressed="false">÷</button>
+      <button type="button" data-calc="7">7</button><button type="button" data-calc="8">8</button><button type="button" data-calc="9">9</button>
+      <button type="button" data-calc="*" class="calculator-operator" aria-label="Multiply" aria-pressed="false">×</button>
+      <button type="button" data-calc="4">4</button><button type="button" data-calc="5">5</button><button type="button" data-calc="6">6</button>
+      <button type="button" data-calc="-" class="calculator-operator" aria-label="Subtract" aria-pressed="false">−</button>
+      <button type="button" data-calc="1">1</button><button type="button" data-calc="2">2</button><button type="button" data-calc="3">3</button>
+      <button type="button" data-calc="+" class="calculator-operator" aria-label="Add" aria-pressed="false">+</button>
+      <button type="button" data-calc="sign" class="calculator-function" aria-label="Change sign">+/−</button><button type="button" data-calc="0">0</button><button type="button" data-calc="." aria-label="Decimal point">.</button>
+      <button type="button" data-calc="equals" class="calculator-equals" aria-label="Equals">=</button>
+    </div>
+    <p id="calculatorHelp" class="calculator-hint">Drag the title to move · Esc to close<span class="sr-only">. Focus the title and use arrow keys to move, Shift for larger steps, or Home to reset its position. Type numbers and operators; Enter calculates. Calculations run in the order entered.</span></p>
+  </section>
 </body>
 </html>
