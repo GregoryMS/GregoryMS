@@ -17,16 +17,17 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/finance-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/finance-app/icon-192.png?v=20261002-radio">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/finance.css?v=20261019-site-colours">
+  <link rel="stylesheet" href="assets/finance.css?v=20261029-finance-refresh">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/finance-core.js" defer></script>
-  <script src="assets/finance.js?v=20261021-subdomains" defer></script>
+  <script src="assets/finance.js?v=20261029-finance-refresh" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://finance.gregle.uk/">
 </head>
-<body>
+<body class="finance-body">
+  <a class="skip-link" href="#pageTitle">Skip to finance</a>
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Finance</span></div>
     <div class="top-actions"><!-- Gregle app menu -->
@@ -53,52 +54,58 @@
 <!-- /Gregle app menu --></div>
   </header>
   <main class="page finance-page">
-    <section class="cad-ticker" aria-labelledby="cadTickerTitle">
-      <div class="cad-ticker-heading"><h2 id="cadTickerTitle">Currencies in Canadian dollars</h2><span>CAD per 1 unit · Market rates</span></div>
-      <div id="cadTickerWidget" class="widget cad-ticker-widget"></div>
-    </section>
     <section class="finance-hero" aria-labelledby="pageTitle">
-      <div><p class="eyebrow">Your window on the markets</p><h1 id="pageTitle">Markets &amp; money.</h1><p class="subtitle">Stocks, world markets and currencies. All in one place.</p></div>
-      <nav class="section-nav" aria-label="Finance sections"><a href="#explore">Explore ↗</a><a href="#markets">Markets</a><a href="#currencies">Currencies</a></nav>
+      <h1 id="pageTitle" tabindex="-1">Finance<span>.</span></h1>
+      <p class="subtitle">Markets, stocks and currencies.</p>
     </section>
     <section class="lookup-panel" aria-labelledby="lookupTitle">
       <h2 id="lookupTitle" class="sr-only">Find a stock or currency</h2>
       <form id="symbolForm" class="search-row" role="search">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
         <label class="sr-only" for="symbolSearch">Find a stock or currency</label>
-        <input id="symbolSearch" type="search" placeholder="Search Apple, TSX:RY, USD/CAD…" autocomplete="off" maxlength="80" aria-describedby="searchHint" aria-controls="searchResults">
-        <button class="pill primary" type="submit">Look up</button>
+        <input id="symbolSearch" type="search" placeholder="Search stocks or currencies…" autocomplete="off" maxlength="80" aria-describedby="searchHint" aria-controls="searchResults">
+        <button class="pill primary" type="submit">Search <span aria-hidden="true">↗</span></button>
       </form>
-      <p class="hint" id="searchHint">Quick search for popular companies and currency pairs, or enter an exchange:ticker. For all listings, use the chart’s symbol search.</p>
-      <div id="searchResults" class="lookup-results" hidden></div>
+      <p class="hint" id="searchHint">Try Apple, TSX:RY or USD/CAD. Find more listings in the chart’s symbol search.</p>
+      <div id="searchResults" class="lookup-results" role="region" aria-label="Symbol search results" hidden></div>
       <p id="searchStatus" class="sr-only" role="status"></p>
-      <div class="favourites-row"><span class="eyebrow">Favourites</span><div id="favourites" class="favourites"></div></div>
+      <div class="favourites-row" id="favouritesRow"><span class="favourites-label">Favourites</span><div id="favourites" class="favourites" role="group" aria-label="Favourite symbols"></div><button id="editFavourites" class="text-button" type="button" aria-pressed="false">Edit<span class="sr-only"> favourites</span></button></div>
       <p id="saveStatus" class="hint" role="status"></p>
     </section>
-    <div class="dashboard">
-      <section class="panel explore-panel" id="explore" aria-labelledby="exploreTitle">
-        <div class="panel-heading"><div><p class="eyebrow">Take a closer look</p><h2 id="exploreTitle">Explore a symbol</h2></div><button id="reloadChart" class="text-button" type="button">Reload chart</button></div>
-        <p class="panel-note">Click the symbol at the chart’s top left to search any stock or currency pair.</p>
-        <div id="chartWidget" class="widget chart-widget"></div>
-        <p class="widget-help">Chart unavailable? <a id="chartFallback" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3AAAPL" target="_blank" rel="noopener noreferrer">Open on TradingView ↗</a></p>
-      </section>
-      <section class="panel markets-panel" id="markets" aria-labelledby="marketsTitle">
-        <div class="panel-heading"><div><p class="eyebrow">The bigger picture</p><h2 id="marketsTitle">Market overview</h2></div><span class="panel-mark" aria-hidden="true">↗</span></div>
-        <p class="panel-note">World benchmarks and familiar stocks.</p>
+    <nav class="finance-views" id="financeViews" aria-label="Finance views">
+      <a href="#markets" id="marketsTab" data-finance-view="markets">Markets</a>
+      <a href="#explore" id="exploreTab" data-finance-view="explore">Explore</a>
+      <a href="#currencies" id="currenciesTab" data-finance-view="currencies">Currencies</a>
+    </nav>
+    <section class="finance-view" id="markets" aria-labelledby="marketsTitle" data-finance-panel>
+      <div class="view-heading"><div><h2 id="marketsTitle" tabindex="-1">Market overview</h2><p class="panel-note">World benchmarks, familiar stocks and Canadian listings.</p></div><a class="quiet-link" href="https://www.tradingview.com/markets/indices/" target="_blank" rel="noopener noreferrer">View markets <span aria-hidden="true">↗</span></a></div>
+      <div class="panel">
         <div id="marketWidget" class="widget market-widget"></div>
-        <p class="widget-help">CFDs track the named index; quotes may be delayed. <a href="https://www.tradingview.com/markets/indices/" target="_blank" rel="noopener noreferrer">View markets ↗</a></p>
-      </section>
-    </div>
-    <section class="panel currency-panel" id="currencies" aria-labelledby="currenciesTitle">
-      <div class="panel-heading"><div><p class="eyebrow">Across borders</p><h2 id="currenciesTitle">Currency dashboard</h2></div><span class="currency-badge">FX</span></div>
-      <div class="currency-layout">
-        <div class="currency-intro"><h3>One currency.<br> Another perspective.</h3><p>Follow major pairs, Canadian dollar crosses and European currencies.</p><label for="baseCurrency">From</label><select id="baseCurrency"></select><label for="quoteCurrency">To</label><select id="quoteCurrency"></select><button id="viewPair" class="pill primary" type="button">Explore this pair ↗</button><p class="hint">The rate is the amount of the second currency for one unit of the first.</p></div>
-        <div class="currency-data"><div id="currencyWidget" class="widget currency-widget"></div><p class="widget-help">Rates are market quotes, not bank or card conversion rates. <a href="https://www.tradingview.com/markets/currencies/rates-major/" target="_blank" rel="noopener noreferrer">View currencies ↗</a></p></div>
       </div>
+      <p class="widget-help">Select a symbol to explore its chart. Index CFDs and ETFs are labelled in the list.</p>
+    </section>
+    <section class="finance-view" id="explore" aria-labelledby="exploreTitle" data-finance-panel>
+      <div class="view-heading"><div><h2 id="exploreTitle" tabindex="-1">Explore a symbol</h2><p class="panel-note">A closer look at a stock, index or currency pair.</p></div><button id="reloadChart" class="icon-button" type="button" aria-label="Reload chart" title="Reload chart"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M19.2 12a7.2 7.2 0 1 0-1.8 5.3M20 12l-3-4"/></svg></button></div>
+      <div class="panel"><div id="chartWidget" class="widget chart-widget"></div></div>
+      <p class="widget-help">Use the chart’s symbol name to find more listings. <a id="chartFallback" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3AAAPL" target="_blank" rel="noopener noreferrer">Open on TradingView ↗</a></p>
+    </section>
+    <section class="finance-view" id="currencies" aria-labelledby="currenciesTitle" data-finance-panel>
+      <div class="view-heading"><div><h2 id="currenciesTitle" tabindex="-1">Currencies</h2><p class="panel-note">Major pairs and a Canadian dollar perspective.</p></div><a class="quiet-link" href="https://www.tradingview.com/markets/currencies/rates-major/" target="_blank" rel="noopener noreferrer">View currencies <span aria-hidden="true">↗</span></a></div>
+      <section class="cad-ticker" aria-labelledby="cadTickerTitle">
+        <div class="cad-ticker-heading"><h3 id="cadTickerTitle">In Canadian dollars</h3><span>CAD per 1 unit</span></div>
+        <div id="cadTickerWidget" class="widget cad-ticker-widget"></div>
+      </section>
+      <form id="pairForm" class="pair-form">
+        <div><label for="baseCurrency">From</label><select id="baseCurrency"></select></div>
+        <span class="pair-arrow" aria-hidden="true">→</span>
+        <div><label for="quoteCurrency">To</label><select id="quoteCurrency"></select></div>
+        <button id="viewPair" class="pill primary" type="submit">Explore pair <span aria-hidden="true">↗</span></button>
+      </form>
+      <div class="panel"><div id="currencyWidget" class="widget currency-widget"></div></div>
+      <p class="widget-help">Each rate is the second currency per 1 unit of the first. Market rates may differ from your bank or card provider.</p>
     </section>
     <noscript><p class="panel-note">Enable JavaScript to load charts and search. You can also <a href="https://www.tradingview.com/markets/">view markets on TradingView</a>.</p></noscript>
-    <details><summary>About the data &amp; your favourites</summary><p>Charts and quotes are supplied by <a href="https://www.tradingview.com/widget/" target="_blank" rel="noopener noreferrer">TradingView</a>. Availability and delays depend on the exchange and data feed. Check each widget’s timestamps and market status; a closed market can show its last traded price. Index CFDs are labelled separately from indices. Favourites are saved only in this browser. Quick-search suggestions cover a small built-in directory; the chart’s own symbol search covers TradingView’s available listings. An internet connection and access to TradingView are required.</p></details>
-    
+    <footer class="finance-footer"><p>Data by TradingView · Quotes may be delayed.</p><details><summary>About data &amp; favourites</summary><p>Charts and quotes are supplied by <a href="https://www.tradingview.com/widget/" target="_blank" rel="noopener noreferrer">TradingView</a>. Availability and delays depend on the exchange and data feed. Check each widget’s timestamps and market status; a closed market can show its last traded price. Index CFDs and ETFs are labelled separately from indices. Favourites are saved only in this browser. Quick-search suggestions cover a small built-in directory; the chart’s own symbol search covers TradingView’s available listings. An internet connection and access to TradingView are required.</p></details></footer>
   </main>
 </body>
 </html>

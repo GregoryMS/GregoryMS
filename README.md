@@ -91,6 +91,22 @@ stats and TV listings remain available. Search and date filters affect the
 match list; team/category filters also update the two spotlight cards. Standings
 always show the selected league in full.
 
+## Finance
+
+Finance separates Markets, Explore and Currencies into three keyboard-accessible
+tabs. Each view has a full-width chart or quote list, and widgets load when their
+view is first opened. Search results and favourites open Explore automatically;
+symbol query links and view fragments remain shareable. Theme changes refresh
+the visible widgets and apply to other views when opened.
+
+Favourites remain in `gregle-finance-favourites` in this browser. Use Edit to
+remove them, or Save beside a search result to add one. The currency view keeps
+the CAD ticker, currency lists and a From/To selector for opening a pair's chart.
+Provider failures retain a retry button and a direct TradingView link.
+
+Run `node --test tests/finance.test.cjs tests/finance-ui.test.cjs` for lookup,
+storage, tab navigation, deep links, theme changes and widget fallback checks.
+
 ## Search suggestions
 
 Typing in the homepage search box requests up to eight suggestions from Google's autocomplete feed after a short pause. Queries are sent to Google for suggestions; selecting one (by click, tap, or arrow keys and Enter) searches Brave. The Search Gregle button continues to use Gregle. Escape, Tab, or leaving the field dismisses suggestions. Matching recent searches appear immediately and remain available if the external service fails. Suggestions are cached only in memory for the current page visit; recent searches continue to use local browser storage.
