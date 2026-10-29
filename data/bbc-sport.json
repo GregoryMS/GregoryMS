@@ -1,15 +1,11 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-29T19:12:41+00:00",
-  "fetchedAt": "2026-10-29T19:12:43.465704+00:00",
+  "feedUpdatedAt": "2026-10-29T23:27:17+00:00",
+  "fetchedAt": "2026-10-29T23:27:22.720116+00:00",
   "items": [
     {
-      "title": "Duckett and Dawson deliver in England's consolation win",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/cjg4700703rxo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Dowman to miss three matches after appeal rejected",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6kgq9qg28dno?at_medium=RSS&at_campaign=rss"
+      "title": "Grealish dropped by Everton after 'breach of club discipline'",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmwy4vyl9nplo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Is the double drop from the Premier League becoming more common?",
@@ -20,28 +16,32 @@
       "link": "https://www.bbc.co.uk/sport/cricket/articles/cwz0vevng3n0o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Antonelli to miss Mexico media day with illness",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/cke8rlrrzpqyo?at_medium=RSS&at_campaign=rss"
+      "title": "Zverev seals world number one spot after win",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/cwdr8m8g4jz2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "PSG score late to hold struggling Man City",
+      "link": "https://www.bbc.co.uk/sport/football/videos/ckeq3v1wgxy4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Duckett and Dawson deliver in England's consolation win",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cjg4700703rxo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Scottish football could pave way for 3pm TV blackout to end",
       "link": "https://www.bbc.co.uk/sport/football/articles/cmgr8l87edyjo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Garcia targets Ryder Cup return as he confirms LIV exit",
-      "link": "https://www.bbc.co.uk/sport/golf/articles/cw3djl7mz90zo?at_medium=RSS&at_campaign=rss"
+      "title": "Chelsea linked with Alexander-Arnold - Friday's gossip",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ck1l396jqv4zo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'Fully committed' Fernandes to remain Man Utd captain",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ckz7x8z1e9y9o?at_medium=RSS&at_campaign=rss"
+      "title": "Cundy's 20-year reign as world champion ends",
+      "link": "https://www.bbc.co.uk/sport/cycling/articles/cxj0lv0vzv7do?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'Hungrier than ever' - Paul to return on 24 December",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/cvkgkx496e0ko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Sometimes managers need sacking for own good - Neville",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cjvgx0ek6rz2o?at_medium=RSS&at_campaign=rss"
+      "title": "Dream win to set up WNBA Finals decider",
+      "link": "https://www.bbc.co.uk/sport/basketball/articles/cr4g181v4q4wo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
