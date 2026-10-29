@@ -1,27 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-29T00:16:51+00:00",
-  "fetchedAt": "2026-10-29T00:16:58.389977+00:00",
+  "feedUpdatedAt": "2026-10-29T05:53:00+00:00",
+  "fetchedAt": "2026-10-29T05:53:09.086593+00:00",
   "items": [
     {
       "title": "Healey unveils £100 for energy bills and bank tax in first Budget",
       "link": "https://www.bbc.co.uk/news/articles/cqpvgxz3y49go?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Budget key points at a glance",
-      "link": "https://www.bbc.co.uk/news/articles/c6x2zrjl7kjno?at_medium=RSS&at_campaign=rss"
+      "title": "I earn £30,000. I'm angry there was no fuel duty cut in the Budget",
+      "link": "https://www.bbc.co.uk/news/articles/cmx235r9wr3yo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "High-speed train crash kills at least 68 people in Spain",
-      "link": "https://www.bbc.co.uk/news/articles/c6p3g84kjqjlo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: At the scene of Spain's deadly train crash",
-      "link": "https://www.bbc.co.uk/news/videos/cw5ynjgy3vvgo?at_medium=RSS&at_campaign=rss"
+      "title": "Spain begins three days of mourning after train crash kills dozens",
+      "link": "https://www.bbc.co.uk/news/articles/cmqxnl312v34o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Netanyahu's bloc leading Israel election but short of majority, partial results show",
       "link": "https://www.bbc.co.uk/news/articles/cmdx3knq1xexo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Flávio Bolsonaro denies fleeing Brazil after landing in Miami",
+      "link": "https://www.bbc.co.uk/news/articles/c6kglwe4lxwzo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Death of US actress Hayden Panettiere ruled accidental, ending local police probe",
@@ -32,16 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/cmr4y51gd5yro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Flávio Bolsonaro denies fleeing Brazil after landing in Miami",
-      "link": "https://www.bbc.co.uk/news/articles/c6kglwe4lxwzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "King Charles shows off dance moves on second day of Caribbean tour",
       "link": "https://www.bbc.co.uk/news/articles/ckzd670vpj09o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Details of thousands of US immigration agents leaked in major hack",
       "link": "https://www.bbc.co.uk/news/articles/cq8jzkpjr28vo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Building boom puts 300,000 people in the path of potential Himalayan disasters",
+      "link": "https://www.bbc.co.uk/news/articles/c574pj3zljvjo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
