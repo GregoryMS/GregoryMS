@@ -3,50 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
+      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "Real Madrid (W)",
-          "start": "2026-10-28T17:45:00+00:00",
-          "channels": [
-            "Disney+ (UK)"
-          ]
-        },
-        {
-          "home": "Chelsea (W)",
-          "away": "Roma (W)",
-          "start": "2026-10-28T17:45:00+00:00",
-          "channels": [
-            "Disney+ (UK)"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Brighton & Hove Albion",
-          "start": "2026-10-28T19:30:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports+ app"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "Benfica (W)",
-          "start": "2026-10-28T20:00:00+00:00",
-          "channels": [
-            "Disney+ (UK)"
-          ]
-        },
-        {
-          "home": "Liverpool",
-          "away": "Chelsea",
-          "start": "2026-10-28T20:00:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports+ app"
-          ]
-        },
         {
           "home": "Vancouver Whitecaps",
           "away": "San Diego FC",
@@ -228,7 +186,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
+      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -386,12 +344,36 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Hull City",
+          "start": "2026-11-07T15:00:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Fulham",
+          "away": "Newcastle United",
+          "start": "2026-11-07T15:00:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Nottingham Forest",
+          "away": "Manchester City",
+          "start": "2026-11-07T17:30:00+00:00",
+          "channels": [
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
+      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -558,12 +540,36 @@
             "TV3+ NO",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Hull City",
+          "start": "2026-11-07T15:00:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
+        },
+        {
+          "home": "Fulham",
+          "away": "Newcastle United",
+          "start": "2026-11-07T15:00:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
+        },
+        {
+          "home": "Nottingham Forest",
+          "away": "Manchester City",
+          "start": "2026-11-07T17:30:00+00:00",
+          "channels": [
+            "Viaplay"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
+      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -734,7 +740,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
+      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
