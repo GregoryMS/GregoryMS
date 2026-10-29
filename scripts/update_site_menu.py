@@ -22,7 +22,7 @@ APPS = [
     ('Weather', '/weather.html', 'assets/weather-app/icon-192.png'),
     ('Earthquakes', '/earthquakes.html', 'assets/earthquakes-app/icon-192.png'),
     ('Astronomy', '/astro.html', 'assets/astro-app/icon-192.png'),
-    ('Sports', '/sports.html', 'assets/sports-app/icon-192.png'),
+    ('Sports', '/sports.html', 'assets/sports-app/icon-192.png?v=20261029-football-v2'),
     ('News', '/news.html', 'assets/news-app/icon-192.png'),
     ('Finance', '/finance.html', 'assets/finance-app/icon-192.png'),
     ('More', '/links.html', 'assets/tools-app.svg'),

@@ -25,7 +25,7 @@ test('every content page has the same valid app destinations and working icons',
       const host = new URL(href).hostname;
       assert(host === 'cloud.gregle.uk' || Object.values(routes).includes(host), href);
       if (host !== 'cloud.gregle.uk') assert(fs.existsSync(path.join(root, Object.keys(routes).find(page => routes[page] === host))), href);
-      assert(fs.existsSync(path.join(root, icon.slice(1))), icon);
+      assert(fs.existsSync(path.join(root, new URL(icon, 'https://gregle.uk').pathname.slice(1))), icon);
     }
     assert(source.includes('assets/site-menu.css?'), file);
     assert(source.includes('assets/site-menu.js?'), file);
