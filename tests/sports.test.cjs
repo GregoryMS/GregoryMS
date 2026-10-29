@@ -82,7 +82,7 @@ function harness(options = {}) {
         await new Promise(resolve => setImmediate(resolve));
         if (fail(url)) throw Error('Offline');
         const id = url.match(/teams\/(\d+)\//)?.[1];
-        const data = url === 'data/sports-tv.json' ? tvData : id ? { team: { id }, events: id === '359' ? options.fixture && url.endsWith('true') ? [options.fixture] : [event('arsenal-' + (url.endsWith('false') ? 'result' : 'next'), url.endsWith('false') ? 'post' : 'pre')] : [] } : table();
+        const data = url === 'data/sports-tv.json' ? tvData : id ? { team: { id }, events: id === '359' ? options.fixture && url.endsWith('true') ? [options.fixture] : [event('arsenal-' + (url.endsWith('false') ? 'result' : 'next'), url.endsWith('false') ? 'post' : 'pre')] : [] } : options.tables?.[url.match(/soccer\/([^/]+)\/standings/)?.[1]] || table();
         return { ok: true, json: async () => data };
       } finally { active--; }
     }
@@ -99,7 +99,7 @@ async function settled(h) {
 }
 test('controller loads all feeds with bounded concurrency and renders distinct fixtures and table', async () => {
   const h = harness(); await settled(h);
-  assert.equal(h.requests.length, 48); assert(h.maxActive() <= 6);
+  assert.equal(h.requests.length, 49); assert(h.maxActive() <= 6);
   for (const id of ['306', '361', '20103', '19976']) assert.equal(h.requests.filter(url => url.includes('/teams/' + id + '/')).length, 2);
   for (const name of ['Hull City', 'Newcastle United']) assert(h.get('team-filter').innerHTML.includes(name));
   assert.match(h.get('next-match').innerHTML, /Arsenal/);
@@ -110,6 +110,35 @@ test('controller loads all feeds with bounded concurrency and renders distinct f
   h.get('team-filter').value = '19973'; h.get('team-filter').listeners.change();
   assert(!h.get('match-list').innerHTML.includes('Manchester City'));
   assert.match(h.get('match-list').innerHTML, /No upcoming fixtures/);
+});
+test('Champions League restores the full league phase, switches tables and retains data on refresh failure', async () => {
+  const payload = require('./fixtures/champions-league-standings.json');
+  const h = harness({ saved: JSON.stringify({ league: 'uefa.champions' }), tables: { 'uefa.champions': payload } });
+  await settled(h);
+  const source = 'https://site.api.espn.com/apis/v2/sports/soccer/uefa.champions/standings';
+  assert.equal(h.requests.filter(url => url === source).length, 1);
+  assert.match(h.get('table-status').textContent, /UEFA Champions League · 2026-27 UEFA Champions League/);
+  const tableBody = () => h.get('league-tables').innerHTML.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
+  assert.equal((tableBody().match(/<tr\b/g) || []).length, 36);
+  assert.equal((tableBody().match(/class="followed"/g) || []).length, 3);
+  assert.match(h.get('league-tables').innerHTML, /League Phase/);
+  assert.match(h.get('league-tables').innerHTML, /https:\/\/www\.espn\.com\/soccer\/standings\/_\/league\/uefa\.champions/);
+  const requests = h.requests.length;
+  const select = league => h.get('league-tabs').listeners.click({ target: { closest: () => ({ dataset: { league } }) } });
+  select('ger.1');
+  assert.match(h.get('table-status').textContent, /^Bundesliga/);
+  select('uefa.champions');
+  assert.equal(JSON.parse(h.saved()).league, 'uefa.champions');
+  assert.equal(h.requests.length, requests, 'switching reuses the loaded table');
+  h.setFail(url => url === source);
+  await h.get('refresh').listeners.click(); await settled(h);
+  assert.match(h.get('table-status').textContent, /Refresh failed; previously loaded table shown/);
+  assert.equal((tableBody().match(/<tr\b/g) || []).length, 36);
+  h.setFail(() => false);
+  await h.get('refresh').listeners.click(); await settled(h);
+  assert(!h.get('table-status').textContent.includes('Refresh failed'));
+  const html = fs.readFileSync(path.join(__dirname, '../sports.html'), 'utf8');
+  assert.match(html, /data-league="uefa\.champions" aria-pressed="false">UEFA Champions League<\/button>/);
 });
 test('refresh failure retains older data with warnings and retries successfully', async () => {
   const h = harness(); await settled(h);
@@ -125,11 +154,11 @@ test('refresh failure retains older data with warnings and retries successfully'
 });
 test('failed empty feeds and blocked browser storage are handled explicitly', async () => {
   const h = harness({ fail: () => true, storageThrows: true }); await settled(h);
-  assert.match(h.get('feed-status').textContent, /48 unavailable/);
+  assert.match(h.get('feed-status').textContent, /49 unavailable/);
   assert.match(h.get('match-list').innerHTML, /Match feeds are unavailable/);
   assert.match(h.get('team-cards').innerHTML, /Fixture feed unavailable/);
   assert.match(h.get('league-tables').innerHTML, /Open the ESPN table/);
-  h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, 48);
+  h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, 49);
 });
 test('sports page is linked from Tools and uses the shared theme and local scripts', () => {
   const root = path.join(__dirname, '..');
@@ -270,7 +299,7 @@ test('a fully failed refresh is dated as an attempt rather than fresh data', asy
   await h.get('refresh').listeners.click(); await settled(h);
   assert.match(h.get('dashboard-date').textContent, /^Last attempt: /);
   assert.match(h.get('dashboard-date').textContent, /2026.*\d{2}:\d{2}:\d{2}/);
-  assert.match(h.get('feed-status').textContent, /48 unavailable/);
+  assert.match(h.get('feed-status').textContent, /49 unavailable/);
 });
 
 const chooseTeamsGender = (h, gender) => h.get('teams-tabs').listeners.click({target:{closest:()=>({dataset:{teamsGender:gender}})}});
