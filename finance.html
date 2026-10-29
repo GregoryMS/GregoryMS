@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/finance-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/finance-app/icon-192.png?v=20261002-radio">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/finance.css?v=20261029-graphing-resize">
+  <link rel="stylesheet" href="assets/finance.css?v=20261029-calculator-menu-icon">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/finance-core.js" defer></script>
   <script src="assets/finance.js?v=20261029-finance-refresh" defer></script>
@@ -31,7 +31,9 @@
   <a class="skip-link" href="#pageTitle">Skip to finance</a>
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Finance</span></div>
-    <div class="top-actions"><!-- Gregle app menu -->
+    <div class="top-actions">
+      <button id="calculatorToggle" class="calculator-launcher" type="button" aria-label="Calculator" title="Calculator" aria-controls="financeCalculator" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M8 6h8M8 10h2m4 0h2M8 14h2m4 0h2M8 18h2m4 0h2"/></svg></button>
+<!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
 <summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
 <nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>
@@ -56,10 +58,7 @@
   </header>
   <main class="page finance-page">
     <section class="finance-hero" aria-labelledby="pageTitle">
-      <div class="finance-hero-heading">
-        <h1 id="pageTitle" tabindex="-1">Finance<span>.</span></h1>
-        <button id="calculatorToggle" class="pill calculator-launcher" type="button" aria-controls="financeCalculator" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M8 6h8M8 10h2m4 0h2M8 14h2m4 0h2M8 18h2m4 0h2"/></svg>Calculator</button>
-      </div>
+      <h1 id="pageTitle" tabindex="-1">Finance<span>.</span></h1>
       <p class="subtitle">Markets, stocks and currencies.</p>
     </section>
     <section class="lookup-panel" aria-labelledby="lookupTitle">
