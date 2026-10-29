@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
+      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
       "listings": [
         {
           "home": "Bayern München (W)",
@@ -228,7 +228,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
+      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -312,6 +312,14 @@
           ]
         },
         {
+          "home": "Bayern München (W)",
+          "away": "Bayer Leverkusen (W)",
+          "start": "2026-11-01T14:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
+        },
+        {
           "home": "Brighton (W)",
           "away": "Crystal Palace (W)",
           "start": "2026-11-01T14:00:00+00:00",
@@ -383,7 +391,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
+      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -555,7 +563,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
+      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -726,7 +734,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-29T08:29:25.182411+00:00",
+      "checkedAt": "2026-10-29T15:33:44.987234+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -810,6 +818,7 @@
             "ARD-Mediathek",
             "Sky Sport Mix",
             "Sky Top Event",
+            "Sportschau.de",
             "WOW"
           ]
         },
