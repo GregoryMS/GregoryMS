@@ -21,12 +21,12 @@ function calculator({width=1200,height=900,visual=null}={}) {
     releasePointerCapture(id) { this.captures.delete(id); this.fire('lostpointercapture',{pointerId:id}); }
     getBoundingClientRect() {
       const left=parseFloat(this.style.left)||0,top=parseFloat(this.style.top)||0;
-      const width=Math.min(304,window.innerWidth-24,parseFloat(this.style.maxWidth)||Infinity);
-      const height=Math.min(469,window.innerHeight-24,parseFloat(this.style.maxHeight)||Infinity);
+      const width=Math.min(parseFloat(this.style.width)||304,window.innerWidth-24,parseFloat(this.style.maxWidth)||Infinity);
+      const height=Math.min(parseFloat(this.style.height)||520,window.innerHeight-24,parseFloat(this.style.maxHeight)||Infinity);
       return {left,top,width,height,right:left+width,bottom:top+height};
     }
   }
-  const window=new Element(); window.innerWidth=width; window.innerHeight=height;
+  const window=new Element(); window.innerWidth=width; window.innerHeight=height; window.location={origin:'https://finance.gregle.uk'};
   if(visual) window.visualViewport=Object.assign(new Element(),visual);
   const nodes={};
   for(const [,tag,attrs,id] of html.matchAll(/<(\w+)\b([^>]*\bid="([^"]+)"[^>]*)>/g)) {
@@ -39,6 +39,7 @@ function calculator({width=1200,height=900,visual=null}={}) {
     return node;
   });
   const panel=nodes.financeCalculator; panel.querySelectorAll=()=>keys;
+  nodes.calculatorGraphFrame.contentWindow={};
   const document={getElementById:id=>nodes[id]};
   const context=vm.createContext({document,window,ResizeObserver:class { constructor(callback){this.callback=callback;} observe(){this.callback();} }});
   vm.runInContext(fs.readFileSync(path.join(root,'assets/finance-calculator.js'),'utf8'),context);
@@ -134,7 +135,7 @@ test('keyboard movement, smaller screens, rotation and visual viewport changes k
   const p=calculator(); p.open(); const handle=p.nodes.calculatorHandle;
   let rect=p.panel.getBoundingClientRect(); handle.fire('keydown',{key:'ArrowLeft'}); assert.equal(p.panel.getBoundingClientRect().left,rect.left-16);
   rect=p.panel.getBoundingClientRect(); handle.fire('keydown',{key:'ArrowUp',shiftKey:true}); assert.equal(p.panel.getBoundingClientRect().top,rect.top-48);
-  handle.fire('keydown',{key:'Home'}); assert.equal(p.panel.getBoundingClientRect().right,1176);
+  handle.fire('keydown',{key:'Home'}); rect=p.panel.getBoundingClientRect(); assert.equal(rect.left,(1200-rect.width)/2);
   p.window.innerWidth=320; p.window.innerHeight=568; p.window.fire('resize');
   rect=p.panel.getBoundingClientRect(); assert(rect.left>=12); assert(rect.right<=308); assert(rect.bottom<=556);
   p.window.innerWidth=568; p.window.innerHeight=320; p.window.fire('resize');
@@ -151,5 +152,73 @@ test('calculator uses local arithmetic, scoped keyboard events and fixed-positio
   assert.match(css,/\.finance-calculator\s*\{[^}]*position:fixed/);
   assert.match(css,/\.calculator-handle\s*\{[^}]*touch-action:none/);
   assert.match(css,/\.finance-calculator\s*\{[^}]*background:var\(--panel\)/);
-  assert.match(html,/assets\/finance-calculator\.js\?v=20261029-floating-calculator/);
+  assert.match(html,/assets\/finance-calculator\.js\?v=20261029-graphing-resize/);
+});
+
+test('graphing switch lazily loads a full graphing app and preserves both modes across switching and closing',()=>{
+  const p=calculator(); p.open(); p.type('42');
+  const frame=p.nodes.calculatorGraphFrame,modeSwitch=p.nodes.calculatorGraphingSwitch;
+  assert.equal(frame.getAttribute('src'),undefined); assert.equal(p.nodes.calculatorGraph.hidden,true);
+  modeSwitch.fire('click');
+  assert.equal(modeSwitch.attrs.role,'switch'); assert.equal(modeSwitch.attrs['aria-checked'],'true');
+  assert.equal(p.nodes.calculatorBasic.hidden,true); assert.equal(p.nodes.calculatorGraph.hidden,false);
+  assert.equal(p.nodes.calculatorTitle.textContent,'Graphing calculator');
+  assert.equal(p.panel.getBoundingClientRect().width,720); assert.equal(p.panel.getBoundingClientRect().height,640);
+  const src=frame.getAttribute('src'); assert.match(src,/^assets\/finance-graph\.html\?/);
+  frame.graphState='y=x^2';
+  assert.equal(p.key('3').prevented,undefined); assert.equal(p.key('Backspace').prevented,undefined); assert.equal(p.read(),'42');
+  modeSwitch.fire('click'); assert.equal(p.read(),'42'); assert.equal(p.panel.getBoundingClientRect().width,304);
+  modeSwitch.fire('click'); assert.equal(frame.getAttribute('src'),src); assert.equal(frame.graphState,'y=x^2');
+  p.nodes.calculatorClose.fire('click'); p.open(); assert.equal(modeSwitch.attrs['aria-checked'],'true'); assert.equal(frame.graphState,'y=x^2');
+});
+
+for(const pointerType of ['mouse','touch','pen']) test(`${pointerType} resizing changes both dimensions, remembers each mode and stops after release`,()=>{
+  const p=calculator(); p.open(); const resize=p.nodes.calculatorResize;
+  const start=p.panel.getBoundingClientRect();
+  const event={isPrimary:true,button:0,pointerType,pointerId:5,clientX:start.right-10,clientY:start.bottom-10};
+  resize.fire('pointerdown',event); assert(resize.hasPointerCapture(5)); assert(p.panel.classes.has('is-resizing'));
+  resize.fire('pointermove',{...event,pointerId:6,clientX:event.clientX+100,clientY:event.clientY+80}); assert.equal(p.panel.getBoundingClientRect().width,start.width);
+  resize.fire('pointermove',{...event,clientX:event.clientX+100,clientY:event.clientY+80});
+  assert.equal(p.panel.getBoundingClientRect().width,start.width+100); assert.equal(p.panel.getBoundingClientRect().height,start.height+80);
+  resize.fire('pointerup',event); assert(!resize.hasPointerCapture(5)); assert(!p.panel.classes.has('is-resizing'));
+  resize.fire('pointermove',{...event,clientX:1000,clientY:1000}); assert.equal(p.panel.getBoundingClientRect().width,start.width+100);
+  p.nodes.calculatorGraphingSwitch.fire('click'); assert.equal(p.panel.getBoundingClientRect().width,720);
+  p.nodes.calculatorGraphingSwitch.fire('click'); assert.equal(p.panel.getBoundingClientRect().width,start.width+100);
+  p.nodes.calculatorClose.fire('click'); p.open(); assert.equal(p.panel.getBoundingClientRect().height,start.height+80);
+});
+
+test('resizing enforces reachable minimums, viewport limits, cancellation and blur cleanup',()=>{
+  const p=calculator({width:375,height:667}); p.open(); const resize=p.nodes.calculatorResize;
+  const start=p.panel.getBoundingClientRect(),event={isPrimary:true,button:0,pointerId:7,clientX:start.right,clientY:start.bottom};
+  resize.fire('pointerdown',{...event,button:2}); assert(!resize.hasPointerCapture(7));
+  resize.fire('pointerdown',{...event,isPrimary:false}); assert(!resize.hasPointerCapture(7));
+  resize.fire('pointerdown',event); resize.fire('pointermove',{...event,clientX:-1000,clientY:-1000});
+  assert.equal(p.panel.getBoundingClientRect().width,280); assert.equal(p.panel.getBoundingClientRect().height,320);
+  resize.fire('pointermove',{...event,clientX:4000,clientY:4000});
+  let rect=p.panel.getBoundingClientRect(); assert.equal(rect.width,351); assert.equal(rect.height,643); assert(rect.left>=12); assert(rect.right<=363); assert(rect.bottom<=655);
+  resize.fire('pointercancel',event); assert(!resize.hasPointerCapture(7));
+  resize.fire('pointerdown',event); p.window.fire('blur'); assert(!resize.hasPointerCapture(7)); assert(!p.panel.classes.has('is-resizing'));
+  resize.fire('pointerdown',event); p.nodes.calculatorClose.fire('click'); assert(!resize.hasPointerCapture(7));
+  p.open(); p.window.innerWidth=667; p.window.innerHeight=375; p.window.fire('resize');
+  rect=p.panel.getBoundingClientRect(); assert(rect.bottom<=363); assert(rect.top>=12);
+});
+
+test('resize handle supports keyboard sizing and per-mode Home defaults',()=>{
+  const p=calculator(); p.open(); const handle=p.nodes.calculatorResize;
+  handle.fire('keydown',{key:'ArrowRight'}); assert.equal(p.panel.getBoundingClientRect().width,320);
+  handle.fire('keydown',{key:'ArrowDown',shiftKey:true}); assert.equal(p.panel.getBoundingClientRect().height,568);
+  handle.fire('keydown',{key:'Home'}); assert.equal(p.panel.getBoundingClientRect().width,304); assert.equal(p.panel.getBoundingClientRect().height,520);
+  p.nodes.calculatorGraphingSwitch.fire('click');
+  handle.fire('keydown',{key:'ArrowLeft'}); assert.equal(p.panel.getBoundingClientRect().width,704);
+  handle.fire('keydown',{key:'Home'}); assert.equal(p.panel.getBoundingClientRect().width,720); assert.equal(p.panel.getBoundingClientRect().height,640);
+  assert.equal(handle.fire('keydown',{key:'ArrowRight',ctrlKey:true}).prevented,undefined);
+});
+
+test('only Escape messages from the calculator iframe on this origin can close the panel',()=>{
+  const p=calculator(); p.open(); const source=p.nodes.calculatorGraphFrame.contentWindow;
+  const event={origin:p.window.location.origin,source,data:{type:'gregle-calculator-close'}};
+  p.window.fire('message',{...event,origin:'https://example.com'}); assert.equal(p.panel.hidden,false);
+  p.window.fire('message',{...event,source:{}}); assert.equal(p.panel.hidden,false);
+  p.window.fire('message',{...event,data:{type:'other'}}); assert.equal(p.panel.hidden,false);
+  p.window.fire('message',event); assert.equal(p.panel.hidden,true); assert.equal(p.focused(),p.nodes.calculatorToggle);
 });

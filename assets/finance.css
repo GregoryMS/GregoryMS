@@ -95,28 +95,42 @@ html { scroll-behavior:smooth; }
 .finance-footer summary { padding:4px 0; }
 .finance-footer details[open] { flex-basis:100%; }
 .finance-footer details p { font-size:12px; line-height:1.8; max-width:720px; margin:12px 0 0; }
-.finance-calculator { position:fixed; z-index:1050; top:100px; right:24px; width:304px; max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); overflow:auto; border:1px solid var(--line); border-radius:22px; background:var(--panel); color:var(--text); box-shadow:0 18px 64px rgba(20,12,40,.22),0 3px 12px rgba(20,12,40,.08); overscroll-behavior:contain; }
-.finance-calculator[hidden] { display:none !important; }
+.finance-calculator { position:fixed; z-index:1050; top:100px; right:24px; display:flex; flex-direction:column; width:304px; height:520px; max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); overflow:hidden; border:1px solid var(--line); border-radius:22px; background:var(--panel); color:var(--text); box-shadow:0 18px 64px rgba(20,12,40,.22),0 3px 12px rgba(20,12,40,.08); overscroll-behavior:contain; }
+.finance-calculator[hidden],.finance-calculator [hidden] { display:none !important; }
 .finance-calculator:focus { outline:none; }
 .finance-calculator:focus-visible { outline:3px solid var(--finance-accent); outline-offset:3px; }
-.calculator-header { display:flex; align-items:center; gap:4px; position:sticky; top:0; z-index:1; padding:6px 8px; background:var(--panel); border-bottom:1px solid var(--line); }
+.calculator-header { display:flex; flex-shrink:0; align-items:center; gap:4px; z-index:1; padding:6px 8px; background:var(--panel); border-bottom:1px solid var(--line); }
 .calculator-handle { flex:1; min-width:0; display:flex; align-items:center; gap:10px; min-height:44px; padding:8px; background:transparent; color:var(--text); border:0; border-radius:12px; text-align:left; font-size:13px; font-weight:500; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; }
 .calculator-handle svg { color:var(--muted); flex-shrink:0; }
 .calculator-handle:hover,.calculator-close:hover { background:var(--soft); }
 .finance-calculator.is-dragging .calculator-handle { cursor:grabbing; }
 .calculator-close { display:grid; place-items:center; flex-shrink:0; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--muted); }
-.calculator-screen { padding:16px 20px 14px; text-align:right; }
+.calculator-mode-row { display:flex; flex-shrink:0; align-items:center; justify-content:space-between; gap:12px; padding:0 14px; min-height:46px; border-bottom:1px solid var(--line); color:var(--muted); font-size:12px; }
+.calculator-switch { display:grid; place-items:center; width:52px; min-height:44px; padding:0; border:0; background:transparent; border-radius:10px; touch-action:manipulation; }
+.calculator-switch>span { display:block; position:relative; width:40px; height:24px; border-radius:999px; background:var(--line); }
+.calculator-switch>span::after { content:''; position:absolute; left:3px; top:3px; width:18px; height:18px; border-radius:50%; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.2); }
+.calculator-switch[aria-checked="true"]>span { background:var(--finance-accent); }
+.calculator-switch[aria-checked="true"]>span::after { transform:translateX(16px); background:var(--finance-button-text); }
+.calculator-basic { display:flex; flex:1; min-height:0; flex-direction:column; overflow:auto; overscroll-behavior:contain; }
+.calculator-graph { flex:1; min-width:0; min-height:0; background:#fff; }
+.calculator-graph iframe { display:block; width:100%; height:100%; border:0; }
+.finance-calculator.is-dragging iframe,.finance-calculator.is-resizing iframe { pointer-events:none; }
+.calculator-screen { padding:16px 20px 10px; text-align:right; }
 .calculator-expression { min-height:20px; margin:0 0 6px; color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
 .calculator-display { display:block; min-height:48px; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:36px; font-variant-numeric:tabular-nums; line-height:1.3; overflow-wrap:anywhere; }
 .calculator-display.is-long { font-size:22px; padding-top:9px; }
-.calculator-keys { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; padding:0 14px; }
+.calculator-keys { display:grid; flex:1; grid-template-columns:repeat(4,minmax(0,1fr)); grid-template-rows:repeat(5,minmax(48px,1fr)); gap:6px; padding:0 14px 4px; }
 .calculator-keys button { min-width:0; min-height:48px; padding:8px 4px; border:1px solid transparent; border-radius:12px; background:var(--soft); color:var(--text); font-size:19px; font-variant-numeric:tabular-nums; touch-action:manipulation; }
 .calculator-keys button:hover { border-color:var(--finance-accent); }
 .calculator-keys button:active { background:var(--line); }
 .calculator-keys .calculator-function { color:var(--muted); font-size:16px; }
 .calculator-keys .calculator-operator { background:var(--finance-tint); color:var(--finance-accent); font-size:24px; }
 .calculator-keys .calculator-operator[aria-pressed="true"],.calculator-keys .calculator-equals { background:var(--finance-accent); color:var(--finance-button-text); }
-.calculator-hint { padding:12px 14px 14px; margin:0; color:var(--muted); text-align:center; font-size:11px; }
+.calculator-footer { display:flex; flex-shrink:0; align-items:center; justify-content:space-between; gap:4px; padding:0 4px 0 14px; min-height:46px; border-top:1px solid var(--line); }
+.calculator-hint { margin:0; color:var(--muted); font-size:10px; }
+.calculator-resize { display:grid; place-items:center; flex-shrink:0; width:44px; height:44px; padding:0; border:0; border-radius:12px; background:transparent; color:var(--muted); cursor:nwse-resize; touch-action:none; user-select:none; -webkit-user-select:none; }
+.calculator-resize:hover { background:var(--soft); color:var(--finance-accent); }
+.finance-calculator.is-resizing { user-select:none; -webkit-user-select:none; }
 @media(max-width:360px) {
   .finance-hero-heading { gap:8px; }
   .calculator-launcher svg { display:none; }

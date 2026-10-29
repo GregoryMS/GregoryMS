@@ -17,11 +17,11 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/finance-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/finance-app/icon-192.png?v=20261002-radio">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/finance.css?v=20261029-floating-calculator">
+  <link rel="stylesheet" href="assets/finance.css?v=20261029-graphing-resize">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="assets/finance-core.js" defer></script>
   <script src="assets/finance.js?v=20261029-finance-refresh" defer></script>
-  <script src="assets/finance-calculator.js?v=20261029-floating-calculator" defer></script>
+  <script src="assets/finance-calculator.js?v=20261029-graphing-resize" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
@@ -116,6 +116,8 @@
       <button id="calculatorHandle" class="calculator-handle" type="button" aria-label="Move calculator: drag or use arrow keys" title="Drag to move, or focus and use arrow keys"><svg viewBox="0 0 12 20" width="12" height="20" fill="currentColor" aria-hidden="true"><circle cx="3" cy="5" r="1.2"/><circle cx="9" cy="5" r="1.2"/><circle cx="3" cy="10" r="1.2"/><circle cx="9" cy="10" r="1.2"/><circle cx="3" cy="15" r="1.2"/><circle cx="9" cy="15" r="1.2"/></svg><span id="calculatorTitle">Calculator</span></button>
       <button id="calculatorClose" class="calculator-close" type="button" aria-label="Close calculator" title="Close calculator"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
     </div>
+    <div class="calculator-mode-row"><span id="calculatorModeLabel">Graphing mode</span><button id="calculatorGraphingSwitch" class="calculator-switch" type="button" role="switch" aria-checked="false" aria-labelledby="calculatorModeLabel" aria-controls="calculatorGraph"><span aria-hidden="true"></span></button></div>
+    <div id="calculatorBasic" class="calculator-basic">
     <div class="calculator-screen">
       <p id="calculatorExpression" class="calculator-expression" aria-live="off"></p>
       <output id="calculatorDisplay" class="calculator-display" aria-label="Calculator result" aria-live="polite" aria-atomic="true">0</output>
@@ -134,7 +136,12 @@
       <button type="button" data-calc="sign" class="calculator-function" aria-label="Change sign">+/−</button><button type="button" data-calc="0">0</button><button type="button" data-calc="." aria-label="Decimal point">.</button>
       <button type="button" data-calc="equals" class="calculator-equals" aria-label="Equals">=</button>
     </div>
-    <p id="calculatorHelp" class="calculator-hint">Drag the title to move · Esc to close<span class="sr-only">. Focus the title and use arrow keys to move, Shift for larger steps, or Home to reset its position. Type numbers and operators; Enter calculates. Calculations run in the order entered.</span></p>
+    </div>
+    <div id="calculatorGraph" class="calculator-graph" hidden><iframe id="calculatorGraphFrame" title="GeoGebra graphing calculator" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="calculator-footer">
+      <p id="calculatorHelp" class="calculator-hint">Drag title to move · Corner to resize<span class="sr-only">. Escape closes the calculator. Focus the title and use arrow keys to move, Shift for larger steps, or Home to reset its position. Focus the resize handle and use arrow keys to resize, or Home for the default size. Switch on graphing mode to enter equations and explore graphs. In standard mode, type numbers and operators; Enter calculates in the order entered.</span></p>
+      <button id="calculatorResize" class="calculator-resize" type="button" aria-label="Resize calculator: drag or use arrow keys" title="Drag to resize, or focus and use arrow keys"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m7 19 12-12M13 19l6-6M19 19h.01"/></svg></button>
+    </div>
   </section>
 </body>
 </html>

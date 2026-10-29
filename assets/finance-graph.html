@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Graphing calculator · Gregle</title>
+  <style>
+    * { box-sizing:border-box; }
+    html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#fff; color:#20202d; font:14px/1.6 system-ui,sans-serif; }
+    #graphApplet { width:100%; height:100%; }
+    .graph-loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:24px; text-align:center; background:#fff; }
+    .graph-loading p { margin:0; max-width:340px; }
+    button { min-height:44px; padding:10px 20px; border:1px solid #e2e2eb; border-radius:999px; background:#eee8fa; color:#7044c7; font:inherit; cursor:pointer; }
+    :focus-visible { outline:3px solid #7044c7; outline-offset:3px; }
+    [hidden] { display:none !important; }
+  </style>
+  <script src="finance-graph.js?v=20261029-graphing-resize" defer></script>
+</head>
+<body>
+  <div id="graphApplet"></div>
+  <div id="graphLoading" class="graph-loading"><p id="graphStatus" role="status">Loading graphing calculator…</p><button id="graphRetry" type="button" hidden>Try again</button></div>
+</body>
+</html>

@@ -112,7 +112,20 @@ after resizing. Close it with its close button, the Calculator button or Escape.
 Numbers and operators work from the keyboard while the panel has focus; Enter
 calculates, Backspace deletes a digit, and C or Delete clears. Arithmetic runs in
 the order entered; percentages support additions such as 200 + 10% = 220. The
-calculator runs locally and follows the page's light/dark theme.
+standard calculator runs locally and its panel follows the page's light/dark theme.
+
+The Graphing mode switch replaces the keypad with an embedded GeoGebra Graphing
+Calculator for equations, functions, points and graph exploration. GeoGebra loads
+only when graphing is first selected and needs a connection to geogebra.org.
+Switching modes and closing/reopening the panel preserve each mode's work during
+the page visit. Graphs are not saved after a page reload. A failed provider load
+offers a retry without affecting the standard calculator.
+
+Drag the lower-right corner to resize with a mouse, touch or pen. The resize
+handle also supports arrow keys (Shift for larger changes) and Home to restore
+the current mode's default size. Each mode remembers its own dimensions during
+the visit; resizing and rotation keep the panel inside the visible screen.
+The graphing app resizes its actual drawing area with the panel.
 
 Run `node --test tests/finance*.test.cjs` for lookup, storage, tab navigation,
 deep links, theme changes, widget fallbacks and calculator interaction checks.
