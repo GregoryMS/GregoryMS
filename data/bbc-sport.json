@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-29T00:24:30+00:00",
-  "fetchedAt": "2026-10-29T00:24:37.345401+00:00",
+  "feedUpdatedAt": "2026-10-29T06:17:55+00:00",
+  "fetchedAt": "2026-10-29T06:17:58.349609+00:00",
   "items": [
     {
       "title": "'He could be happier' - why is Estevao becoming Chelsea's forgotten man?",
@@ -32,16 +32,16 @@
       "link": "https://www.bbc.co.uk/sport/american-football/articles/c9e8l47grpz4o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "'Stutter' penalty back in the spotlight after Barco miss costs Chelsea",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmp3g8vxd258o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Sancho rejects Getafe - Thursday's gossip",
       "link": "https://www.bbc.co.uk/sport/football/articles/ckyvr1q72v84o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Labuschagne's form hits record low but Australia hint at future",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/cxyvr1my94m4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Djokovic celebrates 'big win' on return to Basel",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/cmd93vlz4k11o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
