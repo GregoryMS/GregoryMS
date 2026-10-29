@@ -34,7 +34,7 @@ apex/www/Cloud/Docs records. Reverting the router route and this change restores
 the original navigation without moving or deleting any site files.
 
 - `index.html`: search, recent searches, local weather and BBC headlines.
-- `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference and Women’s Super League tables.
+- `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference, Women’s Super League and UEFA Champions League league-phase tables.
 - `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
 - `weather.html`: automatic local weather, Environment Canada across Canada and Open-Meteo worldwide.
 - `petrol.html`: fuel-cost calculator with map-based routing.

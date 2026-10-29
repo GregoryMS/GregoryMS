@@ -4,7 +4,8 @@
     { id: 'eng.1', name: 'Premier League' },
     { id: 'ger.1', name: 'Bundesliga' },
     { id: 'usa.1', name: 'MLS' },
-    { id: 'eng.w.1', name: 'Women’s Super League' }
+    { id: 'eng.w.1', name: 'Women’s Super League' },
+    { id: 'uefa.champions', name: 'UEFA Champions League' }
   ];
   const teams = [
     ['331', 'Brighton', 'men-clubs', 'eng.1', 'BHA'],
