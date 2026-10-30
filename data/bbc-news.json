@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-30T15:46:36+00:00",
-  "fetchedAt": "2026-10-30T15:46:41.219548+00:00",
+  "feedUpdatedAt": "2026-10-30T20:09:17+00:00",
+  "fetchedAt": "2026-10-30T20:09:26.769165+00:00",
   "items": [
+    {
+      "title": "Crypto giant Binance attempting to recover $6.3bn stolen in hack linked to North Korea",
+      "link": "https://www.bbc.co.uk/news/articles/cwe8lp7zy07zo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "What we know about Binance's $6.3bn hack",
       "link": "https://www.bbc.co.uk/news/videos/cv2d62e34rw5o?at_medium=RSS&at_campaign=rss"
@@ -10,6 +14,10 @@
     {
       "title": "Driver guilty of hitting cyclist and dragging him to death under car",
       "link": "https://www.bbc.co.uk/news/articles/c6e3xg5we9eyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Hundreds evacuated from Russian-occupied Oleshky during rare Ukraine ceasefire",
+      "link": "https://www.bbc.co.uk/news/articles/c60me298k1yeo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Police Scotland carrying out 'active inquiries' into Andrew and Epstein Balmoral visits",
@@ -20,28 +28,20 @@
       "link": "https://www.bbc.co.uk/news/articles/ck62ydn7dj9eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Residents leave devastated Russian-occupied Oleshky as evacuation corridor opens",
-      "link": "https://www.bbc.co.uk/news/articles/c60me298k1yeo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Iconic moments from the career of Sir Patrick Stewart, who has died aged 86",
-      "link": "https://www.bbc.co.uk/news/videos/c6qxnlxn0n15o?at_medium=RSS&at_campaign=rss"
+      "title": "Russell Brand accusers 'haunted' for years by alleged crimes, court hears",
+      "link": "https://www.bbc.co.uk/news/articles/cx4g1ve5ylg7o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Prominent Russian newspaper shuts down under pressure from authorities",
       "link": "https://www.bbc.co.uk/news/articles/cmewepdr109do?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "US tech stocks see sharp falls over AI cost fears",
+      "title": "US tech stocks see sharp falls as AI spending nears $1tn",
       "link": "https://www.bbc.co.uk/news/articles/cvwy72e0n72yo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Police watchdog to investigate Met over letter about Meghan's father",
       "link": "https://www.bbc.co.uk/news/articles/c61m42pzplnzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Spain transport minister says he won't resign over high-speed rail disaster",
-      "link": "https://www.bbc.co.uk/news/articles/c6zxj2e5qlxxo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
