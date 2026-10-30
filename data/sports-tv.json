@@ -183,7 +183,7 @@
           ]
         }
       ],
-      "error": false
+      "error": true
     },
     "CA": {
       "checkedAt": "2026-10-30T06:29:11.322223+00:00",
@@ -343,7 +343,7 @@
           ]
         }
       ],
-      "error": false
+      "error": true
     },
     "NO": {
       "checkedAt": "2026-10-30T06:29:11.322223+00:00",
@@ -513,7 +513,7 @@
           ]
         }
       ],
-      "error": false
+      "error": true
     },
     "SE": {
       "checkedAt": "2026-10-30T06:29:11.322223+00:00",
@@ -659,7 +659,7 @@
           ]
         }
       ],
-      "error": false
+      "error": true
     },
     "DE": {
       "checkedAt": "2026-10-30T06:29:11.322223+00:00",
@@ -797,7 +797,7 @@
           ]
         }
       ],
-      "error": false
+      "error": true
     }
   }
 }
