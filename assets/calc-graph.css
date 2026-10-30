@@ -17,6 +17,7 @@
 .curve-toggle[aria-pressed="true"]::after { content:''; position:absolute; width:6px; height:3px; border-left:1.5px solid white; border-bottom:1.5px solid white; transform:rotate(-45deg); left:3px; top:4px; }
 .equation-main input { min-width:0; width:100%; border:0; outline:0; background:transparent; color:var(--text); font:15px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; padding:6px 0; }
 .graph-equation:focus-within { border-color:var(--calc-accent); }
+.graph-equation.is-active { border-color:var(--calc-accent); }
 .remove-equation { flex-shrink:0; height:32px; width:24px; border:0; border-radius:6px; background:transparent; color:var(--muted); padding:0; font-size:20px; }
 .remove-equation:hover { background:var(--soft); }
 .equation-status { font-size:11px; color:var(--muted); margin:0; line-height:1.5; }
@@ -61,6 +62,16 @@
 .graph-help { font-size:12px; margin:8px 0 0; }
 .graph-help summary { padding:8px 0; }
 .graph-help p { margin:10px 0; }
+.graph-keyboard { grid-column:1/-1; padding:16px 20px 20px; border-top:1px solid var(--line); }
+.graph-keyboard-heading { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; max-width:800px; margin:0 auto 12px; font-size:12px; color:var(--muted); }
+.graph-keyboard-heading h2 { margin:0; font-size:13px; font-weight:500; color:var(--text); }
+.graph-keyboard-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.35fr); gap:16px; max-width:800px; margin:auto; }
+.graph-function-keys,.graph-number-keys { display:grid; gap:6px; }
+.graph-function-keys { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.graph-number-keys { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.graph-keyboard .key { min-width:0; min-height:44px; padding:8px 0; border-radius:10px; font-size:18px; touch-action:manipulation; }
+.graph-keyboard .key.function,.graph-keyboard .key.clear { font-size:14px; }
+@media(max-width:700px) { .graph-keyboard { padding:16px; } .graph-keyboard-grid { grid-template-columns:1fr; gap:12px; } .graph-function-keys { grid-template-columns:repeat(6,minmax(0,1fr)); } }
 @media(max-width:900px) { .graph-layout { grid-template-columns:245px minmax(0,1fr); } .graph-sidebar { padding:18px 14px; } .calc-heading-row { align-items:flex-start; flex-direction:column; gap:18px; } .graph-range { width:100%; margin-left:0; } .graph-toolbar { padding:10px; gap:6px; } }
 @media(max-width:700px) { .calc-page.graphing-active { max-width:700px; } .graph-layout { display:flex; flex-direction:column; border-radius:18px; } .graph-layout[hidden] { display:none; } .graph-sidebar { border-right:0; border-bottom:1px solid var(--line); padding:16px; } .graph-stage { height:380px; } .graph-examples { margin:12px 0 16px; } .parameter-control { padding-top:12px; } .parameter-control p { margin-bottom:12px; } .parameter-control input { display:block; } .calc-heading-row { margin-bottom:20px; gap:16px; } .graph-angle-row { margin-top:14px; } .graph-equation { margin-bottom:9px; } .equation-hint { margin-bottom:14px; } .graph-readout { padding:12px; } .trace-form { gap:7px; } .graph-toolbar { flex-wrap:wrap; } .graph-tool { min-width:33px; padding:6px 8px; } }
 @media(max-width:700px) { .graph-workspace { order:-1; } .graph-sidebar { border-bottom:0; border-top:1px solid var(--line); } .graph-stage { height:350px; } }
