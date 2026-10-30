@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
+      "checkedAt": "2026-10-30T00:24:41.026701+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -181,12 +181,20 @@
             "HBO Max (UK)",
             "TNT Sports 2"
           ]
+        },
+        {
+          "home": "CF Montréal",
+          "away": "Vancouver Whitecaps",
+          "start": "2026-11-07T21:00:00+00:00",
+          "channels": [
+            "Apple TV (UK)"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
+      "checkedAt": "2026-10-30T00:24:41.026701+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -373,7 +381,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
+      "checkedAt": "2026-10-30T00:24:41.026701+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -569,7 +577,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
+      "checkedAt": "2026-10-30T00:24:41.026701+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -740,7 +748,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-10-29T20:37:37.400754+00:00",
+      "checkedAt": "2026-10-30T00:24:41.026701+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
