@@ -7,8 +7,9 @@ const graph = require('../assets/calc-graph-core.js');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'calc.html'), 'utf8');
 
-function setup() {
+function setup(initialState) {
   const elements = new Map(), saved = new Map();
+  if (initialState) saved.set('gregle-calc-graph', JSON.stringify(initialState));
   let activeElement;
   class Element {
     constructor(tag = 'div') {
@@ -117,4 +118,33 @@ test('keypad respects the expression limit while allowing replacement and remain
   assert.equal(app.get('expression').value, '');
   const keyboard = html.split('id="graphKeyboard"')[1].split('</section>')[0];
   assert(!/\bdata-insert=/.test(keyboard), 'Graph buttons must not trigger the arithmetic input listener');
+});
+
+
+test('WINDOW applies independent axis ranges and rejects reversed or excessive ranges', () => {
+  const app = setup();
+  function apply(values) {
+    ['graphXmin','graphXmax','graphYmin','graphYmax'].forEach((id,i) => {app.get(id).value = String(values[i]);});
+    app.get('graphWindowForm').dispatch('submit', {preventDefault() {}});
+    return app.state().view;
+  }
+  assert.deepEqual(apply([-5,15,-2,8]), {x:5,y:3,span:20,yspan:10});
+  assert.equal(app.get('graphScreenTitle').textContent, 'GRAPH');
+  const valid = app.state().view;
+  for (const values of [[5,-5,-2,8],[-5,5,8,-2],[-5,5,0,0],[-5,5,-1e9,1e9],[-5,Infinity,-2,8]]) {
+    assert.deepEqual(apply(values), valid);
+    assert.match(app.get('graphWindowError').textContent, /increasing ranges/);
+  }
+});
+
+test('window ranges restore from storage and zoom together without losing their aspect ratio', () => {
+  const app = setup({equations:[{expression:'x',enabled:true}],view:{x:3,y:2,span:8,yspan:30}});
+  app.get('graphZoomOut').dispatch('click');
+  assert.deepEqual(app.state().view, {x:3,y:2,span:16,yspan:60});
+  app.get('graphZoomIn').dispatch('click');
+  assert.deepEqual(app.state().view, {x:3,y:2,span:8,yspan:30});
+  app.get('graphReset').dispatch('click');
+  assert.deepEqual(app.state().view, {x:0,y:0,span:20,yspan:20});
+  const old = setup({equations:[{expression:'x'}],view:{x:0,y:0,span:20}});
+  assert.deepEqual(old.state().view, {x:0,y:0,span:20});
 });
