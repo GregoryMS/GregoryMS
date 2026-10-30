@@ -176,7 +176,8 @@ test('one scientific calculator starts in calculation mode, chains answers and s
   assert.equal(app.get('result').textContent, '15');
   app.key('9'); assert.equal(app.get('expression').value, '9');
   assert.equal(app.get('historyList').children.length, 2);
-  app.scientific.navigate('up'); assert.equal(app.get('expression').value, '14+1');
+  app.scientific.navigate('up'); assert.equal(app.get('expression').value, '9');
+  assert.match(app.get('homeStatus').textContent,/History answer: 15/);
   app.scientific.navigate('down'); assert.equal(app.get('expression').value, '9');
 });
 
@@ -192,7 +193,8 @@ test('scientific keys share angle settings, show errors and preserve calculation
   app.key('clear', true); app.type(app.get('expression'), '1/0'); app.scientific.calculate();
   assert.equal(app.get('expression').attributes['aria-invalid'], 'true');
   assert.match(app.get('calcMessage').textContent, /zero/);
-  app.key('clear', true); assert.equal(app.get('result').textContent, '0');
+  app.key('clear', true); assert.equal(app.get('result').textContent, '1');
+  assert.equal(app.get('calcError').hidden,true);
 });
 
 
@@ -204,7 +206,7 @@ test('completed Ans calculations retain the answer when settings change or a pop
   app.scientific.setAngle('rad');
   assert.equal(app.get('result').textContent, '43');
   const state = app.scientific.getState();
-  assert.equal(state.ans, 43); assert.equal(state.completed, true); assert.equal(state.expression, 'ans+1');
+  assert.equal(state.ans, 43); assert.equal(state.completed, true); assert.equal(state.expression, ''); assert.equal(state.lastEntry,'ans+1');
 });
 
 
@@ -269,4 +271,84 @@ test('the exact-x inspector retains a coordinate entered with the touch keypad',
   assert.equal(app.screen(),'trace'); assert.equal(field.value,'-2.5');
   app.get('traceInput').value=''; app.get('traceForm').dispatch('submit',{preventDefault() {}});
   assert.equal(field.attributes['aria-invalid'],'true');
+});
+
+
+test('the home screen waits for ENTER, writes left/right rows, and opens a fresh entry', () => {
+  const app = setup(undefined,true,true);
+  app.key('2'); app.key('+'); app.key('3');
+  assert.equal(app.get('result').textContent,'0'); assert.equal(app.get('historyList').children.length,0);
+  app.scientific.calculate();
+  assert.equal(app.get('expression').value,''); assert.equal(app.get('result').textContent,'5');
+  const row = app.get('historyList').children[0];
+  assert.equal(row.children[0].textContent,'2+3'); assert.equal(row.children[1].textContent,'5');
+});
+
+test('blank ENTER repeats an entry and a new operator starts with Ans', () => {
+  const app = setup(undefined,true,true);
+  app.type(app.get('expression'),'2+3'); app.scientific.calculate(); app.scientific.calculate();
+  assert.equal(app.get('result').textContent,'5'); assert.equal(app.get('historyList').children.length,2);
+  app.key('+'); app.key('1'); assert.equal(app.get('expression').value,'Ans+1');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'6');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'7');
+});
+
+test('history navigation selects separate entries and answers and ENTER copies without executing', () => {
+  const app = setup(undefined,true,true);
+  for (const expression of ['2+3','9*9']) {app.type(app.get('expression'),expression); app.scientific.calculate();}
+  app.scientific.navigate('up'); assert.match(app.get('homeStatus').textContent,/answer: 81/);
+  app.scientific.navigate('up'); assert.match(app.get('homeStatus').textContent,/expression: 9\*9/);
+  app.scientific.navigate('enter'); assert.equal(app.get('expression').value,'9*9');
+  assert.equal(app.get('historyList').children.length,2);
+  app.key('clear',true); app.scientific.navigate('up'); app.scientific.navigate('enter');
+  assert.equal(app.get('expression').value,'81'); assert.equal(app.get('historyList').children.length,2);
+});
+
+test('CLEAR on an empty entry clears the display and retains history and Ans for recall', () => {
+  const app = setup(undefined,true,true);
+  app.type(app.get('expression'),'6*7'); app.scientific.calculate(); app.key('clear',true);
+  assert.equal(app.get('historyList').children.length,0); assert.equal(app.scientific.getState().ans,42);
+  app.scientific.navigate('up'); app.scientific.navigate('enter'); assert.equal(app.get('expression').value,'42');
+  app.key('clear',true); app.scientific.recallEntry(); assert.equal(app.get('expression').value,'6*7');
+});
+
+test('2nd ENTER recalls previous entries without executing them', () => {
+  const app = setup(undefined,true,true);
+  for(const expression of ['3+4','8*9']) {app.type(app.get('expression'),expression); app.scientific.calculate();}
+  app.get('graphSecond').dispatch('click');
+  app.get('graphCalculator').dispatch('keydown',{key:'Enter',preventDefault() {}});
+  assert.equal(app.get('expression').value,'8*9'); assert.equal(app.get('graphSecond').attributes['aria-pressed'],'false');
+  app.get('graphSecond').dispatch('click'); app.get('graphCalculator').dispatch('keydown',{key:'Enter',preventDefault() {}});
+  assert.equal(app.get('expression').value,'3+4'); assert.equal(app.get('historyList').children.length,2);
+});
+
+test('error menus allow Goto to repair an entry and Quit without losing the last answer', () => {
+  const app = setup(undefined,true,true);
+  app.type(app.get('expression'),'2+'); app.scientific.calculate();
+  assert.equal(app.get('calcError').hidden,false); assert.equal(app.get('calcErrorTitle').textContent,'ERR:SYNTAX');
+  app.scientific.navigate('down'); app.scientific.navigate('enter');
+  assert.equal(app.get('calcError').hidden,true); assert.equal(app.get('expression').value,'2+');
+  app.key('3'); app.scientific.calculate(); assert.equal(app.get('result').textContent,'5');
+  app.type(app.get('expression'),'1/0'); app.scientific.calculate();
+  assert.equal(app.get('calcErrorTitle').textContent,'ERR:DIVIDE BY 0');
+  app.key('1'); assert.equal(app.get('expression').value,''); assert.equal(app.get('calcError').hidden,true);
+  assert.equal(app.get('result').textContent,'5'); assert.equal(app.get('historyList').children.length,1);
+});
+
+test('the negative-number key remains distinct from subtracting Ans', () => {
+  const app = setup(undefined,true,true);
+  app.type(app.get('expression'),'5'); app.scientific.calculate();
+  app.scientific.insert('neg'); app.key('2'); assert.equal(app.get('expression').value,'−2');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'-2');
+  app.key('−'); app.key('3'); assert.equal(app.get('expression').value,'Ans−3');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'-5');
+});
+
+
+test('physical cursor keys move through read-only touch entries', () => {
+  const app = setup(undefined,true,true), input = app.get('expression'); app.type(input,'12345');
+  input.dispatch('keydown',{key:'Home',preventDefault() {}}); assert.equal(input.selectionStart,0);
+  input.dispatch('keydown',{key:'ArrowRight',preventDefault() {}}); assert.equal(input.selectionStart,1);
+  input.dispatch('keydown',{key:'End',preventDefault() {}}); assert.equal(input.selectionStart,5);
+  input.dispatch('keydown',{key:'ArrowLeft',preventDefault() {}}); assert.equal(input.selectionStart,4);
 });

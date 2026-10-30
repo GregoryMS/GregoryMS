@@ -241,7 +241,7 @@
     draw(); canvas.toBlob(blob => {if (!blob) return; const link = document.createElement('a'), url = URL.createObjectURL(blob); link.href = url; link.download = 'gregle-graph.png'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);});
   });
   const screenPanels = {calculate:'scientificScreen', equations:'graphEquations', window:'graphWindowMenu', zoom:'graphZoomMenu', mode:'graphModeMenu', math:'graphMathMenu', table:'graphTableWrap'};
-  const screenHints = {calculate:'ENTER: calculate · ↑↓: history · GRAPH: plot', graph:'Arrows: pan · ENTER: trace', equations:'↑↓ function · ←→ cursor · ENTER: graph', window:'↑↓ field · ENTER: apply · CLEAR: back', zoom:'↑↓ choose · ENTER: select', trace:'←→ trace · ↑↓ curve · CLEAR: back', mode:'↑↓ setting · ←→ change · CLEAR: back', math:'↑↓ choose · ENTER: insert', table:'↑↓ row · ←→ columns · CLEAR: back'};
+  const screenHints = {calculate:'ENTER: calculate · ↑↓: history · 2nd ENTER: recall', graph:'Arrows: pan · ENTER: trace', equations:'↑↓ function · ←→ cursor · ENTER: graph', window:'↑↓ field · ENTER: apply · CLEAR: back', zoom:'↑↓ choose · ENTER: select', trace:'←→ trace · ↑↓ curve · CLEAR: back', mode:'↑↓ setting · ←→ change · CLEAR: back', math:'↑↓ choose · ENTER: insert', table:'↑↓ row · ←→ columns · CLEAR: back'};
   const traceable = () => equations.filter(e => e.enabled && e.compiled);
   const keyButtons = Array.from(document.querySelectorAll('#graphKeyboard [data-graph-insert]'));
   function renderKeyModes() {
@@ -268,7 +268,8 @@
       if (alpha) {button.textContent = button.dataset.alphaLabel; aria = button.dataset.alphaAria;}
       button.setAttribute('aria-label',aria);
     }
-    $('graphScreenTitle').textContent = `${alpha ? 'ALPHA ' : second ? '2nd ' : ''}${screen === 'equations' ? 'Y=' : screen.toUpperCase()}`;
+    scientific.setKeyMode(alpha ? 'alpha' : second ? 'second' : 'normal');
+    $('graphScreenTitle').textContent = `${alpha ? 'ALPHA ' : second ? '2nd ' : ''}${screen === 'equations' ? 'Y=' : screen === 'calculate' ? 'HOME' : screen.toUpperCase()}`;
     $('graphScreenHint').textContent = alpha ? 'A–Z: type · ALPHA: return to numbers' : screenHints[screen];
   }
   function setSecond(value) {second = value; if (value) alpha = false; renderKeyModes();}
@@ -324,7 +325,7 @@
     request();
   }
   function menuItems() {
-    if (screen === 'mode') return [$('graphAngle'), $('graphParameter'), $('graphExport')];
+    if (screen === 'mode') return [$('graphAngle'), $('graphParameter'), $('graphExport'), $('copyResult'), $('clearHistory')];
     return Array.from($(screenPanels[screen])?.querySelectorAll('[data-menu-item]') || []);
   }
   function highlightMenu() {
@@ -341,8 +342,11 @@
     if (Number.isFinite(value) && (value < b.ymin || value > b.ymax)) view.y = Math.max(-1e10,Math.min(1e10,value));
     $('traceInput').value = compact(traceX); request(); save();
   }
+  document.addEventListener('gregle-calc-release-second',() => setSecond(false));
   function navigate(direction) {
+    const recall = second && direction === 'enter' && screen === 'calculate' && !activeNumberInput && !scientific.hasError();
     setSecond(false);
+    if (recall) {scientific.recallEntry(); return;}
     const vertical = direction === 'up' || direction === 'down', delta = direction === 'up' || direction === 'left' ? -1 : 1;
     if (activeNumberInput?.id === 'traceInput') {
       if (direction === 'enter') $('traceForm').requestSubmit();

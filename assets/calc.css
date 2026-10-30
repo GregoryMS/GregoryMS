@@ -13,24 +13,29 @@
 .calculator-resize-handle {position:absolute;right:2px;bottom:2px;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:0 0 16px 0;background:#262832;color:#d0c2e1;cursor:nwse-resize;touch-action:none;z-index:2}
 .calculator-resize-handle:focus-visible {outline:2px solid var(--calc-accent);outline-offset:-3px}
 .calculator-resize-note {margin:12px 0 16px;color:var(--muted);font-size:11px;text-align:center}
-.scientific-screen {display:flex;flex-direction:column;gap:6px;padding:10px 12px!important}
-.screen-history-heading {display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;font-size:9px;letter-spacing:1px;color:#536f5e}
-.screen-history-heading button {border:0;background:transparent;color:inherit;padding:3px;font:10px ui-monospace,monospace;letter-spacing:0}
-.screen-history-heading button:disabled {opacity:.45;cursor:default}
-.screen-history-empty {margin:auto 0;color:#536f5e;font-size:13px;line-height:1.7}
-.screen-history-empty[hidden],.screen-history[hidden] {display:none}
-.screen-history {flex:1;min-height:0;overflow:auto;margin:0;padding:0;list-style:none;scrollbar-width:thin;scrollbar-color:#82998b transparent}
-.screen-history li {border-bottom:1px solid #bdcec2}
-.screen-history button {display:flex;flex-direction:column;gap:4px;width:100%;padding:7px 0;border:0;background:transparent;color:#365242;text-align:right;font:12px/1.5 ui-monospace,monospace;overflow-wrap:anywhere}
-.screen-history button strong {font-size:16px;font-weight:500;color:#23392f}
-.scientific-form {flex-shrink:0;margin-top:auto;border-top:1px solid #bdcec2;padding-top:6px}
-#expression {width:100%;min-width:0;padding:4px 0;background:transparent;border:0;border-bottom:1px solid transparent;border-radius:0;color:#23392f;text-align:right;font:20px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
-#expression:focus {border-bottom-color:#82998b;outline:none}
-#expression[aria-invalid="true"] {border-bottom-color:#993d34}
-.scientific-result-row {display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:42px}
-#result {min-width:0;overflow-wrap:anywhere;text-align:right;color:#23392f;font:28px/1.4 ui-monospace,monospace;font-variant-numeric:tabular-nums;user-select:text}
-#copyResult {padding:4px 0;border:0;background:transparent;color:#536f5e;font:9px ui-monospace,monospace}
-.calc-message {margin:0;min-height:15px;color:#91392f;font:10px/1.5 ui-monospace,monospace;overflow-wrap:anywhere}
+.scientific-screen {display:flex;flex-direction:column;gap:0;padding:7px 10px!important;font:18px/1.42 ui-monospace,SFMono-Regular,Consolas,monospace}
+.screen-history {flex:0 1 auto;max-height:calc(100% - 27px);min-height:0;overflow:auto;margin:0;padding:0;list-style:none;scrollbar-width:thin;scrollbar-color:#82998b transparent}
+.screen-history li {margin:0;padding:0;border:0}
+.screen-history button {display:block;width:100%;min-height:26px;margin:0;padding:0 1px;border:0;border-radius:0;background:transparent;color:var(--ink);font:inherit;line-height:26px;white-space:pre-wrap;overflow-wrap:anywhere}
+.screen-history .home-history-expression {text-align:left}
+.screen-history .home-history-answer {text-align:right}
+#scientificScreen button:focus-visible {outline:1px solid var(--ink);outline-offset:-1px}
+.screen-history button.is-selected {background:var(--ink);color:var(--screen)}
+.scientific-form {flex-shrink:0;margin:0;padding:0;border:0}
+.home-entry {position:relative;min-height:27px;overflow:hidden;font:inherit}
+#expression {display:block;width:100%;min-width:0;height:27px;margin:0;padding:0 1ch 0 0;border:0;border-radius:0;outline:none;background:transparent;color:var(--ink);text-align:left;font:inherit;line-height:27px;caret-color:transparent}
+#expression:focus {outline:none;border:0}
+.home-cursor {position:absolute;left:calc(var(--cursor-column,0)*1ch - var(--cursor-scroll,0px));top:2px;width:1ch;height:23px;background:var(--ink);color:var(--screen);font:inherit;line-height:23px;text-align:center;pointer-events:none;animation:home-cursor-blink 1.1s steps(1,end) infinite}
+@keyframes home-cursor-blink {0%,55%{opacity:1}56%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce) {.home-cursor {animation:none}}
+.home-error {position:absolute;inset:0;z-index:1;padding:11px 12px;background:var(--screen);color:var(--ink);overflow:auto}
+#calcError h2 {margin:0 0 9px;font:600 19px/1.4 ui-monospace,monospace;letter-spacing:0}
+.calc-message {margin:0 0 14px;color:var(--ink);font:14px/1.5 ui-monospace,monospace}
+.home-error-options {display:grid;gap:5px}
+.home-error-options button {width:100%;min-height:30px;padding:2px 5px;border:0;border-radius:0;background:transparent;color:var(--ink);text-align:left;font:18px/1.4 ui-monospace,monospace}
+.home-error-options button.is-selected {background:var(--ink);color:var(--screen)}
+#graphKeyboard .graph-enter {display:flex;flex-direction:column;align-items:center;justify-content:center}
+#graphKeyboard .graph-enter small {position:static;display:block;margin-bottom:6px;color:#dfc167;font-size:8px;line-height:1}
 .calculator-popout,.calculator-popout body {width:100%;height:100%;margin:0;overflow:hidden;background:#22242c}
 .calculator-popout .topbar,.calculator-popout .calc-heading,.calculator-popout #popoutStatus,.calculator-popout .calculator-resize-note,.calculator-popout .trace-form,.calculator-popout .graph-help,.calculator-popout footer,.calculator-popout noscript {display:none!important}
 .calculator-popout .page.calc-page {width:100%;height:100dvh;max-width:none;margin:0;padding:4px;box-sizing:border-box}
