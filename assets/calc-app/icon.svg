@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Calculator</title>
+  <rect width="512" height="512" fill="#232323"/>
+  <rect x="122" y="76" width="268" height="360" rx="34" fill="#faf9f6"/>
+  <rect x="138" y="92" width="236" height="328" rx="20" fill="#232323"/>
+  <rect x="160" y="116" width="192" height="70" rx="12" fill="#9850ff"/>
+  <rect x="268" y="146" width="60" height="12" rx="6" fill="#faf9f6"/>
+  <g fill="#faf9f6">
+    <rect x="160" y="212" width="48" height="44" rx="10"/>
+    <rect x="232" y="212" width="48" height="44" rx="10"/>
+    <rect x="304" y="212" width="48" height="44" rx="10"/>
+    <rect x="160" y="276" width="48" height="44" rx="10"/>
+    <rect x="232" y="276" width="48" height="44" rx="10"/>
+    <rect x="304" y="276" width="48" height="44" rx="10"/>
+    <rect x="160" y="340" width="48" height="44" rx="10"/>
+  </g>
+  <rect x="232" y="340" width="120" height="44" rx="10" fill="#9850ff"/>
+  <rect x="271" y="352" width="42" height="7" rx="3.5" fill="#faf9f6"/>
+  <rect x="271" y="366" width="42" height="7" rx="3.5" fill="#faf9f6"/>
+</svg>

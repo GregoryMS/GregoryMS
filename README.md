@@ -35,6 +35,7 @@ the original navigation without moving or deleting any site files.
 
 - `index.html`: search, recent searches, local weather and BBC headlines.
 - `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference, Women’s Super League and UEFA Champions League league-phase tables.
+- `calc.html`: standard and scientific calculator, editable expressions, keyboard support and browser-local history.
 - `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
 - `weather.html`: automatic local weather, Environment Canada across Canada and Open-Meteo worldwide.
 - `petrol.html`: fuel-cost calculator with map-based routing.
@@ -540,3 +541,9 @@ A purple route with A/B endpoints, estimated distance and duration, and expandab
 **Car layout** enlarges touch controls, fields and navigation text, and remembers only that display preference. It activates automatically for a Tesla user agent and can be toggled on other devices. Available viewport width controls the layout, including Tesla's full and half-screen browser: a side panel above 700 pixels, the existing resizable drawer at 700 pixels and below, and a separate navigation card that remains visible outside the drawer. ResizeObserver notifies Leaflet when its container changes size. Real Tesla hardware has not been tested; GPS and speech availability depend on the vehicle browser.
 
 Run `node --test tests/maps-navigation*.test.cjs` for mode-specific routing, progress and arrival, handoff URLs, request cancellation, GPS lifecycle, weak and stale fixes, rerouting and cleanup checks.
+
+## Calculator
+
+`calc.html` is served at `https://calc.gregle.uk/` and appears in the shared app launcher and Tools & Links. It uses a bounded expression parser (no evaluated JavaScript), standard operator precedence, brackets, relative addition/subtraction percentages, scientific functions and degree/radian angle modes. History keeps the last 50 calculations in `gregle-calc-history` in this browser; storage restrictions do not prevent calculations. Ans is kept for the current page visit. Display values use 14 significant digits.
+
+The Calculator icon shares Gregle’s charcoal, off-white and violet palette. Run `python3 scripts/render_calc_icons.py` to reproduce its app icons and favicons. Check arithmetic and integration with `node --test tests/calc.test.cjs tests/site-router.test.cjs tests/site-menu.test.cjs` and `python3 scripts/update_site_menu.py --check`.

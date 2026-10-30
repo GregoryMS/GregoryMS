@@ -9,7 +9,7 @@ const routes = require('../assets/site-routes.json');
 const destination = page => `https://${routes[page]}/`;
 
 test('every content page has the same valid app destinations and working icons', () => {
-  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html', 'sports.html', 'news.html', 'finance.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/files/files', 'https://cloud.gregle.uk/apps/calendar/']);
+  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html', 'sports.html', 'news.html', 'finance.html', 'calc.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/files/files', 'https://cloud.gregle.uk/apps/calendar/']);
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);

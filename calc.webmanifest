@@ -1,0 +1,25 @@
+{
+  "id": "/calc.html",
+  "name": "Gregle Calculator",
+  "short_name": "Calculator",
+  "description": "Everyday sums and scientific calculations.",
+  "start_url": "/calc.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#242424",
+  "theme_color": "#7637cc",
+  "icons": [
+    {
+      "src": "/assets/calc-app/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/calc-app/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

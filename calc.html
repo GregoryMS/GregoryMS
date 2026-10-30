@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculator · Gregle</title>
+<meta name="description" content="A simple, free calculator from Gregle. Everyday sums, percentages and scientific functions, with keyboard support and calculation history.">
+<meta name="theme-color" content="#7637cc">
+<meta name="application-name" content="Calculator"><meta name="apple-mobile-web-app-title" content="Calculator"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/calc-app/apple-touch-icon.png">
+<link rel="manifest" href="/calc.webmanifest">
+<link rel="icon" href="/assets/calc-app/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/calc-app/favicon-32.png">
+<link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
+<link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261029"><link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
+<script src="assets/theme.js?v=20261017-theme-switch" defer></script><script src="assets/site-menu.js?v=20261019-docs" defer></script>
+<script src="assets/calc-core.js?v=20261029" defer></script><script src="assets/calc.js?v=20261029" defer></script>
+<link rel="canonical" href="https://calc.gregle.uk/">
+</head><body>
+<header class="gregle-menu-header topbar"><div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Calculator</span></div><div class="top-actions">
+<!-- Gregle app menu -->
+<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
+<summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>
+<p class="gregle-menu-sr-only" id="gregleAppHelp">Drag apps to rearrange them. On a touch screen, hold an app before dragging. With an app focused, use Alt and the arrow keys to move it.</p>
+<div class="gregle-app-grid" aria-describedby="gregleAppHelp"><a class="gregle-app" href="https://gregle.uk/" data-gregle-app-id="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
+<a class="gregle-app" href="https://translate.gregle.uk/" data-gregle-app-id="/translate.html"><img src="/assets/translate-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Translate</span></a>
+<a class="gregle-app" href="https://weather.gregle.uk/" data-gregle-app-id="/weather.html"><img src="/assets/weather-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Weather</span></a>
+<a class="gregle-app" href="https://earthquakes.gregle.uk/" data-gregle-app-id="/earthquakes.html"><img src="/assets/earthquakes-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Earthquakes</span></a>
+<a class="gregle-app" href="https://astro.gregle.uk/" data-gregle-app-id="/astro.html"><img src="/assets/astro-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Astronomy</span></a>
+<a class="gregle-app" href="https://sports.gregle.uk/" data-gregle-app-id="/sports.html"><img src="/assets/sports-app/icon-192.png?v=20261029-football-v2" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Sports</span></a>
+<a class="gregle-app" href="https://news.gregle.uk/" data-gregle-app-id="/news.html"><img src="/assets/news-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>News</span></a>
+<a class="gregle-app" href="https://finance.gregle.uk/" data-gregle-app-id="/finance.html"><img src="/assets/finance-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Finance</span></a>
+<a class="gregle-app" href="https://calc.gregle.uk/" aria-current="page" data-gregle-app-id="/calc.html"><img src="/assets/calc-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Calculator</span></a>
+<a class="gregle-app" href="https://links.gregle.uk/" data-gregle-app-id="/links.html"><img src="/assets/tools-app.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>More</span></a>
+<a class="gregle-app" href="https://radio.gregle.uk/" data-gregle-app-id="/radio.html"><img src="/assets/radio-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Radio</span></a>
+<a class="gregle-app" href="https://dictionary.gregle.uk/" data-gregle-app-id="/dictionary.html"><img src="/assets/dictionary-app/icon-192.png" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Dictionary</span></a>
+<a class="gregle-app" href="https://maps.gregle.uk/" data-gregle-app-id="/maps.html"><img src="/assets/maps-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Maps</span></a>
+<a class="gregle-app" href="https://cloud.gregle.uk" data-gregle-app-id="https://cloud.gregle.uk"><img src="/assets/cloud-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Cloud</span></a>
+<a class="gregle-app" href="https://cloud.gregle.uk/apps/files/files" data-gregle-app-id="docs"><img src="/assets/docs-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Docs</span></a>
+<a class="gregle-app" href="https://cloud.gregle.uk/apps/calendar/" data-gregle-app-id="calendar"><img src="/assets/calendar-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Calendar</span></a></div>
+<div class="gregle-menu-sr-only" role="status" aria-live="polite" data-gregle-app-status></div>
+</nav></details>
+<!-- /Gregle app menu -->
+</div></header>
+<main class="page calc-page">
+<section class="calc-heading"><p class="eyebrow">Make it add up</p><h1>Calculator<span>.</span></h1><p class="subtitle">From a quick sum to a little more science.</p></section>
+<div class="calc-layout">
+<form class="calculator" id="calculatorForm" aria-label="Calculator">
+<div class="calc-toolbar"><button class="mode-button" id="scientificToggle" type="button" aria-expanded="false" aria-pressed="false" aria-controls="scientificKeys angleControl">Scientific</button><div class="toolbar-end"><div class="angle-control" id="angleControl" hidden><button class="small-button" id="angleToggle" type="button" aria-label="Angle unit: degrees. Change to radians.">DEG</button></div><button class="small-button" type="button" data-insert="ans" title="Insert the last calculated answer">Ans</button></div></div>
+<div class="calc-display"><label for="expression">Your calculation</label><input id="expression" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" autocapitalize="off" maxlength="300" placeholder="0" aria-describedby="calcMessage keyboardHelp"><div class="result-row"><button class="copy-button" id="copyResult" type="button" aria-label="Copy result" title="Copy result"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button><output id="result" for="expression" aria-label="Result" aria-live="off">0</output></div></div>
+<p class="calc-message" id="calcMessage" role="status" aria-live="polite"></p>
+<div class="scientific-keys" id="scientificKeys" aria-label="Scientific functions" hidden>
+<button class="key function" type="button" data-insert="sin(" aria-label="Sine">sin</button>
+<button class="key function" type="button" data-insert="cos(" aria-label="Cosine">cos</button>
+<button class="key function" type="button" data-insert="tan(" aria-label="Tangent">tan</button>
+<button class="key function" type="button" data-insert="asin(" aria-label="Inverse sine">sin⁻¹</button>
+<button class="key function" type="button" data-insert="acos(" aria-label="Inverse cosine">cos⁻¹</button>
+<button class="key function" type="button" data-insert="atan(" aria-label="Inverse tangent">tan⁻¹</button>
+<button class="key function" type="button" data-insert="ln(" aria-label="Natural logarithm">ln</button>
+<button class="key function" type="button" data-insert="log(" aria-label="Base 10 logarithm">log</button>
+<button class="key function" type="button" data-insert="π" aria-label="Pi">π</button>
+<button class="key function" type="button" data-insert="e" aria-label="Euler’s number">e</button>
+<button class="key function" type="button" data-insert="^" aria-label="Power">xʸ</button>
+<button class="key function" type="button" data-insert="!" aria-label="Factorial">x!</button>
+</div><div class="keypad" aria-label="Number pad">
+<button class="key clear" type="button" aria-label="Clear all" id="clear">AC</button>
+<button class="key function" type="button" data-insert="(" aria-label="Open bracket">(</button>
+<button class="key function" type="button" data-insert=")" aria-label="Close bracket">)</button>
+<button class="key function" type="button" aria-label="Backspace" id="backspace">⌫</button>
+<button class="key function" type="button" data-insert="^2" aria-label="Square">x²</button>
+<button class="key function" type="button" data-insert="sqrt(" aria-label="Square root">√</button>
+<button class="key function" type="button" data-insert="%" aria-label="Percent">%</button>
+<button class="key operator" type="button" data-insert="÷" aria-label="Divide">÷</button>
+<button class="key " type="button" data-insert="7">7</button>
+<button class="key " type="button" data-insert="8">8</button>
+<button class="key " type="button" data-insert="9">9</button>
+<button class="key operator" type="button" data-insert="×" aria-label="Multiply">×</button>
+<button class="key " type="button" data-insert="4">4</button>
+<button class="key " type="button" data-insert="5">5</button>
+<button class="key " type="button" data-insert="6">6</button>
+<button class="key operator" type="button" data-insert="−" aria-label="Subtract">−</button>
+<button class="key " type="button" data-insert="1">1</button>
+<button class="key " type="button" data-insert="2">2</button>
+<button class="key " type="button" data-insert="3">3</button>
+<button class="key operator" type="button" data-insert="+" aria-label="Add">+</button>
+<button class="key function" type="button" aria-label="Change sign" id="negate">±</button>
+<button class="key " type="button" data-insert="0">0</button>
+<button class="key " type="button" data-insert="." aria-label="Decimal point">.</button>
+<button class="key operator equals" type="submit" aria-label="Calculate" id="equals">=</button>
+</div><p class="calc-footnote" id="keyboardHelp">Type a calculation · Enter to calculate · Esc to clear</p>
+</form>
+<aside class="history-panel" aria-labelledby="historyTitle"><div class="history-heading"><h2 id="historyTitle">History</h2><button type="button" id="clearHistory">Clear</button></div><div class="history-empty" id="historyEmpty"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.5 7M3 5v6h6m3-4v6l4 2"/></svg><strong>A fresh start.</strong><p>Your calculations will appear here.<br>Tap an answer to use it again.</p></div><ol class="history-list" id="historyList"></ol><p class="history-note">Your last 50 calculations, saved in this browser.</p></aside>
+</div>
+<details class="calc-help"><summary>Keyboard shortcuts &amp; a few useful tips</summary><p>Use your keyboard or the number pad. <kbd>Enter</kbd> or <kbd>=</kbd> calculates, <kbd>Backspace</kbd> deletes, and <kbd>Esc</kbd> clears. You can select and edit any part of a calculation.</p><p>Brackets and the usual order of operations are supported: <b>2 + 3 × 4 = 14</b>. Powers come before a leading minus: <b>−2^2 = −4</b>. Use <b>(−2)^2</b> for 4.</p><p>For a percentage, <b>200 + 10% = 220</b>, <b>200 − 10% = 180</b> and <b>200 × 10% = 20</b>. A percentage on its own divides by 100.</p><p>Scientific mode adds powers, logarithms, factorials and trigonometry. Choose DEG for degrees or RAD for radians. Close function brackets, for example <b>sin(30)</b>. Ans uses the last calculated answer from this visit.</p><p>Results are rounded to 14 significant digits for display. Calculations and history stay on your device.</p></details>
+<noscript><p>Please enable JavaScript to use this calculator.</p></noscript>
+<footer><p>Calculator · Gregle</p><a href="https://links.gregle.uk/">More useful things ↗</a></footer>
+</main></body></html>

@@ -25,6 +25,7 @@ APPS = [
     ('Sports', '/sports.html', 'assets/sports-app/icon-192.png?v=20261029-football-v2'),
     ('News', '/news.html', 'assets/news-app/icon-192.png'),
     ('Finance', '/finance.html', 'assets/finance-app/icon-192.png'),
+    ('Calculator', '/calc.html', 'assets/calc-app/icon-192.png'),
     ('More', '/links.html', 'assets/tools-app.svg'),
     ('Radio', '/radio.html', 'assets/radio-app/icon-192.png'),
     ('Dictionary', '/dictionary.html', 'assets/dictionary-app/icon-192.png'),
