@@ -4,6 +4,22 @@
   const input = $('expression'), output = $('result'), message = $('calcMessage');
   const {evaluate, format} = window.GregleCalc;
   let ans = 0, completed = false, history = [], angle = 'deg';
+  const popout = new URLSearchParams(window.location.search).get('popout') === '1';
+  if (popout) {
+    $('popoutCalculator').hidden = true;
+    try {
+      const state = JSON.parse(sessionStorage.getItem('gregle-calc-popout') || 'null');
+      sessionStorage.removeItem('gregle-calc-popout');
+      if (state && typeof state.expression === 'string' && state.expression.length <= 300) {
+        input.value = state.expression;
+        ans = Number.isFinite(state.ans) ? state.ans : 0;
+        angle = state.angle === 'rad' ? 'rad' : 'deg';
+        completed = state.completed === true;
+      }
+    } catch (_) {}
+    $('angleToggle').textContent = angle.toUpperCase();
+    $('angleToggle').setAttribute('aria-label', `Angle unit: ${angle === 'deg' ? 'degrees' : 'radians'}. Change to ${angle === 'deg' ? 'radians' : 'degrees'}.`);
+  }
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-calc-history') || '[]');
     if (Array.isArray(saved)) history = saved.filter(x => x && typeof x.expression === 'string' && x.expression.length <= 300 && Number.isFinite(x.value)).slice(0, 50);
@@ -113,6 +129,29 @@
     catch (_) {message.textContent = 'Select the result to copy it.'; const selection = window.getSelection(); const range = document.createRange(); range.selectNodeContents(output); selection.removeAllRanges(); selection.addRange(range);}
   });
   $('clearHistory').addEventListener('click', () => {history = []; save(); renderHistory();});
+  $('popoutCalculator').addEventListener('click', () => {
+    document.dispatchEvent(new Event('gregle-calc-save-graph'));
+    const graph = !$('graphPanel').hidden;
+    const url = new URL(window.location.href);
+    url.searchParams.set('popout', '1');
+    url.searchParams.set('mode', graph ? 'graph' : 'standard');
+    const width = Math.min(graph ? 1120 : 560, Math.max(320, screen.availWidth - 40));
+    const height = Math.min(860, Math.max(480, screen.availHeight - 60));
+    const left = Math.round((screen.availLeft || 0) + (screen.availWidth - width) / 2);
+    const top = Math.round((screen.availTop || 0) + (screen.availHeight - height) / 2);
+    const state = JSON.stringify({expression: input.value, ans, angle, completed});
+    const popup = window.open(url.href, '_blank', `popup=yes,toolbar=no,menubar=no,location=no,status=no,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
+    if (!popup) {
+      $('popoutStatus').textContent = 'The new window was blocked. Allow pop-ups for this site and try again.';
+      return;
+    }
+    $('popoutStatus').textContent = '';
+    try {
+      popup.sessionStorage.setItem('gregle-calc-popout', state);
+      popup.opener = null;
+      popup.focus();
+    } catch (_) {}
+  });
   document.addEventListener('keydown', event => {
     if (document.getElementById('arithmeticPanel')?.hidden) return;
     if (event.target === input || event.ctrlKey || event.metaKey || event.altKey || $('gregleAppMenu')?.open || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;

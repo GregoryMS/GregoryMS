@@ -12,13 +12,13 @@
 <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
 <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261029-graph"><link rel="stylesheet" href="assets/calc-graph.css?v=20261029-graph"><link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261029-popout"><link rel="stylesheet" href="assets/calc-graph.css?v=20261029-graph"><link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
 <script src="assets/theme.js?v=20261017-theme-switch" defer></script><script src="assets/site-menu.js?v=20261019-docs" defer></script>
-<script src="assets/calc-core.js?v=20261029-graph" defer></script><script src="assets/calc.js?v=20261029-graph" defer></script>
-<script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261029-graph" defer></script>
+<script src="assets/calc-core.js?v=20261029-graph" defer></script><script src="assets/calc.js?v=20261029-popout" defer></script>
+<script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261029-popout" defer></script>
 <link rel="canonical" href="https://calc.gregle.uk/">
 </head><body>
-<header class="gregle-menu-header topbar"><div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Calculator</span></div><div class="top-actions">
+<header class="gregle-menu-header topbar"><div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Calculator</span></div><div class="top-actions"><button type="button" class="pill calc-popout-button" id="popoutCalculator" title="Open calculator in a separate window" aria-label="Pop out calculator into a separate window"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7-9 9"/><path d="M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg><span>Pop out</span></button>
 <!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
 <summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
@@ -45,7 +45,8 @@
 <!-- /Gregle app menu -->
 </div></header>
 <main class="page calc-page graphing-active" id="calcPage">
-<div class="calc-heading-row"><section class="calc-heading"><p class="eyebrow">A little more possibility</p><h1>Calculator<span>.</span></h1><p class="subtitle">Plot a function. Explore a curve. Work it out.</p></section><div class="calc-modes" role="group" aria-label="Calculator mode"><button type="button" data-calc-mode="graph" aria-pressed="true" aria-controls="graphPanel">Graphing</button><button type="button" data-calc-mode="standard" aria-pressed="false" aria-controls="arithmeticPanel">Calculator</button></div></div>
+<p id="popoutStatus" class="calc-popout-status" role="status" aria-live="polite"></p>
+<div class="calc-heading-row"><section class="calc-heading"><p class="eyebrow">A little more possibility</p><h1>Calculator<span>.</span></h1></section><div class="calc-modes" role="group" aria-label="Calculator mode"><button type="button" data-calc-mode="graph" aria-pressed="true" aria-controls="graphPanel">Graphing</button><button type="button" data-calc-mode="standard" aria-pressed="false" aria-controls="arithmeticPanel">Calculator</button></div></div>
 <section id="graphPanel" aria-label="Graphing calculator">
 <div class="graph-layout">
 <aside class="graph-sidebar" aria-labelledby="equationsHeading"><div class="equations-heading"><h2 id="equationsHeading">Expressions</h2><span class="source-label">y = f(x)</span></div><p class="equation-hint">Write a function of x. Each one gets its own curve.</p><div id="equationList"></div><button type="button" class="add-equation" id="addEquation">+ Add expression</button><div class="graph-examples"><span>Try</span><button type="button" data-graph-example="x^2">x²</button><button type="button" data-graph-example="1/x">1/x</button><button type="button" data-graph-example="sin(a*x)">sin(ax)</button></div>

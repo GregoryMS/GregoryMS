@@ -16,12 +16,11 @@
     }
   } catch (_) {}
   if (!equations.length) equations = [{expression: 'sin(x)', enabled: true, colour: colours[0]}, {expression: 'x^2 / 4 - 2', enabled: true, colour: colours[1]}];
-  function save() {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      try {localStorage.setItem('gregle-calc-graph', JSON.stringify({equations: equations.map(({expression, enabled, colour}) => ({expression, enabled, colour})), angle, parameter, view}));} catch (_) {}
-    }, 180);
+  function persist() {
+    try {localStorage.setItem('gregle-calc-graph', JSON.stringify({equations: equations.map(({expression, enabled, colour}) => ({expression, enabled, colour})), angle, parameter, view}));} catch (_) {}
   }
+  function save() {clearTimeout(saveTimer); saveTimer = setTimeout(persist, 180);}
+  document.addEventListener('gregle-calc-save-graph', () => {clearTimeout(saveTimer); persist();});
   function bounds() {
     const yspan = view.span * height / width;
     return {xmin: view.x - view.span / 2, xmax: view.x + view.span / 2, ymin: view.y - yspan / 2, ymax: view.y + yspan / 2, width, height};
@@ -206,12 +205,14 @@
   $('graphExport').addEventListener('click', () => {
     draw(); canvas.toBlob(blob => {if (!blob) return; const link = document.createElement('a'), url = URL.createObjectURL(blob); link.href = url; link.download = 'gregle-graph.png'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);});
   });
-  document.querySelectorAll('[data-calc-mode]').forEach(button => button.addEventListener('click', () => {
-    const graph = button.dataset.calcMode === 'graph'; $('graphPanel').hidden = !graph; $('arithmeticPanel').hidden = graph;
-    document.querySelectorAll('[data-calc-mode]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+  function setMode(mode) {
+    const graph = mode === 'graph'; $('graphPanel').hidden = !graph; $('arithmeticPanel').hidden = graph;
+    document.querySelectorAll('[data-calc-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.calcMode === mode)));
     $('calcPage').classList.toggle('graphing-active', graph); $('calcHelp').hidden = graph;
     if (graph) request();
-  }));
+  }
+  document.querySelectorAll('[data-calc-mode]').forEach(button => button.addEventListener('click', () => setMode(button.dataset.calcMode)));
+  if (new URLSearchParams(window.location.search).get('mode') === 'standard') setMode('standard');
   equations.forEach(e => makeEquation(e)); $('addEquation').disabled = equations.length >= 8;
   new ResizeObserver(request).observe(stage);
   new MutationObserver(request).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});

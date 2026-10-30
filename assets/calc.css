@@ -57,3 +57,8 @@
 .calc-help kbd { font:inherit; padding:2px 5px; border:1px solid var(--line); border-radius:5px; }
 @media(max-width:700px) { .calc-page { max-width:570px; padding-top:8px; } .calc-heading { margin:8px 0 24px; } .calc-layout { grid-template-columns:1fr; gap:24px; } .calculator { padding:18px; border-radius:22px; } .calc-toolbar { margin-bottom:12px; } .calc-heading .subtitle { font-size:14px; } .key { min-height:56px; } .calc-message { min-height:35px; } .history-list { max-height:340px; } .history-empty { padding:25px 16px; } .history-panel { padding:0 4px; } .calc-help { margin-top:22px; } }
 @media(max-width:360px) { .calc-page { padding-left:12px; padding-right:12px; } .calculator { padding:14px; } .key { min-height:50px; } .keypad { gap:7px; } .scientific-keys { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+
+.calc-popout-button { gap:8px; white-space:nowrap; }
+.calc-popout-button[hidden] { display:none; }
+.calc-popout-status { color:var(--muted); font-size:13px; margin:0 0 16px; }
+.calc-popout-status:empty { display:none; }
