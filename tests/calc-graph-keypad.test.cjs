@@ -4,10 +4,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const graph = require('../assets/calc-graph-core.js');
+const calc = require('../assets/calc-core.js');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'calc.html'), 'utf8');
 
-function setup(initialState) {
+function setup(initialState, calculation = false) {
   const elements = new Map(), saved = new Map();
   if (initialState) saved.set('gregle-calc-graph', JSON.stringify(initialState));
   let activeElement;
@@ -15,14 +16,20 @@ function setup(initialState) {
     constructor(tag = 'div') {
       this.tagName = tag.toUpperCase(); this.children = []; this.listeners = {};
       this.attributes = {}; this.dataset = {}; this.value = ''; this.selectionStart = this.selectionEnd = 0;
-      this.classList = {toggle() {}, contains() {return false;}}; this.style = {setProperty() {}};
+      this.classList = {add() {},toggle() {}, contains() {return false;}}; this.style = {setProperty() {}};
     }
     set id(value) {this._id = value; elements.set(value, this);}
     get id() {return this._id;}
     setAttribute(name, value) {this.attributes[name] = value;}
+    removeAttribute(name) {delete this.attributes[name];}
+    getAttribute(name) {return this.attributes[name];}
+    hasAttribute(name) {return name in this.attributes;}
+    querySelectorAll() {return [];}
+    dispatchEvent(event) {this.dispatch(event.type, event);}
     addEventListener(type, fn) {(this.listeners[type] ||= []).push(fn);}
     dispatch(type, event = {}) {for (const fn of this.listeners[type] || []) fn({target:this, ...event});}
     append(...children) {for (const child of children) {child.parent = this; this.children.push(child);}}
+    replaceChildren(...children) {this.children = []; this.append(...children);}
     remove() {this.parent.children.splice(this.parent.children.indexOf(this), 1);}
     closest(selector) {return selector === 'button' && this.tagName === 'BUTTON' ? this : null;}
     focus() {if (activeElement !== this) {activeElement = this; this.dispatch('focus');}}
@@ -38,7 +45,7 @@ function setup(initialState) {
   document.getElementById = id => elements.get(id);
   document.createElement = tag => new Element(tag);
   document.querySelectorAll = () => [];
-  for (const [, id] of html.matchAll(/\bid="([^"]+)"/g)) {const element = new Element(); element.id = id;}
+  for (const [, tag, id] of html.matchAll(/<([a-z]+)\b[^>]*\bid="([^"]+)"/g)) {const element = new Element(tag); element.id = id;}
   const buttons = [];
   const keyboard = html.split('id="graphKeyboard"')[1].split('</section>')[0];
   for (const [, attributes] of keyboard.matchAll(/<button\b([^>]+)>/g)) {
@@ -48,12 +55,16 @@ function setup(initialState) {
     }
     buttons.push(button);
   }
-  vm.runInNewContext(fs.readFileSync(path.join(root, 'assets/calc-graph.js'), 'utf8'), {
-    document, window:{GregleGraph:graph, location:{search:''}}, URLSearchParams,
-    localStorage:{getItem:key => saved.get(key), setItem:(key,value) => saved.set(key,value)},
+  const window = {GregleGraph:graph, GregleCalc:calc, location:{search:''}, addEventListener() {}};
+  const context = {
+    document, window, URLSearchParams, Event:class {constructor(type) {this.type = type;}},
+    localStorage:{getItem:key => saved.get(key), setItem:(key,value) => saved.set(key,value), removeItem:key => saved.delete(key)},
     setTimeout:() => 1, clearTimeout() {}, requestAnimationFrame:() => 1,
     ResizeObserver:class {observe() {}}, MutationObserver:class {observe() {}}
-  });
+  };
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'assets/calc.js'), 'utf8'),context);
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'assets/calc-graph.js'), 'utf8'),context);
+  if (!calculation) window.GregleCalculator.openScreen('equations', false);
   const get = id => elements.get(id);
   const inputs = () => get('equationList').children.map(row => row.children[0].children[2]);
   function key(value, action = false) {
@@ -67,7 +78,7 @@ function setup(initialState) {
   function type(input, value) {input.focus(); input.value = value; input.setSelectionRange(value.length,value.length); input.dispatch('input');}
   const state = () => {document.dispatch('gregle-calc-save-graph'); return JSON.parse(saved.get('gregle-calc-graph'));};
   const remove = input => input.parent.children[3].dispatch('click');
-  return {get, inputs, key, type, state, remove};
+  return {get, inputs, key, type, state, remove, scientific:window.GregleScientific, open:window.GregleCalculator.openScreen, screen:window.GregleCalculator.getScreen};
 }
 
 test('keypad edits the selected equation at its cursor, replaces selections and saves updates', () => {
@@ -109,7 +120,7 @@ test('keypad follows added and removed equations and recreates a row after the l
   assert.equal(app.state().equations[0].expression, '2x');
 });
 
-test('keypad respects the expression limit while allowing replacement and remains separate from arithmetic', () => {
+test('graph keypad respects the expression limit and leaves the calculation intact', () => {
   const app = setup(), [first] = app.inputs();
   app.type(first, '1'.repeat(300)); app.key('2'); assert.equal(first.value.length, 300);
   first.setSelectionRange(0,2); app.key('sin('); assert.equal(first.value.length, 300);
@@ -147,4 +158,45 @@ test('window ranges restore from storage and zoom together without losing their 
   assert.deepEqual(app.state().view, {x:0,y:0,span:20,yspan:20});
   const old = setup({equations:[{expression:'x'}],view:{x:0,y:0,span:20}});
   assert.deepEqual(old.state().view, {x:0,y:0,span:20});
+});
+
+
+test('one scientific calculator starts in calculation mode, chains answers and saves history', () => {
+  const app = setup(undefined, true);
+  assert.equal(app.screen(), 'calculate');
+  app.key('2'); app.key('+'); app.key('3'); app.key('×'); app.key('4');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent, '14');
+  app.key('+'); app.key('1'); app.scientific.calculate();
+  assert.equal(app.get('result').textContent, '15');
+  app.key('9'); assert.equal(app.get('expression').value, '9');
+  assert.equal(app.get('historyList').children.length, 2);
+  app.scientific.navigate('up'); assert.equal(app.get('expression').value, '14+1');
+  app.scientific.navigate('down'); assert.equal(app.get('expression').value, '9');
+});
+
+test('scientific keys share angle settings, show errors and preserve calculations while graphing', () => {
+  const app = setup(undefined, true);
+  app.key('sin('); app.key('3'); app.key('0'); app.key(')'); app.scientific.calculate();
+  assert.equal(app.get('result').textContent, '0.5');
+  app.open('graph', false); assert.equal(app.screen(), 'graph');
+  app.open('calculate', false); assert.equal(app.get('result').textContent, '0.5');
+  app.key('clear', true); app.type(app.get('expression'), 'sin(pi/2)');
+  app.get('graphAngle').value = 'rad'; app.get('graphAngle').dispatch('change');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent, '1');
+  app.key('clear', true); app.type(app.get('expression'), '1/0'); app.scientific.calculate();
+  assert.equal(app.get('expression').attributes['aria-invalid'], 'true');
+  assert.match(app.get('calcMessage').textContent, /zero/);
+  app.key('clear', true); assert.equal(app.get('result').textContent, '0');
+});
+
+
+test('completed Ans calculations retain the answer when settings change or a popout restores state', () => {
+  const app = setup(undefined, true);
+  app.type(app.get('expression'), '6*7'); app.scientific.calculate();
+  app.type(app.get('expression'), 'ans+1'); app.scientific.calculate();
+  assert.equal(app.get('result').textContent, '43');
+  app.scientific.setAngle('rad');
+  assert.equal(app.get('result').textContent, '43');
+  const state = app.scientific.getState();
+  assert.equal(state.ans, 43); assert.equal(state.completed, true); assert.equal(state.expression, 'ans+1');
 });

@@ -1,13 +1,13 @@
 (() => {
   'use strict';
-  const $ = id => document.getElementById(id), core = window.GregleGraph;
+  const $ = id => document.getElementById(id), core = window.GregleGraph, scientific = window.GregleScientific;
   const canvas = $('graphCanvas'), ctx = canvas.getContext('2d'), stage = $('graphStage');
   const colours = ['#9850ff', '#159a91', '#e36d37', '#3d8ee9', '#db518c', '#a29a22', '#a26643', '#708090'];
-  let equations = [], angle = 'rad', parameter = 1, view = {x: 0, y: 0, span: 20}, traceX = null;
+  let equations = [], angle = 'deg', parameter = 1, view = {x: 0, y: 0, span: 20}, traceX = null;
   let width = 1, height = 1, frame = 0, saveTimer, counter = 0, tableVisible = false;
   const pointers = new Map(); let gesture = null, moved = false;
   let activeEquation = null;
-  let screen = 'graph', menuIndex = 0, second = false, traceEquation = 0, tableRow = 0;
+  let screen = 'calculate', editTarget = 'calculate', menuReturn = 'calculate', menuIndex = 0, second = false, traceEquation = 0, tableRow = 0;
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-calc-graph') || 'null');
     if (saved && Array.isArray(saved.equations)) {
@@ -18,12 +18,15 @@
       if (Number.isFinite(saved.view?.yspan) && saved.view.yspan >= 1e-6 && saved.view.yspan <= 1e8) view.yspan = saved.view.yspan;
     }
   } catch (_) {}
+  if (scientific.restoredAngle) angle = scientific.restoredAngle === 'rad' ? 'rad' : 'deg';
+  scientific.setAngle(angle);
   if (!equations.length) equations = [{expression: 'sin(x)', enabled: true, colour: colours[0]}, {expression: 'x^2 / 4 - 2', enabled: true, colour: colours[1]}];
   function persist() {
     try {localStorage.setItem('gregle-calc-graph', JSON.stringify({equations: equations.map(({expression, enabled, colour}) => ({expression, enabled, colour})), angle, parameter, view}));} catch (_) {}
   }
   function save() {clearTimeout(saveTimer); saveTimer = setTimeout(persist, 180);}
   document.addEventListener('gregle-calc-save-graph', () => {clearTimeout(saveTimer); persist();});
+  document.addEventListener('gregle-calc-resize', request);
   function bounds() {
     const yspan = view.yspan || view.span * height / width;
     return {xmin: view.x - view.span / 2, xmax: view.x + view.span / 2, ymin: view.y - yspan / 2, ymax: view.y + yspan / 2, width, height};
@@ -74,7 +77,7 @@
     const status = document.createElement('p'); status.className = 'equation-status'; status.id = `equation-status-${id}`; status.setAttribute('aria-live', 'polite'); input.setAttribute('aria-describedby', status.id);
     top.append(visible, label, input, remove); row.append(top, status); $('equationList').append(row);
     Object.assign(equation, {id, row, input, status}); compile(equation);
-    input.addEventListener('focus', () => activateEquation(equation));
+    input.addEventListener('focus', () => {activateEquation(equation); if (screen !== 'equations') openScreen('equations', false);});
     input.addEventListener('input', () => {equation.expression = input.value; compile(equation); request(); save();});
     input.addEventListener('keydown', event => {if (event.key === 'Enter') {event.preventDefault(); openScreen('graph');}});
     visible.addEventListener('click', () => {equation.enabled = !equation.enabled; visible.setAttribute('aria-pressed', String(equation.enabled)); request(); save();});
@@ -95,7 +98,6 @@
   }
   function request() { if (!frame) frame = requestAnimationFrame(draw); }
   function drawGrid(b) {
-    const dark = false;
     ctx.fillStyle = '#dce7df'; ctx.fillRect(0, 0, width, height);
     const step = core.tickStep(view.span, width), minor = step / 5;
     function grid(spacing, colour) {
@@ -217,12 +219,13 @@
     const button = event.target.closest('button');
     if (!button || button.dataset.graphNav) return;
     if ((screen === 'zoom' || screen === 'math') && /^[1-6]$/.test(button.dataset.graphInsert || '')) {menuIndex = Number(button.dataset.graphInsert) - 1; navigate('enter'); return;}
-    editEquation(second && button.dataset.secondInsert ? button.dataset.secondInsert : button.dataset.graphInsert || '', button.dataset.graphAction);
+    const primary = editTarget === 'calculate' && button.dataset.calcInsert ? button.dataset.calcInsert : button.dataset.graphInsert || '';
+    insertActive(second && button.dataset.secondInsert ? button.dataset.secondInsert : primary, button.dataset.graphAction);
     setSecond(false);
   });
   document.querySelectorAll('[data-graph-example]').forEach(button => button.addEventListener('click', () => add(button.dataset.graphExample)));
   $('graphZoomIn').addEventListener('click', () => {zoom(.5); openScreen('graph');}); $('graphZoomOut').addEventListener('click', () => {zoom(2); openScreen('graph');}); $('graphReset').addEventListener('click', () => {view = {x:0,y:0,span:20,yspan:20}; traceX = null; openScreen('graph'); request(); save();});
-  $('graphAngle').value = angle; $('graphAngle').addEventListener('change', event => {angle = event.target.value; $('graphAngleStatus').textContent = angle.toUpperCase(); request(); save();});
+  $('graphAngle').value = angle; $('graphAngle').addEventListener('change', event => {angle = event.target.value; scientific.setAngle(angle); $('graphAngleStatus').textContent = angle.toUpperCase(); request(); save();});
   $('graphAngleStatus').textContent = angle.toUpperCase();
   $('graphParameter').value = parameter; $('parameterValue').textContent = compact(parameter);
   $('graphParameter').addEventListener('input', event => {parameter = Number(event.target.value); $('parameterValue').textContent = compact(parameter); request(); save();});
@@ -231,12 +234,11 @@
     if (!Number.isFinite(x) || Math.abs(x) > 1e10) return;
     openScreen('trace'); traceX = x; const b = bounds(); if (x < b.xmin || x > b.xmax) view.x = x; request(); save();
   });
-  $('tableToggle').addEventListener('click', () => openScreen(screen === 'table' ? 'graph' : 'table'));
   $('graphExport').addEventListener('click', () => {
     draw(); canvas.toBlob(blob => {if (!blob) return; const link = document.createElement('a'), url = URL.createObjectURL(blob); link.href = url; link.download = 'gregle-graph.png'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);});
   });
-  const screenPanels = {equations:'graphEquations', window:'graphWindowMenu', zoom:'graphZoomMenu', mode:'graphModeMenu', math:'graphMathMenu', table:'graphTableWrap'};
-  const screenHints = {graph:'Arrows: pan · ENTER: trace', equations:'↑↓ function · ←→ cursor · ENTER: graph', window:'↑↓ field · ENTER: apply · CLEAR: back', zoom:'↑↓ choose · ENTER: select', trace:'←→ trace · ↑↓ curve · CLEAR: back', mode:'↑↓ setting · ←→ change · CLEAR: back', math:'↑↓ choose · ENTER: insert', table:'↑↓ row · ←→ columns · CLEAR: back'};
+  const screenPanels = {calculate:'scientificScreen', equations:'graphEquations', window:'graphWindowMenu', zoom:'graphZoomMenu', mode:'graphModeMenu', math:'graphMathMenu', table:'graphTableWrap'};
+  const screenHints = {calculate:'ENTER: calculate · ↑↓: history · GRAPH: plot', graph:'Arrows: pan · ENTER: trace', equations:'↑↓ function · ←→ cursor · ENTER: graph', window:'↑↓ field · ENTER: apply · CLEAR: back', zoom:'↑↓ choose · ENTER: select', trace:'←→ trace · ↑↓ curve · CLEAR: back', mode:'↑↓ setting · ←→ change · CLEAR: back', math:'↑↓ choose · ENTER: insert', table:'↑↓ row · ←→ columns · CLEAR: back'};
   const traceable = () => equations.filter(e => e.enabled && e.compiled);
   function setSecond(value) {
     second = value; $('graphSecond').setAttribute('aria-pressed', String(second));
@@ -248,6 +250,9 @@
     $('graphScreenTitle').textContent = `${second ? '2nd ' : ''}${screen === 'equations' ? 'Y=' : screen.toUpperCase()}`;
   }
   function openScreen(next, focus = true) {
+    if ((next === 'mode' || next === 'math') && screen !== 'mode' && screen !== 'math') menuReturn = screen;
+    if (next === 'calculate') editTarget = 'calculate';
+    else if (!['mode','math'].includes(next)) editTarget = 'equations';
     screen = next; menuIndex = 0; tableVisible = next === 'table';
     for (const [name,id] of Object.entries(screenPanels)) $(id).hidden = name !== next;
     canvas.hidden = Boolean(screenPanels[next]);
@@ -258,13 +263,20 @@
       if (button.hasAttribute('aria-expanded')) button.setAttribute('aria-expanded', String(selected));
       if (button.dataset.graphMenu === 'trace') button.setAttribute('aria-pressed', String(selected));
     });
-    $('tableToggle').setAttribute('aria-expanded', String(tableVisible));
+    $('graphReadout').hidden = editTarget === 'calculate';
+    $('graphFunctionStatus').textContent = editTarget === 'calculate' ? 'REAL' : 'FUNCTION';
+    $('graphKeypadTarget').textContent = editTarget === 'calculate' ? 'Scientific calculation' : activeEquation ? `Editing equation ${activeEquation.id}` : 'Tap a key to add an expression';
+    document.querySelectorAll('[data-calc-insert]').forEach(button => {
+      button.textContent = editTarget === 'calculate' ? button.dataset.calcLabel : button.dataset.graphLabel;
+      button.setAttribute('aria-label', editTarget === 'calculate' ? button.dataset.calcAria : button.dataset.graphInsert === 'x' ? 'Variable x' : 'Parameter a');
+    });
     if (next === 'window') {const b = bounds(); for (const name of ['xmin','xmax','ymin','ymax']) $(`graph${name[0].toUpperCase()}${name.slice(1)}`).value = compact(b[name]); $('graphWindowError').textContent = '';}
     if (next === 'trace') {if (traceX === null) traceX = view.x; traceEquation = Math.min(traceEquation, Math.max(0, traceable().length - 1)); followTrace();}
     if (next === 'table') {tableRow = 0; drawTable();}
     if (next === 'zoom' || next === 'math' || next === 'mode') highlightMenu();
     if (focus) {
-      if (next === 'equations' && activeEquation) activeEquation.input.focus({preventScroll:true});
+      if (next === 'calculate') $('expression').focus({preventScroll:true});
+      else if (next === 'equations' && activeEquation) activeEquation.input.focus({preventScroll:true});
       else if (next === 'window') $('graphXmin').focus({preventScroll:true});
       else $('graphCalculator').focus({preventScroll:true});
     }
@@ -291,7 +303,8 @@
   function navigate(direction) {
     setSecond(false);
     const vertical = direction === 'up' || direction === 'down', delta = direction === 'up' || direction === 'left' ? -1 : 1;
-    if (screen === 'equations') {
+    if (screen === 'calculate') {scientific.navigate(direction);}
+    else if (screen === 'equations') {
       if (direction === 'enter') {openScreen('graph'); return;}
       if (!equations.length) {add(); return;}
       const index = Math.max(0,equations.indexOf(activeEquation));
@@ -336,13 +349,17 @@
   }));
   document.querySelectorAll('[data-graph-nav]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.graphNav)));
   $('graphSecond').addEventListener('click', () => setSecond(!second));
-  $('graphDelete').addEventListener('click', () => editEquation('', 'backspace'));
-  $('graphClear').addEventListener('click', () => {setSecond(false); if (screen === 'equations') editEquation('', 'clear'); else {traceX = null; openScreen('graph');}});
+  function insertActive(value, action) {
+    if (editTarget === 'calculate') {openScreen('calculate', false); scientific.insert(value, action);}
+    else editEquation(value, action);
+  }
+  $('graphDelete').addEventListener('click', () => insertActive('', 'backspace'));
+  $('graphClear').addEventListener('click', () => {setSecond(false); if (screen === 'equations' || screen === 'calculate') insertActive('', 'clear'); else {traceX = null; openScreen(screen === 'mode' || screen === 'math' ? menuReturn : 'graph');}});
   $('graphCalculator').addEventListener('pointerdown', event => {if (event.target.closest('[data-graph-nav], #graphDelete, #graphSecond')) event.preventDefault();});
   $('graphCalculator').addEventListener('keydown', event => {
     if (event.defaultPrevented || (event.target.tagName === 'BUTTON' && event.key === 'Enter')) return;
     if (event.altKey || event.ctrlKey || event.metaKey) return;
-    if (event.key === 'Escape') {event.preventDefault(); setSecond(false); openScreen('graph'); return;}
+    if (event.key === 'Escape') {event.preventDefault(); setSecond(false); openScreen('calculate'); return;}
     const direction = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Enter:'enter'}[event.key];
     const input = ['INPUT','SELECT'].includes(event.target.tagName);
     if (input && event.key !== 'Enter' && !(screen === 'equations' && ['ArrowUp','ArrowDown'].includes(event.key))) return;
@@ -361,7 +378,7 @@
     if (![xmin,xmax,ymin,ymax].every(Number.isFinite) || Math.max(Math.abs(xmin),Math.abs(xmax),Math.abs(ymin),Math.abs(ymax)) > 1e10 || xmax - xmin < 1e-6 || ymax - ymin < 1e-6 || xmax - xmin > 1e8 || ymax - ymin > 1e8) {$('graphWindowError').textContent = 'Use increasing ranges between 0.000001 and 100000000, within ±10000000000.'; return;}
     view = {x:(xmin+xmax)/2,y:(ymin+ymax)/2,span:xmax-xmin,yspan:ymax-ymin}; traceX = null; save(); openScreen('graph');
   });
-  document.querySelectorAll('[data-math-insert]').forEach(button => button.addEventListener('click', () => editEquation(button.dataset.mathInsert)));
+  document.querySelectorAll('[data-math-insert]').forEach(button => button.addEventListener('click', () => insertActive(button.dataset.mathInsert)));
   document.querySelectorAll('[data-graph-preset]').forEach(button => button.addEventListener('click', () => {
     const preset = button.dataset.graphPreset;
     if (preset === 'trig') view = {x:0,y:0,span:angle === 'deg' ? 720 : 4*Math.PI,yspan:4};
@@ -376,16 +393,12 @@
     traceX=null; save(); openScreen('graph');
   }));
 
-  function setMode(mode) {
-    const graph = mode === 'graph'; $('graphPanel').hidden = !graph; $('arithmeticPanel').hidden = graph;
-    document.querySelectorAll('[data-calc-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.calcMode === mode)));
-    $('calcPage').classList.toggle('graphing-active', graph); $('calcHelp').hidden = graph;
-    if (graph) request();
-  }
-  document.querySelectorAll('[data-calc-mode]').forEach(button => button.addEventListener('click', () => setMode(button.dataset.calcMode)));
-  if (new URLSearchParams(window.location.search).get('mode') === 'standard') setMode('standard');
   equations.forEach(e => makeEquation(e)); $('addEquation').disabled = equations.length >= 8;
   new ResizeObserver(request).observe(stage);
   new MutationObserver(request).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+  window.GregleCalculator = {openScreen,getScreen:() => screen};
+  const requested = new URLSearchParams(window.location.search).get('mode');
+  const initial = scientific.initialScreen;
+  openScreen(initial && (screenPanels[initial] || ['graph','trace'].includes(initial)) ? initial : requested === 'graph' ? 'graph' : 'calculate', false);
   request();
 })();

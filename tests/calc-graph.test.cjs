@@ -46,12 +46,14 @@ test('sampling work stays bounded for rapid oscillations and extreme functions',
   assert(calls<8000,`${calls} samples exceed the work limit`);
   assert(graph.tickStep(20,800)>0); assert(graph.tickStep(.000001,400)>0);
 });
-test('graphing is local, default, keyboard-accessible and keeps calculator available', () => {
+test('scientific calculation is the default with local graphing in the same calculator', () => {
   const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'calc.html'),'utf8');
   const js=fs.readFileSync(path.join(root,'assets/calc-graph.js'),'utf8');
-  assert.match(html,/data-calc-mode="graph" aria-pressed="true"/);
-  assert.match(html,/id="graphCanvas" tabindex="0"/);
-  assert.match(html,/id="arithmeticPanel" hidden/);
+  assert.match(html,/id="scientificScreen"/);
+  assert.match(js,/requested === 'graph' \? 'graph' : 'calculate'/);
+  assert(!/data-calc-mode|arithmeticPanel|scientificToggle/.test(html));
+  assert.match(html,/id="graphCanvas" hidden tabindex="0"/);
+
   assert.match(html,/id="traceInput"/); assert.match(html,/id="graphTable"/);
   assert(!/<iframe\b/i.test(html));
   assert(!/https?:\/\/|fetch\(|\beval\s*\(|new Function/.test(js));
