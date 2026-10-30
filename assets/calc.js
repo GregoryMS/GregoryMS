@@ -19,6 +19,23 @@
     const saved = JSON.parse(localStorage.getItem('gregle-calc-history') || '[]');
     if (Array.isArray(saved)) history = saved.filter(item => item && typeof item.expression === 'string' && item.expression.length <= 300 && Number.isFinite(item.value)).slice(0,50);
   } catch (_) {}
+  const touchInput = window.matchMedia?.('(pointer: coarse)').matches === true;
+  function prepareInput(field) {
+    field.inputMode = 'none'; field.setAttribute('inputmode','none');
+    field.readOnly = touchInput;
+    if (touchInput) field.setAttribute('readonly','');
+  }
+  prepareInput(input);
+  function handleReadonlyKey(event, edit) {
+    if (!event.target.readOnly || event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented) return false;
+    if (event.key === 'Backspace' || event.key === 'Delete') {
+      event.preventDefault(); edit('',event.key === 'Backspace' ? 'backspace' : 'delete'); return true;
+    }
+    if (event.key.length === 1 && /^[a-z0-9.+*/^()%!,= π√−×÷-]$/i.test(event.key)) {
+      event.preventDefault(); edit(event.key); return true;
+    }
+    return false;
+  }
   const options = () => ({angle,ans});
   const focus = () => input.focus({preventScroll:true});
   function update() {
@@ -47,6 +64,7 @@
     let start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? start;
     if (action === 'clear') {start = 0; end = input.value.length;}
     else if (action === 'backspace' && start === end) start = Math.max(0,start - 1);
+    else if (action === 'delete' && start === end) end = Math.min(input.value.length,end + 1);
     if (input.value.length - (end - start) + value.length > 300) return;
     input.setRangeText(value,start,end,'end'); completed = false; historyIndex = -1;
     update(); focus();
@@ -87,6 +105,7 @@
     if (event.key === 'Enter' || event.key === '=') {event.preventDefault(); calculate();}
     else if (event.key === 'Escape') {event.preventDefault(); insert('','clear');}
     else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {event.preventDefault(); navigate(event.key === 'ArrowUp' ? 'up' : 'down');}
+    else if (handleReadonlyKey(event,insert)) return;
     else if (['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) completed = false;
     else if (completed && event.key.length === 1) {
       input.value = /^[+×÷*/^%!)−-]$/.test(event.key) ? format(ans) : '';
@@ -102,7 +121,7 @@
     history = []; historyIndex = -1; try {localStorage.removeItem('gregle-calc-history');} catch (_) {} renderHistory();
   });
   const getState = () => ({expression:input.value,ans,angle,completed,screen:window.GregleCalculator?.getScreen() || 'calculate'});
-  window.GregleScientific = {insert,calculate,navigate,setAngle,getState,initialScreen:restored?.screen,restoredAngle:restored?.angle};
+  window.GregleScientific = {insert,calculate,navigate,setAngle,getState,prepareInput,handleReadonlyKey,initialScreen:restored?.screen,restoredAngle:restored?.angle};
   $('popoutCalculator').addEventListener('click',() => {
     document.dispatchEvent(new Event('gregle-calc-save-graph'));
     const state = getState(), url = new URL(window.location.href); url.searchParams.set('popout','1');

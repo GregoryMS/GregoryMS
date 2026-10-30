@@ -8,14 +8,14 @@ const calc = require('../assets/calc-core.js');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'calc.html'), 'utf8');
 
-function setup(initialState, calculation = false) {
+function setup(initialState, calculation = false, touch = false) {
   const elements = new Map(), saved = new Map();
   if (initialState) saved.set('gregle-calc-graph', JSON.stringify(initialState));
   let activeElement;
   class Element {
     constructor(tag = 'div') {
       this.tagName = tag.toUpperCase(); this.children = []; this.listeners = {};
-      this.attributes = {}; this.dataset = {}; this.value = ''; this.selectionStart = this.selectionEnd = 0;
+      this.attributes = {}; this.dataset = {}; this.value = ''; this.textContent = ''; this.innerHTML = ''; this.selectionStart = this.selectionEnd = 0;
       this.classList = {add() {},toggle() {}, contains() {return false;}}; this.style = {setProperty() {}};
     }
     set id(value) {this._id = value; elements.set(value, this);}
@@ -25,6 +25,7 @@ function setup(initialState, calculation = false) {
     getAttribute(name) {return this.attributes[name];}
     hasAttribute(name) {return name in this.attributes;}
     querySelectorAll() {return [];}
+    querySelector(selector) {return selector === 'span' && this.innerHTML.includes('<span>') ? new Element('span') : null;}
     dispatchEvent(event) {this.dispatch(event.type, event);}
     addEventListener(type, fn) {(this.listeners[type] ||= []).push(fn);}
     dispatch(type, event = {}) {for (const fn of this.listeners[type] || []) fn({target:this, ...event});}
@@ -44,18 +45,19 @@ function setup(initialState, calculation = false) {
   document.documentElement = new Element();
   document.getElementById = id => elements.get(id);
   document.createElement = tag => new Element(tag);
-  document.querySelectorAll = () => [];
-  for (const [, tag, id] of html.matchAll(/<([a-z]+)\b[^>]*\bid="([^"]+)"/g)) {const element = new Element(tag); element.id = id;}
+  document.querySelectorAll = selector => selector === '#graphKeyboard [data-graph-insert]' ? buttons.filter(button => button.dataset.graphInsert !== undefined) : [];
+  for (const [, tag, id] of html.matchAll(/<([a-z][a-z0-9]*)\b[^>]*\bid="([^"]+)"/g)) {const element = new Element(tag); element.id = id;}
   const buttons = [];
   const keyboard = html.split('id="graphKeyboard"')[1].split('</section>')[0];
-  for (const [, attributes] of keyboard.matchAll(/<button\b([^>]+)>/g)) {
-    const button = new Element('button');
-    for (const [, key, value] of attributes.matchAll(/data-graph-(insert|action)="([^"]*)"/g)) {
-      button.dataset[key === 'insert' ? 'graphInsert' : 'graphAction'] = value;
+  for (const [, attributes, body] of keyboard.matchAll(/<button\b([^>]+)>([\s\S]*?)<\/button>/g)) {
+    const button = new Element('button'); button.innerHTML = body; button.textContent = body.replace(/<[^>]*>/g, '').trim();
+    for (const [, name, value] of attributes.matchAll(/data-([a-z-]+)="([^"]*)"/g)) {
+      button.dataset[name.replace(/-([a-z])/g,(_,letter) => letter.toUpperCase())] = value;
     }
+    const aria = attributes.match(/aria-label="([^"]*)"/); if (aria) button.setAttribute('aria-label',aria[1]);
     buttons.push(button);
   }
-  const window = {GregleGraph:graph, GregleCalc:calc, location:{search:''}, addEventListener() {}};
+  const window = {GregleGraph:graph, GregleCalc:calc, location:{search:''}, addEventListener() {}, matchMedia:() => ({matches:touch})};
   const context = {
     document, window, URLSearchParams, Event:class {constructor(type) {this.type = type;}},
     localStorage:{getItem:key => saved.get(key), setItem:(key,value) => saved.set(key,value), removeItem:key => saved.delete(key)},
@@ -75,10 +77,14 @@ function setup(initialState, calculation = false) {
     assert(prevented, 'Pointer activation preserves the expression selection');
     get('graphKeyboard').dispatch('click', {target:button});
   }
+  function letter(value) {
+    const button = buttons.find(button => button.dataset.alphaInsert === value); assert(button,`Missing alpha key ${value}`);
+    get('graphKeyboard').dispatch('click',{target:button});
+  }
   function type(input, value) {input.focus(); input.value = value; input.setSelectionRange(value.length,value.length); input.dispatch('input');}
   const state = () => {document.dispatch('gregle-calc-save-graph'); return JSON.parse(saved.get('gregle-calc-graph'));};
   const remove = input => input.parent.children[3].dispatch('click');
-  return {get, inputs, key, type, state, remove, scientific:window.GregleScientific, open:window.GregleCalculator.openScreen, screen:window.GregleCalculator.getScreen};
+  return {get, inputs, key, letter, type, state, remove, scientific:window.GregleScientific, open:window.GregleCalculator.openScreen, screen:window.GregleCalculator.getScreen};
 }
 
 test('keypad edits the selected equation at its cursor, replaces selections and saves updates', () => {
@@ -199,4 +205,68 @@ test('completed Ans calculations retain the answer when settings change or a pop
   assert.equal(app.get('result').textContent, '43');
   const state = app.scientific.getState();
   assert.equal(state.ans, 43); assert.equal(state.completed, true); assert.equal(state.expression, 'ans+1');
+});
+
+
+test('ALPHA enters complete function names, stays active, and restores numeric and 2nd keys', () => {
+  const app = setup(undefined,true,true);
+  app.get('graphAlpha').dispatch('click');
+  for (const letter of 'sin') app.letter(letter);
+  assert.equal(app.get('expression').value,'sin');
+  assert.equal(app.get('graphAlpha').attributes['aria-pressed'],'true');
+  assert.match(app.get('graphScreenTitle').textContent,/ALPHA/);
+  app.get('graphAlpha').dispatch('click');
+  app.key('('); app.key('3'); app.key('0'); app.key(')'); app.scientific.calculate();
+  assert.equal(app.get('result').textContent,'0.5');
+  app.key('clear',true); app.get('graphAlpha').dispatch('click'); app.get('graphSecond').dispatch('click');
+  assert.equal(app.get('graphAlpha').attributes['aria-pressed'],'false');
+  app.key('sin('); assert.equal(app.get('expression').value,'asin(');
+  assert.equal(app.get('graphSecond').attributes['aria-pressed'],'false');
+});
+
+test('alphabet keys cover A to Z and edit the graph expression at its cursor', () => {
+  const app = setup(undefined,true,true);
+  app.get('graphAlpha').dispatch('click');
+  for (const letter of 'abcdefghijklmnopqrstuvwxyz') app.letter(letter);
+  assert.equal(app.get('expression').value,'abcdefghijklmnopqrstuvwxyz');
+  app.open('equations'); const first = app.inputs()[0]; app.key('clear',true);
+  for (const letter of 'cos') app.letter(letter);
+  app.letter('('); app.letter('x'); app.letter(')');
+  assert.equal(first.value,'cos(x)'); assert.equal(first.attributes['aria-invalid'],'false');
+  first.setSelectionRange(0,3); app.key('backspace',true); assert.equal(first.value,'(x)');
+});
+
+test('touch inputs suppress the system keyboard while supporting the keypad and physical typing', () => {
+  const app = setup(undefined,true,true), input = app.get('expression');
+  for (const field of [input,...app.inputs(),...['graphXmin','graphXmax','graphYmin','graphYmax','traceInput'].map(app.get)]) {
+    assert.equal(field.readOnly,true); assert.equal(field.attributes.inputmode,'none');
+  }
+  app.key('2'); app.key('+'); app.key('3'); app.scientific.calculate(); assert.equal(app.get('result').textContent,'5');
+  app.key('clear',true);
+  let prevented=false; input.dispatch('keydown',{key:'7',preventDefault() {prevented=true;}});
+  assert(prevented); assert.equal(input.value,'7');
+  input.dispatch('keydown',{key:'Backspace',preventDefault() {}}); assert.equal(input.value,'');
+  const desktop = setup(undefined,true,false); assert.equal(desktop.get('expression').readOnly,false);
+});
+
+test('touch keypad edits the selected WINDOW field and keeps negative numeric input valid', () => {
+  const app = setup(undefined,true,true); app.open('window');
+  app.key('clear',true); app.key('−'); app.key('5'); assert.equal(app.get('graphXmin').value,'-5');
+  app.get('graphXmax').focus(); app.get('graphXmax').setSelectionRange(0,app.get('graphXmax').value.length);
+  app.key('2'); app.key('0'); assert.equal(app.get('graphXmax').value,'20');
+  app.get('graphWindowForm').dispatch('submit',{preventDefault() {}});
+  assert.equal(app.screen(),'graph'); assert.equal(app.state().view.span,25);
+  assert.equal(app.get('expression').value,'');
+});
+
+
+test('the exact-x inspector retains a coordinate entered with the touch keypad', () => {
+  const app = setup(undefined,true,true), field = app.get('traceInput');
+  field.focus(); field.setSelectionRange(0,field.value.length);
+  app.key('clear',true); app.key('−'); app.key('2'); app.key('.'); app.key('5');
+  assert.equal(field.value,'-2.5');
+  app.get('traceForm').dispatch('submit',{preventDefault() {}});
+  assert.equal(app.screen(),'trace'); assert.equal(field.value,'-2.5');
+  app.get('traceInput').value=''; app.get('traceForm').dispatch('submit',{preventDefault() {}});
+  assert.equal(field.attributes['aria-invalid'],'true');
 });

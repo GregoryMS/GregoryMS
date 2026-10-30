@@ -45,7 +45,8 @@
 .graph-menu-keys button[aria-expanded="true"],.graph-menu-keys button[aria-pressed="true"],.hardware-key[aria-expanded="true"] {background:#b89bd8;color:#251c31}
 .graph-menu-keys small,.graph-keyboard .key small {position:absolute;bottom:calc(100% + 4px);left:0;right:0;color:#dfc167;font-size:9px;line-height:1;pointer-events:none}
 .graph-navigation {display:grid;grid-template-columns:1fr 138px .58fr;gap:15px;align-items:center;margin-bottom:15px}
-.graph-control-keys {display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.graph-control-keys {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.graph-control-keys [data-graph-menu="calculate"] {grid-column:span 2}
 .hardware-key {width:100%;min-height:38px;font-size:10px;padding:0 4px}
 .second-key {background:linear-gradient(#dcbf67,#bd9c43);border-color:#e4cb87;border-bottom-color:#191a20;color:#28261b}
 .second-key[aria-pressed="true"] {background:#fce6a2;outline:2px solid #dfc167;outline-offset:2px}
@@ -92,3 +93,9 @@
 .graph-help {max-width:520px;margin:12px auto 0;color:var(--muted);font-size:12px;line-height:1.7}.graph-help summary {cursor:pointer;padding:8px 0}.graph-help p {margin:10px 0}
 
 .calculator-fit .graph-layout {width:520px;max-width:none;margin:0;box-sizing:border-box;box-shadow:inset 0 2px 2px #ffffff18,inset 0 -8px 0 #00000025}
+
+.alpha-key {background:linear-gradient(#77a890,#527b67);border-color:#96bda8;border-bottom-color:#191a20;color:#f6fff9}
+.alpha-key[aria-pressed="true"] {background:#b8e6cb;color:#193b2a;outline:2px solid #8dc7a5;outline-offset:2px}
+.graph-keyboard.is-alpha .graph-function-keys .key[data-alpha-insert],.graph-keyboard.is-alpha .graph-number-keys .key[data-alpha-insert] {background:linear-gradient(#4f695b,#3d5347);border-color:#6f8b7b;color:#e8fff0;font-size:17px}
+.graph-keyboard.is-alpha .graph-number-keys .key[data-alpha-insert=" "] {font-size:10px}
+#traceMessage {font-size:11px;color:#b4473c}
