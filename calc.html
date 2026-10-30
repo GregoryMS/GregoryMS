@@ -12,10 +12,10 @@
 <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
 <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261029-popout"><link rel="stylesheet" href="assets/calc-graph.css?v=20261029-graph"><link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261029-popout"><link rel="stylesheet" href="assets/calc-graph.css?v=20261030-keypad"><link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
 <script src="assets/theme.js?v=20261017-theme-switch" defer></script><script src="assets/site-menu.js?v=20261019-docs" defer></script>
 <script src="assets/calc-core.js?v=20261029-graph" defer></script><script src="assets/calc.js?v=20261029-popout" defer></script>
-<script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261029-popout" defer></script>
+<script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261030-keypad" defer></script>
 <link rel="canonical" href="https://calc.gregle.uk/">
 </head><body>
 <header class="gregle-menu-header topbar"><div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Calculator</span></div><div class="top-actions"><button type="button" class="pill calc-popout-button" id="popoutCalculator" title="Open calculator in a separate window" aria-label="Pop out calculator into a separate window"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7-9 9"/><path d="M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg><span>Pop out</span></button>
@@ -53,10 +53,50 @@
 <div class="parameter-control"><label for="graphParameter"><span>Parameter a</span><output id="parameterValue" for="graphParameter">1</output></label><input id="graphParameter" type="range" min="-10" max="10" value="1" step="0.1"><p>Use a in an expression to explore how it changes.</p></div><div class="graph-angle-row"><label for="graphAngle">Angles</label><select id="graphAngle"><option value="rad">Radians</option><option value="deg">Degrees</option></select></div></aside>
 <div class="graph-workspace"><div class="graph-toolbar"><div class="graph-tool-group"><button type="button" class="graph-tool zoom" id="graphZoomIn" aria-label="Zoom in" title="Zoom in">+</button><button type="button" class="graph-tool zoom" id="graphZoomOut" aria-label="Zoom out" title="Zoom out">−</button><button type="button" class="graph-tool" id="graphReset" title="Reset view">Reset</button></div><div class="graph-tool-group"><button type="button" class="graph-tool" id="tableToggle" aria-expanded="false" aria-controls="graphTableWrap">Table</button><button type="button" class="graph-tool" id="graphExport" aria-label="Download graph as PNG" title="Download graph as PNG">Save PNG</button></div></div>
 <div class="graph-stage" id="graphStage"><canvas id="graphCanvas" tabindex="0" aria-label="Function graph. Drag to pan, scroll or pinch to zoom. Arrow keys pan, plus and minus zoom, zero resets." aria-describedby="graphInstructions">Your browser needs canvas support to draw graphs. The value table provides the same function values in text.</canvas></div><div class="graph-readout"><span id="traceX">Tap the graph to inspect a point</span><div id="traceValues" class="trace-values"></div></div></div>
+<section class="graph-keyboard" id="graphKeyboard" aria-labelledby="graphKeypadHeading">
+<div class="graph-keyboard-heading"><h2 id="graphKeypadHeading">Expression keypad</h2><span id="graphKeypadTarget" role="status" aria-live="polite">Select an expression to edit</span></div>
+<div class="graph-keyboard-grid">
+<div class="graph-function-keys" role="group" aria-label="Graphing functions and variables">
+<button class="key function" type="button" data-graph-insert="sin(" aria-label="Sine">sin</button>
+<button class="key function" type="button" data-graph-insert="cos(" aria-label="Cosine">cos</button>
+<button class="key function" type="button" data-graph-insert="tan(" aria-label="Tangent">tan</button>
+<button class="key function" type="button" data-graph-insert="sqrt(" aria-label="Square root">√</button>
+<button class="key function" type="button" data-graph-insert="ln(" aria-label="Natural logarithm">ln</button>
+<button class="key function" type="button" data-graph-insert="log(" aria-label="Base 10 logarithm">log</button>
+<button class="key function" type="button" data-graph-insert="abs(" aria-label="Absolute value">abs</button>
+<button class="key function" type="button" data-graph-insert="^" aria-label="Power">xʸ</button>
+<button class="key function" type="button" data-graph-insert="x" aria-label="Variable x">x</button>
+<button class="key function" type="button" data-graph-insert="a" aria-label="Parameter a">a</button>
+<button class="key function" type="button" data-graph-insert="π" aria-label="Pi">π</button>
+<button class="key function" type="button" data-graph-insert="e" aria-label="Euler’s number">e</button>
+</div>
+<div class="graph-number-keys" role="group" aria-label="Graphing number pad">
+<button class="key clear" type="button" data-graph-action="clear" aria-label="Clear selected expression">AC</button>
+<button class="key function" type="button" data-graph-insert="(" aria-label="Open bracket">(</button>
+<button class="key function" type="button" data-graph-insert=")" aria-label="Close bracket">)</button>
+<button class="key function" type="button" data-graph-insert="^2" aria-label="Square">x²</button>
+<button class="key function" type="button" data-graph-action="backspace" aria-label="Delete from selected expression">⌫</button>
+<button class="key" type="button" data-graph-insert="7">7</button>
+<button class="key" type="button" data-graph-insert="8">8</button>
+<button class="key" type="button" data-graph-insert="9">9</button>
+<button class="key operator" type="button" data-graph-insert="÷" aria-label="Divide">÷</button>
+<button class="key operator" type="button" data-graph-insert="×" aria-label="Multiply">×</button>
+<button class="key" type="button" data-graph-insert="4">4</button>
+<button class="key" type="button" data-graph-insert="5">5</button>
+<button class="key" type="button" data-graph-insert="6">6</button>
+<button class="key operator" type="button" data-graph-insert="−" aria-label="Subtract">−</button>
+<button class="key operator" type="button" data-graph-insert="+" aria-label="Add">+</button>
+<button class="key" type="button" data-graph-insert="1">1</button>
+<button class="key" type="button" data-graph-insert="2">2</button>
+<button class="key" type="button" data-graph-insert="3">3</button>
+<button class="key" type="button" data-graph-insert="0">0</button>
+<button class="key" type="button" data-graph-insert="." aria-label="Decimal point">.</button>
+</div></div>
+</section>
 </div>
 <form class="trace-form" id="traceForm"><label for="traceInput">Evaluate at x =</label><input id="traceInput" type="number" step="any" min="-10000000000" max="10000000000" value="0" required><button type="submit">Find values</button><span class="graph-range" id="graphRange"></span></form>
 <div class="graph-table-wrap" id="graphTableWrap" hidden><table id="graphTable"></table></div>
-<details class="graph-help"><summary>Graphing tips &amp; keyboard shortcuts</summary><p id="graphInstructions">Enter expressions such as <b>y = x^2 − 4</b>, <b>sin(x)</b>, <b>sqrt(x)</b> or <b>2x + 1</b>. Up to eight curves can be shown at once. Use the coloured circles to hide or show a curve.</p><p>Drag to pan, use the + and − buttons or scroll to zoom, and pinch on a touch screen. Reset returns to the origin. With the graph focused, use the arrow keys to pan, +/− to zoom and 0 to reset.</p><p>Move over the graph or tap it to trace the curves. You can also enter an exact x value below the graph. Table shows values across the visible x range; Save PNG downloads the graph.</p><p>Supported functions include sin, cos, tan, asin, acos, atan, sqrt, abs, ln, log, exp, floor, ceil, round and sign. Trigonometry starts in radians; change to degrees when needed. Use pi or π for pi, e for Euler’s number, ^ for powers and * for multiplication.</p><p>The a slider runs from −10 to 10. Try <b>sin(a*x)</b> or <b>x^2 + a</b>. Expressions, the slider and your view are saved in this browser. Graphs show real function values; gaps appear where a function is undefined. Very rapid oscillations may need a closer zoom.</p></details>
+<details class="graph-help"><summary>Graphing tips &amp; keyboard shortcuts</summary><p id="graphInstructions">Enter expressions such as <b>y = x^2 − 4</b>, <b>sin(x)</b>, <b>sqrt(x)</b> or <b>2x + 1</b>. Select an expression, then type or use the expression keypad below the graph. Buttons insert at the cursor; AC clears only the selected expression. Curves update as you edit. Up to eight curves can be shown at once. Use the coloured circles to hide or show a curve.</p><p>Drag to pan, use the + and − buttons or scroll to zoom, and pinch on a touch screen. Reset returns to the origin. With the graph focused, use the arrow keys to pan, +/− to zoom and 0 to reset.</p><p>Move over the graph or tap it to trace the curves. You can also enter an exact x value below the graph. Table shows values across the visible x range; Save PNG downloads the graph.</p><p>Supported functions include sin, cos, tan, asin, acos, atan, sqrt, abs, ln, log, exp, floor, ceil, round and sign. Trigonometry starts in radians; change to degrees when needed. Use pi or π for pi, e for Euler’s number, ^ for powers and * for multiplication.</p><p>The a slider runs from −10 to 10. Try <b>sin(a*x)</b> or <b>x^2 + a</b>. Expressions, the slider and your view are saved in this browser. Graphs show real function values; gaps appear where a function is undefined. Very rapid oscillations may need a closer zoom.</p></details>
 </section>
 <div class="calc-layout" id="arithmeticPanel" hidden>
 <form class="calculator" id="calculatorForm" aria-label="Calculator">

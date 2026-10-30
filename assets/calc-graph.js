@@ -6,6 +6,7 @@
   let equations = [], angle = 'rad', parameter = 1, view = {x: 0, y: 0, span: 20}, traceX = null;
   let width = 1, height = 1, frame = 0, saveTimer, counter = 0, tableVisible = false;
   const pointers = new Map(); let gesture = null, moved = false;
+  let activeEquation = null;
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-calc-graph') || 'null');
     if (saved && Array.isArray(saved.equations)) {
@@ -41,6 +42,24 @@
     equation.input?.setAttribute('aria-invalid', String(Boolean(equation.error)));
     if (equation.status) equation.status.textContent = equation.error;
   }
+  function activateEquation(equation) {
+    activeEquation = equation;
+    equations.forEach(e => e.row?.classList.toggle('is-active', e === equation));
+    $('graphKeypadTarget').textContent = equation ? `Editing equation ${equation.id}` : 'Tap a key to add an expression';
+  }
+  function editEquation(value, action) {
+    if (!activeEquation || !equations.includes(activeEquation)) add();
+    const equation = activeEquation;
+    if (!equation) return;
+    const input = equation.input;
+    let start = input.selectionStart, end = input.selectionEnd;
+    if (action === 'clear') {start = 0; end = input.value.length;}
+    else if (action === 'backspace' && start === end) start = Math.max(0, start - 1);
+    if (input.value.length - (end - start) + value.length > input.maxLength) return;
+    input.setRangeText(value, start, end, 'end');
+    equation.expression = input.value; compile(equation); request(); save();
+    input.focus({preventScroll: true});
+  }
   function makeEquation(equation, focus = false) {
     const id = ++counter, row = document.createElement('div'); row.className = 'graph-equation'; row.style.setProperty('--curve', equation.colour);
     const top = document.createElement('div'); top.className = 'equation-main';
@@ -51,14 +70,17 @@
     const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'remove-equation'; remove.textContent = '×'; remove.title = 'Remove equation'; remove.setAttribute('aria-label', `Remove equation ${id}`);
     const status = document.createElement('p'); status.className = 'equation-status'; status.id = `equation-status-${id}`; status.setAttribute('aria-live', 'polite'); input.setAttribute('aria-describedby', status.id);
     top.append(visible, label, input, remove); row.append(top, status); $('equationList').append(row);
-    Object.assign(equation, {row, input, status}); compile(equation);
+    Object.assign(equation, {id, row, input, status}); compile(equation);
+    input.addEventListener('focus', () => activateEquation(equation));
     input.addEventListener('input', () => {equation.expression = input.value; compile(equation); request(); save();});
     input.addEventListener('keydown', event => {if (event.key === 'Enter') {event.preventDefault(); canvas.focus();}});
     visible.addEventListener('click', () => {equation.enabled = !equation.enabled; visible.setAttribute('aria-pressed', String(equation.enabled)); request(); save();});
     remove.addEventListener('click', () => {
       const position = equations.indexOf(equation); equations.splice(position, 1); row.remove(); $('addEquation').disabled = false;
+      if (activeEquation === equation) activateEquation(equations[Math.min(position, equations.length - 1)] || null);
       (equations[Math.min(position, equations.length - 1)]?.input || $('addEquation')).focus(); request(); save();
     });
+    if (!activeEquation) activateEquation(equation);
     if (focus) input.focus();
   }
   function add(expression = '') {
@@ -191,6 +213,13 @@
     else if (event.key === '0' || event.key === 'Home') {event.preventDefault(); reset();}
   });
   $('addEquation').addEventListener('click', () => add());
+  $('graphKeyboard').addEventListener('pointerdown', event => {
+    if (event.target.closest('button')) event.preventDefault();
+  });
+  $('graphKeyboard').addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (button) editEquation(button.dataset.graphInsert || '', button.dataset.graphAction);
+  });
   document.querySelectorAll('[data-graph-example]').forEach(button => button.addEventListener('click', () => add(button.dataset.graphExample)));
   $('graphZoomIn').addEventListener('click', () => zoom(.8)); $('graphZoomOut').addEventListener('click', () => zoom(1.25)); $('graphReset').addEventListener('click', reset);
   $('graphAngle').value = angle; $('graphAngle').addEventListener('change', event => {angle = event.target.value; request(); save();});
