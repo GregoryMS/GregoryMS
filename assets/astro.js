@@ -47,6 +47,7 @@
   }
   function altitude(time) { return S.getPosition(new Date(time), place.latitude, place.longitude).altitude * 180 / Math.PI; }
   function updateWeatherLink() {
+    window.GregleSpaceWeather?.setLocation(place);
     window.GregleSatellite?.setLocation(place);
     window.GregleAstroCalendar?.setTimezone(forecast?.timezone || place.timezone || 'UTC');
     $('weather-link').href = 'https://weather.gregle.uk/?' + new URLSearchParams({lat:place.latitude, lon:place.longitude, name:place.name, country:place.country || '', tz:forecast?.timezone || place.timezone || 'UTC'});

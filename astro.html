@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Plan a night under the stars with observation conditions, hourly forecasts, Clear Sky Charts, observing-site search and a light-pollution map.">
+  <meta name="description" content="Plan a night under the stars with observing conditions, hourly forecasts, Clear Sky Charts, space weather, aurora forecasts, Moon phases and satellite tracking.">
   <title>Astronomy observations · Gregle</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <meta name="application-name" content="Gregle Astronomy">
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261025-mobile-quick-links">
+  <link rel="stylesheet" href="assets/astro.css?v=20261030-space-weather">
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
@@ -37,7 +37,9 @@
   <script src="assets/vendor/satellite.min.js?v=6.0.1" defer></script>
   <script src="assets/astro-satellite-core.js?v=20261005-orbits" defer></script>
   <script src="assets/astro-satellite.js?v=20261005-orbits" defer></script>
-  <script src="assets/astro.js?v=20261025-quick-locations" defer></script>
+  <script src="assets/astro-space-weather-core.js?v=20261030" defer></script>
+  <script src="assets/astro-space-weather.js?v=20261030" defer></script>
+  <script src="assets/astro.js?v=20261030-space-weather" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
@@ -83,7 +85,13 @@
       </div>
     </div>
     <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner</h1></div></div>
-    <section class="location-section" aria-label="Choose an observing location">
+    <nav class="astro-quick-links panel" aria-label="Page sections">
+      <span class="astro-quick-label">Jump to</span>
+      <div class="astro-quick-scroll">
+        <a href="#observing-location">Location</a><a href="#hourly-forecast">48-hour forecast</a><a href="#clear-sky-sites">Clear sky sites</a><a href="#clear-sky-chart">Sky chart</a><a href="#current-conditions">Conditions</a><a href="#space-weather">Space weather</a><a href="#aurora-forecast">Aurora forecast</a><a href="#moon-phases">Moon phases</a><a href="#astro-calendar">Events</a><a href="#satellite-tracker">Satellites</a>
+      </div>
+    </nav>
+    <section id="observing-location" class="location-section" aria-label="Choose an observing location">
       <form id="location-form" class="location-form">
         <label for="location-query">Find a city</label>
         <div class="location-search-row">
@@ -99,12 +107,12 @@
       <div class="shortcuts" aria-label="Quick locations"><button class="pill" data-place="victoria" type="button">Victoria</button><button class="pill" data-place="vancouver" type="button">Vancouver</button><button class="pill" data-place="chilliwack" type="button">Chilliwack</button><button class="pill" data-place="tofino" type="button">Tofino</button><button class="pill" data-place="oslo" type="button">Oslo</button><button class="pill" data-place="london" type="button">London</button><button class="pill" data-place="stockholm" type="button">Stockholm</button></div>
     </section>
     <noscript><p>Enable JavaScript for location search and forecasts. Visit <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada astronomy</a> or the <a href="https://test.cleardarksky.com/browse/map.html">Clear Sky Chart map</a> directly.</p></noscript>
-    <section class="forecast-section" aria-labelledby="hourly-heading">
+    <section id="hourly-forecast" class="forecast-section" aria-labelledby="hourly-heading">
       <div class="section-heading"><div class="forecast-heading-copy"><h2 id="hourly-heading">The next 48 hours</h2><p class="meta">Local times · Scroll across</p></div><div class="forecast-controls"><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label><button class="pill" id="refresh" type="button">↻ Refresh</button></div></div>
       <div id="hourly" class="hourly-wrap panel" tabindex="0" role="region" aria-label="Scrollable hourly observing forecast"><p class="empty">Loading hourly forecast…</p></div>
       <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and the Clear Sky Chart below. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>
     </section>
-    <section class="site-browser" aria-labelledby="map-heading">
+    <section id="clear-sky-sites" class="site-browser" aria-labelledby="map-heading">
       <div class="section-heading"><div><p class="eyebrow">Choose your observing spot</p><h2 id="map-heading">Clear sky sites</h2></div><a href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Original chart map ↗</a></div>
       <p id="directory-status" class="meta" role="status">Loading observing sites…</p>
       <div class="site-map-layout panel">
@@ -114,7 +122,7 @@
       <p id="map-status" class="meta" role="status"></p>
       <div class="sky-legend" aria-label="Light pollution colour guide"><span><i style="background:#111"></i>Darker</span><span><i style="background:#013edc"></i>Blue</span><span><i style="background:#316a1b"></i>Green</span><span><i style="background:#908c2e"></i>Yellow</span><span><i style="background:#ed3833"></i>Red</span><span><i style="background:#bfbfbf"></i>Brighter</span><a href="https://djlorenz.github.io/astronomy/lp/colors.html" target="_blank" rel="noopener">Scale explained ↗</a></div>
     </section>
-    <section class="chart-section" aria-labelledby="chart-heading">
+    <section id="clear-sky-chart" class="chart-section" aria-labelledby="chart-heading">
       <div class="section-heading"><div><p class="eyebrow">The observing forecast</p><h2 id="chart-heading">Clear Sky Chart</h2><p id="chart-site" class="meta">Choose an observing site on the map.</p></div><a id="chart-source" href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Chart details &amp; legend ↗</a></div>
       <p id="chart-status" class="meta" role="status">Loading chart sites…</p>
       <div id="chart-image" class="chart-image panel" tabindex="0" role="region" aria-label="Scrollable Clear Sky Chart"></div>
@@ -134,7 +142,7 @@
         </div>
       </details>
     </section>
-    <section aria-labelledby="place-name">
+    <section id="current-conditions" aria-labelledby="place-name">
       <div class="section-heading"><div><h2 id="place-name">Vancouver</h2><p id="place-detail" class="meta">British Columbia, Canada</p></div><a id="weather-link" class="pill" href="https://weather.gregle.uk/">Full weather ↗</a></div>
       <p id="forecast-status" class="meta" role="status">Loading observation conditions…</p>
       <div id="conditions" class="conditions" aria-label="Current modelled conditions"></div>
@@ -147,7 +155,40 @@
       </div>
       <p id="rise-set-date" class="meta">Today’s times for the selected location.</p>
     </section>
-    <section class="moon-section" aria-labelledby="moon-heading">
+    <section id="space-weather" class="space-weather-section" aria-labelledby="space-weather-heading">
+      <div class="section-heading"><div><p class="eyebrow">From the Sun to Earth</p><h2 id="space-weather-heading">Space weather</h2><p class="meta">Latest geomagnetic activity and upstream solar wind measurements.</p></div><button id="space-weather-refresh" class="pill" type="button">↻ Refresh space weather</button></div>
+      <p id="space-weather-status" class="meta" role="status">Loading NOAA observations…</p>
+      <div class="space-weather-metrics" aria-label="Latest space weather observations">
+        <div class="condition panel"><span>Estimated planetary Kp</span><strong id="sw-kp">—</strong><small id="sw-kp-detail">Waiting for data</small></div>
+        <div class="condition panel"><span>Solar wind speed</span><strong id="sw-speed">—</strong><small id="sw-speed-detail">Waiting for data</small></div>
+        <div class="condition panel"><span>Magnetic field Bz · GSM</span><strong id="sw-bz">—</strong><small id="sw-bz-detail">Waiting for data</small></div>
+        <div class="condition panel"><span>Solar wind density</span><strong id="sw-density">—</strong><small id="sw-density-detail">Waiting for data</small></div>
+      </div>
+      <div class="space-weather-links"><a class="pill" href="https://spaceweather.com/" target="_blank" rel="noopener">SpaceWeather.com ↗</a><a href="https://www.spaceweather.gov/products/solar-wind" target="_blank" rel="noopener">NOAA solar wind ↗</a><a href="https://www.spaceweather.gov/products/planetary-k-index" target="_blank" rel="noopener">NOAA Kp chart ↗</a></div>
+      <details class="space-weather-guide"><summary>What do these readings mean?</summary><p>Kp measures global geomagnetic activity on a scale from 0 to 9; higher values can mean a wider auroral oval. It is an estimate of a three-hour index, not a local visibility forecast. Faster solar wind and a sustained negative (southward) Bz can favour auroral activity. Density is the number of solar wind protons per cubic centimetre. Solar wind readings are taken upstream of Earth and do not describe conditions at the ground.</p></details>
+      <noscript><p>Enable JavaScript for observations, or visit <a href="https://spaceweather.com/">SpaceWeather.com</a> and <a href="https://www.spaceweather.gov/">NOAA space weather</a>.</p></noscript>
+    </section>
+    <section id="aurora-forecast" class="aurora-section" aria-labelledby="aurora-heading">
+      <div class="section-heading"><div><p class="eyebrow">Watch for the northern &amp; southern lights</p><h2 id="aurora-heading">Aurora forecast</h2><p class="meta">A short-term auroral oval and the next three days of global Kp guidance.</p></div><a href="https://www.spaceweather.gov/products/aurora-30-minute-forecast" target="_blank" rel="noopener">NOAA aurora forecast ↗</a></div>
+      <div class="aurora-layout">
+        <figure class="aurora-map panel">
+          <div class="aurora-map-controls"><label for="aurora-hemisphere">Auroral oval</label><select id="aurora-hemisphere"><option value="north">Northern hemisphere</option><option value="south">Southern hemisphere</option></select></div>
+          <a id="aurora-map-link" href="https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg" target="_blank" rel="noopener"><img id="aurora-map-image" src="https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg" alt="NOAA OVATION short-term aurora forecast for the Northern hemisphere; forecast time and colour scale are printed on the map" width="800" height="800" loading="lazy" decoding="async"></a>
+          <figcaption class="meta"><span id="aurora-map-status" role="status">NOAA OVATION · Forecast time and colour scale are printed on the map.</span> Typically 30–90 minutes ahead. Check the printed timestamp before using the map.</figcaption>
+        </figure>
+        <div class="aurora-outlook panel">
+          <h3>Three-day geomagnetic outlook</h3><p class="meta">Peak Kp in the remaining forecast intervals for each UTC date.</p>
+          <p id="aurora-forecast-status" class="meta" role="status">Loading NOAA forecast…</p>
+          <div id="aurora-days" class="aurora-days"></div>
+          <p class="meta">Higher Kp can bring auroras farther from the poles. The oval shows where activity is expected; darkness, clouds, moonlight and light pollution affect what you can see.</p>
+          <a href="https://www.spaceweather.gov/products/3-day-forecast" target="_blank" rel="noopener">Read NOAA’s full forecast ↗</a>
+        </div>
+      </div>
+      <details class="aurora-intervals"><summary>Three-hour Kp forecast · UTC</summary><div id="aurora-intervals" class="hourly-wrap panel" tabindex="0" role="region" aria-label="Scrollable three-hour geomagnetic forecast"><p class="empty">Waiting for forecast data…</p></div></details>
+      <p class="meta">Source: <a href="https://www.spaceweather.gov/" target="_blank" rel="noopener">NOAA Space Weather Prediction Center</a>. These are global model estimates, not a guarantee of aurora at your observing location. Observations and forecasts refresh every five minutes while this page is visible.</p>
+      <noscript><p><a href="https://www.spaceweather.gov/products/3-day-forecast">Open the three-day forecast directly</a>.</p></noscript>
+    </section>
+    <section id="moon-phases" class="moon-section" aria-labelledby="moon-heading">
       <div class="section-heading"><div><p class="eyebrow">Plan around the Moon</p><h2 id="moon-heading">Moon phases</h2></div></div>
       <div class="moon-layout panel">
         <div class="moon-current"><span id="moon-phase-icon" class="moon-symbol" aria-hidden="true"></span><div><span class="meta">Current phase</span><h3 id="moon-phase-name">Calculating…</h3><p id="moon-phase-detail" class="meta"></p></div></div>
