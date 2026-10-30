@@ -1,10 +1,10 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-29T23:27:17+00:00",
-  "fetchedAt": "2026-10-29T23:27:22.720116+00:00",
+  "feedUpdatedAt": "2026-10-30T02:57:02+00:00",
+  "fetchedAt": "2026-10-30T02:57:12.701602+00:00",
   "items": [
     {
-      "title": "Grealish dropped by Everton after 'breach of club discipline'",
+      "title": "Grealish dropped over 'breach of club discipline' - what now?",
       "link": "https://www.bbc.co.uk/sport/football/articles/cmwy4vyl9nplo?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -20,12 +20,12 @@
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cwdr8m8g4jz2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "PSG score late to hold struggling Man City",
-      "link": "https://www.bbc.co.uk/sport/football/videos/ckeq3v1wgxy4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Duckett and Dawson deliver in England's consolation win",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/cjg4700703rxo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "PSG score late to hold struggling Man City",
+      "link": "https://www.bbc.co.uk/sport/football/videos/ckeq3v1wgxy4o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Scottish football could pave way for 3pm TV blackout to end",
