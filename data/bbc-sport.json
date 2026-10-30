@@ -1,19 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-30T09:56:41+00:00",
-  "fetchedAt": "2026-10-30T09:56:46.265708+00:00",
+  "feedUpdatedAt": "2026-10-30T16:41:17+00:00",
+  "fetchedAt": "2026-10-30T16:41:26.272618+00:00",
   "items": [
     {
-      "title": "Grealish dropped over 'breach of club discipline' - what now?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmwy4vyl9nplo?at_medium=RSS&at_campaign=rss"
+      "title": "What Howe could bring to Man Utd - and what are the challenges?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cr74pd99vwq3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "How talking about Man Utd's cycle of doom became an industry",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cjn5v3pl0159o?at_medium=RSS&at_campaign=rss"
+      "title": "Arteta warns Dowman 'we are not in Disneyland' after red card",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c875p940g5v2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Why managers must put their own fitness first - Pulis",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqy0r31kwne0o?at_medium=RSS&at_campaign=rss"
+      "title": "Britain's first £100m man facing defining moment",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmzxj2e2e5p2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Set up to fail? Where England's World Cup campaign went wrong",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cqp9gv3mr8myo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Anderson 'shocked' by Lancs exit and unsure if he will continue",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cmly0pq7435lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "F1 has never had anyone like me - Hamilton",
@@ -24,24 +32,16 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/cq1m4j79x50jo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Spirited England exit World Cup after Samoa loss",
-      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/c8ly0p5ngwx6o?at_medium=RSS&at_campaign=rss"
+      "title": "Fears Chelsea's Lacroix could be out until January",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmkgkpexjzneo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Matchroom's Hearn expected to increase Prem influence",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmrry1rgzd4zo?at_medium=RSS&at_campaign=rss"
+      "title": "Ireland 'have it in us' to claim Springboks series win",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c8p3gpe2e93go?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Shock Basel loss dents Djokovic's ATP Finals hopes",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/cwe8lpmn2ly1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Time to invest in Bournemouth? - FPL gameweek nine dilemmas",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cked3zen65d1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Who am I? Plus today's other quizzes",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmd7qj9r3v7vo?at_medium=RSS&at_campaign=rss"
+      "title": "England out of World Cup after loss to Samoa",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/videos/cmx281j2n8r4o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
