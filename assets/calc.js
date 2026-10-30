@@ -114,6 +114,7 @@
   });
   $('clearHistory').addEventListener('click', () => {history = []; save(); renderHistory();});
   document.addEventListener('keydown', event => {
+    if (document.getElementById('arithmeticPanel')?.hidden) return;
     if (event.target === input || event.ctrlKey || event.metaKey || event.altKey || $('gregleAppMenu')?.open || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
     if (/^[0-9.+*/^()%!−×÷-]$/.test(event.key)) {event.preventDefault(); insert(event.key);}
     else if (event.key === 'Enter' && event.target === document.body) {event.preventDefault(); calculate();}

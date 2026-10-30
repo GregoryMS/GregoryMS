@@ -35,7 +35,7 @@ the original navigation without moving or deleting any site files.
 
 - `index.html`: search, recent searches, local weather and BBC headlines.
 - `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference, Women’s Super League and UEFA Champions League league-phase tables.
-- `calc.html`: standard and scientific calculator, editable expressions, keyboard support and browser-local history.
+- `calc.html`: native graphing and scientific calculator, editable expressions, keyboard support and browser-local history.
 - `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
 - `weather.html`: automatic local weather, Environment Canada across Canada and Open-Meteo worldwide.
 - `petrol.html`: fuel-cost calculator with map-based routing.
@@ -547,3 +547,12 @@ Run `node --test tests/maps-navigation*.test.cjs` for mode-specific routing, pro
 `calc.html` is served at `https://calc.gregle.uk/` and appears in the shared app launcher and Tools & Links. It uses a bounded expression parser (no evaluated JavaScript), standard operator precedence, brackets, relative addition/subtraction percentages, scientific functions and degree/radian angle modes. History keeps the last 50 calculations in `gregle-calc-history` in this browser; storage restrictions do not prevent calculations. Ans is kept for the current page visit. Display values use 14 significant digits.
 
 The Calculator icon shares Gregle’s charcoal, off-white and violet palette. Run `python3 scripts/render_calc_icons.py` to reproduce its app icons and favicons. Check arithmetic and integration with `node --test tests/calc.test.cjs tests/site-router.test.cjs tests/site-menu.test.cjs` and `python3 scripts/update_site_menu.py --check`.
+
+
+### Native graphing calculator
+
+Graphing is the default view at `calc.gregle.uk`. `assets/calc-graph.js` draws up to eight functions directly on a local Canvas 2D surface; no iframe, third-party graph service, runtime library or remote computation is involved. The shared mathematical parser compiles bounded expressions once and evaluates them locally. The graph supports x and parameter a, implicit multiplication, degree/radian trigonometry, pan/zoom (including touch pinch), coordinate tracing, an exact-x inspector, a value table and PNG export. The standard calculator remains available through the mode switch.
+
+Adaptive subdivision avoids connecting across discontinuities. Undefined values are gaps; very high frequencies may need a closer zoom. Curves, parameter and viewport are saved in `gregle-calc-graph` with bounded restoration; storage failures leave graphing usable. Plot percentages have ordinary mathematical meaning (10% = 0.1); standard calculator percentages retain their relative addition/subtraction behaviour.
+
+Run `node --test tests/calc.test.cjs tests/calc-graph.test.cjs tests/site-menu.test.cjs tests/site-router.test.cjs` for the focused arithmetic, sampling and integration checks.

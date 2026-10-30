@@ -2,7 +2,7 @@
   "id": "/calc.html",
   "name": "Gregle Calculator",
   "short_name": "Calculator",
-  "description": "Everyday sums and scientific calculations.",
+  "description": "Graph functions and explore curves, with a scientific calculator.",
   "start_url": "/calc.html",
   "scope": "/",
   "display": "standalone",

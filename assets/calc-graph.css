@@ -1,0 +1,66 @@
+.calc-page.graphing-active { max-width:1240px; }
+.calc-heading-row { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:26px; }
+.calc-heading-row .calc-heading { margin-bottom:0; }
+.calc-modes { display:flex; flex-shrink:0; background:var(--soft); border:1px solid var(--line); border-radius:999px; padding:4px; gap:4px; }
+.calc-modes button { min-height:40px; padding:8px 20px; border:0; border-radius:999px; background:transparent; color:var(--muted); font-size:13px; }
+.calc-modes button[aria-pressed="true"] { background:var(--panel); color:var(--calc-accent); box-shadow:0 2px 6px #0000000a; }
+.graph-layout { display:grid; grid-template-columns:290px minmax(0,1fr); border:1px solid var(--line); border-radius:24px; overflow:hidden; background:var(--panel); box-shadow:var(--shadow); }
+.graph-layout[hidden],.calc-layout[hidden],.calc-help[hidden] { display:none; }
+.graph-sidebar { padding:22px 18px; border-right:1px solid var(--line); }
+.equations-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.equations-heading h2 { font-size:15px; font-weight:500; margin:0; }
+.equation-hint { font-size:12px; color:var(--muted); margin:0 0 20px; }
+.graph-equation { border:1px solid var(--line); border-radius:12px; padding:9px 10px; margin-bottom:12px; }
+.equation-main { display:flex; align-items:center; gap:9px; }
+.curve-toggle { flex-shrink:0; height:18px; width:18px; padding:0; border:2px solid var(--curve); background:var(--curve); border-radius:50%; position:relative; }
+.curve-toggle[aria-pressed="false"] { background:transparent; opacity:.6; }
+.curve-toggle[aria-pressed="true"]::after { content:''; position:absolute; width:6px; height:3px; border-left:1.5px solid white; border-bottom:1.5px solid white; transform:rotate(-45deg); left:3px; top:4px; }
+.equation-main input { min-width:0; width:100%; border:0; outline:0; background:transparent; color:var(--text); font:15px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; padding:6px 0; }
+.graph-equation:focus-within { border-color:var(--calc-accent); }
+.remove-equation { flex-shrink:0; height:32px; width:24px; border:0; border-radius:6px; background:transparent; color:var(--muted); padding:0; font-size:20px; }
+.remove-equation:hover { background:var(--soft); }
+.equation-status { font-size:11px; color:var(--muted); margin:0; line-height:1.5; }
+.equation-status:not(:empty) { padding:5px 0 2px 27px; }
+.equation-main input[aria-invalid="true"] { color:#cb625d; }
+.add-equation { width:100%; border:1px dashed var(--line); color:var(--calc-accent); background:transparent; border-radius:10px; min-height:40px; font-size:12px; }
+.add-equation:hover { background:var(--soft); }
+.add-equation:disabled { opacity:.4; cursor:default; }
+.graph-examples { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:14px 0 24px; font-size:11px; color:var(--muted); }
+.graph-examples button { font:inherit; background:var(--soft); color:var(--muted); border:0; border-radius:6px; padding:5px 7px; }
+.parameter-control { border-top:1px solid var(--line); padding-top:18px; }
+.parameter-control label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:12px; }
+.parameter-control output { color:var(--text); font-variant-numeric:tabular-nums; }
+.parameter-control input { width:100%; accent-color:var(--calc-accent); }
+.parameter-control p { font-size:11px; color:var(--muted); margin:6px 0 20px; }
+.graph-angle-row { display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--muted); font-size:12px; }
+.graph-angle-row select { background:var(--soft); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:7px 8px; font:inherit; }
+.graph-workspace { min-width:0; }
+.graph-toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; border-bottom:1px solid var(--line); }
+.graph-tool-group { display:flex; align-items:center; gap:6px; }
+.graph-tool { display:grid; place-items:center; min-height:36px; min-width:36px; background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-size:12px; }
+.graph-tool:hover,.graph-tool[aria-expanded="true"] { background:var(--calc-tint); color:var(--calc-accent); }
+.graph-tool.zoom { font-size:20px; padding:0; }
+.graph-stage { position:relative; height:510px; width:100%; background:var(--panel); }
+#graphCanvas { position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; cursor:crosshair; }
+#graphCanvas:active { cursor:grabbing; }
+#graphCanvas:focus-visible { outline:2px solid var(--calc-accent); outline-offset:-3px; }
+.graph-readout { border-top:1px solid var(--line); padding:13px 16px; min-height:52px; display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; font:11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--muted); }
+.trace-values { display:flex; flex-wrap:wrap; gap:6px 16px; }
+.trace-chip { color:var(--curve); }
+.trace-chip::before { content:'●'; margin-right:6px; font-size:8px; }
+.trace-form { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:20px 0; font-size:12px; color:var(--muted); }
+.trace-form input { min-width:0; width:100px; border:1px solid var(--line); background:var(--panel); color:var(--text); padding:7px 9px; border-radius:8px; font:inherit; }
+.trace-form button { border:1px solid var(--line); background:var(--panel); color:var(--calc-accent); border-radius:8px; padding:7px 10px; font:inherit; }
+.graph-range { font-size:11px; color:var(--muted); margin-left:auto; }
+.graph-table-wrap { overflow:auto; margin-top:18px; border:1px solid var(--line); border-radius:14px; }
+.graph-table-wrap[hidden] { display:none; }
+#graphTable { border-collapse:collapse; width:100%; background:var(--panel); font-size:12px; font-variant-numeric:tabular-nums; }
+#graphTable caption { text-align:left; padding:14px; font-size:12px; color:var(--muted); }
+#graphTable th,#graphTable td { padding:10px 16px; text-align:right; border-top:1px solid var(--line); white-space:nowrap; font-weight:400; }
+#graphTable thead th { background:var(--soft); font-size:12px; }
+.graph-help { font-size:12px; margin:8px 0 0; }
+.graph-help summary { padding:8px 0; }
+.graph-help p { margin:10px 0; }
+@media(max-width:900px) { .graph-layout { grid-template-columns:245px minmax(0,1fr); } .graph-sidebar { padding:18px 14px; } .calc-heading-row { align-items:flex-start; flex-direction:column; gap:18px; } .graph-range { width:100%; margin-left:0; } .graph-toolbar { padding:10px; gap:6px; } }
+@media(max-width:700px) { .calc-page.graphing-active { max-width:700px; } .graph-layout { display:flex; flex-direction:column; border-radius:18px; } .graph-layout[hidden] { display:none; } .graph-sidebar { border-right:0; border-bottom:1px solid var(--line); padding:16px; } .graph-stage { height:380px; } .graph-examples { margin:12px 0 16px; } .parameter-control { padding-top:12px; } .parameter-control p { margin-bottom:12px; } .parameter-control input { display:block; } .calc-heading-row { margin-bottom:20px; gap:16px; } .graph-angle-row { margin-top:14px; } .graph-equation { margin-bottom:9px; } .equation-hint { margin-bottom:14px; } .graph-readout { padding:12px; } .trace-form { gap:7px; } .graph-toolbar { flex-wrap:wrap; } .graph-tool { min-width:33px; padding:6px 8px; } }
+@media(max-width:700px) { .graph-workspace { order:-1; } .graph-sidebar { border-bottom:0; border-top:1px solid var(--line); } .graph-stage { height:350px; } }
