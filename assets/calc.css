@@ -38,3 +38,10 @@
 .calculator-popout .calculator-resizer {width:100%!important;height:100%!important;max-width:none;margin:0;aspect-ratio:auto;border-radius:0;box-shadow:none;background:#22242c}
 .calculator-popout .calculator-resize-handle {display:none}
 @media(max-width:700px) {.calc-page {padding-top:0;padding-left:14px;padding-right:14px}.calc-heading {margin:0 0 12px}.calc-heading .eyebrow {font-size:10px}.calculator-resize-note {font-size:10px}}
+
+.calculator-standalone body {padding:0}
+.calculator-standalone .page.calc-page {
+  height:100vh;
+  height:100dvh;
+  padding:max(4px,env(safe-area-inset-top,0px)) max(4px,env(safe-area-inset-right,0px)) max(4px,env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));
+}
