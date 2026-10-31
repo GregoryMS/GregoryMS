@@ -62,7 +62,6 @@
 .graph-keyboard .key.equals {background:linear-gradient(#9571bb,#785997);border-color:#a586c1;border-bottom-color:#191a20;color:white;font-size:11px}
 .graph-enter {grid-row:3 / span 2;grid-column:5;writing-mode:horizontal-tb}
 .graph-number-keys .key:not(.function):not(.operator):not(.equals) {background:linear-gradient(#555863,#454751)}
-.graph-bottom-label {display:flex;justify-content:flex-end;padding:18px 5px 3px;font-size:8px;letter-spacing:1.2px;color:#a5a5b3}
 .window-fields {display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .window-fields label {display:flex;flex-direction:column;gap:4px;font-size:11px}
 .window-fields input {width:100%;min-width:0;border:1px solid #95aa9d;border-radius:3px;padding:7px;background:#eaf0e9;color:var(--ink);font:13px ui-monospace,monospace}
