@@ -46,7 +46,7 @@
       setupError='Offline use needs a secure browser with service workers.'; render(); return;
     }
     try {
-      registration=await navigator.serviceWorker.register('/calc-sw.js',{scope:'/',updateViaCache:'none'});
+      registration=await navigator.serviceWorker.register('/calc-sw.js?v=20261031-offline2',{scope:'/',updateViaCache:'none'});
       watchWorker(registration.installing);
       registration.addEventListener('updatefound',() => {watchWorker(registration.installing);});
       await check();
