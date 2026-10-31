@@ -44,14 +44,13 @@
 .graph-layout button:focus-visible {outline:2px solid #deb6ff;outline-offset:2px}
 .graph-menu-keys button[aria-expanded="true"],.graph-menu-keys button[aria-pressed="true"],.hardware-key[aria-expanded="true"] {background:#b89bd8;color:#251c31}
 .graph-menu-keys small,.graph-keyboard .key small {position:absolute;bottom:calc(100% + 4px);left:0;right:0;color:#dfc167;font-size:9px;line-height:1;pointer-events:none}
-.graph-navigation {display:grid;grid-template-columns:1fr 138px .58fr;gap:15px;align-items:center;margin-bottom:15px}
-.graph-control-keys {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-.graph-control-keys [data-graph-menu="calculate"] {grid-column:span 2}
+.graph-navigation {display:grid;grid-template-columns:minmax(0,1fr) 138px minmax(0,1fr);gap:15px;align-items:center;margin-bottom:15px}
+.graph-control-keys,.graph-edit-keys {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .hardware-key {width:100%;min-height:38px;font-size:10px;padding:0 4px}
 .second-key {background:linear-gradient(#dcbf67,#bd9c43);border-color:#e4cb87;border-bottom-color:#191a20;color:#28261b}
 .second-key[aria-pressed="true"] {background:#fce6a2;outline:2px solid #dfc167;outline-offset:2px}
 .clear-key {background:linear-gradient(#c48762,#ae6946);border-color:#d99c77;border-bottom-color:#191a20;color:#fff}
-.graph-edit-keys {display:grid;gap:9px}
+.graph-edit-keys .clear-key {grid-column:1 / -1;justify-self:center;width:calc((100% - 9px)/2)}
 .graph-dpad {display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,34px);padding:4px;background:#16181e;border:1px solid #575964;border-radius:40%;box-shadow:inset 0 2px 3px #00000070,0 1px 0 #ffffff12}
 .graph-dpad button {padding:0;border:0;color:#e6e5ee;background:#4d4f5b;font-size:16px;line-height:1}
 .pad-up {grid-column:2;border-radius:8px 8px 0 0}.pad-left {grid-column:1;grid-row:2;border-radius:8px 0 0 8px}.pad-enter {grid-column:2;grid-row:2;background:#33353e!important;border:2px solid #4d4f5b!important;border-radius:50%;font:10px ui-monospace,monospace!important}.pad-right {grid-column:3;grid-row:2;border-radius:0 8px 8px 0}.pad-down {grid-column:2;grid-row:3;border-radius:0 0 8px 8px}
