@@ -408,7 +408,7 @@
   $('graphClear').addEventListener('click', () => {setSecond(false); if (activeNumberInput || screen === 'equations' || screen === 'calculate') insertActive('', 'clear'); else {traceX = null; openScreen(screen === 'mode' || screen === 'math' ? menuReturn : 'graph');}});
   $('graphCalculator').addEventListener('pointerdown', event => {if (event.target.closest('[data-graph-nav], #graphDelete, #graphSecond, #graphAlpha')) event.preventDefault();});
   $('graphCalculator').addEventListener('keydown', event => {
-    if (event.defaultPrevented || (event.target.tagName === 'BUTTON' && event.key === 'Enter')) return;
+    if (event.defaultPrevented || window.GregleEmulator?.isActive() || (event.target.tagName === 'BUTTON' && event.key === 'Enter')) return;
     if (event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.key === 'Escape') {event.preventDefault(); setSecond(false); openScreen('calculate'); return;}
     const direction = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Enter:'enter'}[event.key];

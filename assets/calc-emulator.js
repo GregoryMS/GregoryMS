@@ -1,0 +1,392 @@
+/* Gregle TI-84 Plus CE frontend. SPDX-License-Identifier: GPL-3.0-or-later */
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const CORE_VERSION = 'e5ffbb2c-gregle-1', STORAGE_KEY = 'session';
+  const scriptURL = new URL(document.currentScript.src);
+  const workerURL = new URL('ti84/worker.mjs',scriptURL);
+  const shell = $('graphCalculator'), page = $('calcPage');
+  const modeButton = $('emulatorOpen');
+  if (!shell || !modeButton) return;
+  const owner = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+  let active=false, loaded=false, paused=false, busy=false, remote=false, visibilityPaused=false, starting=false;
+  let worker, database, record, savePromise, saveTimer, sequence=0;
+  const pending = new Map(), pointers = new Map(), hardware = new Map();
+  const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('gregle-ti84-session') : null;
+
+  // Primary hardware keys, followed by their 2nd and ALPHA legends.
+  const menus = [
+    ['yeq','Y=',1,4,'STAT PLOT'],['window','WINDOW',1,3,'TBLSET'],
+    ['zoom','ZOOM',1,2,'FORMAT'],['trace','TRACE',1,1,'CALC'],['graph','GRAPH',1,0,'TABLE']
+  ];
+  const controls = [
+    ['second','2nd',1,5,'','', 'second-key'],['mode','MODE',1,6,'QUIT'],['del','DEL',1,7,'INS'],
+    ['alpha','ALPHA',2,7,'A-LOCK','', 'alpha-key'],['variable','X,T,θ,n',3,7,'LINK'],['stat','STAT',4,7,'LIST']
+  ];
+  const keys = [
+    ['math','MATH',2,6,'TEST','A'],['apps','APPS',3,6,'ANGLE','B'],['prgm','PRGM',4,6,'DRAW','C'],['vars','VARS',5,6,'DISTR'],['clear','CLEAR',6,6,'','','clear-key'],
+    ['inverse','x⁻¹',2,5,'MATRIX','D'],['sin','sin',3,5,'sin⁻¹','E'],['cos','cos',4,5,'cos⁻¹','F'],['tan','tan',5,5,'tan⁻¹','G'],['power','^',6,5,'π','H'],
+    ['square','x²',2,4,'√','I'],['comma',',',3,4,'EE','J'],['leftparen','(',4,4,'{','K'],['rightparen',')',5,4,'}','L'],['divide','÷',6,4,'e','M','emu-operator'],
+    ['log','log',2,3,'10ˣ','N'],['7','7',3,3,'u','O','emu-number'],['8','8',4,3,'v','P','emu-number'],['9','9',5,3,'w','Q','emu-number'],['multiply','×',6,3,'[','R','emu-operator'],
+    ['ln','ln',2,2,'eˣ','S'],['4','4',3,2,'L4','T','emu-number'],['5','5',4,2,'L5','U','emu-number'],['6','6',5,2,'L6','V','emu-number'],['subtract','−',6,2,']','W','emu-operator'],
+    ['store','sto→',2,1,'RCL','X'],['1','1',3,1,'L1','Y','emu-number'],['2','2',4,1,'L2','Z','emu-number'],['3','3',5,1,'L3','θ','emu-number'],['add','+',6,1,'MEM','"','emu-operator'],
+    ['on','ON',2,0,'OFF'],['0','0',3,0,'CATALOG','␣','emu-number'],['decimal','.',4,0,'i',':','emu-number'],['negative','(−)',5,0,'ANS','?'],['enter','ENTER',6,0,'ENTRY','SOLVE','emu-enter']
+  ];
+  const arrows = [['up','▲',7,3],['left','◀',7,1],['right','▶',7,2],['down','▼',7,0]];
+  const allKeys = [...menus,...controls,...keys,...arrows];
+  const byName = new Map(allKeys.map(key => [key[0],key]));
+  function keyHTML([name,label,row,col,second='',alpha='',style='']) {
+    const aria = ({up:'Navigate up',down:'Navigate down',left:'Navigate left',right:'Navigate right',negative:'Negative sign'})[name] || label;
+    const title=(second ? `2nd: ${second}` : label)+(alpha ? ` · ALPHA: ${alpha}` : '');
+    return `<button type="button" class="hardware-key ${style}" data-emu-key="${name}" data-emu-row="${row}" data-emu-col="${col}" aria-label="${aria}" title="${title.replaceAll('"','&quot;')}"><span class="emu-legend"><span>${second}</span><b>${alpha}</b></span>${label}</button>`;
+  }
+  const view = document.createElement('section');
+  view.id='emulatorView'; view.className='emulator-view'; view.hidden=true;
+  view.setAttribute('aria-label','TI-84 Plus CE emulator');
+  view.innerHTML=`
+    <div class="emu-display"><div class="emu-lcd">
+      <canvas id="emulatorCanvas" width="320" height="240" tabindex="0" aria-label="TI-84 Plus CE display. Use the calculator keys below or a hardware keyboard."></canvas>
+      <section class="emu-overlay" id="emulatorSetup" aria-labelledby="emulatorSetupTitle">
+        <h2 id="emulatorSetupTitle">TI-84 Plus CE</h2>
+        <p id="emulatorSetupText">Import your calculator’s ROM once. It stays on this device and loads automatically next time.</p>
+        <button type="button" class="emu-primary" id="emulatorImport">Import ROM</button>
+        <button type="button" id="emulatorRestoreSetup">Restore backup</button>
+        <p class="emu-fine-print">Choose a full TI-84 Plus CE .rom file. Files are read locally and never uploaded.</p>
+      </section>
+      <section class="emu-overlay" id="emulatorSession" aria-labelledby="emulatorSessionTitle" hidden>
+        <button type="button" class="emu-close" id="emulatorCloseSession">Close</button>
+        <h2 id="emulatorSessionTitle">Your calculator</h2>
+        <p id="emulatorSessionInfo">ROM and session are saved on this device.</p>
+        <div class="emu-session-actions">
+          <button type="button" id="emulatorSave">Save now</button><button type="button" id="emulatorPause">Pause</button>
+          <button type="button" id="emulatorExport">Export backup</button><button type="button" id="emulatorRestore">Restore backup</button>
+          <button type="button" id="emulatorProgram">Import program</button><button type="button" id="emulatorRestart">Restart calculator</button>
+          <button type="button" id="emulatorReplace">Replace ROM</button><button type="button" id="emulatorForget">Remove saved ROM</button>
+        </div>
+        <p class="emu-fine-print">Backups contain your ROM and calculator memory. Keep them private. Clearing site data removes this device’s saved calculator.</p>
+        <p class="emu-fine-print"><a href="assets/ti84/README.md" target="_blank" rel="noopener">CEmu source and licence</a> · Independent project; not affiliated with Texas Instruments.</p>
+      </section>
+    </div></div>
+    <div class="emu-toolbar"><span id="emulatorStatus" role="status" aria-live="polite">One-time ROM setup</span><button type="button" id="emulatorSessionButton">Session</button></div>
+    <div class="graph-menu-keys emu-menu-keys" role="group" aria-label="TI-84 graph menus">${menus.map(keyHTML).join('')}</div>
+    <div class="emu-control-grid" role="group" aria-label="TI-84 controls">
+      ${controls.slice(0,3).map(keyHTML).join('')}
+      <div class="graph-dpad emu-pad" role="group" aria-label="TI-84 directional pad">
+        ${arrows.map(key => keyHTML([...key,'','','pad-'+key[0]])).join('')}<span class="pad-center" aria-hidden="true"></span>
+      </div>${controls.slice(3).map(keyHTML).join('')}
+    </div>
+    <div class="emu-keypad" role="group" aria-label="TI-84 keypad">${keys.map(keyHTML).join('')}</div>
+    <div class="emu-credits"><span>TI-84 PLUS CE · CEMU</span><span>LOCAL ROM · AUTO SAVE</span></div>
+    <input type="file" id="emulatorRomFile" accept=".rom,application/octet-stream" hidden>
+    <input type="file" id="emulatorBackupFile" accept=".gregle84,application/octet-stream" hidden>
+    <input type="file" id="emulatorProgramFile" accept=".8xp,.8xv,.8xg,.8xk,.8xl,.8xm,.8xn,.8xs,.8xi,.8xc,.8ca,.8cl,.8ef" hidden>`;
+  shell.append(view);
+  view.querySelectorAll('[data-emu-key]').forEach(button => {button.disabled=true;});
+  const canvas=$('emulatorCanvas'), context=canvas.getContext('2d',{alpha:false});
+  let lastFrame;
+  function status(message,error=false) {
+    $('emulatorStatus').textContent=message;
+    $('emulatorStatus').classList.toggle('emu-storage-error',error);
+  }
+  function preference(value) {try {localStorage.setItem('gregle-calc-engine',value);} catch (_) {}}
+  function show(activeValue) {
+    active=activeValue; page.classList.toggle('emulator-active',active); view.hidden=!active;
+    modeButton.textContent=active ? 'Scientific' : 'TI-84 CE';
+    modeButton.setAttribute('aria-label',active ? 'Use scientific calculator' : 'Use TI-84 Plus CE emulator');
+    modeButton.setAttribute('aria-pressed',String(active));
+    if (!active) releaseAll();
+    window.dispatchEvent(new Event('resize'));
+  }
+  async function db() {
+    if (!database) database = new Promise((resolve,reject) => {
+      if (!window.indexedDB) {reject(new Error('Device storage is unavailable.')); return;}
+      const request=indexedDB.open('gregle-ti84',1);
+      request.onupgradeneeded=() => request.result.createObjectStore('calculator');
+      request.onsuccess=() => {request.result.onversionchange=() => {request.result.close(); database=null;}; resolve(request.result);};
+      request.onerror=() => {database=null; reject(request.error);};
+      request.onblocked=() => {database=null; reject(new Error('Close other calculator tabs to unlock storage.'));};
+    });
+    return database;
+  }
+  async function stored(change) {
+    const connection=await db();
+    return new Promise((resolve,reject) => {
+      const transaction=connection.transaction('calculator',change ? 'readwrite' : 'readonly');
+      const store=transaction.objectStore('calculator'), request=store.get(STORAGE_KEY);
+      let result, failure;
+      request.onsuccess=() => {
+        try {
+          result=change ? change(request.result) : request.result;
+          if (change) {if (result === null) store.delete(STORAGE_KEY); else store.put(result,STORAGE_KEY);}
+        } catch (error) {failure=error; transaction.abort();}
+      };
+      transaction.oncomplete=() => resolve(result);
+      transaction.onabort=transaction.onerror=() => reject(failure || transaction.error || new Error('Could not save on this device.'));
+    });
+  }
+  function destroyWorker() {
+    worker?.terminate(); worker=null; loaded=false;
+    for (const item of pending.values()) {clearTimeout(item.timer); item.reject(new Error('Calculator restarted.'));}
+    pending.clear();
+  }
+  function getWorker() {
+    if (worker) return worker;
+    worker=new Worker(workerURL,{type:'module'});
+    worker.onmessage=({data}) => {
+      if (data.type === 'frame') {
+        lastFrame=new ImageData(new Uint8ClampedArray(data.pixels),320,240);
+        context.putImageData(lastFrame,0,0);
+      } else if (data.type === 'transfer') {
+        status(data.progress < 0 ? 'Program transfer failed. Try again from HOME.' : data.progress >= 100 ? 'Program imported · open PRGM to run it' : `Importing program… ${data.progress}%`,data.progress<0);
+        if (data.progress >= 100) scheduleSave();
+      } else if (data.type === 'fatal') {paused=true; status(data.message,true);}
+      else if (data.type === 'ready') {starting=false; view.querySelectorAll('[data-emu-key]').forEach(button => {button.disabled=false;}); void save();}
+      else {
+        const item=pending.get(data.id);
+        if (item) {clearTimeout(item.timer); pending.delete(data.id); data.type === 'error' ? item.reject(new Error(data.message)) : item.resolve(data);}
+      }
+    };
+    worker.onerror=() => {
+      status('The emulator could not start. Refresh to retry; your saved ROM is kept.',true);
+      destroyWorker();
+    };
+    return worker;
+  }
+  function request(type,data={}) {
+    return new Promise((resolve,reject) => {
+      const instance=getWorker(), id=++sequence;
+      const timer=setTimeout(() => {pending.delete(id); reject(new Error('The emulator did not respond. Open Session to restart it.'));},30000);
+      pending.set(id,{resolve,reject,timer}); instance.postMessage({type,id,...data});
+    });
+  }
+  function releaseAll() {
+    pointers.clear(); hardware.clear();
+    view.querySelectorAll('.is-down').forEach(button => button.classList.remove('is-down'));
+    if (loaded) worker?.postMessage({type:'release'});
+  }
+  async function save() {
+    clearTimeout(saveTimer);
+    if (!loaded || !record || remote) return false;
+    if (savePromise) return savePromise;
+    savePromise=(async () => {
+      try {
+        const {state,bootFrames}=await request('save');
+        const next={...record,state,bootFrames,coreVersion:CORE_VERSION,updatedAt:Date.now(),owner};
+        await stored(current => {
+          if (current && current.owner !== owner) throw new Error('This calculator was opened in another window. Resume here to continue.');
+          return next;
+        });
+        record=next;
+        status(paused ? 'Paused · saved on this device' : starting ? 'Starting TI-OS… · saved on this device' : 'Saved on this device');
+        return true;
+      } catch (error) {status(`Not saved: ${error.message} Export a backup from Session.`,true); return false;}
+      finally {savePromise=null;}
+    })();
+    return savePromise;
+  }
+  function scheduleSave() {clearTimeout(saveTimer); saveTimer=setTimeout(() => {void save();},1500);}
+  async function pause(value) {
+    if (!loaded) return;
+    releaseAll(); paused=value; await request('pause',{paused:value});
+    $('emulatorPause').textContent=paused ? 'Resume' : 'Pause';
+  }
+  async function yieldSession(requireSaved=false) {
+    if (!loaded || remote) return;
+    await pause(true);
+    if (!await save() && requireSaved) {await pause(false); throw new Error('The session could not be saved for the new window.');}
+    remote=true;
+    status('Saved · calculator continued in another window');
+    $('emulatorPause').textContent='Resume here';
+    $('emulatorSessionButton').textContent='Resume here';
+  }
+  const handoffs=new Map();
+  if (channel) channel.onmessage=async ({data}) => {
+    if (data.owner === owner) return;
+    if (data.type === 'takeover' && loaded && !remote) {
+      await yieldSession(); channel.postMessage({type:'yielded',owner,request:data.request});
+    } else if (data.type === 'yielded') handoffs.get(data.request)?.();
+  };
+  async function takeOver() {
+    if (!channel) return;
+    const id=++sequence;
+    await new Promise(resolve => {
+      const finish=() => {clearTimeout(timer); handoffs.delete(id); resolve();};
+      const timer=setTimeout(finish,450); handoffs.set(id,finish);
+      channel.postMessage({type:'takeover',owner,request:id});
+    });
+  }
+  async function boot(next,{fresh=false}={}) {
+    status('Starting TI-84 Plus CE…'); busy=true;
+    modeButton.disabled=true;
+    $('emulatorImport').disabled=true;
+    try {
+      destroyWorker();
+      const result=await request('load',{rom:next.rom,state:!fresh && next.coreVersion===CORE_VERSION ? next.state : null,bootFrames:next.bootFrames});
+      record={...next,owner,coreVersion:CORE_VERSION}; loaded=true; paused=false; remote=false;
+      starting=result.bootFrames>0;
+      view.querySelectorAll('[data-emu-key]').forEach(button => {button.disabled=starting;});
+      // Claim the record only after the emulator accepts the new ROM. An invalid
+      // import must never erase the previous saved calculator.
+      try {await stored(() => record);} catch (_) {}
+      $('emulatorSetup').hidden=true; $('emulatorSession').hidden=true;
+      $('emulatorPause').textContent='Pause';
+      $('emulatorSessionButton').textContent='Session';
+      $('emulatorSessionInfo').textContent=`${record.name || 'TI-84 Plus CE'} · ROM and session stay on this device.`;
+      preference('ti84');
+      const saved=await save();
+      if (saved) status(starting ? 'Starting TI-OS… · saved on this device' : 'Session restored · saved on this device');
+      if (navigator.storage?.persist) void navigator.storage.persist().catch(() => {});
+      canvas.focus({preventScroll:true});
+    } catch (error) {
+      loaded=false; $('emulatorSetup').hidden=false;
+      view.querySelectorAll('[data-emu-key]').forEach(button => {button.disabled=true;});
+      status(error.message,true);
+    } finally {busy=false; modeButton.disabled=false; $('emulatorImport').disabled=false;}
+  }
+  async function open() {
+    show(true); preference('ti84');
+    if (busy) return;
+    if (loaded && !remote) {await pause(false); await save(); return;}
+    await takeOver();
+    try {
+      const saved=await stored();
+      if (saved?.rom) {await boot(saved); return;}
+      status('One-time ROM setup');
+    } catch (_) {status('Device storage is unavailable. A ROM can run for this visit; export a backup to keep it.',true);}
+    $('emulatorSetup').hidden=false;
+  }
+  modeButton.addEventListener('click',async () => {
+    if (active) {await pause(true); await save(); show(false); preference('scientific');}
+    else await open();
+  });
+  $('emulatorSessionButton').addEventListener('click',async () => {
+    if (remote) {await open(); return;}
+    if (!loaded) {$('emulatorSetup').hidden=false; return;}
+    releaseAll(); $('emulatorSession').hidden=false; $('emulatorCloseSession').focus({preventScroll:true});
+  });
+  $('emulatorCloseSession').addEventListener('click',() => {$('emulatorSession').hidden=true; canvas.focus({preventScroll:true});});
+  $('emulatorSave').addEventListener('click',() => {void save();});
+  $('emulatorPause').addEventListener('click',async () => {
+    if (remote) {await open(); return;}
+    await pause(!paused); await save();
+  });
+  const chooseRom=() => {if (!busy) $('emulatorRomFile').click();};
+  $('emulatorImport').addEventListener('click',chooseRom); $('emulatorReplace').addEventListener('click',chooseRom);
+  $('emulatorRomFile').addEventListener('change',async event => {
+    const file=event.target.files[0]; event.target.value=''; if (!file || busy) return;
+    if (/\.8eu$/i.test(file.name) || file.size<0x40000 || file.size>8*1024*1024) {status('Choose a full TI-84 Plus CE .rom dump, rather than an OS update or program file.',true); return;}
+    const rom=await file.arrayBuffer();
+    await takeOver(); await boot({rom,name:file.name,updatedAt:Date.now()}, {fresh:true});
+  });
+  $('emulatorRestart').addEventListener('click',async () => {
+    if (!loaded || !confirm('Restart the emulated calculator? Unsaved calculator work may be lost. Your ROM will stay saved.')) return;
+    if (remote) {await open(); return;}
+    releaseAll(); await request('reset'); starting=true;
+    view.querySelectorAll('[data-emu-key]').forEach(button => {button.disabled=true;});
+    await pause(false); $('emulatorSession').hidden=true; scheduleSave();
+  });
+  $('emulatorForget').addEventListener('click',async () => {
+    if (!confirm('Remove this device’s saved ROM and calculator session? Export a backup first if you want to keep them.')) return;
+    try {
+      await pause(true); await save(); await takeOver(); await stored(() => null);
+      destroyWorker(); record=null; remote=false; clearTimeout(saveTimer);
+      $('emulatorSession').hidden=true; $('emulatorSetup').hidden=false;
+      context.clearRect(0,0,320,240); status('Saved ROM removed · import a ROM to start again');
+    } catch (error) {status(error.message,true);}
+  });
+  function download(blob,name) {
+    const url=URL.createObjectURL(blob), link=document.createElement('a'); link.href=url; link.download=name; link.click();
+    setTimeout(() => URL.revokeObjectURL(url),10000);
+  }
+  $('emulatorExport').addEventListener('click',async () => {
+    if (!record) return;
+    try {
+      if (remote) await open();
+      const {state,bootFrames}=await request('save');
+      const metadata=new TextEncoder().encode(JSON.stringify({version:1,name:record.name,coreVersion:CORE_VERSION,bootFrames,romLength:record.rom.byteLength,stateLength:state.byteLength}));
+      const header=new Uint8Array(12); header.set(new TextEncoder().encode('GREGLE84'));
+      new DataView(header.buffer).setUint32(8,metadata.length,true);
+      download(new Blob([header,metadata,record.rom,state],{type:'application/octet-stream'}),'calculator.gregle84');
+      status('Backup exported · keep this file private');
+    } catch (error) {status(error.message,true);}
+  });
+  const chooseBackup=() => $('emulatorBackupFile').click();
+  $('emulatorRestore').addEventListener('click',chooseBackup); $('emulatorRestoreSetup').addEventListener('click',chooseBackup);
+  $('emulatorBackupFile').addEventListener('change',async event => {
+    const file=event.target.files[0]; event.target.value=''; if (!file || busy) return;
+    try {
+      if (file.size>70*1024*1024 || file.size<12) throw new Error('Choose a Gregle calculator backup (.gregle84).');
+      const bytes=await file.arrayBuffer(), header=new Uint8Array(bytes,0,8);
+      if (new TextDecoder().decode(header)!=='GREGLE84') throw new Error('This is not a Gregle calculator backup.');
+      const length=new DataView(bytes).getUint32(8,true);
+      if (length>2048 || 12+length>bytes.byteLength) throw new Error('This backup is damaged.');
+      const meta=JSON.parse(new TextDecoder().decode(new Uint8Array(bytes,12,length)));
+      if (meta.version!==1 || !Number.isInteger(meta.romLength) || !Number.isInteger(meta.stateLength) || meta.romLength<0x40000 || meta.romLength>8*1024*1024 || meta.stateLength<4 || meta.stateLength>12*1024*1024 || bytes.byteLength!==12+length+meta.romLength+meta.stateLength) throw new Error('This backup is damaged or unsupported.');
+      if (loaded && !confirm('Replace the current calculator with this backup?')) return;
+      const start=12+length; await takeOver();
+      await boot({name:typeof meta.name==='string' ? meta.name.slice(0,160) : 'TI-84 Plus CE',coreVersion:meta.coreVersion,bootFrames:meta.bootFrames,rom:bytes.slice(start,start+meta.romLength),state:bytes.slice(start+meta.romLength)});
+    } catch (error) {status(error.message,true);}
+  });
+  $('emulatorProgram').addEventListener('click',() => $('emulatorProgramFile').click());
+  $('emulatorProgramFile').addEventListener('change',async event => {
+    const file=event.target.files[0]; event.target.value=''; if (!file || !loaded || remote) return;
+    try {
+      if (starting) throw new Error('Wait for TI-OS to finish starting before importing a program.');
+      if (file.size<8 || file.size>4*1024*1024) throw new Error('Choose a compatible TI calculator program or variable file.');
+      const bytes=await file.arrayBuffer(), signature=new TextDecoder().decode(new Uint8Array(bytes,0,8));
+      if (signature!=='**TI83F*' && signature!=='**TIFL**') throw new Error('This file is not a supported TI program or variable file.');
+      await pause(false); await request('program',{bytes}); $('emulatorSession').hidden=true; status('Importing program…');
+    } catch (error) {status(error.message,true);}
+  });
+  function sendKey(name,down) {
+    if (!loaded || paused || remote || !active || busy || starting) return;
+    const key=byName.get(name); if (!key) return;
+    worker.postMessage({type:'key',row:key[2],col:key[3],down});
+    view.querySelector(`[data-emu-key="${name}"]`)?.classList.toggle('is-down',down);
+    if (!down) scheduleSave();
+  }
+  view.addEventListener('pointerdown',event => {
+    const button=event.target.closest('[data-emu-key]'); if (!button || (event.pointerType==='mouse' && event.button!==0)) return;
+    event.preventDefault(); button.setPointerCapture(event.pointerId); pointers.set(event.pointerId,button.dataset.emuKey); sendKey(button.dataset.emuKey,true);
+  });
+  function pointerUp(event) {const name=pointers.get(event.pointerId); if (name) {sendKey(name,false); pointers.delete(event.pointerId);}}
+  view.addEventListener('pointerup',pointerUp); view.addEventListener('pointercancel',pointerUp); view.addEventListener('lostpointercapture',pointerUp);
+  view.addEventListener('click',event => {
+    const button=event.target.closest('[data-emu-key]');
+    if (button && event.detail===0) {sendKey(button.dataset.emuKey,true); setTimeout(() => sendKey(button.dataset.emuKey,false),80);}
+  });
+  const keyMap={Enter:'enter',Backspace:'del',Delete:'del',Escape:'clear',ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Shift:'second',Alt:'alpha',F1:'yeq',F2:'window',F3:'zoom',F4:'trace',F5:'graph','+':'add','-':'subtract','*':'multiply','/':'divide','^':'power','(':'leftparen',')':'rightparen',',':'comma','.':'decimal','_':'negative',Home:'on',s:'sin',c:'cos',t:'tan',l:'ln',g:'log',x:'variable',m:'math',p:'prgm',v:'vars'};
+  for (let i=0;i<=9;i++) keyMap[String(i)]=String(i);
+  document.addEventListener('keydown',event => {
+    if (!active || $('gregleAppMenu')?.open) return;
+    if (!$('emulatorSession').hidden || !$('emulatorSetup').hidden) {
+      if (event.key==='Escape' && !$('emulatorSession').hidden) {event.preventDefault(); event.stopImmediatePropagation(); $('emulatorCloseSession').click();}
+      return;
+    }
+    if (event.ctrlKey || event.metaKey || (event.altKey && event.key!=='Alt') || event.key==='Tab') return;
+    if ((event.key==='Enter' || event.key===' ') && event.target.tagName==='BUTTON') return;
+    const name=keyMap[event.key]; if (!name) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    if (!event.repeat) {hardware.set(event.code,name); sendKey(name,true);}
+  },true);
+  document.addEventListener('keyup',event => {
+    const name=hardware.get(event.code); if (!name) return;
+    event.preventDefault(); event.stopImmediatePropagation(); sendKey(name,false); hardware.delete(event.code);
+  },true);
+  window.addEventListener('blur',releaseAll);
+  document.addEventListener('visibilitychange',() => {
+    if (document.hidden) {releaseAll(); if (loaded && !remote) {visibilityPaused=!paused; void pause(true); void save();}}
+    else if (visibilityPaused && active && loaded && !remote) {visibilityPaused=false; void pause(false); void save();}
+  });
+  window.addEventListener('pagehide',() => {releaseAll(); void save();});
+  setInterval(() => {if (active && loaded && !remote && !document.hidden) void save();},30000);
+  window.GregleEmulator={isActive:() => active,beforePopout:async () => {if (active) await yieldSession(true);}};
+  // A saved ROM boots straight into the calculator. No file picker is opened.
+  (async () => {
+    let preferred;
+    try {preferred=localStorage.getItem('gregle-calc-engine');} catch (_) {}
+    const requested=new URLSearchParams(location.search).get('engine');
+    if (requested==='ti84' || preferred==='ti84') {await open(); return;}
+    if (!preferred) {try {if ((await stored())?.rom) await open();} catch (_) {}}
+  })();
+})();

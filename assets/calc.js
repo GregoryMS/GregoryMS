@@ -168,15 +168,21 @@
   });
   const getState = () => ({expression:input.value,ans,angle,completed,lastEntry,homeCleared:homeHistory.length === 0,screen:window.GregleCalculator?.getScreen() || 'calculate'});
   window.GregleScientific = {insert,calculate,navigate,setAngle,getState,prepareInput,handleReadonlyKey,recallEntry,setKeyMode,hasError:() => Boolean(errorState),initialScreen:restored?.screen,restoredAngle:restored?.angle};
-  $('popoutCalculator').addEventListener('click',() => {
+  $('popoutCalculator').addEventListener('click',async () => {
     document.dispatchEvent(new Event('gregle-calc-save-graph'));
     const state = getState(), url = new URL(window.location.href); url.searchParams.set('popout','1');
     url.searchParams.set('mode',state.screen === 'calculate' ? 'standard' : 'graph');
     const width = Math.min(560,Math.max(280,screen.availWidth - 40)), height = Math.min(1080,Math.max(400,screen.availHeight - 60));
     const left = Math.round((screen.availLeft || 0) + (screen.availWidth - width)/2), top = Math.round((screen.availTop || 0) + (screen.availHeight - height)/2);
-    const popup = window.open(url.href,'_blank',`popup=yes,toolbar=no,menubar=no,location=no,status=no,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no`);
+    const emulating = window.GregleEmulator?.isActive();
+    if (emulating) url.searchParams.set('engine','ti84');
+    const popup = window.open(emulating ? 'about:blank' : url.href,'_blank',`popup=yes,toolbar=no,menubar=no,location=no,status=no,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no`);
     if (!popup) {$('popoutStatus').textContent = 'The new window was blocked. Allow pop-ups for this site and try again.'; return;}
     $('popoutStatus').textContent = '';
+    if (emulating) {
+      try {await window.GregleEmulator.beforePopout(); popup.location.replace(url.href);}
+      catch (_) {popup.close(); $('popoutStatus').textContent = 'The calculator could not be moved. Try again.'; return;}
+    }
     try {popup.sessionStorage.setItem('gregle-calc-popout',JSON.stringify(state)); popup.opener = null; popup.focus();} catch (_) {}
   });
   const sizer = $('calculatorSizer'), fit = $('calculatorFit'), calculator = $('graphCalculator'), handle = $('calculatorResize');
@@ -216,7 +222,7 @@
     }
   });
   document.addEventListener('keydown',event => {
-    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || $('gregleAppMenu')?.open || window.GregleCalculator?.getScreen() !== 'calculate' || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
+    if (event.defaultPrevented || window.GregleEmulator?.isActive() || event.ctrlKey || event.metaKey || event.altKey || $('gregleAppMenu')?.open || window.GregleCalculator?.getScreen() !== 'calculate' || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
     if (/^[0-9.+*/^()%!−×÷-]$/.test(event.key)) {event.preventDefault(); insert(event.key);}
     else if (event.key === 'Backspace') {event.preventDefault(); insert('','backspace');}
     else if (event.key === 'Enter' && event.target === document.body) {event.preventDefault(); calculate();}

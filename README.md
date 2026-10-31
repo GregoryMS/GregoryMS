@@ -572,3 +572,50 @@ Launching the installed home-screen app shows only the calculator, with the same
 Curves, angle mode, parameter and viewport are saved in `gregle-calc-graph` with bounded restoration. Saved windows optionally include an independent `yspan`; earlier saved equal-unit windows remain compatible. Storage failures leave graphing usable. Plot percentages have ordinary mathematical meaning (10% = 0.1); standard calculator percentages retain relative addition/subtraction behaviour.
 
 Run `node --test tests/calc.test.cjs tests/calc-graph.test.cjs tests/calc-graph-keypad.test.cjs tests/site-menu.test.cjs tests/site-router.test.cjs` for arithmetic, sampling, the shared scientific/graph keypad, ENTER-only evaluation, history selection, repeat/ENTRY recall, error recovery, window persistence and integration checks. Browser QA also covers the home LCD and its filled-history layout, the calculator-only pop-out, state transfer and resizing at narrow, wide, short and tall window sizes.
+
+
+### TI-84 Plus CE emulation
+
+The **TI-84 CE** button opens a full hardware emulator using a pinned CEmu
+core compiled to single-threaded WebAssembly. It runs from the existing
+GitHub Pages static hosting: no backend, remote execution, API key or
+cross-origin isolation headers are required. The scientific calculator stays
+available and remains the initial view until the user selects emulation.
+
+Import a full `.rom` dump from a TI-84 Plus CE once. The ROM and complete
+CEmu snapshot (flash, RAM, processor and peripherals) are saved in IndexedDB
+(`gregle-ti84`, store `calculator`, key `session`). Later visits boot directly
+from this device-local record without another import. `gregle-calc-engine`
+remembers an explicit switch back to the scientific calculator. The emulator
+autosaves after keypad activity, every 30 seconds while visible, when hidden
+and before pop-out handoff. A BroadcastChannel coordinates active windows;
+record ownership prevents a previous window from overwriting a newer session.
+Storage errors are visible and leave the running calculator and backup export
+available. Browser storage is per origin/device/browser; clearing site data
+or browser eviction removes the stored calculator. Persistent storage is
+requested when supported, but browsers decide whether to grant it.
+
+The native 50-key matrix includes all TI-84 menus, second functions, alphabet
+legends, directional keys, ON, STO and PRGM. Touch keys never focus a text
+input. Hardware digits, arithmetic, arrows and Enter work; F1–F5 open graph
+menus, Shift is 2nd, Alt is ALPHA, Escape is CLEAR and Backspace is DEL.
+The Web Worker keeps emulation off the page's UI thread and releases held
+keys when focus is lost. Fresh ROMs have a ten-second startup guard so TI-OS
+can boot before accepting keys; the remaining boot time is saved with the
+session. Restored sessions become usable immediately after boot has completed. Installed iOS mode and pop-outs keep the same
+calculator-only fitting and safe-area layout.
+
+**Session** provides pause/resume, save, private `.gregle84` backup export and
+restore, program/variable import through CEmu's emulated USB connection,
+restart, ROM replacement and explicit removal. Backups contain the ROM and
+calculator memory and should stay private. ROMs and backups are ignored by
+Git and are never sent to the server. Firmware is not bundled in the site.
+Compatibility of imported programs depends on the calculator OS/model.
+
+The ROM-free build, notices and corresponding source are in `assets/ti84/`.
+See `assets/ti84/README.md` for the pinned upstream revision and
+`bash scripts/build_ti84.sh` for reproducible build instructions (Emscripten
+4.0.23). The CEmu adapter and emulator frontend are GPL-3.0-or-later.
+Run `node --test tests/calc-emulator.test.cjs` to check the actual compiled
+engine, CPU execution, complete snapshot round trips and invalid-file
+rejection using a tiny original diagnostic image, without TI firmware.

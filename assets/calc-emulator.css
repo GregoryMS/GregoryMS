@@ -1,0 +1,38 @@
+.calculator-engine-controls {display:flex;align-items:center;gap:7px}
+.calculator-engine-controls button,.emu-toolbar button {min-height:28px;padding:4px 8px;border:1px solid #62606f;border-radius:6px;color:#ded9e6;background:#35333f;font:10px ui-monospace,monospace}
+.emulator-active #graphCalculator > :not(.graph-brand):not(#emulatorView) {display:none!important}
+.emulator-active .trace-form {display:none}
+.emulator-view {position:relative}
+.emu-display {position:relative;padding:8px;border:2px solid #14161b;border-radius:12px;background:#15171d;overflow:hidden}
+.emu-lcd {position:relative;width:100%;aspect-ratio:4/3;background:white;border-radius:3px;overflow:hidden}
+#emulatorCanvas {display:block;width:100%;height:100%;background:#fff;image-rendering:pixelated;outline-offset:-3px;touch-action:manipulation}
+.emu-overlay {position:absolute;inset:0;z-index:2;overflow:auto;padding:20px;background:#edf0ec;color:#23392f;font:14px/1.5 ui-monospace,monospace}
+.emu-overlay h2 {margin:0 0 14px;font:600 20px/1.3 ui-monospace,monospace}
+.emu-overlay p {margin:10px 0;font:13px/1.5 ui-monospace,monospace}
+.emu-overlay button {min-height:36px;padding:7px 10px;border:1px solid #82998b;border-radius:4px;background:#d0ddd2;color:#23392f;font:13px/1.3 ui-monospace,monospace}
+.emu-overlay button:focus-visible {outline:2px solid #23392f;outline-offset:2px}
+.emu-overlay .emu-primary {background:#334d3c;color:#fff}
+.emu-overlay .emu-close {float:right;min-height:28px;font-size:11px}
+.emu-session-actions {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.emu-overlay .emu-fine-print {font-size:10px;color:#4e6656}
+.emu-overlay a {color:#36533f;text-decoration:underline}
+.emu-toolbar {display:flex;align-items:center;gap:7px;margin:8px 2px 22px}
+.emu-toolbar span {flex:1;min-width:0;font:10px/1.4 ui-monospace,monospace;color:#c5c3ce}
+.emu-toolbar .emu-storage-error {color:#ffd2a6}
+.emu-menu-keys {margin:0 0 23px}
+.emu-control-grid {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:40px 40px;gap:18px 9px;margin-bottom:23px}
+.emu-control-grid .emu-pad {grid-column:4/6;grid-row:1/3;align-self:center;justify-self:center;width:130px;grid-template-rows:repeat(3,25px)}
+.emu-pad .pad-center {grid-column:2;grid-row:2;background:#33353e;border:2px solid #4d4f5b;border-radius:50%}
+.emu-control-grid .emu-pad button {min-height:0;width:auto;font-size:16px}
+.emu-keypad {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:23px 9px}
+.emu-keypad button,.emu-control-grid>.hardware-key {position:relative;min-height:43px;font:15px ui-monospace,monospace}
+.emu-keypad .emu-number {font-size:25px;background:linear-gradient(#555863,#454751)}
+.emu-keypad .emu-operator {font-size:25px;background:linear-gradient(#5d566b,#484252)}
+.emu-keypad .emu-enter {font-size:11px;background:linear-gradient(#9571bb,#785997)}
+.emu-legend {position:absolute;bottom:calc(100% + 4px);left:0;right:0;display:flex;justify-content:space-between;gap:2px;font:9px/1 ui-monospace,monospace;white-space:nowrap;pointer-events:none;color:#dfc167}
+.emu-legend b {font-weight:400;color:#9bcbb0}
+.emu-keypad button.is-down,.emu-control-grid button.is-down,.emu-menu-keys button.is-down {filter:brightness(1.35);transform:translateY(1px)}
+.emulator-view [data-emu-key]:disabled {opacity:.55;cursor:wait}
+.emu-keypad button,.emu-control-grid button,.emu-menu-keys button {touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.emu-credits {display:flex;justify-content:space-between;align-items:center;margin:18px 2px 0;color:#aaa5b5;font:8px/1.5 ui-monospace,monospace;letter-spacing:1px}
+.emu-credits a {color:inherit}
