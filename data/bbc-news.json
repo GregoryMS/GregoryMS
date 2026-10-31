@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-30T23:51:05+00:00",
-  "fetchedAt": "2026-10-30T23:51:19.473653+00:00",
+  "feedUpdatedAt": "2026-10-31T02:47:32+00:00",
+  "fetchedAt": "2026-10-31T02:47:40.387819+00:00",
   "items": [
     {
       "title": "US approves sale of 500 Patriot missiles to Ukraine",
@@ -24,10 +24,6 @@
       "link": "https://www.bbc.co.uk/news/articles/crz9824d5e88o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Hundreds evacuated from Russian-occupied Oleshky during rare Ukraine ceasefire",
-      "link": "https://www.bbc.co.uk/news/articles/c60me298k1yeo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Driver guilty of hitting cyclist and dragging him to death under car",
       "link": "https://www.bbc.co.uk/news/articles/c6e3xg5we9eyo?at_medium=RSS&at_campaign=rss"
     },
@@ -36,8 +32,12 @@
       "link": "https://www.bbc.co.uk/news/articles/cmd6dp2y576do?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "US inmate Christa Pike says she woke up 'confused and in pain' after failed execution",
-      "link": "https://www.bbc.co.uk/news/articles/ck62ydn7dj9eo?at_medium=RSS&at_campaign=rss"
+      "title": "Why MPs keep talking about an early election despite Burnham's denials",
+      "link": "https://www.bbc.co.uk/news/articles/cm5yn7d0qx1do?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Global nature talks reach deal but money remains an issue",
+      "link": "https://www.bbc.co.uk/news/articles/cw1l32qyj8pqo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "King visits Guyanese slave rebellion site on Caribbean tour",
