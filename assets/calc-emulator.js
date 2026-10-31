@@ -92,9 +92,7 @@
   function preference(value) {try {localStorage.setItem('gregle-calc-engine',value);} catch (_) {}}
   function show(activeValue) {
     active=activeValue; page.classList.toggle('emulator-active',active); view.hidden=!active;
-    modeButton.textContent=active ? 'Scientific' : 'TI-84 CE';
-    modeButton.setAttribute('aria-label',active ? 'Use scientific calculator' : 'Use TI-84 Plus CE emulator');
-    modeButton.setAttribute('aria-pressed',String(active));
+    modeButton.setAttribute('aria-checked',String(active));
     if (!active) releaseAll();
     window.dispatchEvent(new Event('resize'));
   }

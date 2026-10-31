@@ -12,11 +12,11 @@
 <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
 <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261030-ti-home"><link rel="stylesheet" href="assets/calc-graph.css?v=20261031-clean-labels"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261031-ce1"><link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261030-ti-home"><link rel="stylesheet" href="assets/calc-graph.css?v=20261031-clean-labels"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261031-engine-switch"><link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
 <script src="assets/theme.js?v=20261017-theme-switch" defer></script><script src="assets/site-menu.js?v=20261019-docs" defer></script>
 <script src="assets/calc-core.js?v=20261029-graph" defer></script><script src="assets/calc.js?v=20261031-ce1" defer></script>
 <script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261031-clean-labels" defer></script>
-<script src="assets/calc-emulator.js?v=20261031-hosted1" defer></script>
+<script src="assets/calc-emulator.js?v=20261031-engine-switch" defer></script>
 <link rel="canonical" href="https://calc.gregle.uk/">
 </head><body>
 <script>
@@ -65,7 +65,7 @@
 <section id="graphPanel" aria-label="Scientific and graphing calculator">
 <div class="calculator-resizer" id="calculatorSizer"><div class="calculator-fit" id="calculatorFit">
 <div class="graph-layout" id="graphCalculator" tabindex="-1">
-<div class="graph-brand"><span>GREGLE<span class="graph-brand-dot">.</span></span><div class="calculator-engine-controls"><button type="button" id="emulatorOpen" aria-label="Use TI-84 Plus CE emulator" aria-pressed="false">TI-84 CE</button></div></div>
+<div class="graph-brand"><span>GREGLE<span class="graph-brand-dot">.</span></span><div class="calculator-engine-controls"><button type="button" class="calculator-engine-switch" id="emulatorOpen" role="switch" aria-checked="false" aria-label="TI-84 CE mode" title="Switch between scientific and TI-84 CE calculators"><span>TI-84 CE</span><span class="engine-switch-track" aria-hidden="true"><span class="engine-switch-thumb"></span></span></button></div></div>
 <div class="graph-display">
 <div class="graph-screen-status"><span id="graphScreenTitle" role="status" aria-live="polite">HOME</span><span><span id="graphAngleStatus">DEG</span> · <span id="graphFunctionStatus">REAL</span></span></div>
 <div class="graph-stage" id="graphStage">
