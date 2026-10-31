@@ -1,15 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-10-31T08:55:57+00:00",
-  "fetchedAt": "2026-10-31T08:56:02.460630+00:00",
+  "feedUpdatedAt": "2026-10-31T15:14:11+00:00",
+  "fetchedAt": "2026-10-31T15:14:18.470917+00:00",
   "items": [
-    {
-      "title": "US approves sale of 500 Patriot missiles to Ukraine",
-      "link": "https://www.bbc.co.uk/news/articles/c3vgxznlx7jzo?at_medium=RSS&at_campaign=rss"
-    },
     {
       "title": "Burnham 'open' to calls for slavery apology but not reparations",
       "link": "https://www.bbc.co.uk/news/articles/c5398239je88o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Evacuees from Russia-occupied city where residents ate weeds arrive in Ukraine",
+      "link": "https://www.bbc.co.uk/news/articles/cqx2818elrnzo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Why North Korea's 'elite' hackers are the prime suspect in major Binance hack",
@@ -24,11 +24,7 @@
       "link": "https://www.bbc.co.uk/news/videos/cmeq3ppg7wrno?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mahmood expected to announce changes to rules around indefinite leave to remain",
-      "link": "https://www.bbc.co.uk/news/articles/cm62yxxd992eo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "He left 28 years ago, now after 36,000 miles Karl Bushby is almost home",
+      "title": "After 28 years and 36,000 miles, Karl Bushby is almost home",
       "link": "https://www.bbc.co.uk/news/articles/cq8rz38jr50go?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -42,6 +38,10 @@
     {
       "title": "'The necktie is dead': How US midterm candidates are dressing for votes",
       "link": "https://www.bbc.co.uk/news/articles/ckq6nz4286r4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Why MPs keep talking about an early election despite Burnham's denials",
+      "link": "https://www.bbc.co.uk/news/articles/cm5yn7d0qx1do?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
