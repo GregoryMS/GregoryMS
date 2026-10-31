@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-31T17:50:55+00:00",
-  "fetchedAt": "2026-10-31T17:51:01.083861+00:00",
+  "feedUpdatedAt": "2026-10-31T20:54:51+00:00",
+  "fetchedAt": "2026-10-31T20:55:00.482335+00:00",
   "items": [
+    {
+      "title": "Maresca's big test is to address mounting Man City issues",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cve8rkd8r302o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Martinez's 'inexplicable' 83 seconds cost Man Utd and Carrick",
       "link": "https://www.bbc.co.uk/sport/football/articles/ckvg64xp1e1eo?at_medium=RSS&at_campaign=rss"
@@ -12,36 +16,32 @@
       "link": "https://www.bbc.co.uk/sport/cricket/articles/cmdx3p354v04o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Glasner fears he will be next Forest sacking if wins don't follow",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cvn067174knjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Usyk eyes 'final chapter' at cruiserweight against Benavidez",
+      "link": "https://www.bbc.co.uk/sport/boxing/articles/crpdg3qwjg4eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Verbruggen spreads belief as Brighton continue to impress",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6d7qwnz1jnjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sunderland's paradox - San Siro trip amid relegation battle",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmrry892zpkro?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Returning Estevao brings X-factor to strikerless Chelsea",
       "link": "https://www.bbc.co.uk/sport/football/articles/cwnv0p143qzyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Quins claim victory at Exeter in nine-try nailbiter",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cwe9l41ke3mzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Carragher apologises to Villa for 'wrong' language",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqj6jp63k87zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'Best thing is keep your mouth shut' - Mourinho on Mbappe-Mao row",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ck9dz2yned67o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "A 3/10 that might be generous - player ratings for Chelsea v Man Utd",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c3j47prvlz04o?at_medium=RSS&at_campaign=rss"
+      "title": "Saints come from behind to beat in-form Gloucester",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cj5ynk53x39eo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Briton Dart reaches first WTA Tour singles final",
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cqwyr2r3jggno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Carrick bemoans Man Utd defending in Chelsea loss",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cqrlywrdjdzyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Alonso praises Estevao response to lack of gametime",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cr5ynzdpjnn9o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
