@@ -191,8 +191,13 @@
     resizeFrame = 0;
     const baseWidth = calculator.offsetWidth, baseHeight = calculator.offsetHeight;
     if (!baseWidth || !baseHeight || !sizer.clientWidth || !sizer.clientHeight) return;
-    sizer.style.aspectRatio = `${baseWidth} / ${baseHeight}`;
-    const scale = Math.min(sizer.clientWidth/baseWidth,sizer.clientHeight/baseHeight);
+    // Reserve an unscaled strip for the drag tab, including at small sizes.
+    // The tab is hidden in installed/pop-out windows, which use the full area.
+    const gutter = handle.offsetHeight ? handle.offsetHeight + 12 : 0;
+    sizer.style.aspectRatio = `${baseWidth} / ${baseHeight + gutter*baseWidth/sizer.clientWidth}`;
+    const availableHeight = Math.max(1,sizer.clientHeight-gutter);
+    const scale = Math.min(sizer.clientWidth/baseWidth,availableHeight/baseHeight);
+    fit.style.top = `${availableHeight/2}px`;
     fit.style.transform = `translate(-50%, -50%) scale(${scale})`;
     sizer.style.setProperty('--calculator-scale',String(scale));
     document.dispatchEvent(new Event('gregle-calc-resize'));

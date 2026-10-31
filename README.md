@@ -576,7 +576,7 @@ Run `node --test tests/calc.test.cjs tests/calc-graph.test.cjs tests/calc-graph-
 
 ### TI-84 Plus CE emulation
 
-The **TI-84 CE** button opens a full hardware emulator using a pinned CEmu
+The **TI-84 CE** toggle opens a full hardware emulator using a pinned CEmu
 core compiled to single-threaded WebAssembly. It runs from the existing
 GitHub Pages static hosting: no backend, remote execution, API key or
 cross-origin isolation headers are required. The scientific calculator stays
@@ -630,3 +630,44 @@ See `assets/ti84/README.md` for the pinned upstream revision and
 Run `node --test tests/calc-emulator.test.cjs` to check the actual compiled
 engine, CPU execution, complete snapshot round trips and invalid-file
 rejection using a tiny original diagnostic image, without TI firmware.
+
+
+### Offline calculator / iOS home-screen app
+
+Open the installed calculator online once and wait for **Ready offline** in
+scientific **MODE** or the TI-84 **Session** menu. The complete scientific,
+graphing and TI-84 interface, worker, WebAssembly engine, local icons and
+manifest are cached by `calc-sw.js`. Installed apps also prepare the
+hash-checked ROM in IndexedDB without booting the emulator or changing the
+selected mode. Ordinary browser visits prepare the ROM when TI-84 is opened.
+Existing imported ROMs and sessions take precedence over background preparation;
+explicitly removing the saved ROM disables automatic preparation until Load
+calculator is selected again. Retry offline setup is available after errors.
+
+Both the dedicated calculator host's `/` start URL and legacy `/calc.html`,
+including pop-out and engine query parameters, reopen from the cached page.
+Other Gregle app pages and requests keep their normal network behaviour. The
+cache never contains the external ROM URL or user history/memory. Those remain
+in device storage. No font service, iframe or server process is needed offline.
+
+An update downloads a complete separate cache and activates after all existing
+calculator windows are closed. Failed downloads retain the previous working
+version. No waiting worker forcibly reloads or takes over an active session.
+The next online launch checks for updates; a waiting update is shown in MODE
+and Session. Cache cleanup only removes older calculator caches, never another
+app's caches or calculator storage. iOS decides whether persistent storage is
+granted; clearing site data or storage eviction requires another online setup.
+Installed iOS apps may have separate storage from their Safari tab, so finish
+setup in the installed app itself.
+
+For every calculator release, bump `VERSION` in `calc-sw.js` and keep `ASSETS`
+in sync with the versioned links in `calc.html` and any worker dependencies.
+The install also rejects mismatched HTML/assets during a partial deployment.
+Run `node --test tests/calc-offline.test.cjs` for offline routing, complete
+precaching, failed-update recovery and activation cleanup. Browser QA covers
+cold offline launches, a first TI-84 boot offline, session restoration, ROM
+removal and imports racing background preparation in Chromium and WebKit.
+
+The resize handle has a fixed blank strip below the fitted calculator. This
+space stays clear of ENTER at every supported size, and is reclaimed in
+installed/pop-out views where the handle is hidden.

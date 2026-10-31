@@ -10,7 +10,8 @@
   if (!shell || !modeButton) return;
   const owner = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
   let active=false, loaded=false, paused=false, busy=false, remote=false, visibilityPaused=false, starting=false;
-  let worker, database, record, savePromise, saveTimer, sequence=0;
+  let worker, database, record, savePromise, saveTimer, romDownload, sequence=0;
+  const downloadListeners = new Set();
   const pending = new Map(), pointers = new Map(), hardware = new Map();
   const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('gregle-ti84-session') : null;
 
@@ -58,6 +59,8 @@
         <button type="button" class="emu-close" id="emulatorCloseSession">Close</button>
         <h2 id="emulatorSessionTitle">Your calculator</h2>
         <p id="emulatorSessionInfo">ROM and session are saved on this device.</p>
+        <p class="calc-offline-status" data-offline-status role="status">Preparing offline use…</p>
+        <button type="button" data-offline-retry hidden>Retry offline setup</button>
         <div class="emu-session-actions">
           <button type="button" id="emulatorSave">Save now</button><button type="button" id="emulatorPause">Pause</button>
           <button type="button" id="emulatorExport">Export backup</button><button type="button" id="emulatorRestore">Restore backup</button>
@@ -119,7 +122,10 @@
           if (change) {if (result === null) store.delete(STORAGE_KEY); else store.put(result,STORAGE_KEY);}
         } catch (error) {failure=error; transaction.abort();}
       };
-      transaction.oncomplete=() => resolve(result);
+      transaction.oncomplete=() => {
+        resolve(result);
+        if (change) window.dispatchEvent(new Event('gregle-ti84-storage'));
+      };
       transaction.onabort=transaction.onerror=() => reject(failure || transaction.error || new Error('Could not save on this device.'));
     });
   }
@@ -243,6 +249,32 @@
       status(error.message,true);
     } finally {busy=false; modeButton.disabled=false; $('emulatorImport').disabled=false; $('emulatorDownload').disabled=false;}
   }
+  function downloadDisabled() {
+    try {return localStorage.getItem('gregle-ti84-download-disabled')==='1';} catch (_) {return false;}
+  }
+  async function getDownload(onProgress) {
+    if (onProgress) downloadListeners.add(onProgress);
+    try {
+      if (!romDownload) romDownload=(async () => {
+        const {downloadRom}=await import(new URL('ti84/rom-source.mjs?v=20261031-hosted1',scriptURL));
+        return downloadRom({onProgress:value => {for (const listener of downloadListeners) listener(value);}});
+      })().finally(() => {romDownload=null;});
+      return await romDownload;
+    } finally {if (onProgress) downloadListeners.delete(onProgress);}
+  }
+  async function prepareOffline({download=false}={}) {
+    if ((await stored())?.rom) return {ready:true};
+    if (downloadDisabled()) return {ready:false,removed:true};
+    if (!download) return {ready:false};
+    const downloaded=await getDownload();
+    // Recheck inside the transaction: importing, restoring or removing a ROM
+    // while this download runs must win over background offline preparation.
+    const saved=await stored(current => current?.rom ? current : downloadDisabled() ? null : {...downloaded,updatedAt:Date.now()});
+    if (saved?.rom) {
+      try {if (!localStorage.getItem('gregle-calc-engine')) preference('scientific');} catch (_) {}
+    }
+    return {ready:Boolean(saved?.rom),removed:downloadDisabled()};
+  }
   async function downloadCalculator() {
     if (busy) return;
     busy=true; modeButton.disabled=true;
@@ -253,9 +285,8 @@
     status('Downloading calculator…');
     let downloaded;
     try {
-      const {downloadRom}=await import(new URL('ti84/rom-source.mjs?v=20261031-hosted1',scriptURL));
       let progress=-1;
-      downloaded=await downloadRom({onProgress:value => {if (value!==progress) {progress=value; status(`Downloading calculator… ${value}%`);}}});
+      downloaded=await getDownload(value => {if (value!==progress) {progress=value; status(`Downloading calculator… ${value}%`);}});
       try {localStorage.removeItem('gregle-ti84-download-disabled');} catch (_) {}
     } catch (error) {
       $('emulatorSetupText').textContent='The automatic download could not finish. You can retry, restore a backup or choose your own ROM file.';
@@ -411,7 +442,7 @@
   });
   window.addEventListener('pagehide',() => {releaseAll(); void save();});
   setInterval(() => {if (active && loaded && !remote && !document.hidden) void save();},30000);
-  window.GregleEmulator={isActive:() => active,beforePopout:async () => {if (active) await yieldSession(true);}};
+  window.GregleEmulator={isActive:() => active,prepareOffline,beforePopout:async () => {if (active) await yieldSession(true);}};
   // A saved ROM boots straight into the calculator. No file picker is opened.
   (async () => {
     let preferred;
