@@ -241,14 +241,14 @@
     draw(); canvas.toBlob(blob => {if (!blob) return; const link = document.createElement('a'), url = URL.createObjectURL(blob); link.href = url; link.download = 'gregle-graph.png'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);});
   });
   const screenPanels = {calculate:'scientificScreen', equations:'graphEquations', window:'graphWindowMenu', zoom:'graphZoomMenu', mode:'graphModeMenu', math:'graphMathMenu', table:'graphTableWrap'};
-  const screenHints = {calculate:'ENTER: calculate · ↑↓: history · 2nd ENTER: recall', graph:'Arrows: pan · ENTER: trace', equations:'↑↓ function · ←→ cursor · ENTER: graph', window:'↑↓ field · ENTER: apply · CLEAR: back', zoom:'↑↓ choose · ENTER: select', trace:'←→ trace · ↑↓ curve · CLEAR: back', mode:'↑↓ setting · ←→ change · CLEAR: back', math:'↑↓ choose · ENTER: insert', table:'↑↓ row · ←→ columns · CLEAR: back'};
+  const screenHints = {calculate:'', graph:'Arrows: pan · ENTER: trace', equations:'↑↓ function · ←→ cursor · ENTER: graph', window:'↑↓ field · ENTER: apply · CLEAR: back', zoom:'↑↓ choose · ENTER: select', trace:'←→ trace · ↑↓ curve · CLEAR: back', mode:'↑↓ setting · ←→ change · CLEAR: back', math:'↑↓ choose · ENTER: insert', table:'↑↓ row · ←→ columns · CLEAR: back'};
   const traceable = () => equations.filter(e => e.enabled && e.compiled);
   const keyButtons = Array.from(document.querySelectorAll('#graphKeyboard [data-graph-insert]'));
   function renderKeyModes() {
     $('graphSecond').setAttribute('aria-pressed',String(second));
     $('graphAlpha').setAttribute('aria-pressed',String(alpha));
     $('graphKeyboard').classList.toggle('is-alpha',alpha);
-    $('graphKeypadHeading').textContent = alpha ? 'Alphabet keypad' : 'Scientific keypad';
+    $('graphKeypadHeading').textContent = alpha ? 'Alphabet keypad' : 'Calculator keypad';
     for (const button of keyButtons) {
       if (button.dataset.normalHtml === undefined) {
         button.dataset.normalHtml = button.innerHTML;
@@ -302,6 +302,7 @@
     canvas.hidden = Boolean(screenPanels[next]);
     $('graphScreenTitle').textContent = next === 'equations' ? 'Y=' : next.toUpperCase();
     $('graphScreenHint').textContent = screenHints[next];
+    $('graphScreenFooter').hidden = next === 'calculate';
     document.querySelectorAll('[data-graph-menu]').forEach(button => {
       const selected = button.dataset.graphMenu === next;
       if (button.hasAttribute('aria-expanded')) button.setAttribute('aria-expanded', String(selected));
@@ -309,7 +310,7 @@
     });
     $('graphReadout').hidden = editTarget === 'calculate';
     $('graphFunctionStatus').textContent = editTarget === 'calculate' ? 'REAL' : 'FUNCTION';
-    $('graphKeypadTarget').textContent = editTarget === 'calculate' ? 'Scientific calculation' : activeEquation ? `Editing equation ${activeEquation.id}` : 'Tap a key to add an expression';
+    $('graphKeypadTarget').textContent = editTarget === 'calculate' ? 'Ready to calculate' : activeEquation ? `Editing equation ${activeEquation.id}` : 'Tap a key to add an expression';
     if (next !== 'window') activeNumberInput = null;
     renderKeyModes();
     if (next === 'window') {const b = bounds(); for (const name of ['xmin','xmax','ymin','ymax']) $(`graph${name[0].toUpperCase()}${name.slice(1)}`).value = compact(b[name]); $('graphWindowError').textContent = ''; activeNumberInput = $('graphXmin');}
