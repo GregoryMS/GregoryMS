@@ -582,7 +582,18 @@ GitHub Pages static hosting: no backend, remote execution, API key or
 cross-origin isolation headers are required. The scientific calculator stays
 available and remains the initial view until the user selects emulation.
 
-Import a full `.rom` dump from a TI-84 Plus CE once. The ROM and complete
+On the first TI-84 launch, the calculator automatically downloads the ROM
+from the user-configured URL in `assets/ti84/rom-source.mjs`. The request goes
+directly from the browser to Catbox using CORS, without credentials or a
+referrer. The expected byte count and SHA-256 fingerprint are checked before
+booting or saving; oversized, incomplete, changed and unavailable files are
+rejected, and downloads time out after 45 seconds. Retry, backup restore and
+manual ROM selection remain available if the host cannot be reached. This
+uses the existing calculator UI and CEmu engine, without an iframe, proxy,
+new backend or ROM committed to GitHub. It does not change the ownership or
+licence of the separately hosted firmware.
+
+The ROM and complete
 CEmu snapshot (flash, RAM, processor and peripherals) are saved in IndexedDB
 (`gregle-ti84`, store `calculator`, key `session`). Later visits boot directly
 from this device-local record without another import. `gregle-calc-engine`

@@ -12,8 +12,12 @@ Emscripten-generated runtime support retains its upstream MIT/NCSA licensing;
 see `LICENSE-Emscripten.txt`.
 
 No TI ROM, operating system, proprietary skin or saved calculator state is
-included. Import a ROM from your own TI-84 Plus CE in the calculator's local
-setup screen. ROMs and state images stay in IndexedDB in that browser. Backup
+included in this repository. `rom-source.mjs` configures the user-supplied
+Catbox ROM URL and its SHA-256 fingerprint. When no local ROM is available,
+the calculator downloads that file directly to the browser, validates it and
+saves it locally. The firmware is separate from CEmu's open-source licence.
+Users can also select a ROM from their own TI-84 Plus CE in the local setup
+screen. ROMs and state images stay in IndexedDB in that browser. Backup
 files contain the ROM as well as state and should be kept private.
 
 This single-threaded WebAssembly build needs no server, cookies, API keys,

@@ -48,10 +48,11 @@
       <canvas id="emulatorCanvas" width="320" height="240" tabindex="0" aria-label="TI-84 Plus CE display. Use the calculator keys below or a hardware keyboard."></canvas>
       <section class="emu-overlay" id="emulatorSetup" aria-labelledby="emulatorSetupTitle">
         <h2 id="emulatorSetupTitle">TI-84 Plus CE</h2>
-        <p id="emulatorSetupText">Import your calculator’s ROM once. It stays on this device and loads automatically next time.</p>
-        <button type="button" class="emu-primary" id="emulatorImport">Import ROM</button>
+        <p id="emulatorSetupText">Your calculator will download automatically and stay saved on this device.</p>
+        <button type="button" class="emu-primary" id="emulatorDownload">Load calculator</button>
+        <button type="button" id="emulatorImport">Choose ROM file</button>
         <button type="button" id="emulatorRestoreSetup">Restore backup</button>
-        <p class="emu-fine-print">Choose a full TI-84 Plus CE .rom file. Files are read locally and never uploaded.</p>
+        <p class="emu-fine-print">The first download comes from Catbox. You can also choose your own TI-84 Plus CE .rom file; selected files are never uploaded.</p>
       </section>
       <section class="emu-overlay" id="emulatorSession" aria-labelledby="emulatorSessionTitle" hidden>
         <button type="button" class="emu-close" id="emulatorCloseSession">Close</button>
@@ -219,6 +220,7 @@
     status('Starting TI-84 Plus CE…'); busy=true;
     modeButton.disabled=true;
     $('emulatorImport').disabled=true;
+    $('emulatorDownload').disabled=true;
     try {
       destroyWorker();
       const result=await request('load',{rom:next.rom,state:!fresh && next.coreVersion===CORE_VERSION ? next.state : null,bootFrames:next.bootFrames});
@@ -241,7 +243,31 @@
       loaded=false; $('emulatorSetup').hidden=false;
       view.querySelectorAll('[data-emu-key]').forEach(button => {button.disabled=true;});
       status(error.message,true);
-    } finally {busy=false; modeButton.disabled=false; $('emulatorImport').disabled=false;}
+    } finally {busy=false; modeButton.disabled=false; $('emulatorImport').disabled=false; $('emulatorDownload').disabled=false;}
+  }
+  async function downloadCalculator() {
+    if (busy) return;
+    busy=true; modeButton.disabled=true;
+    for (const id of ['emulatorImport','emulatorRestoreSetup','emulatorDownload']) $(id).disabled=true;
+    $('emulatorDownload').textContent='Downloading…';
+    $('emulatorSetup').hidden=false;
+    $('emulatorSetupText').textContent='Preparing your calculator. This download is only needed once on this device.';
+    status('Downloading calculator…');
+    let downloaded;
+    try {
+      const {downloadRom}=await import(new URL('ti84/rom-source.mjs?v=20261031-hosted1',scriptURL));
+      let progress=-1;
+      downloaded=await downloadRom({onProgress:value => {if (value!==progress) {progress=value; status(`Downloading calculator… ${value}%`);}}});
+      try {localStorage.removeItem('gregle-ti84-download-disabled');} catch (_) {}
+    } catch (error) {
+      $('emulatorSetupText').textContent='The automatic download could not finish. You can retry, restore a backup or choose your own ROM file.';
+      status(error.message || 'Could not download the calculator. Please retry.',true);
+    } finally {
+      busy=false; modeButton.disabled=false;
+      for (const id of ['emulatorImport','emulatorRestoreSetup','emulatorDownload']) $(id).disabled=false;
+      $('emulatorDownload').textContent='Retry download';
+    }
+    if (downloaded) await boot(downloaded,{fresh:true});
   }
   async function open() {
     show(true); preference('ti84');
@@ -251,10 +277,16 @@
     try {
       const saved=await stored();
       if (saved?.rom) {await boot(saved); return;}
-      status('One-time ROM setup');
-    } catch (_) {status('Device storage is unavailable. A ROM can run for this visit; export a backup to keep it.',true);}
+    } catch (_) {status('Device storage is unavailable. Export a backup to keep your calculator.',true);}
+    let disabled=false;
+    try {disabled=localStorage.getItem('gregle-ti84-download-disabled')==='1';} catch (_) {}
+    if (!disabled) {await downloadCalculator(); return;}
+    status('Saved calculator removed · load again when ready');
+    $('emulatorSetupText').textContent='Your saved calculator was removed. Load it again or choose a ROM file when you want to continue.';
+    $('emulatorDownload').textContent='Load calculator';
     $('emulatorSetup').hidden=false;
   }
+  $('emulatorDownload').addEventListener('click',() => {void downloadCalculator();});
   modeButton.addEventListener('click',async () => {
     if (active) {await pause(true); await save(); show(false); preference('scientific');}
     else await open();
@@ -289,6 +321,7 @@
     if (!confirm('Remove this device’s saved ROM and calculator session? Export a backup first if you want to keep them.')) return;
     try {
       await pause(true); await save(); await takeOver(); await stored(() => null);
+      try {localStorage.setItem('gregle-ti84-download-disabled','1');} catch (_) {}
       destroyWorker(); record=null; remote=false; clearTimeout(saveTimer);
       $('emulatorSession').hidden=true; $('emulatorSetup').hidden=false;
       context.clearRect(0,0,320,240); status('Saved ROM removed · import a ROM to start again');
