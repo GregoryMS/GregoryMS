@@ -1,14 +1,26 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-30T21:16:55+00:00",
-  "fetchedAt": "2026-10-30T21:17:00.414903+00:00",
+  "feedUpdatedAt": "2026-10-31T00:54:53+00:00",
+  "fetchedAt": "2026-10-31T00:55:04.409653+00:00",
   "items": [
     {
       "title": "What Howe could bring to Man Utd - and what are the challenges?",
       "link": "https://www.bbc.co.uk/sport/football/articles/cr74pd99vwq3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Leclerc fastest in Mexico City Grand Prix first practice",
+      "title": "Villa to sue Carragher over 'unacceptable insults'",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqd09p3kppyvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sherrock upsets Littler to claim £501,000 prize",
+      "link": "https://www.bbc.co.uk/sport/darts/articles/crkg7p1z3p3lo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "England see off USA to return to winning ways",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cq98zrj5dj6ro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Verstappen says Lawson 'not very smart' after collision in Mexico practice",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/cqde8p6j9ye7o?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -16,32 +28,20 @@
       "link": "https://www.bbc.co.uk/sport/cricket/articles/c6n8dpvyyy71o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "From her own Barbie doll to bench - how Ellie Kildunne slipped from Red Roses' XV",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmy832jv00p1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Britain's first £100m man facing defining moment",
       "link": "https://www.bbc.co.uk/sport/football/articles/cmzxj2e2e5p2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Arteta warns Dowman 'we are not in Disneyland' after red card",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c875p940g5v2o?at_medium=RSS&at_campaign=rss"
+      "title": "Leicester dominate Bristol to go top of the Prem",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c3x2wrp97dqdo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Zverev thrashes GB's Fery to reach Vienna semis",
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cm0ld27ew5lyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Sutton's predictions v Bad Day At The Office star John Hannah",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cq1m4j79x50jo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Set up to fail? Where England's World Cup campaign went wrong",
       "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cqp9gv3mr8myo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Why has Caf abandoned plans to hold Afcon every four years?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm3el25ez88yo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
