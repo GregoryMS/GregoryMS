@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-31T00:54:53+00:00",
-  "fetchedAt": "2026-10-31T00:55:04.409653+00:00",
+  "feedUpdatedAt": "2026-10-31T06:50:42+00:00",
+  "fetchedAt": "2026-10-31T06:50:49.550997+00:00",
   "items": [
+    {
+      "title": "Shearer discusses scoring record, MOTD & a brush with Cardiff",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cwkg5l822k3no?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "What Howe could bring to Man Utd - and what are the challenges?",
       "link": "https://www.bbc.co.uk/sport/football/articles/cr74pd99vwq3o?at_medium=RSS&at_campaign=rss"
@@ -20,12 +24,16 @@
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cq98zrj5dj6ro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Verstappen says Lawson 'not very smart' after collision in Mexico practice",
+      "title": "Verstappen and Lawson given grid penalties for Mexico practice collision",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/cqde8p6j9ye7o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "South Africa-Australia set for classic finale – what does history suggest could happen?",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/c6n8dpvyyy71o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "AC Milan v Inter and the tale of an iconic image",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cq99zlpzm87ro?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Britain's first £100m man facing defining moment",
@@ -34,14 +42,6 @@
     {
       "title": "Leicester dominate Bristol to go top of the Prem",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c3x2wrp97dqdo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Zverev thrashes GB's Fery to reach Vienna semis",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/cm0ld27ew5lyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Set up to fail? Where England's World Cup campaign went wrong",
-      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cqp9gv3mr8myo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
