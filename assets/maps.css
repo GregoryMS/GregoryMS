@@ -545,3 +545,55 @@
   .vehicle-layout .has-mobile-drawer .map-actions { max-width: 176px; }
 }
 @media (max-width: 360px) { .maps-page .breadcrumb { display: none; } }
+
+/* Street View keeps a selectable map alongside Google's own panorama controls. */
+.streetview-panel { position: absolute; inset: 0 0 0 46%; z-index: 460; display: flex; flex-direction: column; min-width: 0; background: var(--map-surface); color: var(--text); border-left: 1px solid var(--map-border); }
+.streetview-toolbar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; flex-shrink: 0; }
+.streetview-toolbar h2 { margin: 0 auto 0 0; font: 500 15px/1.4 ui-sans-serif, system-ui, sans-serif; }
+.streetview-panel :is(a, button) { color: var(--map-accent); font: 12px/1.4 ui-sans-serif, system-ui, sans-serif; }
+.streetview-panel button { min-height: 40px; padding: 8px 10px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--map-control-accent-soft); cursor: pointer; }
+.streetview-panel :is(a, button):focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
+.streetview-help { margin: 0; padding: 0 14px 10px; font: 11px/1.5 ui-sans-serif, system-ui, sans-serif; color: var(--muted); }
+.streetview-frame { position: relative; flex: 1; min-height: 0; background: #e5e3df; }
+.streetview-frame iframe { position: absolute; inset: 0; border: 0; width: 100%; height: 100%; }
+#streetview-status { position: absolute; z-index: 1; inset: 12px 12px auto; padding: 12px; margin: 0; border-radius: 10px; font-size: 12px; pointer-events: none; }
+.streetview-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 5px 12px; font-size: 10px; color: var(--muted); }
+#streetview-coordinates { flex: 1; min-width: 100px; font-variant-numeric: tabular-nums; }
+.streetview-active #gregle-map { width: 46%; cursor: crosshair; }
+.streetview-active .map-actions { right: calc(54% + 12px); }
+.streetview-active .map-search { width: calc(46% - 100px); max-width: none; }
+.streetview-active .map-place, .streetview-active .gregle-map-pin { display: none; }
+.streetview-active .map-layers-panel { right: calc(54% + 70px); }
+@media(max-width: 900px) {
+  .streetview-active #gregle-map { width: 100%; height: 48%; }
+  .streetview-panel { inset: 48% 0 0; border-left: 0; border-top: 1px solid var(--map-border); }
+  .streetview-active .map-search { width: calc(100% - 100px); max-width: none; }
+  .streetview-active .map-actions { right: 12px; }
+  .streetview-active .map-layers-panel { right: 68px; }
+  .streetview-active .map-report { bottom: 52%; }
+  .streetview-active .map-notice { bottom: calc(52% + 24px); }
+  .streetview-active.has-mobile-drawer .map-search { width: calc(100% - 24px); }
+  .streetview-toolbar { padding: 5px 10px; gap: 8px; }
+  .streetview-help { font-size: 10px; padding: 0 10px 5px; }
+  .streetview-toolbar :is(a, button) { font-size: 11px; }
+  .streetview-footer { padding: 4px 8px; }
+  .streetview-footer button { min-height: 32px; padding: 5px 8px; font-size: 10px; }
+  .streetview-active.has-mobile-drawer .map-drawer { z-index: 580; }
+}
+@media(max-height: 520px) and (min-width: 701px) {
+  .streetview-active #gregle-map { width: 46%; height: 100%; }
+  .streetview-panel { inset: 0 0 0 46%; border-left: 1px solid var(--map-border); border-top: 0; }
+  .streetview-active .map-search { width: calc(46% - 100px); }
+  .streetview-active .map-actions { right: calc(54% + 12px); }
+  .streetview-active .map-layers-panel { right: calc(54% + 70px); }
+  .streetview-active .map-report { bottom: 4px; }
+}
+@media(max-height: 620px) and (max-width: 700px) {
+  .streetview-active #gregle-map { height: 30%; }
+  .streetview-panel { top: 30%; }
+  .streetview-active .map-search, .streetview-active .map-report, .streetview-help, #streetview-coordinates { display: none; }
+  .streetview-active .map-actions, .streetview-active.has-mobile-drawer .map-actions { top: 8px; }
+  .streetview-active .leaflet-top.leaflet-right, .streetview-active.has-mobile-drawer .leaflet-top.leaflet-right { top: 6px; bottom: auto; left: 2px; right: auto; }
+  .streetview-active .leaflet-control-zoom a { width: 30px; height: 30px; line-height: 30px; }
+  .streetview-footer { justify-content: flex-end; }
+}

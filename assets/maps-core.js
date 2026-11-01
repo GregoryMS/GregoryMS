@@ -32,13 +32,13 @@
     return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
-    return { fuel: value?.fuel === true, fuelType: ['regular','midgrade','premium','diesel'].includes(value?.fuelType) ? value.fuelType : 'regular', evSource: value?.evSource === 'openstreetmap' ? 'openstreetmap' : 'openchargemap', base: ['street', 'topographic', 'plugshare', 'adsbexchange'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true || value?.ev === true && value?.tesla === undefined, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true };
+    return { fuel: value?.fuel === true, fuelType: ['regular','midgrade','premium','diesel'].includes(value?.fuelType) ? value.fuelType : 'regular', evSource: value?.evSource === 'openstreetmap' ? 'openstreetmap' : 'openchargemap', base: ['street', 'topographic', 'plugshare', 'adsbexchange'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true || value?.ev === true && value?.tesla === undefined, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true, streetview: value?.streetview === true };
   }
   function readLayers(hash) {
     const params = new URLSearchParams(hash.replace(/^#/, ''));
     if (!params.has('base') && !params.has('overlays') && !params.has('evdata') && !params.has('fueltype')) return null;
     const overlays = (params.get('overlays') || '').split(',');
-    return normalizeLayers({ fuel: overlays.includes('fuel'), fuelType: params.get('fueltype'), evSource: params.get('evdata') === 'osm' ? 'openstreetmap' : 'openchargemap', base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), aircraft: overlays.includes('aircraft'), vessels: overlays.includes('vessels'), ev: overlays.includes('ev'), tesla: overlays.includes('tesla') ? true : params.get('tesla') === 'off' ? false : overlays.includes('ev') ? undefined : false, drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google') });
+    return normalizeLayers({ fuel: overlays.includes('fuel'), fuelType: params.get('fueltype'), evSource: params.get('evdata') === 'osm' ? 'openstreetmap' : 'openchargemap', base: params.get('base'), maritime: overlays.includes('maritime'), aviation: overlays.includes('aviation'), aircraft: overlays.includes('aircraft'), vessels: overlays.includes('vessels'), ev: overlays.includes('ev'), tesla: overlays.includes('tesla') ? true : params.get('tesla') === 'off' ? false : overlays.includes('ev') ? undefined : false, drivebc: overlays.includes('drivebc'), future: overlays.includes('future'), webcams: overlays.includes('webcams'), speed: overlays.includes('speed'), messages: overlays.includes('messages'), ferries: overlays.includes('ferries'), traffic: overlays.includes('traffic'), google: overlays.includes('google'), streetview: overlays.includes('streetview') });
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
@@ -46,7 +46,7 @@
     if (pin?.osm && osmReference(...pin.osm.split('/')) === pin.osm) hash += `&osm=${pin.osm}`;
     if (layers) {
       const state = normalizeLayers(layers);
-      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'aircraft', 'vessels', 'fuel', 'ev', 'tesla', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'ferries', 'traffic', 'google'].filter(key => state[key]).join(',')}`;
+      hash += `&base=${state.base}&overlays=${['maritime', 'aviation', 'aircraft', 'vessels', 'fuel', 'ev', 'tesla', 'drivebc', 'future', 'webcams', 'speed', 'messages', 'ferries', 'traffic', 'google', 'streetview'].filter(key => state[key]).join(',')}`;
       if (state.ev && !state.tesla) hash += '&tesla=off';
       if (state.evSource === 'openstreetmap') hash += '&evdata=osm';
       if (state.fuelType !== 'regular') hash += '&fueltype=' + state.fuelType;
@@ -87,6 +87,20 @@
   function adsbExchangeEmbedURL(view) {
     const url = new URL(adsbExchangeURL(view));
     url.searchParams.set('hideSidebar', '');
+    return url.href;
+  }
+  function streetViewURL(point) {
+    if (!Number.isFinite(point?.lng) || !validPoint(point?.lat, wrapLongitude(point.lng))) throw new Error('Invalid Street View point');
+    const url = new URL('https://www.google.com/maps/@');
+    url.searchParams.set('api', '1'); url.searchParams.set('map_action', 'pano');
+    url.searchParams.set('viewpoint', `${point.lat.toFixed(6)},${wrapLongitude(point.lng).toFixed(6)}`);
+    return url.href;
+  }
+  function streetViewEmbedURL(point) {
+    const coords = new URL(streetViewURL(point)).searchParams.get('viewpoint');
+    const url = new URL('https://www.google.com/maps');
+    url.searchParams.set('layer', 'c'); url.searchParams.set('cbll', coords);
+    url.searchParams.set('cbp', '12,0,,0,0'); url.searchParams.set('source', 'embed'); url.searchParams.set('output', 'svembed');
     return url.href;
   }
   function searchArea(current, bounds = []) {
@@ -186,5 +200,5 @@
     }
     return results;
   }
-  return { defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, plugshareURL, plugshareEmbedURL, adsbExchangeURL, adsbExchangeEmbedURL, isEmbeddedBase, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
+  return { streetViewURL, streetViewEmbedURL, defaultView, validPoint, wrapLongitude, osmReference, readHash, makeHash, osmURL, plugshareURL, plugshareEmbedURL, adsbExchangeURL, adsbExchangeEmbedURL, isEmbeddedBase, searchArea, searchURL, readResults, normalizeLayers, readLayers, readRoadEvents, roadStart };
 });

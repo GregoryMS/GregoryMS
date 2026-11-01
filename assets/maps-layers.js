@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  window.GregleMapLayers = ({ map, config, initial, notify, onChange, onOpen = () => {} }) => {
+  window.GregleMapLayers = ({ map, config, initial, notify, onChange, onOpen = () => {}, getSelected = () => null, onStreetViewOpen = () => {}, onStreetViewSelect = () => {} }) => {
     const core = window.GregleMaps, $ = id => document.getElementById(id);
     const panel = $('map-layers-panel'), toggle = $('map-layers-toggle'), embedToggle = $('embedded-layers-toggle');
     const preferenceKey = 'gregle-maps-layers', credentialKey = 'gregle-maps-tomtom-key';
@@ -18,6 +18,7 @@
     const aircraft = window.GregleAircraft({ map, notify });
     const vessels = window.GregleVessels({ map, notify });
     const embed = window.GregleMapEmbed({ map });
+    const streetView = window.GregleStreetView({ map, getSelected, onOpen: onStreetViewOpen, onSelect: onStreetViewSelect, onClose: () => setState({ ...state, streetview: false }, true) });
     let applied;
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
@@ -92,6 +93,7 @@
       $('map-drivebc-ferries').checked = state.ferries;
       $('map-traffic').checked = state.traffic;
       $('map-google-traffic').checked = state.google;
+      $('map-streetview').checked = state.streetview;
       $('maritime-layer-status').hidden = !state.maritime;
       $('drivebc-layer-status').hidden = !state.drivebc;
       $('drivebc-cameras-status').hidden = !state.webcams;
@@ -261,6 +263,7 @@
       if (first || previous.traffic !== active.traffic || (active.traffic && apiKey && !trafficLayer && !trafficPaused)) {
         if (active.traffic) loadTraffic(); else { removeTraffic(); trafficPaused = false; scheduleTraffic(); }
       }
+      if (first || previous.streetview !== active.streetview) streetView.setEnabled(active.streetview);
       render();
       if (changed) { persist(); onChange(); }
     }
@@ -272,6 +275,10 @@
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
     panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
+    $('map-streetview').addEventListener('change', () => {
+      setState({ ...state, streetview: $('map-streetview').checked }, true);
+      if (state.streetview) closePanel();
+    });
     $('map-fuel').addEventListener('change', () => setState({...state, fuel: $('map-fuel').checked}, true));
     $('fuel-type').addEventListener('change', () => setState({...state, fuelType: $('fuel-type').value}, true));
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));
@@ -327,6 +334,9 @@
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
     window.addEventListener('pageshow', event => { if (event.persisted && !core.isEmbeddedBase(state.base) && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
     setState(state);
-    return { getState: () => ({ ...state }), setState: next => setState(next, false) };
+    return { getState: () => ({ ...state }), setState: next => setState(next, false), openStreetView: point => {
+      setState({ ...state, base: core.isEmbeddedBase(state.base) ? 'street' : state.base, streetview: true }, true);
+      closePanel(); onStreetViewOpen(); streetView.showAt(point);
+    } };
   };
 })();

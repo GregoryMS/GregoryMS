@@ -16,7 +16,7 @@
     placesURL: 'https://overpass.private.coffee/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, drawer, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false;
+  let map, drawer, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -72,6 +72,7 @@
     cancelSearch(); hideSearch();
     renderPin(point);
     map.setView([Math.max(-85.051129, Math.min(85.051129, point.lat)), point.lng], zoom);
+    if (layerControl.getState().streetview) layerControl.openStreetView(point);
     updateURL();
     $('gregle-map').focus({ preventScroll: true });
   }
@@ -90,6 +91,13 @@
       placeDetails?.clear();
       if (document.activeElement?.closest('.map-search, .map-place, .map-actions, #gregle-map')) $('embedded-layers-toggle').focus({ preventScroll: true });
     } else if (restoreDetails) placeDetails?.select(selected);
+  }
+  function syncStreetView() {
+    const enabled = layerControl.getState().streetview && !usingEmbed;
+    if (enabled === usingStreetView) return;
+    usingStreetView = enabled;
+    if (enabled) $('map-place').hidden = true;
+    else if (!usingEmbed) renderPin(selected, false);
   }
   function showScopeAction(worldwide) {
     const button = $('map-search-scope');
@@ -125,7 +133,7 @@
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
-  if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GregleMapEmbed || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces || !window.GregleMapPinGestures) {
+  if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GregleMapEmbed || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleStreetView || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces || !window.GregleMapPinGestures) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
     return;
   }
@@ -143,17 +151,17 @@
   drawer = window.GregleMapDrawer?.({ map });
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
-  layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, onChange: () => { syncMapMode(); updateURL(); }, onOpen: () => drawer?.show('map-layers-panel', true) });
+  layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, getSelected: () => layerControl ? selected : initial.pin, onStreetViewOpen: () => { navigation?.close(); $('map-place').hidden = true; }, onStreetViewSelect: point => { intent++; cancelSearch(); hideSearch(); renderPin(point, false); $('map-place').hidden = true; updateURL(); }, onChange: () => { syncMapMode(); syncStreetView(); updateURL(); }, onOpen: () => drawer?.show('map-layers-panel', true) });
   placeDetails = window.GregleMapPlaces({ map, config, onPlace: point => { renderPin(point, false); updateURL(); } });
   syncMapMode(false);
-  renderPin(initial.pin); updateURL();
+  renderPin(initial.pin); syncStreetView(); updateURL();
   navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected, onOpen: () => drawer?.show('map-directions', true) });
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
   const dropPin = event => {
-    if (usingEmbed || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
+    if (usingEmbed || layerControl.getState().streetview || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
     if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point, true, true); updateURL(); }
   };
@@ -168,7 +176,9 @@
     const layers = core.readLayers(location.hash);
     if (layers) layerControl.setState(layers);
     syncMapMode(false);
-    renderPin(state.pin); map.setView([state.view.lat, state.view.lng], state.view.zoom); updateURL();
+    renderPin(state.pin); map.setView([state.view.lat, state.view.lng], state.view.zoom);
+    if (layerControl.getState().streetview && !usingEmbed) layerControl.openStreetView(state.pin || state.view);
+    syncStreetView(); updateURL();
   });
   async function search(worldwide = false) {
     const term = query.value.trim();
@@ -234,6 +244,7 @@
     }
   });
   document.addEventListener('click', event => { if (!event.target.closest('.map-search, #map-search-content, #map-drawer')) hideSearch(); });
+  $('place-streetview').addEventListener('click', () => { if (selected) layerControl.openStreetView(selected); });
   $('clear-pin').addEventListener('click', clearPin);
   $('map-locate').addEventListener('click', () => {
     if (!navigator.geolocation) { notify('Your browser does not support location sharing. Search for a place instead.'); return; }

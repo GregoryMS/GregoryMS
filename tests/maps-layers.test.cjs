@@ -22,7 +22,7 @@ function setup({storage=new Map(),initial}={}) {
     setBase(value){calls.push(['embed',value]);}
   });
   const window={GregleMaps:core,addEventListener(){}};
-  for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleMapEmbed:'embed'}))window[name]=provider(key);
+  for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed'}))window[name]=provider(key);
   const document={getElementById:get,addEventListener(){},hidden:false};
   const L={TileLayer:{extend:()=>function(){}},tileLayer:()=>({on(){return this;},setZIndex(){return this;},addTo(){return this;}})};
   vm.runInNewContext(fs.readFileSync(__dirname+'/../assets/maps-layers.js','utf8'),{
@@ -62,21 +62,21 @@ test('webcams stay independently controlled even when the DriveBC group is toggl
 });
 
 test('both embedded maps pause all native data and restore the saved selections on return',()=>{
-  const initial=core.normalizeLayers({base:'street',fuel:true,ev:true,aircraft:true,vessels:true,aviation:true,drivebc:true,webcams:true,speed:true,messages:true,ferries:true,google:true,maritime:true});
+  const initial=core.normalizeLayers({base:'street',streetview:true,fuel:true,ev:true,aircraft:true,vessels:true,aviation:true,drivebc:true,webcams:true,speed:true,messages:true,ferries:true,google:true,maritime:true});
   const h=setup({initial});
   for(const base of ['adsbexchange','plugshare']){
     h.calls.length=0;h.api.setState({...initial,base});
     assert(h.calls.some(c=>c[0]==='embed'&&c[1]===base));
     if(base==='adsbexchange'){
-      for(const provider of ['fuel','ev','aircraft','vessels','aviation','drivebc','webcams','ferries','google']) assert(h.calls.some(c=>c[0]===provider&&c[1]===false),provider);
+      for(const provider of ['fuel','ev','aircraft','vessels','aviation','drivebc','webcams','ferries','google','streetview']) assert(h.calls.some(c=>c[0]===provider&&c[1]===false),provider);
       for(const key of ['speed','messages'])assert(h.calls.some(c=>c[0]==='signs'&&c[1]===key&&c[2]===false),key);
     }
-    for(const key of ['fuel','ev','aircraft','vessels','google','maritime'])assert.equal(h.api.getState()[key],true,key);
+    for(const key of ['fuel','ev','aircraft','vessels','google','maritime','streetview'])assert.equal(h.api.getState()[key],true,key);
     assert(h.get('.map-overlay-options').hidden);assert(h.get('.map-overlay-options').disabled);
   }
   h.calls.length=0;h.api.setState(initial);
   assert(h.calls.some(c=>c[0]==='embed'&&c[1]==='street'));
-  for(const provider of ['fuel','ev','aircraft','vessels','aviation','drivebc','webcams','ferries','google'])assert(h.calls.some(c=>c[0]===provider&&c[1]===true),provider);
+  for(const provider of ['fuel','ev','aircraft','vessels','aviation','drivebc','webcams','ferries','google','streetview'])assert(h.calls.some(c=>c[0]===provider&&c[1]===true),provider);
   assert(!h.get('.map-overlay-options').hidden);assert(!h.get('.map-overlay-options').disabled);
 });
 

@@ -20,11 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261023-transparent-controls">
+  <link rel="stylesheet" href="assets/maps.css?v=20261101-streetview">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261021-adsbexchange" defer></script>
+  <script src="assets/maps-core.js?v=20261101-streetview" defer></script>
   <script src="assets/maps-places-core.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-places.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-signs" defer></script>
@@ -34,6 +34,7 @@
   <script src="assets/maps-signs.js?v=20261019-live-messages" defer></script>
   <script src="assets/maps-cameras-core.js?v=20261017-signs" defer></script>
   <script src="assets/maps-cameras.js?v=20261017-signs" defer></script>
+  <script src="assets/maps-streetview.js?v=20261101-streetview" defer></script>
   <script src="assets/maps-google-traffic.js?v=20261017-google-menu" defer></script>
   <script src="assets/maps-aviation.js?v=20261019-aviation-worker" defer></script>
   <script src="assets/maps-ev-core.js?v=20261018-daily-fuel" defer></script>
@@ -45,14 +46,14 @@
   <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261021-adsbexchange" defer></script>
+  <script src="assets/maps-layers.js?v=20261101-streetview" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261022-live-navigation" defer></script>
   <script src="assets/maps-navigation-live.js?v=20261022-live-navigation" defer></script>
   <script src="assets/maps-navigation.js?v=20261022-live-navigation" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261021-adsbexchange" defer></script>
-  <script src="assets/maps.js?v=20261021-adsbexchange" defer></script>
+  <script src="assets/maps.js?v=20261101-streetview" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -89,6 +90,12 @@
   </header>
   <main class="map-stage" aria-label="Gregle Maps">
     <div id="gregle-map" aria-label="Interactive OpenStreetMap. Double-click, double-tap, or touch and hold to drop a pin. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
+    <section class="streetview-panel" id="streetview-panel" aria-labelledby="streetview-heading" hidden>
+      <div class="streetview-toolbar"><h2 id="streetview-heading">Street View</h2><a id="streetview-google" href="https://www.google.com/maps/" target="_blank" rel="noopener">Google Maps ↗</a><button id="streetview-close" type="button" aria-label="Close Street View">Back to map</button></div>
+      <p class="streetview-help">Tap a street on the map to explore. Drag to look around; use the panorama’s arrows to move. Coverage varies.</p>
+      <div class="streetview-frame" id="streetview-frame"><p class="map-glass" id="streetview-status" role="status" hidden></p></div>
+      <div class="streetview-footer"><span id="streetview-coordinates"></span><button id="streetview-center" type="button">Use map centre</button><button id="streetview-retry" type="button">Reload</button></div>
+    </section>
     <section class="embedded-map" id="embedded-map" aria-label="Embedded map" hidden>
       <div class="embedded-toolbar"><strong id="embedded-title">Embedded map</strong><a id="embedded-full-map" href="https://www.plugshare.com/" target="_blank" rel="noopener">Open full map ↗</a><button id="embedded-layers-toggle" type="button" aria-expanded="false" aria-controls="map-layers-panel">Change map</button></div>
       <div class="embedded-frame" id="embedded-frame"><p class="map-glass" id="embedded-status" role="status" hidden></p><p class="map-glass" id="embedded-zoom-help" role="status" hidden>Use two-finger scrolling or the map’s zoom controls to zoom.</p></div>
@@ -154,6 +161,7 @@
       </fieldset>
       <p class="layer-status" id="base-layer-status" role="status"></p>
       <fieldset class="map-overlay-options"><legend>Overlays</legend>
+        <label class="map-layer-row"><span><strong>Street View</strong><small>Google panoramas · tap a street to look around</small></span><span class="map-layer-check"><input id="map-streetview" type="checkbox" aria-controls="streetview-panel"></span></label>
         <div class="map-live-toggles" role="group" aria-label="Live traffic">
           <div class="map-live-control"><button class="gregle-theme-switch map-live-switch" id="map-aircraft" type="button" role="switch" aria-label="Live planes" aria-checked="false" aria-controls="aircraft-options" aria-describedby="aircraft-layer-status" title="Live planes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a1.5 1.5 0 0 0-1.5 1.5V9L3 14v2l7.5-2.5V19L8 21v1l4-1 4 1v-1l-2.5-2v-5.5L21 16v-2l-7.5-5V3.5A1.5 1.5 0 0 0 12 2Z"/></svg></button></div>
           <div class="map-live-control"><button class="gregle-theme-switch map-live-switch" id="map-vessels" type="button" role="switch" aria-label="Live ships" aria-checked="false" aria-controls="vessels-options" aria-describedby="vessels-layer-status" title="Live ships"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12V6h14v6M9 6V3h6v3M12 10l9 4-3 6H6l-3-6Z"/><path d="M12 10v10M2 22c2 0 3-1 4-1s2 1 4 1 3-1 4-1 2 1 4 1 3-1 4-1"/></svg></button></div>
@@ -251,6 +259,7 @@
       <p id="place-detail"></p>
       <div id="place-tags" hidden></div>
       <div class="route-pin-actions" id="route-pin-actions" hidden><button id="directions-from-pin" type="button">Start here</button><button id="directions-to-pin" type="button">Directions here</button></div>
+      <div class="route-pin-actions"><button id="place-streetview" type="button">Street View</button></div>
       <div class="place-bottom" id="place-bottom" hidden><span id="place-coordinates"></span><button id="share-pin" type="button">Copy link <span aria-hidden="true">↗</span></button></div>
     </section>
     <section class="map-drawer map-glass" id="map-drawer" aria-label="Map details drawer" hidden>
