@@ -4,6 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 import datetime as dt
 import json
 from pathlib import Path
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -17,8 +19,13 @@ SOURCES = {
     'dw': 'https://rss.dw.com/xml/rss-de-all',
 }
 MAX_BYTES = 500_000
+MAX_ATTEMPTS = 3
+MAX_SNAPSHOT_AGE = dt.timedelta(hours=2)
 FALLBACKS = {
-    'cbc': 'https://news.google.com/rss/search?q=site%3Acbc.ca%2Fnews&hl=en-CA&gl=CA&ceid=CA%3Aen',
+    'cbc': [
+        'https://www.cbc.ca/cmlink/rss-topstories',
+        'https://news.google.com/rss/search?q=site%3Acbc.ca%2Fnews&hl=en-CA&gl=CA&ceid=CA%3Aen',
+    ],
 }
 
 
@@ -40,19 +47,43 @@ def validate(raw):
 
 
 def fetch_feed(slug, url):
-    for source in [url] + ([FALLBACKS[slug]] if slug in FALLBACKS else []):
+    sources = [url] + FALLBACKS.get(slug, [])
+    for source in sources:
         request = urllib.request.Request(source, headers={
             'Accept': 'application/rss+xml, application/xml, text/xml',
             'User-Agent': 'GregleNews/1.0 (+https://gregle.uk/news.html)',
         })
+        for attempt in range(MAX_ATTEMPTS):
+            try:
+                with urllib.request.urlopen(request, timeout=10 if source != sources[-1] else 25) as response:
+                    raw = response.read(MAX_BYTES + 1)
+                validate(raw)
+                return raw
+            except (OSError, ValueError, ET.ParseError) as error:
+                transient = (isinstance(error, OSError) and
+                             (not isinstance(error, urllib.error.HTTPError) or
+                              error.code in (408, 429, 500, 502, 503, 504)))
+                if transient and attempt + 1 < MAX_ATTEMPTS:
+                    time.sleep(2 ** attempt)
+                    continue
+                if source == sources[-1]:
+                    raise
+                break
+
+
+def unavailable_sources(snapshot, now):
+    """Match the browser's two-hour cache window without renewing failed feeds."""
+    available = set()
+    for feed in snapshot.get('feeds', []):
         try:
-            with urllib.request.urlopen(request, timeout=10 if slug in FALLBACKS and source == url else 25) as response:
-                raw = response.read(MAX_BYTES + 1)
-            validate(raw)
-            return raw
-        except Exception:
-            if source != url or slug not in FALLBACKS:
-                raise
+            fetched = dt.datetime.fromisoformat(feed['fetchedAt'].replace('Z', '+00:00'))
+            age = now - fetched
+            validate(feed['xml'].encode('utf-8'))
+            if -dt.timedelta(minutes=5) <= age <= MAX_SNAPSHOT_AGE:
+                available.add(feed['url'])
+        except (KeyError, TypeError, ValueError, AttributeError, ET.ParseError):
+            continue
+    return [slug for slug, url in SOURCES.items() if url not in available]
 
 
 def update(previous, fetch=fetch_feed, now=None):
@@ -84,7 +115,8 @@ def main():
     args = parser.parse_args()
     previous = json.loads(args.output.read_text(encoding='utf-8')) if args.output.exists() else {}
     fetch = (lambda slug, url: (args.input_dir / f'{slug}-feed.xml').read_bytes()) if args.input_dir else fetch_feed
-    snapshot, errors = update(previous, fetch)
+    now = dt.datetime.now(dt.timezone.utc)
+    snapshot, errors = update(previous, fetch, now)
     if snapshot['feeds']:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         temporary = args.output.with_suffix('.tmp')
@@ -92,8 +124,10 @@ def main():
         temporary.replace(args.output)
     print(f'News: {len(snapshot["feeds"])} feed snapshots; {len(errors)} errors')
     for error in errors:
-        print(error)
-    if errors:
+        print(f'::warning::{error}')
+    unavailable = unavailable_sources(snapshot, now)
+    if unavailable:
+        print(f'::error::No usable feed snapshot for: {", ".join(unavailable)}')
         raise SystemExit(1)
 
 

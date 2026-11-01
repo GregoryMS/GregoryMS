@@ -20,7 +20,7 @@ test('forecast embeds use the selected coordinates, requested layer and metric u
 function setup() {
   const elements=new Map(),frames=[],events={},timers=new Map();let nextTimer=0,paused=0,resumed=0;
   const element=id=>{
-    if(!elements.has(id))elements.set(id,{checked:false,hidden:false,events:{},addEventListener(k,fn){this.events[k]=fn;},replaceChildren(frame){this.child=frame;}});
+    if(!elements.has(id))elements.set(id,{checked:false,hidden:false,previousElementSibling:{textContent:''},events:{},addEventListener(k,fn){this.events[k]=fn;},replaceChildren(frame){this.child=frame;}});
     return elements.get(id);
   };
   const context={URLSearchParams,console,
@@ -51,6 +51,16 @@ test('city changes and recenter replace the frame, preserving the selected layer
   h.element('radarForecastRecenter').events.click();assert.equal(h.frames[1].removed,true);
   assert.equal(h.frames[2].src,h.frames[1].src);
   h.api.setLocation({name:'Victoria',latitude:48.43,longitude:-123.36});assert.equal(h.frames.length,3);
+});
+
+test('forecast and satellite maps show the matching provider caption',()=>{
+  const h=setup();h.select('wind');
+  assert.equal(h.element('radarWindyLink').previousElementSibling.textContent,'Forecast · Windy / ECMWF');
+  h.select('satellite');
+  assert.equal(h.element('radarWindyLink').previousElementSibling.textContent,'Satellite · NOAA');
+  assert.equal(new URL(h.frames.at(-1).src).origin,'https://experience.arcgis.com');
+  h.select('clouds');
+  assert.equal(h.element('radarWindyLink').previousElementSibling.textContent,'Forecast · Windy / ECMWF');
 });
 
 test('late frame callbacks cannot hide loading for a newer selection; timeout has a recovery path',()=>{
