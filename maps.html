@@ -161,7 +161,6 @@
       </fieldset>
       <p class="layer-status" id="base-layer-status" role="status"></p>
       <fieldset class="map-overlay-options"><legend>Overlays</legend>
-        <label class="map-layer-row"><span><strong>Street View</strong><small>Google panoramas · tap a street to look around</small></span><span class="map-layer-check"><input id="map-streetview" type="checkbox" aria-controls="streetview-panel"></span></label>
         <div class="map-live-toggles" role="group" aria-label="Live traffic">
           <div class="map-live-control"><button class="gregle-theme-switch map-live-switch" id="map-aircraft" type="button" role="switch" aria-label="Live planes" aria-checked="false" aria-controls="aircraft-options" aria-describedby="aircraft-layer-status" title="Live planes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a1.5 1.5 0 0 0-1.5 1.5V9L3 14v2l7.5-2.5V19L8 21v1l4-1 4 1v-1l-2.5-2v-5.5L21 16v-2l-7.5-5V3.5A1.5 1.5 0 0 0 12 2Z"/></svg></button></div>
           <div class="map-live-control"><button class="gregle-theme-switch map-live-switch" id="map-vessels" type="button" role="switch" aria-label="Live ships" aria-checked="false" aria-controls="vessels-options" aria-describedby="vessels-layer-status" title="Live ships"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12V6h14v6M9 6V3h6v3M12 10l9 4-3 6H6l-3-6Z"/><path d="M12 10v10M2 22c2 0 3-1 4-1s2 1 4 1 3-1 4-1 2 1 4 1 3-1 4-1"/></svg></button></div>
@@ -178,6 +177,7 @@
           <div class="google-traffic-opacity"><label for="google-traffic-opacity">Opacity <output id="google-traffic-percentage" for="google-traffic-opacity">75%</output></label><input id="google-traffic-opacity" type="range" min="0.2" max="1" step="0.05" value="0.75"></div>
           <div class="traffic-options"><button id="google-traffic-refresh" type="button" hidden>Refresh Google traffic</button></div>
         </div>
+        <label class="map-layer-row"><span><strong>Street View</strong><small>Google panoramas · tap a street to look around</small></span><span class="map-layer-check"><input id="map-streetview" type="checkbox" aria-controls="streetview-panel"></span></label>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="drivebc-options-toggle" type="button" aria-label="DriveBC options" aria-expanded="false" aria-controls="drivebc-sublayers"><span><strong id="drivebc-layer-label">DriveBC</strong><small>BC closures, incidents &amp; road conditions · no key</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <label class="map-layer-check"><input id="map-drivebc" type="checkbox" aria-labelledby="drivebc-layer-label"></label>
