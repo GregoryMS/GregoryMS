@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-01T18:28:38+00:00",
-  "fetchedAt": "2026-11-01T18:28:45.164118+00:00",
+  "feedUpdatedAt": "2026-11-01T22:25:45+00:00",
+  "fetchedAt": "2026-11-01T22:25:52.920412+00:00",
   "items": [
+    {
+      "title": "I'll tell my players to dive in future - Iraola",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cvp8grpjk4leo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "From Fleetwood embarrassment to 'magical' Anfield win 14 years in making",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c39wz2epven4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Arsenal move clear at the top with a rare win at Liverpool",
+      "link": "https://www.bbc.co.uk/sport/football/videos/cmly09yv9xl6o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Are Celtic club in regression amid run of six defeats in 10?",
       "link": "https://www.bbc.co.uk/sport/football/articles/cmvg7d1xl8epo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Referee accidentally fractures college football player's leg",
-      "link": "https://www.bbc.co.uk/sport/american-football/articles/ck30ey1ezmyqo?at_medium=RSS&at_campaign=rss"
+      "title": "Boy, 14, hands himself in to police over Bradley Lowery video",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6z7x52w0r0zo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How Dart revived career with help of Wimbledon champion",
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cmrlyw2y0gxzo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Warnock hid seizures from Liverpool as a youngster",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6rry8pxwkdpo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Giant curiosity Hibs finally liberated from the sucker punch",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cxr5yjpnd31eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Referee accidentally fractures college football player's leg",
+      "link": "https://www.bbc.co.uk/sport/american-football/articles/ck30ey1ezmyqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Defeat for London City against Man City - but is Europe a real possibility?",
       "link": "https://www.bbc.co.uk/sport/football/articles/cj93z2nk2694o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "The plan England's rugby league bosses hope avoids repeat of World Cup pain",
-      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/c5y439xp22n7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Alcaraz wins Vienna Open to maintain perfect record",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/crd6dezj8v86o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Former European champion and two-time Olympian Mageean dies aged 34",
-      "link": "https://www.bbc.co.uk/sport/athletics/articles/cn81px29032o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Yamaha will not travel to Qatar for MotoGP race",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/cm98z2966128o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Chelsea put six past Charlton to top WSL",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c6wyrgydvx0lo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Clinical Man City edge past London City in WSL thriller",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cm4g1rgey8j7o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
