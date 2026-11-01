@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-10-31T23:59:11+00:00",
-  "fetchedAt": "2026-10-31T23:59:18.987727+00:00",
+  "feedUpdatedAt": "2026-11-01T05:57:16+00:00",
+  "fetchedAt": "2026-11-01T05:57:24.959219+00:00",
   "items": [
     {
       "title": "Chelsea beat 10-man Man Utd to pile more pressure on Carrick",
@@ -40,8 +40,8 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c8g47wl06vkqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Hamilton takes first pole for Ferrari at Mexico City Grand Prix",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c6reyl8zp3jwo?at_medium=RSS&at_campaign=rss"
+      "title": "On 'tense' Antonelli's big weekend, this was Hamilton's day",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cje36e0gze4ko?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
