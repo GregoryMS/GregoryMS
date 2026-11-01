@@ -1,39 +1,23 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-01T05:57:16+00:00",
-  "fetchedAt": "2026-11-01T05:57:24.959219+00:00",
+  "feedUpdatedAt": "2026-11-01T13:16:35+00:00",
+  "fetchedAt": "2026-11-01T13:16:42.537407+00:00",
   "items": [
     {
-      "title": "Chelsea beat 10-man Man Utd to pile more pressure on Carrick",
-      "link": "https://www.bbc.co.uk/sport/football/videos/ckn8w20nn9g7o?at_medium=RSS&at_campaign=rss"
+      "title": "Anfield, intensity, rotation - how Iraola is improving Liverpool",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ckzd6217j7pgo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Brighton pick up first away league victory over Man City",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cqx28l2gdepxo?at_medium=RSS&at_campaign=rss"
+      "title": "Former European champion and two-time Olympian Mageean dies aged 34",
+      "link": "https://www.bbc.co.uk/sport/athletics/articles/cn81px29032o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Coventry out of bottom three after win over struggling Sunderland",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cm93zv0zkjqlo?at_medium=RSS&at_campaign=rss"
+      "title": "Britain's Dart wins first WTA title in 'wild week'",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/cm62y10v3p96o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Enciso's stunning goal earns Ipswich draw at Hull",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c8qln4qq2656o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Spurs revival continues with victory over 10-man Crystal Palace",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cxvgdrg33m72o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Evanilson scores again as Bournemouth beat Leeds",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c6zxj1vzwx1xo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Thiago on target as Brentford beat Forest",
-      "link": "https://www.bbc.co.uk/sport/football/videos/ck1l3z063n8vo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Suzuki mistake gifts Fulham point at Villa",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cmwy9rylr0e6o?at_medium=RSS&at_campaign=rss"
+      "title": "Third-choice? Inside Alexander-Arnold's struggles in Madrid",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c9e8lp357je7o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Are Manchester United really at risk of a relegation scrap?",
@@ -42,6 +26,22 @@
     {
       "title": "On 'tense' Antonelli's big weekend, this was Hamilton's day",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/cje36e0gze4ko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Cummins concerns and weaknesses to target - takeaways from SA-Australia",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cm1j3yd6994yo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sheff Wed appoint former Stockport boss Challinor",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ckzd6er2025qo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Wales hit by Australia century in World Cup record defeat",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cked34glxp0no?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Chelsea beat 10-man Man Utd to pile more pressure on Carrick",
+      "link": "https://www.bbc.co.uk/sport/football/videos/ckn8w20nn9g7o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
