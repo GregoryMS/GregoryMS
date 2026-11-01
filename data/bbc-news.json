@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-01T07:59:40+00:00",
-  "fetchedAt": "2026-11-01T07:59:46.733393+00:00",
+  "feedUpdatedAt": "2026-11-01T14:55:17+00:00",
+  "fetchedAt": "2026-11-01T14:55:29.492690+00:00",
   "items": [
     {
-      "title": "Shops looted as German cost of living protests turn violent",
+      "title": "Shops looted as German cost-of-living protests turn violent",
       "link": "https://www.bbc.co.uk/news/articles/cqj34gnd3n30o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Laura Kuenssberg: Healey risks breaking minimum wage promise for younger workers",
+      "title": "Healey risks breaking minimum wage promise for younger workers",
       "link": "https://www.bbc.co.uk/news/articles/cv369266644lo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Emotional reunions for Oleshky evacuees after years in Russia-occupied city",
-      "link": "https://www.bbc.co.uk/news/videos/cmy83w0jwznpo?at_medium=RSS&at_campaign=rss"
+      "title": "More than 300 arrests at Palestine Action support protest outside US embassy",
+      "link": "https://www.bbc.co.uk/news/articles/c98rz23ed781o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Democrats are used to heartbreak in Texas - could Talarico turn the tide?",
-      "link": "https://www.bbc.co.uk/news/articles/cmy0r2y6zeddo?at_medium=RSS&at_campaign=rss"
+      "title": "University of Cambridge scientist among those who died in Spanish train crash",
+      "link": "https://www.bbc.co.uk/news/articles/cq5ynzvkn1d8o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "King to address slavery during Commonwealth speech in Antigua on final leg of Caribbean tour",
+      "link": "https://www.bbc.co.uk/news/articles/cq398y0zj9rpo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Reeves says UK's future should be inside the EU",
       "link": "https://www.bbc.co.uk/news/articles/c62l4yz0eexpo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Who are the real winners of Celebrity Traitors?",
-      "link": "https://www.bbc.co.uk/news/articles/cmx2qg0nezrgo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Watch: Heidi Klum as giant severed hand for Halloween bash",
       "link": "https://www.bbc.co.uk/news/videos/cj040yd1xdrlo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "No more washing up: How Airbnb's new house rules have divided hosts and guests",
+      "title": "Who are the real winners of Celebrity Traitors?",
+      "link": "https://www.bbc.co.uk/news/articles/cmx2qg0nezrgo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "No more washing up: Airbnb's new house rules divide hosts and guests",
       "link": "https://www.bbc.co.uk/news/articles/ckjwez8g5dyeo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "I've been stuck on a tiny Pacific island for years and can't get a transit visa to fly home",
+      "title": "I've been stuck on a tiny Pacific island for years because of visa rules",
       "link": "https://www.bbc.co.uk/news/articles/cmq5npz5l5geo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "How the downfall of Serbia's Vučiċ mirrored that of Hungary's Orbán",
-      "link": "https://www.bbc.co.uk/news/articles/c893z699q401o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
