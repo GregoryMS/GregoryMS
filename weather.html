@@ -18,7 +18,7 @@
   <link rel="manifest" href="/weather.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/weather-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/weather-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261025-uk-warnings">
+  <link rel="stylesheet" href="assets/weather.css?v=20261102-sideways-details">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261022-rounded-selector">
@@ -104,7 +104,7 @@
           <div class="forecast-view-title"><h2 id="forecast-heading">The days ahead</h2><div class="forecast-switch" role="radiogroup" aria-label="Forecast interval"><label><input type="radio" name="forecastView" id="forecastDaily" checked><span>Daily</span></label><label><input type="radio" name="forecastView" id="forecastHourly"><span>Hourly</span></label></div></div>
           <span class="updated" id="updated"></span>
         </div>
-        <div class="forecast-grid" id="forecastGrid"></div>
+        <div class="forecast-grid" id="forecastGrid" tabindex="0" role="region" aria-label="Daily forecast; scroll for more days"></div>
         <div id="hourlyPanel" hidden>
           <div class="hourly-toolbar"><p class="updated" id="hourlyStatus" role="status"></p><div class="hourly-navigation"><button class="pill" id="hourlyRetry" type="button" hidden>Try again</button><button class="hourly-arrow" id="hourlyPrevious" type="button" aria-label="Earlier hours" aria-controls="hourlyGrid" disabled>←</button><button class="hourly-arrow" id="hourlyNext" type="button" aria-label="Later hours" aria-controls="hourlyGrid" disabled>→</button></div></div>
           <div class="hourly-grid" id="hourlyGrid" tabindex="0" role="region" aria-label="Hourly forecast; scroll for more hours"></div>
@@ -316,10 +316,13 @@
         const icon = document.createElement('div'); icon.className = 'forecast-icon'; icon.innerHTML = weatherIcon(day.condition, day.night);
         const condition = document.createElement('p'); condition.className = 'forecast-condition'; condition.textContent = day.condition || 'See forecast details';
         const details = document.createElement('details'); const summary = document.createElement('summary'); summary.textContent = 'Details'; details.appendChild(summary);
-        for (const item of day.periods) { const text = document.createElement('p'); text.className = 'forecast-text'; const label = document.createElement('strong'); label.textContent = item.label; const copy = document.createElement('span'); copy.textContent = item.text; text.append(label,copy); details.appendChild(text); }
+        const content = document.createElement('div'); content.className = 'forecast-details-content'; content.setAttribute('tabindex','0'); content.setAttribute('role','region'); content.setAttribute('aria-label',day.label+' forecast details');
+        for (const item of day.periods) { const text = document.createElement('p'); text.className = 'forecast-text'; const label = document.createElement('strong'); label.textContent = item.label; const copy = document.createElement('span'); copy.textContent = item.text; text.append(label,copy); content.appendChild(text); }
+        details.appendChild(content);
         card.append(period,icon,condition,rangeElement(day.high,day.low),feelsElement(),details); return card;
       });
       forecastGridEl.replaceChildren(...cards);
+      forecastGridEl.style.setProperty('--forecast-day-count',cards.length);
       globalThis.GregleWeatherDetails?.setForecastDays(days,issued,forecastTimezone);
       const first = days[0];
       $('nextPeriod').textContent = 'Next forecast · ' + first.label;
@@ -364,6 +367,7 @@
         card.append(title,icon,condition,rangeElement(day.high,day.low),feelsElement()); return card;
       });
       forecastGridEl.replaceChildren(...cards);
+      forecastGridEl.style.setProperty('--forecast-day-count',cards.length);
       globalThis.GregleWeatherDetails?.setForecastDays(weather.days,new Date().toISOString(),forecastTimezone);
       const first=weather.days[0]; $('nextPeriod').textContent='Today · '+first.label; $('nextSummary').textContent=first.description;
       $('currentHigh').textContent=degrees(first.high); $('currentLow').textContent=degrees(first.low);

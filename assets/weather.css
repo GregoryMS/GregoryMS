@@ -300,6 +300,31 @@
 .photo-window-group-title::before { content:''; width:9px; height:9px; flex-shrink:0; border-radius:50%; background:var(--light-colour); }
 .photo-window-group .photo-window-label { width:100%; }
 
+/* Desktop details extend their day card and move later days along the strip. */
+@media (min-width:701px) {
+  #forecast { container-type:inline-size; }
+  .forecast-grid {
+    --forecast-card-width:max(138px,calc((100cqi - (var(--forecast-day-count,7) - 1)*12px)/var(--forecast-day-count,7)));
+    --forecast-details-width:min(360px,48cqi);
+    display:flex;
+    overflow-x:auto;
+    padding-block:4px 12px;
+    scrollbar-width:thin;
+  }
+  .forecast-grid > .forecast-card { position:relative; flex:0 0 var(--forecast-card-width); overflow:clip; transition:flex-basis .28s ease; }
+  .forecast-grid > .forecast-card > :not(.forecast-icon) { width:calc(var(--forecast-card-width) - 34px); }
+  .forecast-grid > .forecast-card:has(details[open]) { flex-basis:calc(var(--forecast-card-width) + var(--forecast-details-width)); }
+  .forecast-grid details > summary { display:flex; align-items:center; justify-content:space-between; min-height:32px; list-style:none; }
+  .forecast-grid details > summary::-webkit-details-marker { display:none; }
+  .forecast-grid details > summary::after { content:'→'; color:var(--rain); }
+  .forecast-grid details[open] > summary::after { content:'←'; }
+  .forecast-details-content { position:absolute; inset:20px auto 20px calc(var(--forecast-card-width) - 1px); width:calc(var(--forecast-details-width) - 16px); padding-left:20px; border-left:1px solid var(--line); overflow:auto; overflow-wrap:anywhere; transition:opacity .28s ease,transform .28s ease; }
+  .forecast-details-content .forecast-text:first-child { margin-top:0; }
+  @starting-style {
+    .forecast-grid details[open] .forecast-details-content { opacity:0; transform:translateX(-12px); }
+  }
+}
+
 @media (max-width:700px) {
   .weather-shortcuts { flex-wrap:nowrap; justify-content:safe center; overflow-x:auto; padding-block:8px; scrollbar-width:thin; }
   .weather-shortcuts .pill { flex-shrink:0; white-space:nowrap; }
