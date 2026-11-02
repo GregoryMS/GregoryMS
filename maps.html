@@ -48,7 +48,7 @@
   <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261101-streetview" defer></script>
+  <script src="assets/maps-layers.js?v=20261102-no-streetview-layer" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261022-live-navigation" defer></script>
   <script src="assets/maps-navigation-live.js?v=20261022-live-navigation" defer></script>
@@ -179,7 +179,6 @@
           <div class="google-traffic-opacity"><label for="google-traffic-opacity">Opacity <output id="google-traffic-percentage" for="google-traffic-opacity">75%</output></label><input id="google-traffic-opacity" type="range" min="0.2" max="1" step="0.05" value="0.75"></div>
           <div class="traffic-options"><button id="google-traffic-refresh" type="button" hidden>Refresh Google traffic</button></div>
         </div>
-        <label class="map-layer-row"><span><strong>Street View</strong><small>Google panoramas · tap a street to look around</small></span><span class="map-layer-check"><input id="map-streetview" type="checkbox" aria-controls="streetview-panel"></span></label>
         <div class="map-layer-heading">
           <button class="map-options-toggle" id="drivebc-options-toggle" type="button" aria-label="DriveBC options" aria-expanded="false" aria-controls="drivebc-sublayers"><span><strong id="drivebc-layer-label">DriveBC</strong><small>BC closures, incidents &amp; road conditions · no key</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <label class="map-layer-check"><input id="map-drivebc" type="checkbox" aria-labelledby="drivebc-layer-label"></label>

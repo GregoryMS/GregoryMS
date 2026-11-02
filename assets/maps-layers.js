@@ -93,7 +93,6 @@
       $('map-drivebc-ferries').checked = state.ferries;
       $('map-traffic').checked = state.traffic;
       $('map-google-traffic').checked = state.google;
-      $('map-streetview').checked = state.streetview;
       $('maritime-layer-status').hidden = !state.maritime;
       $('drivebc-layer-status').hidden = !state.drivebc;
       $('drivebc-cameras-status').hidden = !state.webcams;
@@ -275,10 +274,6 @@
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
     panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
-    $('map-streetview').addEventListener('change', () => {
-      setState({ ...state, streetview: $('map-streetview').checked }, true);
-      if (state.streetview) closePanel();
-    });
     $('map-fuel').addEventListener('change', () => setState({...state, fuel: $('map-fuel').checked}, true));
     $('fuel-type').addEventListener('change', () => setState({...state, fuelType: $('fuel-type').value}, true));
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));
