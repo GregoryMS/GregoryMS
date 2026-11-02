@@ -86,10 +86,17 @@ test('missing popular times and empty business searches have distinct usable fal
   const h = setup(); h.api.select(shop); h.get('busyness-show').click(); await flush();
   h.widget().places = []; h.widget().emit('gmp-load');
   assert.match(h.get('busyness-status').textContent, /No matching business/);
-  h.widget().emit('gmp-select', {place: {id: 'no-data'}}); const details = h.widget(); details.emit('gmp-load');
+  h.widget().emit('gmp-select', {place: {id: 'no-data'}}); const details = h.widget(); details.children.find(e => e.tagName === 'gmp-place-popular-times').rendered = false; details.emit('gmp-load');
   assert.match(h.get('busyness-status').textContent, /no popular-times data/);
   assert.equal(h.widget(), details); assert.equal(h.get('busyness-back').hidden, false);
   assert.match(h.get('busyness-google-link').href, /^https:\/\/www.google.com\/maps\/search/);
+});
+
+test('SDK releases without the rendered flag do not falsely label a visible graph as missing', async () => {
+  const h = setup(); h.api.select(shop); h.get('busyness-show').click(); await flush();
+  h.widget().emit('gmp-select', {place: {id: 'has-graph'}}); h.widget().emit('gmp-load');
+  assert.doesNotMatch(h.get('busyness-status').textContent, /no popular-times data/);
+  assert.match(h.get('busyness-status').textContent, /when data is available/);
 });
 
 test('Google denial stops requests for this session until Pacific midnight, including after reload or changing pins', async () => {

@@ -77,7 +77,10 @@ the same day may require a new browser session or removal of
 `gregle-maps-busyness-pause-v1` from session storage to test again.
 
 An empty Google search and a business without popular-times data get distinct
-messages. Changing pins discards stale events. Late OSM enrichment of the same
+messages when Google's documented `rendered` flag is available. Some weekly SDK
+releases display the graph without exposing that flag; these get a neutral
+availability message instead of being falsely labelled as missing data.
+Changing pins discards stale events. Late OSM enrichment of the same
 place preserves the widget, avoiding duplicate Google requests.
 
 ## Verification

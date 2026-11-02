@@ -108,7 +108,10 @@
       widget.append(request, document.createElement('gmp-place-name'), document.createElement('gmp-place-address'), popular);
       watch(widget, token, () => {
         if (popular.rendered === true) message('');
-        else message('Google has no popular-times data for this business.');
+        else if (popular.rendered === false) message('Google has no popular-times data for this business.');
+        // Some weekly SDK releases render the graph without exposing this flag.
+        // An absent property cannot establish that the business has no data.
+        else message('Google shows popular times here when data is available.');
       });
       message('Loading popular times…');
       button.hidden = true; back.hidden = false;
