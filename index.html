@@ -255,21 +255,25 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       box-shadow: var(--shadow);
-      overflow: hidden;
+      overflow: visible;
       display: flex;
       align-items: center;
       min-height: 56px;
+      position: relative;
       z-index: 5;
     }
 
     .ticker-label {
+      position: relative;
       flex: 0 0 auto;
-      padding: 0 14px;
+      padding: 0 7px 0 14px;
       min-height: 56px;
       display: flex;
       align-items: center;
+      gap: 4px;
       background: color-mix(in srgb, var(--panel-strong) 98%, transparent);
       border-right: 1px solid var(--border);
+      border-radius: 22px 0 0 22px;
     }
 
     .bbc-badge {
@@ -313,12 +317,72 @@
       color: #bb1919;
     }
 
+    .nrk-logo { display: block; width: 58px; height: 22px; }
+    .nrk-text { color: #1767ce; }
+    .news-source-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 28px;
+      width: 28px;
+      height: 36px;
+      padding: 0;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #c3c7ce;
+      cursor: pointer;
+    }
+    .news-source-toggle svg { width: 10px; height: 10px; }
+    .news-source-toggle:hover { color: #98a2b3; background: rgba(152, 162, 179, 0.10); }
+    .news-source-toggle:focus-visible, .bbc-badge:focus-visible, .news-source-option:focus-visible {
+      outline: 2px solid #9850ff;
+      outline-offset: 2px;
+    }
+    .news-source-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 190px;
+      padding: 5px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel-strong);
+      box-shadow: var(--shadow);
+    }
+    .news-source-menu[hidden] { display: none; }
+    .news-source-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 0.86rem;
+      text-align: left;
+      cursor: pointer;
+    }
+    .news-source-option:hover, .news-source-option:focus-visible { background: rgba(152, 162, 179, 0.10); }
+    .news-source-option[aria-checked="true"]::after {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
     .ticker {
       position: relative;
       overflow: hidden;
       width: 100%;
       min-width: 0;
       min-height: 56px;
+      border-radius: 0 22px 22px 0;
       display: flex;
       align-items: center;
       mask-image: linear-gradient(to right, transparent 0, black 4%, black 96%, transparent 100%);
@@ -768,7 +832,7 @@
       }
 
       .ticker-label {
-        padding: 0 10px;
+        padding: 0 4px 0 10px;
       }
 
       .bbc-text {
@@ -837,16 +901,23 @@
     </div>
   </header>
 
-  <div class="ticker-wrap" aria-label="BBC headlines ticker">
+  <div class="ticker-wrap" id="newsTicker" aria-label="BBC News headlines ticker">
     <div class="ticker-label">
-      <a href="https://www.bbc.co.uk/news" target="_blank" rel="noreferrer" class="bbc-badge">
-  <div class="bbc-blocks">
+      <a href="https://www.bbc.co.uk/news" target="_blank" rel="noreferrer" class="bbc-badge" id="newsSourceLink" aria-label="Open BBC News">
+  <span class="bbc-blocks">
     <span class="bbc-block">B</span>
     <span class="bbc-block">B</span>
     <span class="bbc-block">C</span>
-  </div>
+  </span>
   <span class="bbc-text">News</span>
 </a>
+      <button class="news-source-toggle" id="newsSourceToggle" type="button" aria-label="Choose news source" title="Choose news source" aria-haspopup="menu" aria-expanded="false" aria-controls="newsSourceMenu">
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m2.5 4.5 3.5 3 3.5-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="news-source-menu" id="newsSourceMenu" role="menu" aria-label="News source" hidden>
+        <button class="news-source-option" type="button" role="menuitemradio" aria-checked="true" data-news-source="bbc" tabindex="-1">BBC News</button>
+        <button class="news-source-option" type="button" role="menuitemradio" aria-checked="false" data-news-source="nrk" tabindex="-1">NRK Nyheter</button>
+      </div>
     </div>
     <div class="ticker">
       <div class="ticker-track" id="tickerTrack">
@@ -1451,26 +1522,43 @@
       });
     }
 
-    const BBC_NEWS_MAX_AGE = 6 * 60 * 60 * 1000;
-    let lastBBCNews = null;
-    let bbcNewsLoading = false;
+    const NEWS_SOURCES = {
+      bbc: { name: 'BBC News', site: 'https://www.bbc.co.uk/news', file: 'data/bbc-news.json', maxAge: 6 * 60 * 60 * 1000,
+        hosts: /(^|\.)bbc\.(co\.uk|com)$/, logo: '<span class="bbc-blocks"><span class="bbc-block">B</span><span class="bbc-block">B</span><span class="bbc-block">C</span></span><span class="bbc-text">News</span>' },
+      nrk: { name: 'NRK Nyheter', site: 'https://www.nrk.no/nyheter/', file: 'data/news-feeds.json', feed: 'https://www.nrk.no/toppsaker.rss', maxAge: 2 * 60 * 60 * 1000,
+        hosts: /(^|\.)nrk\.no$/, logo: '<img class="nrk-logo" src="assets/nrk-news.svg" width="58" height="22" alt=""><span class="bbc-text nrk-text">Nyheter</span>' }
+    };
+    let selectedNewsSource = 'bbc';
+    const lastNews = new Map();
+    const newsLoading = new Set();
 
-    function usableBBCNews(data) {
+    function readNewsSnapshot(data, id) {
+      if (id === 'bbc') return data;
+      const feed = data?.feeds?.find(item => item.url === NEWS_SOURCES[id].feed);
+      if (!feed || typeof feed.xml !== 'string' || feed.xml.length > 500000 || /<!DOCTYPE|<!ENTITY/i.test(feed.xml)) return null;
+      const xml = new DOMParser().parseFromString(feed.xml, 'application/xml');
+      if (xml.querySelector('parsererror') || !xml.querySelector('rss > channel')) return null;
+      return { feedUpdatedAt: feed.fetchedAt, items: Array.from(xml.querySelectorAll('channel > item'), item => ({
+        title: item.querySelector('title')?.textContent || '', link: item.querySelector('link')?.textContent || ''
+      })) };
+    }
+
+    function usableNews(data, id) {
       if (!data || !Array.isArray(data.items)) return [];
       const updated = Date.parse(data.feedUpdatedAt);
       const age = Date.now() - updated;
-      if (!Number.isFinite(age) || age < -5 * 60 * 1000 || age > BBC_NEWS_MAX_AGE) return [];
+      if (!Number.isFinite(age) || age < -5 * 60 * 1000 || age > NEWS_SOURCES[id].maxAge) return [];
       return data.items.filter(item => {
         if (!item || typeof item.title !== 'string' || !item.title.trim()) return false;
         try {
           const url = new URL(item.link);
           return url.protocol === 'https:' && !url.username && !url.password &&
-            /(^|\.)bbc\.(co\.uk|com)$/.test(url.hostname);
+            NEWS_SOURCES[id].hosts.test(url.hostname);
         } catch { return false; }
       }).slice(0, 10);
     }
 
-    function renderBBCNews(items) {
+    function renderNews(items) {
       const markup = makeTickerMarkup(items);
       const html = `
         <div class="ticker-group" id="tickerGroup">${markup}</div>
@@ -1481,38 +1569,101 @@
       startTicker();
     }
 
-    async function loadBBCNews() {
-      if (bbcNewsLoading) return;
-      bbcNewsLoading = true;
+    async function loadNews() {
+      const id = selectedNewsSource;
+      const source = NEWS_SOURCES[id];
+      if (newsLoading.has(id)) return;
+      newsLoading.add(id);
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
-        const response = await fetch('data/bbc-news.json', { cache: 'no-cache', signal: controller.signal });
+        const response = await fetch(source.file, { cache: 'no-cache', signal: controller.signal });
         if (!response.ok) throw new Error('Ticker request failed');
-        const data = await response.json();
-        const headlines = usableBBCNews(data);
+        const data = readNewsSnapshot(await response.json(), id);
+        const headlines = usableNews(data, id);
         if (!headlines.length) throw new Error('No headlines found');
-        lastBBCNews = data;
-        renderBBCNews(headlines);
+        lastNews.set(id, data);
+        if (selectedNewsSource === id) renderNews(headlines);
       } catch {
-        const previous = usableBBCNews(lastBBCNews);
-        renderBBCNews(previous.length ? previous : [
-          { link: 'https://www.bbc.com/news', title: 'Open BBC News' },
-          { link: 'https://www.bbc.com/news', title: 'Live headlines unavailable' }
+        const previous = usableNews(lastNews.get(id), id);
+        if (selectedNewsSource === id) renderNews(previous.length ? previous : [
+          { link: source.site, title: `Open ${source.name}` },
+          { link: source.site, title: 'Live headlines unavailable' }
         ]);
       } finally {
         clearTimeout(timeout);
-        bbcNewsLoading = false;
+        newsLoading.delete(id);
       }
+    }
+
+    function selectNewsSource(id) {
+      if (!Object.hasOwn(NEWS_SOURCES, id)) return;
+      selectedNewsSource = id;
+      const source = NEWS_SOURCES[id];
+      const link = document.getElementById('newsSourceLink');
+      link.href = source.site;
+      link.setAttribute('aria-label', `Open ${source.name}`);
+      link.innerHTML = source.logo;
+      document.getElementById('newsTicker').setAttribute('aria-label', `${source.name} headlines ticker`);
+      document.querySelectorAll('[data-news-source]').forEach(option => {
+        option.setAttribute('aria-checked', String(option.dataset.newsSource === id));
+      });
+      try { localStorage.setItem('gregle-news-source', id); } catch {}
+      const cached = usableNews(lastNews.get(id), id);
+      renderNews(cached.length ? cached : [{ title: 'Loading headlines…', link: source.site }]);
+      return loadNews();
+    }
+
+    function bindNewsSources() {
+      const toggle = document.getElementById('newsSourceToggle');
+      const menu = document.getElementById('newsSourceMenu');
+      const options = Array.from(menu.querySelectorAll('[data-news-source]'));
+      function closeMenu(returnFocus = false) {
+        menu.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+        if (returnFocus) toggle.focus();
+      }
+      function openMenu() {
+        menu.hidden = false;
+        toggle.setAttribute('aria-expanded', 'true');
+        options.find(option => option.dataset.newsSource === selectedNewsSource).focus();
+      }
+      toggle.addEventListener('click', () => menu.hidden ? openMenu() : closeMenu());
+      toggle.addEventListener('keydown', event => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); openMenu(); }
+      });
+      options.forEach(option => option.addEventListener('click', () => {
+        selectNewsSource(option.dataset.newsSource);
+        closeMenu(true);
+      }));
+      menu.addEventListener('keydown', event => {
+        const index = options.indexOf(document.activeElement);
+        let next;
+        if (event.key === 'ArrowDown') next = (index + 1) % options.length;
+        if (event.key === 'ArrowUp') next = (index - 1 + options.length) % options.length;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = options.length - 1;
+        if (next !== undefined) { event.preventDefault(); options[next].focus(); }
+        if (event.key === 'Escape') { event.preventDefault(); closeMenu(true); }
+      });
+      document.addEventListener('click', event => {
+        if (!menu.contains(event.target) && !toggle.contains(event.target)) closeMenu();
+      });
+      document.addEventListener('focusin', event => {
+        if (!menu.contains(event.target) && !toggle.contains(event.target)) closeMenu();
+      });
+      let saved;
+      try { saved = localStorage.getItem('gregle-news-source'); } catch {}
+      selectNewsSource(Object.hasOwn(NEWS_SOURCES, saved) ? saved : 'bbc');
     }
 
     loadWeather();
     setInterval(loadWeather, 15 * 60 * 1000);
     bindTickerPause();
     window.addEventListener('resize', startTicker);
-    loadBBCNews();
-    setInterval(() => { if (!document.hidden) loadBBCNews(); }, 5 * 60 * 1000);
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) loadBBCNews(); });
+    bindNewsSources();
+    setInterval(() => { if (!document.hidden) loadNews(); }, 5 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) loadNews(); });
     searchInput.focus();
   </script>
 </body>

@@ -33,7 +33,7 @@ import with **Proxy imported DNS records** checked. Keep the existing seven
 apex/www/Cloud/Docs records. Reverting the router route and this change restores
 the original navigation without moving or deleting any site files.
 
-- `index.html`: search, recent searches, local weather and BBC headlines.
+- `index.html`: search, recent searches, local weather and selectable BBC/NRK headlines.
 - `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference, Women’s Super League, UEFA Champions League and UEFA Conference League league-phase tables.
 - `calc.html`: native graphing and scientific calculator, editable expressions, keyboard support and browser-local history.
 - `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
@@ -59,7 +59,18 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 Open `http://127.0.0.1:8000`. Weather, headlines, autocomplete, map routing and live comic archives use external services and require network access. Browser storage and clipboard access may be restricted; the pages provide fallbacks for these cases.
 
-## BBC headlines
+## Homepage headlines
+
+The subtle grey chevron beside the ticker logo opens a source menu with BBC
+News and NRK Nyheter. Clicking the logo still opens the selected broadcaster's
+news site. The choice is remembered in browser storage; BBC remains the default.
+NRK reuses its official `https://www.nrk.no/toppsaker.rss` feed from
+`data/news-feeds.json`, maintained by the existing `news-feeds.yml` workflow.
+The browser reads only headlines and NRK HTTPS links from this snapshot, rejects
+snapshots older than two hours, and keeps source caches separate when switching.
+The NRK wordmark in `assets/nrk-news.svg` is the NRK portion of the official
+NRK P3 SVG already used by the Radio page (see `assets/radio-logos/SOURCES.md`),
+cropped to the broadcaster mark and coloured blue; rights remain with NRK.
 
 The homepage reads `data/bbc-news.json` from Gregle itself. The
 `bbc-news.yml` workflow refreshes it from BBC's official front-page RSS feed
@@ -71,7 +82,8 @@ every five minutes while visible and when returning to the page.
 atomically replacing the snapshot; failed refreshes leave the last good file
 intact. The ticker retains usable headlines during transient request failures,
 times out stalled requests after eight seconds and falls back to a BBC News
-link when the feed is more than six hours old. It no longer uses rss2json.
+link when the feed is more than six hours old. NRK uses the same timeout and
+fallback behavior with its own source link. It no longer uses rss2json.
 
 Run `node --test tests/bbc-news.test.cjs` and
 `python3 -m unittest discover -s tests -p 'test_bbc_news.py'` for focused checks.
