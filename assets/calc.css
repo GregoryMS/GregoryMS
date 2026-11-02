@@ -1,20 +1,20 @@
-/* Montserrat Light subset for the Gregle header wordmark; see fonts/OFL-Montserrat.txt.
+/* Montserrat Light subset for the Gregle wordmark and page heading; see fonts/OFL-Montserrat.txt.
    Source: https://github.com/google/fonts/tree/main/ofl/montserrat */
 @font-face {
   font-family:"Gregle Wordmark";
-  src:url("fonts/gregle-wordmark-300.woff") format("woff");
+  src:url("fonts/gregle-wordmark-300.woff?v=20261102-heading1") format("woff");
   font-style:normal;
   font-weight:300;
   font-display:swap;
 }
-.topbar .brand {font-family:"Gregle Wordmark",Montserrat,sans-serif}
+.topbar .brand,.calc-heading h1 {font-family:"Gregle Wordmark",Montserrat,sans-serif}
 :root {--calc-accent:#7637cc;--calc-tint:#f0e7fc;--calc-key:#f4f5f7}
 :root.dark-mode {--calc-accent:#b583ff;--calc-tint:#3b2c4e;--calc-key:#353535}
-.calc-page {width:min(100%,1320px);max-width:1320px;padding:10px 36px 32px}
-.calc-heading {margin:0 0 12px}
-.calc-heading .eyebrow {margin-bottom:10px}
-.calc-heading h1 {font-size:clamp(32px,5vw,48px);margin-bottom:10px}
-.calc-heading h1 span {color:var(--calc-accent)}
+.calc-page {width:min(100%,1320px);max-width:1320px;padding:26px 36px 32px}
+.calc-heading {display:flex;align-items:center;justify-content:space-between;gap:24px;margin:10px 0 30px}
+.calc-heading .eyebrow {margin-bottom:12px}
+.calc-heading h1 {font-size:clamp(46px,6.5vw,72px);margin-bottom:10px}
+.calc-heading h1 .accent-dot {color:#9850ff}
 .calc-popout-button {gap:8px;white-space:nowrap}
 .calc-popout-status {color:var(--muted);font-size:13px;margin:0 0 16px}
 .calc-popout-status:empty {display:none}
@@ -52,7 +52,8 @@
 .calculator-popout #graphPanel {height:100%;width:100%}
 .calculator-popout .calculator-resizer {width:100%!important;height:100%!important;max-width:none;margin:0;aspect-ratio:auto;border-radius:0;box-shadow:none;background:#22242c}
 .calculator-popout .calculator-resize-handle {display:none}
-@media(max-width:700px) {.calc-page {padding-top:0;padding-left:14px;padding-right:14px}.calc-heading {margin:0 0 12px}.calc-heading .eyebrow {font-size:10px}.calculator-resize-note {font-size:10px}}
+@media(max-width:700px) {.calculator-resize-note {font-size:10px}}
+@media(max-width:600px) {.calc-page {padding:14px 20px 28px}.calc-heading {align-items:flex-start;flex-direction:column;gap:20px;margin:8px 0 24px}.calc-heading .eyebrow {font-size:9px}.calc-heading h1 {font-size:48px}}
 
 .calculator-standalone body {padding:0}
 .calculator-standalone .page.calc-page {
