@@ -16,7 +16,7 @@ function environment(fetch, parsedItems = []) {
   const timers = new Map();
   let timer = 0, frame;
   const elements = new Map();
-  const options = ['bbc', 'nrk', 'radio-canada'].map(id => ({ dataset: { newsSource: id }, setAttribute() {} }));
+  const options = ['bbc', 'nrk', 'svt', 'radio-canada'].map(id => ({ dataset: { newsSource: id }, setAttribute() {} }));
   const context = vm.createContext({
     URL, AbortController, console, fetch, tickerTrack: track,
     document: {
@@ -210,5 +210,33 @@ test('Radio-Canada uses its official feed, preserves French titles and opens the
     await unsafe.select('radio-canada');
     assert.match(unsafe.track.innerHTML, /Open Radio-Canada Info/);
     assert.match(unsafe.track.innerHTML, /Live headlines unavailable/);
+  }
+});
+
+const svtFeed = (fetchedAt = new Date().toISOString()) => ({
+  feeds: [{ url: 'https://www.svt.se/nyheter/rss.xml', fetchedAt, xml: '<rss><channel/></rss>' }]
+});
+const svtItem = { title: 'Senaste nytt: å ä ö & Sverige', link: 'https://www.svt.se/nyheter/inrikes/nyhet' };
+
+test('SVT uses its existing same-origin snapshot, Swedish headlines and linked official wordmark', async () => {
+  let requested;
+  const env = environment(async url => { requested = url; return response(svtFeed()); }, [svtItem]);
+  await env.select('svt');
+  assert.equal(requested, 'data/news-feeds.json');
+  assert.match(env.track.innerHTML, /Senaste nytt: å ä ö &amp; Sverige/);
+  assert.equal(env.elements.get('newsSourceLink').href, 'https://www.svt.se/nyheter/');
+  assert.match(env.elements.get('newsSourceLink').innerHTML, /svt-news.svg/);
+});
+
+test('SVT rejects stale snapshots and foreign or credentialed links with its own fallback', async () => {
+  const stale = environment(async () => response(svtFeed(new Date(Date.now() - 3 * 3600000).toISOString())), [svtItem]);
+  await stale.select('svt');
+  assert.match(stale.track.innerHTML, /Open SVT Nyheter/);
+  assert.match(stale.track.innerHTML, /Live headlines unavailable/);
+  for (const link of ['https://svt.se.evil.test/', 'https://user:pass@www.svt.se/nyheter/', 'https://www.nrk.no/nyheter/', 'javascript:alert(1)']) {
+    const env = environment(async () => response(svtFeed()), [{ ...svtItem, link }]);
+    await env.select('svt');
+    assert.match(env.track.innerHTML, /Open SVT Nyheter/);
+    assert.match(env.track.innerHTML, /Live headlines unavailable/);
   }
 });
