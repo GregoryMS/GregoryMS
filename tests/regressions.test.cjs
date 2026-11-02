@@ -286,7 +286,7 @@ test('Vancouver loads current conditions and forecasts directly and safely', asy
   const [card] = env.get('forecastGrid').children;
   assert.equal(card.children[0].textContent, 'Tonight');
   assert.match(card.children[1].innerHTML, /^<svg/);
-  const copy = card.children.find(child=>child.tagName==='DETAILS').children[1].children[1];
+  const copy = card.children.find(child=>child.tagName==='DETAILS').children[1].children[0].children[1];
   assert.equal(copy.textContent, '<img src=x> Low 13.');
   assert.equal(copy.innerHTML, '');
   assert.equal(env.get('currentHigh').textContent, '—');

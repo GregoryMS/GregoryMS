@@ -58,7 +58,7 @@ const globalWeather={timezone:'Europe/London',current:{time:'2026-10-21T12:00',t
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 function environment(fetch) {
   const nodes=new Map();
-  const element=()=>({value:'',textContent:'',children:[],style:{},listeners:{},hidden:false,
+  const element=()=>({value:'',textContent:'',children:[],style:{setProperty(){}},listeners:{},hidden:false,
     classList:{toggle(){},contains(){return false;}},setAttribute(){},addEventListener(name,fn){this.listeners[name]=fn;},
     replaceChildren(...children){this.children=children;},append(...children){this.children.push(...children);},appendChild(child){this.children.push(child);}});
   const get=id=>{if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);};
