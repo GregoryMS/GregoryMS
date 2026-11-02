@@ -51,4 +51,12 @@
   padding:max(4px,env(safe-area-inset-top,0px)) max(4px,env(safe-area-inset-right,0px)) max(4px,env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));
 }
 
+/* iOS samples real viewport-fixed elements for its native status-bar colour.
+   Keep this outside the transformed calculator. WebKit ignores backgrounds
+   10px or thinner, so retain at least 12px even when the safe-area inset is 0. */
+.calculator-status-bar-surface {display:none}
+.calculator-ios-standalone {--calculator-status-bar-height:max(12px,env(safe-area-inset-top,0px))}
+.calculator-ios-standalone .calculator-status-bar-surface {display:block;position:fixed;top:0;left:0;right:0;height:var(--calculator-status-bar-height);z-index:100;background:#22242c;pointer-events:none}
+.calculator-ios-standalone .page.calc-page {padding-top:var(--calculator-status-bar-height)}
+
 .calc-offline-status {font:10px/1.5 ui-monospace,monospace;overflow-wrap:anywhere}

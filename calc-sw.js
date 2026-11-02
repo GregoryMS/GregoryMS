@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261101-sharp-1';
+const VERSION='20261101-ios-status-1';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -8,7 +8,7 @@ const ASSETS=[
   '/calc.webmanifest',
   '/assets/installed-app.css?v=20261002-radio',
   '/assets/tools.css',
-  '/assets/calc.css?v=20261101-sharp1',
+  '/assets/calc.css?v=20261101-ios-status1',
   '/assets/calc-graph.css?v=20261101-sharp1',
   '/assets/calc-emulator.css?v=20261101-sharp1',
   '/assets/site-menu.css?v=20261017-scroll-reorder',

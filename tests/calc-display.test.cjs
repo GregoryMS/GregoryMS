@@ -20,15 +20,18 @@ function setup({ios = false, standalone = false, search = '', legacy = false} = 
 }
 test('ordinary browser visits keep the full calculator page', () => {
   const app = setup(); assert(!app.classes.has('calculator-popout')); assert(!app.classes.has('calculator-standalone'));
+  assert(!app.classes.has('calculator-ios-standalone'));
 });
 test('an iOS home-screen launch selects the calculator-only layout independently of media-query support', () => {
   const app = setup({ios:true,legacy:true});
   assert(app.classes.has('calculator-popout')); assert(app.classes.has('calculator-standalone'));
+  assert(app.classes.has('calculator-ios-standalone'));
   app.setDisplay(false); assert(app.classes.has('calculator-popout'));
 });
 test('standalone display mode hides the page and responds to mode changes', () => {
   const app = setup({standalone:true});
   assert(app.classes.has('calculator-popout')); assert(app.classes.has('calculator-standalone'));
+  assert(!app.classes.has('calculator-ios-standalone'),'the iOS status-bar surface must not cover Android or desktop apps');
   app.setDisplay(false); assert(!app.classes.has('calculator-popout')); assert(!app.classes.has('calculator-standalone'));
   app.setDisplay(true); assert(app.classes.has('calculator-popout')); assert(app.classes.has('calculator-standalone'));
 });
