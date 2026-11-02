@@ -1,8 +1,20 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-01T22:25:45+00:00",
-  "fetchedAt": "2026-11-01T22:25:52.920412+00:00",
+  "feedUpdatedAt": "2026-11-02T01:49:18+00:00",
+  "fetchedAt": "2026-11-02T01:49:20.973326+00:00",
   "items": [
+    {
+      "title": "Antonelli becomes world champion as Verstappen wins in Mexico",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cv62y1e6wly6o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Antonelli - the boy 'born in a garage' who became world champion",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c0rdvxdwwwwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'We've got big problems' - Hamilton says Ferrari need 'serious talks'",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmwy7dl879gzo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "I'll tell my players to dive in future - Iraola",
       "link": "https://www.bbc.co.uk/sport/football/articles/cvp8grpjk4leo?at_medium=RSS&at_campaign=rss"
@@ -12,36 +24,24 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c39wz2epven4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Arsenal move clear at the top with a rare win at Liverpool",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cmly09yv9xl6o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Are Celtic club in regression amid run of six defeats in 10?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmvg7d1xl8epo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Boy, 14, hands himself in to police over Bradley Lowery video",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6z7x52w0r0zo?at_medium=RSS&at_campaign=rss"
+      "title": "Were Arsenal 'lucky' not to concede penalty at Liverpool?",
+      "link": "https://www.bbc.co.uk/sport/football/videos/cw7vpy99y606o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How Dart revived career with help of Wimbledon champion",
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cmrlyw2y0gxzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Warnock hid seizures from Liverpool as a youngster",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6rry8pxwkdpo?at_medium=RSS&at_campaign=rss"
+      "title": "Antonelli heads list of F1's youngest champions",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cjy56wkdk3nko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Giant curiosity Hibs finally liberated from the sucker punch",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cxr5yjpnd31eo?at_medium=RSS&at_campaign=rss"
+      "title": "How much do you know about F1 champion Antonelli?",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c98rzkv5y115o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Referee accidentally fractures college football player's leg",
-      "link": "https://www.bbc.co.uk/sport/american-football/articles/ck30ey1ezmyqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Defeat for London City against Man City - but is Europe a real possibility?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cj93z2nk2694o?at_medium=RSS&at_campaign=rss"
+      "title": "Andrew Benson Q&A: Send us your questions",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/ckg3y15zje8o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
