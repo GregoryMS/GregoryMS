@@ -1,10 +1,18 @@
 'use strict';
-window.GregleLiveNavigation = ({ map, onRoute, onStop }) => {
+window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   const $ = id => document.getElementById(id), core = window.GregleNavigation;
   const stage = document.querySelector('.map-stage'), card = $('navigation-live');
   let running = false, session = 0, watch = null, timer, route, mode, destination, lastFix = 0;
   let previous = null, marker, halo, follow = true, voice = false, spoken = '', controller, lastReroute = 0, offSince = 0, firstFix = true, ended = false;
+  let trafficChangePending = false, lastTrafficAttempt = 0, updatingTraffic = false;
   const liveStatus = text => { $('navigation-status').textContent = text; };
+  function trafficUI() {
+    $('navigation-traffic-row').hidden = mode !== 'driving' || ended;
+    $('navigation-traffic').setAttribute('aria-checked', String(routing.enabled));
+    $('navigation-traffic').disabled = !routing.connected;
+    $('navigation-traffic-note').textContent = updatingTraffic ? 'Updating your route…' : trafficChangePending ? 'Waiting for GPS to update your route.' :
+      route?.traffic && Date.now() - route.fetchedAt > 180000 ? 'Traffic estimate is over three minutes old. Waiting for an update.' : window.GregleMapRouting.note(route, mode);
+  }
   function say(text) {
     if (!voice || !window.speechSynthesis || !window.SpeechSynthesisUtterance || document.hidden) return;
     window.speechSynthesis.cancel();
@@ -12,7 +20,7 @@ window.GregleLiveNavigation = ({ map, onRoute, onStop }) => {
     window.speechSynthesis.speak(utterance);
   }
   function cleanup() {
-    session++; running = false; ended = false;
+    session++; running = false; ended = false; trafficChangePending = false; updatingTraffic = false;
     if (watch !== null) navigator.geolocation.clearWatch(watch);
     watch = null; clearInterval(timer); controller?.abort(); controller = null;
     window.speechSynthesis?.cancel();
@@ -60,30 +68,38 @@ window.GregleLiveNavigation = ({ map, onRoute, onStop }) => {
       ended = true; running = false; controller?.abort(); controller = null;
       if (watch !== null) navigator.geolocation.clearWatch(watch); watch = null; clearInterval(timer);
       $('navigation-stop').textContent = 'Done';
+      trafficUI();
     }
   }
-  async function reroute(point, initial = false) {
+  async function reroute(point, initial = false, trafficRefresh = false) {
     if (controller || (!initial && Date.now() - lastReroute < 20000)) return;
-    lastReroute = Date.now(); const token = session;
+    lastReroute = Date.now(); lastTrafficAttempt = Date.now(); const token = session;
     const current = new AbortController(); controller = current;
+    updatingTraffic = trafficRefresh;
+    if (trafficRefresh) trafficUI();
     const timeout = setTimeout(() => current.abort(), 15000);
-    liveStatus('Recalculating from your location…');
+    liveStatus(trafficRefresh ? 'Updating your route for traffic…' : 'Recalculating from your location…');
     try {
-      const response = await fetch(core.routeURL(point, destination, mode), { signal: current.signal });
-      const data = await response.json();
-      if (!running || token !== session) return;
-      if (!response.ok) throw new Error('Routing is unavailable.');
-      route = core.readRoute(data, mode); previous = null; offSince = 0; spoken = '';
+      const updated = await routing.request(point, destination, mode, { signal: current.signal });
+      if (!running || token !== session || controller !== current) return;
+      route = updated; previous = null; offSince = 0; spoken = ''; trafficChangePending = false; updatingTraffic = false;
       onRoute(route, point, destination, false);
+      trafficUI();
       // A newer GPS fix may have arrived during the request.
       const currentPoint = marker?.getLatLng() || point;
       if (Date.now() - lastFix < 15000) guidance(currentPoint);
     } catch (error) {
-      if (token === session && running) {
-        liveStatus('Could not update the route. Retrying when location is available.');
-        $('navigation-instruction').textContent = 'Route update unavailable'; $('navigation-distance').textContent = 'Check route';
+      if (token === session && running && controller === current) {
+        if (trafficRefresh) {
+          trafficChangePending = false;
+          $('navigation-traffic-note').textContent = 'Route update unavailable. The previous route is still displayed; try again.';
+          liveStatus('Could not refresh traffic. Following the previous route.');
+        } else {
+          liveStatus('Could not update the route. Retrying when location is available.');
+          $('navigation-instruction').textContent = 'Route update unavailable'; $('navigation-distance').textContent = 'Check route';
+        }
       }
-    } finally { clearTimeout(timeout); if (controller === current) controller = null; }
+    } finally { clearTimeout(timeout); if (controller === current) { controller = null; updatingTraffic = false; } }
   }
   function position(position, token) {
     if (!running || token !== session) return;
@@ -110,22 +126,27 @@ window.GregleLiveNavigation = ({ map, onRoute, onStop }) => {
       location.y -= Math.min(height / 2, size.y / 4);
       map.setView(map.unproject(location, mode === 'walking' ? 17 : 16), mode === 'walking' ? 17 : 16, { animate: false });
     }
+    if (trafficChangePending && !controller) { firstFix = false; reroute(point, true, true); return; }
     if (firstFix) {
       firstFix = false;
+      if (route.traffic && routing.enabled && Date.now() - route.fetchedAt >= 120000) { reroute(point, true, true); return; }
       const start = route.points[0];
       if (core.meters(point, { lat: start[0], lng: start[1] }) > 35) { reroute(point, true); return; }
     }
-    if (!controller) guidance(point);
+    if (!controller || updatingTraffic) guidance(point);
   }
   function start(nextRoute, nextMode, to) {
     if (!navigator.geolocation?.watchPosition) { onStop('Live location is unavailable in this browser. You can still use the route steps.'); return; }
-    cleanup(); route = nextRoute; mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; spoken = '';
+    cleanup(); route = nextRoute; mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; spoken = ''; lastTrafficAttempt = Date.now();
     running = true; const token = session; setFollow(true); card.hidden = false;
     stage.classList.add('navigating'); $('navigation-stop').textContent = 'Stop';
     $('navigation-distance').textContent = 'Starting'; $('navigation-instruction').textContent = 'Finding your location…';
     $('navigation-remaining').textContent = `${core.distance(route.distance)} · ${core.duration(route.duration)}`;
     $('navigation-eta').textContent = ''; $('navigation-arrow').textContent = '↑'; liveStatus('Allow location access to start live guidance.');
+    trafficUI();
     timer = setInterval(() => {
+      if (running && mode === 'driving' && routing.enabled && routing.connected && !document.hidden && lastFix && Date.now() - lastFix < 15000 && !controller && Date.now() - lastTrafficAttempt >= 120000) reroute(marker.getLatLng(), true, true);
+      if (running && route?.traffic && Date.now() - route.fetchedAt > 180000) trafficUI();
       if (running && (!lastFix || Date.now() - lastFix > 15000)) {
         liveStatus(document.hidden ? 'Location may pause while the browser is in the background.' : 'GPS signal lost. Guidance resumes with a fresh location.');
         $('navigation-distance').textContent = 'Waiting for GPS'; $('navigation-instruction').textContent = 'Waiting for your location';
@@ -140,6 +161,12 @@ window.GregleLiveNavigation = ({ map, onRoute, onStop }) => {
       }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
     } catch { stop('Live location could not start. Check this site’s location permission.'); }
   }
+  function refreshTraffic() {
+    if (!running || mode !== 'driving') return;
+    controller?.abort(); controller = null; updatingTraffic = false;
+    trafficChangePending = true; trafficUI();
+    if (marker && lastFix && Date.now() - lastFix < 15000) return reroute(marker.getLatLng(), true, true);
+  }
   window.addEventListener('pagehide', () => { if (running || ended) stop(); });
-  return { start, stop, get active() { return running || ended; } };
+  return { start, stop, refreshTraffic, get active() { return running || ended; } };
 };

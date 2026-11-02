@@ -1,12 +1,44 @@
 'use strict';
-window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) => {
+window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onConnectTraffic = () => {} }) => {
   const $ = id => document.getElementById(id), core = window.GregleNavigation;
+  const routing = window.GregleMapRouting.create();
   const panel = $('map-directions'), toggle = $('map-directions-toggle');
   const inputs = { from: $('directions-from'), to: $('directions-to') }, points = { from: null, to: null };
   const routeLayers = L.layerGroup().addTo(map);
+  const trafficCredit = '&copy; <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a>';
+  let routeHasTrafficCredit = false;
+  function routeCredit(enabled) {
+    if (routeHasTrafficCredit === enabled) return;
+    if (enabled) map.attributionControl?.addAttribution(trafficCredit);
+    else map.attributionControl?.removeAttribution(trafficCredit);
+    routeHasTrafficCredit = enabled;
+  }
   let active = 'from', version = 0, controller, locating = false, nextSearch = 0, nextRoute = 0, mode = 'driving', currentRoute = null;
   const status = text => { $('directions-status').textContent = text; };
-  const live = window.GregleLiveNavigation?.({ map, onRoute: renderRoute, onStop: message => { open(); status(message); $('directions-start').focus({ preventScroll: true }); } });
+  const live = window.GregleLiveNavigation?.({ map, routing, onRoute: renderRoute, onStop: message => { open(); status(message); $('directions-start').focus({ preventScroll: true }); } });
+  function syncTraffic() {
+    for (const id of ['directions-traffic', 'navigation-traffic']) {
+      $(id).setAttribute('aria-checked', String(routing.enabled));
+      $(id).disabled = !routing.connected;
+    }
+    $('directions-traffic-row').hidden = !currentRoute || mode !== 'driving';
+    $('directions-traffic-connect').hidden = !currentRoute || mode !== 'driving' || routing.connected;
+    $('directions-estimate-note').textContent = window.GregleMapRouting.note(currentRoute, mode);
+  }
+  async function refreshTraffic() {
+    syncTraffic();
+    if (live?.active) return live.refreshTraffic();
+    if (currentRoute) return calculateRoute(true);
+  }
+  for (const id of ['directions-traffic', 'navigation-traffic']) $(id).addEventListener('click', () => {
+    routing.setEnabled(!routing.enabled); refreshTraffic();
+  });
+  $('directions-traffic-connect').addEventListener('click', event => {
+    event.stopPropagation();
+    panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
+    document.querySelector('.map-stage').classList.remove('directions-open');
+    onConnectTraffic();
+  });
   function invalidate(message = 'Choose locations, then show your route.') {
     if (live?.active) live.stop();
     currentRoute = null; $('directions-start').disabled = true;
@@ -14,6 +46,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
     $('directions-location').disabled = false;
     panel.removeAttribute('aria-busy');
     routeLayers.clearLayers(); $('directions-summary').hidden = true;
+    routeCredit(false);
+    syncTraffic();
     $('directions-steps').replaceChildren(); $('directions-results').replaceChildren();
     $('directions-route').disabled = !points.from || !points.to;
     const urls = core.links(points.from, points.to, mode);
@@ -42,7 +76,6 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
     if (travel === mode) return;
     mode = travel;
     for (const choice of ['driving', 'walking']) $('directions-' + choice).setAttribute('aria-pressed', String(choice === mode));
-    $('directions-estimate-note').textContent = mode === 'walking' ? 'Estimated walking time. Routes follow mapped pedestrian access.' : 'Estimated driving time excludes live traffic and ferry waits.';
     invalidate(`Choose locations, then show your ${mode} route.`);
   });
   $('directions-start').addEventListener('click', () => {
@@ -104,30 +137,33 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
     } catch { if (token === version) status('Place search is unavailable. Try again, or select a map pin and choose Start here / Directions here.'); }
     finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); } }
   });
-  $('directions-route').addEventListener('click', async () => {
+  async function calculateRoute(refresh = false) {
     if (!core.valid(points.from) || !core.valid(points.to)) return;
-    invalidate();
-    if (Date.now() < nextRoute) { status('Please wait a moment, then show the route again.'); return; }
+    if (refresh) { version++; controller?.abort(); }
+    else invalidate();
+    if (!refresh && Date.now() < nextRoute) { status('Please wait a moment, then show the route again.'); return; }
     nextRoute = Date.now() + 1100;
     const token = version, from = { ...points.from }, to = { ...points.to };
     controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), 15000);
-    panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; status(`Finding a ${mode} route…`);
+    panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; $('directions-start').disabled = true;
+    status(mode === 'driving' && routing.enabled && routing.connected ? 'Finding a route with live traffic…' : `Finding a ${mode} route…`);
     try {
-      const response = await fetch(core.routeURL(from, to, mode), { signal: current.signal });
-      const data = await response.json(); if (token !== version) return;
-      if (!response.ok && !['NoRoute', 'NoSegment'].includes(data?.code)) throw new Error('Routing is unavailable. Try again, or open your navigation app below.');
-      renderRoute(core.readRoute(data, mode), from, to);
+      const route = await routing.request(from, to, mode, { signal: current.signal });
+      if (token !== version) return;
+      renderRoute(route, from, to, !refresh);
       status(`${mode === 'walking' ? 'Walking' : 'Driving'} route ready. Start navigation for live guidance.`);
     } catch (error) { if (token === version) status(error.name === 'AbortError' ? 'Routing timed out. Try again, or use your navigation app below.' : error.message || 'Routing is unavailable. Try again.'); }
-    finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; } }
-  });
+    finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; $('directions-start').disabled = !currentRoute || !live; } }
+  }
+  $('directions-route').addEventListener('click', () => calculateRoute());
   function renderRoute(route, from, to, fit = true) {
-    if (!fit) {
+    if (!fit && live?.active) {
       points.from = { ...from, name: 'My location' }; inputs.from.value = 'My location';
       const urls = core.links(points.from, points.to, mode);
       if (urls) { $('directions-google').href = urls.google; $('directions-apple').href = urls.apple; }
     }
     currentRoute = route; routeLayers.clearLayers(); $('directions-steps').replaceChildren();
+    routeCredit(!!route.traffic);
     L.polyline(route.points, { color: '#fff', weight: 10, opacity: .9, interactive: false }).addTo(routeLayers);
     const line = L.polyline(route.points, { color: '#7637cc', weight: 6, opacity: .95, interactive: false, dashArray: mode === 'walking' ? '3 10' : null }).addTo(routeLayers);
     for (const [label, p] of [['A', from], ['B', to]]) {
@@ -142,6 +178,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {} }) =
     $('directions-total').textContent = `${core.duration(route.duration)} · ${core.distance(route.distance)}`;
     for (const step of route.steps) { const li = document.createElement('li'); li.textContent = `${step.text} · ${core.distance(step.distance)}`; $('directions-steps').append(li); }
     $('directions-summary').hidden = false; $('directions-start').disabled = !live;
+    syncTraffic();
   }
-  return { close };
+  syncTraffic();
+  return { close, refreshTraffic };
 };

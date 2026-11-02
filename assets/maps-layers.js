@@ -1,10 +1,10 @@
 (() => {
   'use strict';
-  window.GregleMapLayers = ({ map, config, initial, notify, onChange, onOpen = () => {}, getSelected = () => null, onStreetViewOpen = () => {}, onStreetViewSelect = () => {} }) => {
+  window.GregleMapLayers = ({ map, config, initial, notify, onChange, onOpen = () => {}, getSelected = () => null, onStreetViewOpen = () => {}, onStreetViewSelect = () => {}, onTrafficKeyChange = () => {} }) => {
     const core = window.GregleMaps, $ = id => document.getElementById(id);
     const panel = $('map-layers-panel'), toggle = $('map-layers-toggle'), embedToggle = $('embedded-layers-toggle');
     const preferenceKey = 'gregle-maps-layers', credentialKey = 'gregle-maps-tomtom-key';
-    let saved, apiKey = '';
+    let saved, apiKey = '', connectForRouting = false;
     try { saved = JSON.parse(localStorage.getItem(preferenceKey)); apiKey = localStorage.getItem(credentialKey) || ''; } catch {}
     let state = core.normalizeLayers(initial || (saved?.ev === true && saved.teslaDefault !== true ? {...saved, tesla: true} : saved));
     const drivebc = window.GregleDriveBC({ map, notify });
@@ -49,10 +49,11 @@
       $(id).textContent = message;
       $(id).dataset.state = error ? 'error' : 'ready';
     };
-    const openPanel = (keyForm = false) => {
+    const openPanel = (keyForm = false, routingOnly = false) => {
       panel.hidden = false; toggle.setAttribute('aria-expanded', 'true'); embedToggle.setAttribute('aria-expanded', 'true');
       onOpen();
       if (keyForm) {
+        connectForRouting = routingOnly;
         tomtomMenu.setOpen(true, true);
         $('traffic-api-key').focus();
       } else panel.querySelector('input[name="map-base"]:checked')?.focus({ preventScroll: true });
@@ -306,12 +307,13 @@
       if (key.length < 16 || key.length > 256 || /\s/.test(key)) { status('traffic-layer-status', 'Enter a valid TomTom API key without spaces.', true); return; }
       apiKey = key; try { localStorage.setItem(credentialKey, key); } catch {}
       $('traffic-api-key').value = ''; $('traffic-key-form').hidden = true; tomtomMenu.setOpen(false, true);
-      state.traffic = true; trafficPaused = false; loadTraffic(); render(); persist(); onChange();
+      if (!connectForRouting) state.traffic = true;
+      trafficPaused = false; loadTraffic(); render(); persist(); onChange(); onTrafficKeyChange();
     });
     $('traffic-forget').addEventListener('click', () => {
       apiKey = ''; try { localStorage.removeItem(credentialKey); } catch {}
       $('traffic-api-key').value = ''; state.traffic = false;
-      removeTraffic(); scheduleTraffic(); render(); persist(); onChange();
+      removeTraffic(); scheduleTraffic(); render(); persist(); onChange(); onTrafficKeyChange();
     });
     $('traffic-refresh').addEventListener('click', () => {
       if (Date.now() - lastTrafficRequest < 60000) { status('traffic-layer-status', 'Please wait a minute between traffic refreshes.'); return; }
@@ -329,7 +331,7 @@
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
     window.addEventListener('pageshow', event => { if (event.persisted && !core.isEmbeddedBase(state.base) && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
     setState(state);
-    return { getState: () => ({ ...state }), setState: next => setState(next, false), openStreetView: point => {
+    return { getState: () => ({ ...state }), setState: next => setState(next, false), connectTraffic: () => openPanel(true, true), openStreetView: point => {
       setState({ ...state, base: core.isEmbeddedBase(state.base) ? 'street' : state.base, streetview: true }, true);
       closePanel(); onStreetViewOpen(); streetView.showAt(point);
     } };
