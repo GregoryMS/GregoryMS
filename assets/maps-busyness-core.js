@@ -22,6 +22,22 @@
     url.searchParams.set('query', query(place) + ` near ${place.lat.toFixed(5)},${place.lng.toFixed(5)}`);
     return url.href;
   }
+  function singleMatch(selected, places) {
+    if (!identity(selected) || !Array.isArray(places) || places.length !== 1) return null;
+    const place = places[0];
+    if (!place?.id || !place.location) return null;
+    try {
+      const lat = typeof place.location.lat === 'function' ? place.location.lat() : place.location.lat;
+      const lng = typeof place.location.lng === 'function' ? place.location.lng() : place.location.lng;
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+      const radians = Math.PI / 180;
+      const a = Math.sin((lat - selected.lat) * radians / 2) ** 2 + Math.cos(lat * radians) * Math.cos(selected.lat * radians) * Math.sin((lng - selected.lng) * radians / 2) ** 2;
+      const distance = 2 * 6371000 * Math.asin(Math.sqrt(Math.min(1, a)));
+      // Google searched the business name/address. Only skip confirmation for
+      // a unique result close to the OSM pin; nearby branches can share a name.
+      return distance <= 150 ? place : null;
+    } catch { return null; }
+  }
   function nextReset(now = Date.now()) {
     // Find the next Pacific midnight, including 23/25-hour daylight-saving days.
     let low = now, high = now + 27 * 3600000;
@@ -39,5 +55,5 @@
       return Number.isFinite(until) && until > now && until <= now + 27 * 3600000 ? until : 0;
     } catch { return 0; }
   }
-  return {identity, query, googleURL, nextReset, pauseUntil};
+  return {identity, query, googleURL, singleMatch, nextReset, pauseUntil};
 });
