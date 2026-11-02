@@ -1,10 +1,10 @@
 .calculator-engine-controls {display:flex;align-items:center;gap:7px}
 .emu-toolbar button {min-height:28px;padding:4px 8px;border:1px solid #62606f;border-radius:6px;color:#ded9e6;background:#35333f;font:10px ui-monospace,monospace}
 .calculator-engine-switch {display:flex;align-items:center;gap:8px;min-height:32px;padding:2px 0 2px 8px;border:0;border-radius:6px;background:transparent;color:#ded9e6;font:10px ui-monospace,monospace;touch-action:manipulation}
-.engine-switch-track {position:relative;display:block;flex-shrink:0;width:38px;height:22px;box-sizing:border-box;border:1px solid #77707d;border-radius:999px;background:#4a4653;box-shadow:inset 0 1px 0 #0005;transition:background-color .16s,border-color .16s}
-.engine-switch-thumb {position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#ded9e6;box-shadow:0 1px 0 #0005;transition:left .16s}
+.engine-switch-track {position:relative;display:block;flex-shrink:0;width:38px;height:22px;box-sizing:border-box;border:1px solid #77707d;border-radius:999px;background:#4a4653;box-shadow:inset 0 1px 3px #0005;transition:background-color .16s,border-color .16s}
+.engine-switch-thumb {position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#ded9e6;box-shadow:0 1px 3px #0005;transition:transform .16s}
 .calculator-engine-switch[aria-checked="true"] .engine-switch-track {background:#9467bf;border-color:#b593d7}
-.calculator-engine-switch[aria-checked="true"] .engine-switch-thumb {left:19px;background:#fff}
+.calculator-engine-switch[aria-checked="true"] .engine-switch-thumb {transform:translateX(16px);background:#fff}
 .calculator-engine-switch:disabled {opacity:.55;cursor:wait}
 @media(prefers-reduced-motion:reduce) {.engine-switch-track,.engine-switch-thumb {transition:none}}
 .emulator-active #graphCalculator > :not(.graph-brand):not(#emulatorView) {display:none!important}
