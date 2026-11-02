@@ -29,7 +29,7 @@
         clearTimeout(timer); status.textContent = 'Street View could not load. Select another street or open Google Maps above.'; status.hidden = false;
       });
       active.src = core.streetViewEmbedURL(point); frame = active; host.append(active);
-      marker = L.circleMarker([point.lat, point.lng], { radius: 9, color: '#fff', weight: 3, fillColor: '#2477e8', fillOpacity: 1, interactive: false }).addTo(map);
+      marker = L.circleMarker([point.lat, point.lng], { radius: 9, color: '#fff', weight: 3, fillColor: '#7637cc', fillOpacity: 1, interactive: false }).addTo(map);
       timer = setTimeout(() => {
         if (frame === active) { status.textContent = 'Street View is taking longer to load. Try another street or open Google Maps above.'; status.hidden = false; }
       }, 20000);
