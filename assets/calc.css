@@ -1,3 +1,13 @@
+/* Montserrat Light subset for the Gregle header wordmark; see fonts/OFL-Montserrat.txt.
+   Source: https://github.com/google/fonts/tree/main/ofl/montserrat */
+@font-face {
+  font-family:"Gregle Wordmark";
+  src:url("fonts/gregle-wordmark-300.woff") format("woff");
+  font-style:normal;
+  font-weight:300;
+  font-display:swap;
+}
+.topbar .brand {font-family:"Gregle Wordmark",Montserrat,sans-serif}
 :root {--calc-accent:#7637cc;--calc-tint:#f0e7fc;--calc-key:#f4f5f7}
 :root.dark-mode {--calc-accent:#b583ff;--calc-tint:#3b2c4e;--calc-key:#353535}
 .calc-page {width:min(100%,1320px);max-width:1320px;padding:10px 36px 32px}
