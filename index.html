@@ -276,6 +276,11 @@
       border-radius: 22px 0 0 22px;
     }
 
+    .ticker-wrap[data-news-provider="nrk"] {
+      --ticker-hover: rgba(23, 103, 206, 0.10);
+      --news-accent: #1767ce;
+    }
+
     .bbc-badge {
       display: inline-flex;
       align-items: center;
@@ -419,7 +424,7 @@
 
     .ticker-item:hover {
       background: var(--ticker-hover);
-      color: #bb1919;
+      color: var(--news-accent, #bb1919);
       transform: translateY(-1px);
     }
 
@@ -1605,7 +1610,9 @@
       link.href = source.site;
       link.setAttribute('aria-label', `Open ${source.name}`);
       link.innerHTML = source.logo;
-      document.getElementById('newsTicker').setAttribute('aria-label', `${source.name} headlines ticker`);
+      const ticker = document.getElementById('newsTicker');
+      ticker.setAttribute('aria-label', `${source.name} headlines ticker`);
+      ticker.setAttribute('data-news-provider', id);
       document.querySelectorAll('[data-news-source]').forEach(option => {
         option.setAttribute('aria-checked', String(option.dataset.newsSource === id));
       });
