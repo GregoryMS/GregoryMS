@@ -10,21 +10,39 @@ const fresh = (title = 'BBC headline') => ({
 });
 const response = data => ({ ok: true, json: async () => data });
 
-function environment(fetch) {
+function environment(fetch, parsedItems = []) {
   const track = { innerHTML: '', style: {} };
   const group = { scrollWidth: 1500, nextElementSibling: { style: {} } };
   const timers = new Map();
   let timer = 0, frame;
+  const elements = new Map();
+  const options = ['bbc', 'nrk'].map(id => ({ dataset: { newsSource: id }, setAttribute() {} }));
   const context = vm.createContext({
     URL, AbortController, console, fetch, tickerTrack: track,
-    document: { getElementById: () => group },
+    document: {
+      getElementById(id) {
+        if (id === 'tickerGroup') return group;
+        if (!elements.has(id)) elements.set(id, { setAttribute() {} });
+        return elements.get(id);
+      },
+      querySelectorAll: () => options
+    },
+    localStorage: { setItem() {} },
+    DOMParser: class {
+      parseFromString() {
+        return {
+          querySelector: selector => selector === 'parsererror' ? null : {},
+          querySelectorAll: () => parsedItems.map(item => ({ querySelector: key => ({ textContent: item[key] }) }))
+        };
+      }
+    },
     setTimeout(fn) { timers.set(++timer, fn); return timer; },
     clearTimeout(id) { timers.delete(id); },
     requestAnimationFrame(fn) { frame = fn; return 1; }, cancelAnimationFrame() {},
     escapeHtml: value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]))
   });
   vm.runInContext(source, context);
-  return { context, track, timers, run: () => context.loadBBCNews(), step: time => frame(time) };
+  return { context, track, timers, elements, run: () => context.loadNews(), select: id => context.selectNewsSource(id), step: time => frame(time) };
 }
 
 test('homepage inline scripts parse', () => {
@@ -72,7 +90,7 @@ test('expired retained headlines fall back to the BBC link', async () => {
   let fail = false;
   const env = environment(async () => { if (fail) throw new Error('Offline'); return response(fresh()); });
   await env.run();
-  vm.runInContext('lastBBCNews.feedUpdatedAt = new Date(Date.now() - 7 * 3600000).toISOString()', env.context);
+  vm.runInContext("lastNews.get('bbc').feedUpdatedAt = new Date(Date.now() - 7 * 3600000).toISOString()", env.context);
   fail = true;
   await env.run();
   assert.match(env.track.innerHTML, /Live headlines unavailable/);
@@ -104,4 +122,74 @@ test('ticker stays in range after a long background pause and resets on resize',
   assert(offset >= -12 && offset < 0);
   vm.runInContext('startTicker()', env.context);
   assert.equal(env.track.style.transform, 'translateX(0)');
+});
+
+const nrkFeed = (fetchedAt = new Date().toISOString(), xml = '<rss><channel/></rss>') => ({
+  feeds: [{ url: 'https://www.nrk.no/toppsaker.rss', fetchedAt, xml }]
+});
+const nrkItem = { title: 'Siste nytt & nyheter', link: 'https://www.nrk.no/nyheter/eksempel-1.12345' };
+
+test('NRK uses the existing same-origin feed and its logo links directly to NRK Nyheter', async () => {
+  let requested;
+  const env = environment(async url => { requested = url; return response(nrkFeed()); }, [nrkItem]);
+  await env.select('nrk');
+  assert.equal(requested, 'data/news-feeds.json');
+  assert.match(env.track.innerHTML, /Siste nytt &amp; nyheter/);
+  assert.equal(env.elements.get('newsSourceLink').href, 'https://www.nrk.no/nyheter/');
+  assert.match(env.elements.get('newsSourceLink').innerHTML, /nrk-news.svg/);
+});
+
+test('NRK rejects expired snapshots, foreign links and unsafe XML', async () => {
+  for (const data of [null, { feeds: [] }, nrkFeed(new Date(Date.now() - 3 * 3600000).toISOString()),
+    nrkFeed(new Date().toISOString(), '<!DOCTYPE rss><rss/>'),
+    nrkFeed(new Date().toISOString(), 'x'.repeat(500001))]) {
+    const env = environment(async () => response(data), [nrkItem]);
+    await env.select('nrk');
+    assert.match(env.track.innerHTML, /Live headlines unavailable/);
+    assert.match(env.track.innerHTML, /Open NRK Nyheter/);
+    assert(!env.track.innerHTML.includes('Open BBC'));
+  }
+  for (const link of ['https://nrk.no.evil.test/', 'https://user:pass@www.nrk.no/', 'javascript:alert(1)', 'https://www.bbc.co.uk/news/']) {
+    const env = environment(async () => response(nrkFeed()), [{ ...nrkItem, link }]);
+    await env.select('nrk');
+    assert.match(env.track.innerHTML, /Live headlines unavailable/);
+  }
+});
+
+test('a delayed BBC response cannot replace NRK after switching sources', async () => {
+  let finishBBC;
+  const env = environment(url => url.includes('bbc-news')
+    ? new Promise(resolve => { finishBBC = resolve; })
+    : Promise.resolve(response(nrkFeed())), [nrkItem]);
+  const pending = env.run();
+  await env.select('nrk');
+  finishBBC(response(fresh('Delayed BBC headline')));
+  await pending;
+  assert.match(env.track.innerHTML, /Siste nytt/);
+  assert(!env.track.innerHTML.includes('Delayed BBC'));
+  assert.equal(env.timers.size, 0);
+});
+
+test('each source retains only its own usable cache when switched during an outage', async () => {
+  let fail = false;
+  const env = environment(async url => {
+    if (fail) throw new Error('Offline');
+    return response(url.includes('bbc-news') ? fresh() : nrkFeed());
+  }, [nrkItem]);
+  await env.run();
+  await env.select('nrk');
+  fail = true;
+  await env.select('bbc');
+  assert.match(env.track.innerHTML, /BBC headline/);
+  assert(!env.track.innerHTML.includes('Siste nytt'));
+  await env.select('nrk');
+  assert.match(env.track.innerHTML, /Siste nytt/);
+});
+
+test('unavailable storage and invalid source choices do not break source switching', async () => {
+  const env = environment(async () => response(nrkFeed()), [nrkItem]);
+  vm.runInContext("localStorage.setItem = () => { throw new Error('Storage disabled'); }", env.context);
+  await env.select('nrk');
+  await env.select('toString');
+  assert.match(env.track.innerHTML, /Siste nytt/);
 });

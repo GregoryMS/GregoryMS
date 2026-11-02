@@ -72,10 +72,10 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}, ov
     consumptionValue: '18', distance: '100', distanceUnit: 'km', journeyType: '1', chargingEfficiency: '90' })
     .forEach(([id, value]) => { get(id).value = value; });
   Object.assign(context, overrides);
-  // BBC retrieval and timeout behavior have their own suite. Keep their startup
+  // News retrieval and timeout behavior have their own suite. Keep their startup
   // timer out of search/weather tests that inspect and advance mock timers.
   const code = scripts(file, true);
-  vm.runInContext(file === 'index.html' ? code.replace(/^    loadBBCNews\(\);$/m, '') : code,
+  vm.runInContext(file === 'index.html' ? code.replace(/^    bindNewsSources\(\);$/m, '') : code,
     context, { filename: file });
   return { context, get, ready, map, markers, timers };
 }
