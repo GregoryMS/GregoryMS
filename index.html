@@ -281,6 +281,11 @@
       --news-accent: #1767ce;
     }
 
+    .ticker-wrap[data-news-provider="radio-canada"] {
+      --ticker-hover: rgba(190, 0, 0, 0.08);
+      --news-accent: #be0000;
+    }
+
     .bbc-badge {
       display: inline-flex;
       align-items: center;
@@ -324,6 +329,7 @@
 
     .nrk-logo { display: block; width: 58px; height: 22px; }
     .nrk-text { color: #1767ce; }
+    .radio-canada-logo { display: block; width: 80px; height: 27px; }
     .news-source-toggle {
       display: inline-flex;
       align-items: center;
@@ -923,6 +929,7 @@
       <div class="news-source-menu" id="newsSourceMenu" role="menu" aria-label="News source" hidden>
         <button class="news-source-option" type="button" role="menuitemradio" aria-checked="true" data-news-source="bbc" tabindex="-1">BBC News</button>
         <button class="news-source-option" type="button" role="menuitemradio" aria-checked="false" data-news-source="nrk" tabindex="-1">NRK Nyheter</button>
+        <button class="news-source-option" type="button" role="menuitemradio" aria-checked="false" data-news-source="radio-canada" tabindex="-1">Radio-Canada Info</button>
       </div>
     </div>
     <div class="ticker">
@@ -1532,7 +1539,9 @@
       bbc: { name: 'BBC News', site: 'https://www.bbc.co.uk/news', file: 'data/bbc-news.json', maxAge: 6 * 60 * 60 * 1000,
         hosts: /(^|\.)bbc\.(co\.uk|com)$/, logo: '<span class="bbc-blocks"><span class="bbc-block">B</span><span class="bbc-block">B</span><span class="bbc-block">C</span></span><span class="bbc-text">News</span>' },
       nrk: { name: 'NRK Nyheter', site: 'https://www.nrk.no/nyheter/', file: 'data/news-feeds.json', feed: 'https://www.nrk.no/toppsaker.rss', maxAge: 2 * 60 * 60 * 1000,
-        hosts: /(^|\.)nrk\.no$/, logo: '<img class="nrk-logo" src="assets/nrk-news.svg" width="58" height="22" alt=""><span class="bbc-text nrk-text">Nyheter</span>' }
+        hosts: /(^|\.)nrk\.no$/, logo: '<img class="nrk-logo" src="assets/nrk-news.svg" width="58" height="22" alt=""><span class="bbc-text nrk-text">Nyheter</span>' },
+      'radio-canada': { name: 'Radio-Canada Info', site: 'https://ici.radio-canada.ca/info', file: 'data/news-feeds.json', feed: 'https://ici.radio-canada.ca/info/rss/info/en-continu', maxAge: 2 * 60 * 60 * 1000,
+        hosts: /(^|\.)radio-canada\.ca$/, logo: '<img class="radio-canada-logo" src="assets/radio-canada-info.svg" width="80" height="27" alt="">' }
     };
     let selectedNewsSource = 'bbc';
     const lastNews = new Map();

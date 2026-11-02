@@ -33,7 +33,7 @@ import with **Proxy imported DNS records** checked. Keep the existing seven
 apex/www/Cloud/Docs records. Reverting the router route and this change restores
 the original navigation without moving or deleting any site files.
 
-- `index.html`: search, recent searches, local weather and selectable BBC/NRK headlines.
+- `index.html`: search, recent searches, local weather and selectable BBC/NRK/Radio-Canada headlines.
 - `sports.html`: football fixtures and results for five men’s clubs, three women’s clubs, and the men’s and women’s national teams of Canada, Norway, Scotland, Sweden and England; current Premier League, Bundesliga, MLS conference, Women’s Super League, UEFA Champions League and UEFA Conference League league-phase tables.
 - `calc.html`: native graphing and scientific calculator, editable expressions, keyboard support and browser-local history.
 - `finance.html`: searchable stocks, world-market and currency dashboards, and browser-saved favourites.
@@ -62,7 +62,7 @@ Open `http://127.0.0.1:8000`. Weather, headlines, autocomplete, map routing and 
 ## Homepage headlines
 
 The subtle grey chevron beside the ticker logo opens a source menu with BBC
-News and NRK Nyheter. Clicking the logo still opens the selected broadcaster's
+News, NRK Nyheter and Radio-Canada Info. Clicking the logo still opens the selected broadcaster's
 news site. The choice is remembered in browser storage; BBC remains the default.
 NRK reuses its official `https://www.nrk.no/toppsaker.rss` feed from
 `data/news-feeds.json`, maintained by the existing `news-feeds.yml` workflow.
@@ -71,6 +71,13 @@ snapshots older than two hours, and keeps source caches separate when switching.
 The NRK wordmark in `assets/nrk-news.svg` is the NRK portion of the official
 NRK P3 SVG already used by the Radio page (see `assets/radio-logos/SOURCES.md`),
 cropped to the broadcaster mark and coloured blue; rights remain with NRK.
+Radio-Canada Info uses its official
+`https://ici.radio-canada.ca/info/rss/info/en-continu` feed, refreshed in the same
+snapshot without changing the News reader's default subscriptions. Its logo opens
+`https://ici.radio-canada.ca/info`; headlines retain their original French text
+and use Radio-Canada's red hover accent. The local `assets/radio-canada-info.svg`
+preserves the official compact INFO mark from that page, coloured with its
+default header red (`#be0000`); rights remain with CBC/Radio-Canada.
 
 The homepage reads `data/bbc-news.json` from Gregle itself. The
 `bbc-news.yml` workflow refreshes it from BBC's official front-page RSS feed

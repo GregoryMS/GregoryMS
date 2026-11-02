@@ -27,7 +27,7 @@ class NewsFeedsTests(unittest.TestCase):
         now = dt.datetime(2026, 10, 19, tzinfo=dt.timezone.utc)
         result, errors = news.update({}, lambda slug, url: XML, now)
         self.assertEqual(errors, [])
-        self.assertEqual(len(result['feeds']), 6)
+        self.assertEqual(len(result['feeds']), len(news.ALL_SOURCES))
         self.assertIn('ä ö å', result['feeds'][0]['xml'])
         self.assertEqual(result['feeds'][0]['fetchedAt'], now.isoformat())
 
@@ -40,7 +40,7 @@ class NewsFeedsTests(unittest.TestCase):
         result, errors = news.update({'feeds': [previous]}, fetch)
         self.assertEqual(len(errors), 1)
         self.assertEqual(next(feed for feed in result['feeds'] if feed['url'] == previous['url']), previous)
-        self.assertEqual(len(result['feeds']), 6)
+        self.assertEqual(len(result['feeds']), len(news.ALL_SOURCES))
 
     def test_rejects_error_pages_empty_feeds_entities_and_oversized_responses(self):
         for raw in [b'<html>Error</html>', b'<rss><channel/></rss>', b'<!DOCTYPE rss><rss/>', b'x' * (news.MAX_BYTES + 1)]:
@@ -97,7 +97,18 @@ class NewsFeedsTests(unittest.TestCase):
                 changed = {'feeds': [{**feed, **change} if feed['url'] == news.SOURCES['cbc'] else feed
                                      for feed in snapshot['feeds']]}
                 self.assertEqual(news.unavailable_sources(changed, now), ['cbc'])
-        self.assertEqual(news.unavailable_sources({'feeds': []}, now), list(news.SOURCES))
+        self.assertEqual(news.unavailable_sources({'feeds': []}, now), list(news.ALL_SOURCES))
+
+    def test_radio_canada_is_refreshed_without_changing_reader_defaults(self):
+        self.assertNotIn('radio-canada', news.SOURCES)
+        snapshot, errors = news.update({}, lambda slug, url: XML)
+        self.assertEqual(errors, [])
+        radio_canada = next(feed for feed in snapshot['feeds']
+                            if feed['url'] == 'https://ici.radio-canada.ca/info/rss/info/en-continu')
+        self.assertIn('ä ö å', radio_canada['xml'])
+        self.assertIn('radio-canada', news.unavailable_sources(
+            {'feeds': [feed for feed in snapshot['feeds'] if feed is not radio_canada]},
+            dt.datetime.now(dt.timezone.utc)))
 
     def test_command_warns_for_a_fresh_cached_feed_but_fails_when_it_is_stale_or_missing(self):
         now = dt.datetime.now(dt.timezone.utc)

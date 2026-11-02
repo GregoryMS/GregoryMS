@@ -1,4 +1,4 @@
-"""Fetch public default RSS feeds for Gregle's same-origin News reader."""
+"""Fetch public RSS feeds for Gregle's same-origin News reader and homepage ticker."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import datetime as dt
@@ -18,6 +18,11 @@ SOURCES = {
     'cbc': 'https://www.cbc.ca/webfeed/rss/rss-topstories',
     'dw': 'https://rss.dw.com/xml/rss-de-all',
 }
+# Homepage sources can share the snapshot without changing News reader subscriptions.
+TICKER_SOURCES = {
+    'radio-canada': 'https://ici.radio-canada.ca/info/rss/info/en-continu',
+}
+ALL_SOURCES = {**SOURCES, **TICKER_SOURCES}
 MAX_BYTES = 500_000
 MAX_ATTEMPTS = 3
 MAX_SNAPSHOT_AGE = dt.timedelta(hours=2)
@@ -83,7 +88,7 @@ def unavailable_sources(snapshot, now):
                 available.add(feed['url'])
         except (KeyError, TypeError, ValueError, AttributeError, ET.ParseError):
             continue
-    return [slug for slug, url in SOURCES.items() if url not in available]
+    return [slug for slug, url in ALL_SOURCES.items() if url not in available]
 
 
 def update(previous, fetch=fetch_feed, now=None):
@@ -100,7 +105,7 @@ def update(previous, fetch=fetch_feed, now=None):
 
     feeds = []
     with ThreadPoolExecutor(max_workers=6) as pool:
-        for feed, error in pool.map(one, SOURCES.items()):
+        for feed, error in pool.map(one, ALL_SOURCES.items()):
             if feed:
                 feeds.append(feed)
             if error:
