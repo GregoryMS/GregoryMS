@@ -5,6 +5,7 @@
     const panel = $('map-layers-panel'), toggle = $('map-layers-toggle'), embedToggle = $('embedded-layers-toggle');
     const preferenceKey = 'gregle-maps-layers', credentialKey = 'gregle-maps-tomtom-key';
     let saved, apiKey = '', connectForRouting = false;
+    const hasTrafficAccess = () => !!apiKey || config.serverTomTom === true;
     try { saved = JSON.parse(localStorage.getItem(preferenceKey)); apiKey = localStorage.getItem(credentialKey) || ''; } catch {}
     let state = core.normalizeLayers(initial || (saved?.ev === true && saved.teslaDefault !== true ? {...saved, tesla: true} : saved));
     const drivebc = window.GregleDriveBC({ map, notify });
@@ -103,10 +104,10 @@
       $('traffic-connect').textContent = apiKey ? 'Manage key' : 'Connect TomTom';
       $('traffic-layer-description').textContent = apiKey ? 'Current traffic flow · key saved' : 'API key required for traffic';
       $('traffic-forget').hidden = !apiKey;
-      $('traffic-refresh').hidden = !state.traffic || !apiKey;
+      $('traffic-refresh').hidden = !state.traffic || !hasTrafficAccess();
       $('traffic-legend').hidden = !state.traffic || !trafficGood;
-      if (!apiKey) status('traffic-layer-status', 'TomTom offers a free allowance; add your API key to connect.');
-      else if (!state.traffic) status('traffic-layer-status', 'Connected in this browser. Turn on Traffic to display it.');
+      if (!hasTrafficAccess()) status('traffic-layer-status', 'TomTom offers a free allowance; add your API key to connect.');
+      else if (!state.traffic) status('traffic-layer-status', apiKey ? 'Connected in this browser. Turn on Traffic to display it.' : 'TomTom is off. Turn on Traffic to display it, or add your own API key to replace the default connection.');
     };
     function changeBase() {
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
@@ -173,8 +174,8 @@
         tile.gregleClean = clean;
         tile.onload = () => { clean(); done(null, tile); };
         tile.onerror = () => { clean(); done(new Error('Traffic tile unavailable'), tile); };
-        const url = L.Util.template(this._url, coords);
-        fetch(url, { headers: { 'TomTom-Api-Key': key }, credentials: 'omit', signal: controller.signal }).then(response => {
+        const url = L.Util.template(key ? this._url : '/api/maps/tomtom/tiles/{z}/{x}/{y}', coords);
+        fetch(url, { headers: key ? { 'TomTom-Api-Key': key } : {}, credentials: key ? 'omit' : 'same-origin', signal: controller.signal }).then(response => {
           if (!response.ok) { const error = new Error('Traffic request failed'); error.status = response.status; throw error; }
           return response.blob();
         }).then(blob => {
@@ -196,13 +197,13 @@
     }
     function scheduleTraffic() {
       clearInterval(trafficTimer); trafficTimer = null;
-      if (!core.isEmbeddedBase(state.base) && state.traffic && apiKey && !document.hidden && !trafficPaused) {
+      if (!core.isEmbeddedBase(state.base) && state.traffic && hasTrafficAccess() && !document.hidden && !trafficPaused) {
         trafficTimer = setInterval(() => { if (Date.now() - lastTrafficRequest >= 60000) loadTraffic(); }, 60000);
       }
     }
     function loadTraffic() {
       removeTraffic();
-      if (core.isEmbeddedBase(state.base) || !state.traffic || !apiKey || document.hidden) { render(); scheduleTraffic(); return; }
+      if (core.isEmbeddedBase(state.base) || !state.traffic || !hasTrafficAccess() || document.hidden) { render(); scheduleTraffic(); return; }
       const endpoint = new URL(config.trafficURL);
       if (endpoint.protocol !== 'https:' || endpoint.hostname !== 'api.tomtom.com' || !endpoint.pathname.startsWith('/maps/orbis/traffic/flow/raster/tile/')) {
         trafficPaused = true; status('traffic-layer-status', 'Traffic is not configured for a TomTom endpoint.', true); scheduleTraffic(); return;
@@ -260,7 +261,7 @@
       if (first || previous.ferries !== active.ferries) ferries.setEnabled(active.ferries);
       if (first || previous.webcams !== active.webcams) cameras.setEnabled(active.webcams);
       if (first || previous.google !== active.google) googleTraffic.setEnabled(active.google);
-      if (first || previous.traffic !== active.traffic || (active.traffic && apiKey && !trafficLayer && !trafficPaused)) {
+      if (first || previous.traffic !== active.traffic || (active.traffic && hasTrafficAccess() && !trafficLayer && !trafficPaused)) {
         if (active.traffic) loadTraffic(); else { removeTraffic(); trafficPaused = false; scheduleTraffic(); }
       }
       if (first || previous.streetview !== active.streetview) streetView.setEnabled(active.streetview);
@@ -298,7 +299,7 @@
     $('map-google-traffic').addEventListener('change', () => setState({ ...state, google: $('map-google-traffic').checked }, true));
     $('map-traffic').addEventListener('change', () => {
       setState({ ...state, traffic: $('map-traffic').checked }, true);
-      if (state.traffic && !apiKey) openPanel(true);
+      if (state.traffic && !hasTrafficAccess()) openPanel(true);
     });
     $('traffic-connect').addEventListener('click', () => openPanel(true));
     $('traffic-key-form').addEventListener('submit', event => {
@@ -323,13 +324,13 @@
       if (document.hidden) {
         if (!trafficGood) removeTraffic();
         scheduleTraffic(); render();
-      } else if (!core.isEmbeddedBase(state.base) && state.traffic && apiKey && !trafficPaused) {
+      } else if (!core.isEmbeddedBase(state.base) && state.traffic && hasTrafficAccess() && !trafficPaused) {
         if (!trafficLayer || Date.now() - lastTrafficRequest >= 60000) loadTraffic();
         else scheduleTraffic();
       }
     });
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
-    window.addEventListener('pageshow', event => { if (event.persisted && !core.isEmbeddedBase(state.base) && state.traffic && apiKey && !trafficPaused) loadTraffic(); });
+    window.addEventListener('pageshow', event => { if (event.persisted && !core.isEmbeddedBase(state.base) && state.traffic && hasTrafficAccess() && !trafficPaused) loadTraffic(); });
     setState(state);
     return { getState: () => ({ ...state }), setState: next => setState(next, false), connectTraffic: () => openPanel(true, true), openStreetView: point => {
       setState({ ...state, base: core.isEmbeddedBase(state.base) ? 'street' : state.base, streetview: true }, true);

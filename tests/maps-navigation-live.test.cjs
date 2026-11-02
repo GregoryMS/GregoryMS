@@ -49,6 +49,7 @@ function harness({connected = false} = {}) {
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation-live.js'), 'utf8'), context);
   const map = { on: (e, f) => { events[e] = f; }, removeLayer: l => removed.push(l), panTo() {}, getSize: () => ({ x: 600, y: 800 }), project: () => ({ y: 100 }), unproject: p => p, setView() {} };
   const routing = traffic.create({fetch: context.fetch, storage: { getItem: key => connected && key === 'gregle-maps-tomtom-key' ? 'test-key-1234567890' : null, setItem() {} }});
+  if (connected) routing.setEnabled(true);
   const request = routing.request; routing.request = async (...args) => ({...await request(...args), fetchedAt: now});
   const live = context.window.GregleLiveNavigation({ map, routing, onRoute: () => { routeUpdates++; }, onStop: m => { stopMessage = m; } });
   return { el, live, routing, context, pending, cleared, markers, spoken, removed, events, tick: () => tick(), advance: ms => { now += ms; }, routeUpdates: () => routeUpdates, message: () => stopMessage,

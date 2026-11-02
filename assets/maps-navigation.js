@@ -1,7 +1,7 @@
 'use strict';
 window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onConnectTraffic = () => {} }) => {
   const $ = id => document.getElementById(id), core = window.GregleNavigation;
-  const routing = window.GregleMapRouting.create();
+  const routing = window.GregleMapRouting.create({defaultAvailable: config.serverTomTom === true});
   const panel = $('map-directions'), toggle = $('map-directions-toggle');
   const inputs = { from: $('directions-from'), to: $('directions-to') }, points = { from: null, to: null };
   const routeLayers = L.layerGroup().addTo(map);
@@ -22,7 +22,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       $(id).disabled = !routing.connected;
     }
     $('directions-traffic-row').hidden = !currentRoute || mode !== 'driving';
-    $('directions-traffic-connect').hidden = !currentRoute || mode !== 'driving' || routing.connected;
+    $('directions-traffic-connect').hidden = !currentRoute || mode !== 'driving' || routing.hasOwnKey;
+    $('directions-traffic-connect').textContent = config.serverTomTom ? 'Add your own TomTom key' : 'Connect TomTom';
     $('directions-estimate-note').textContent = window.GregleMapRouting.note(currentRoute, mode);
   }
   async function refreshTraffic() {

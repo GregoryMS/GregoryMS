@@ -139,6 +139,8 @@
     return;
   }
   let config = { ...defaults };
+  const serverTomTom = location.hostname === 'maps.gregle.uk' ? fetch('/api/maps/tomtom-config', {credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(3000)})
+    .then(async response => response.ok && (await response.json()).enabled === true).catch(() => false) : Promise.resolve(false);
   try {
     const response = await fetch('assets/maps-config.json?v=20261021-fast-places', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
@@ -147,6 +149,7 @@
       for (const key of Object.keys(defaults)) if (typeof supplied[key] === 'string' && (supplied[key].startsWith('https://') || (['messageSignsURL', 'ferriesURL'].includes(key) && supplied[key].startsWith('/') && !supplied[key].startsWith('//')))) config[key] = supplied[key];
     }
   } catch {}
+  config.serverTomTom = await serverTomTom;
   const initial = core.readHash(location.hash);
   map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, tapHold: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   drawer = window.GregleMapDrawer?.({ map });

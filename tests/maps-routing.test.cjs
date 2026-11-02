@@ -48,10 +48,10 @@ test('invalid traffic estimates, paths and guidance cannot become navigation rou
   }
 });
 
-test('traffic defaults on, persists off, and walking never calls TomTom', async () => {
+test('traffic defaults off even with a key, persists off, and walking never calls TomTom', async () => {
   const saved = storage(true), calls = [];
   const service = routing.create({storage: saved, fetch: async url => {calls.push(url); return ok(osrm());}});
-  assert.equal(service.enabled, true); assert.equal(service.connected, true);
+  assert.equal(service.enabled, false); assert.equal(service.connected, true);
   service.setEnabled(false);
   const route = await service.request(from, to);
   assert.equal(route.traffic, false); assert.equal(route.trafficReason, 'off');
@@ -70,6 +70,7 @@ test('missing credentials and denied or exhausted keys use explicit traffic-free
     const calls = [], service = routing.create({storage: storage(true), fetch: async url => {
       calls.push(url); return url.includes('tomtom') ? {ok: false, status} : ok(osrm());
     }});
+    service.setEnabled(true);
     const result = await service.request(from, to);
     assert.equal(result.traffic, false); assert.equal(result.trafficReason, 'unavailable');
     assert.match(routing.note(result), /Live traffic unavailable/);
@@ -83,6 +84,7 @@ test('a cancelled traffic request cannot fall back or return stale geometry', as
   const controller = new AbortController(), calls = [];
   let complete;
   const service = routing.create({storage: storage(true), fetch: url => {calls.push(url); return new Promise(resolve => {complete = resolve;});}});
+  service.setEnabled(true);
   const request = service.request(from, to, 'driving', {signal: controller.signal});
   controller.abort(); complete(ok(traffic()));
   await assert.rejects(request, {name: 'AbortError'}); assert.equal(calls.length, 1);
@@ -90,16 +92,49 @@ test('a cancelled traffic request cannot fall back or return stale geometry', as
 
 test('successful traffic data never calls the fallback provider; storage failure remains usable', async () => {
   const calls = [], service = routing.create({storage: storage(true), fetch: async url => {calls.push(url); return ok(traffic());}});
+  service.setEnabled(true);
   assert.equal((await service.request(from, to)).traffic, true); assert.equal(calls.length, 1);
   const unavailableStorage = routing.create({storage: {getItem() {throw Error();}, setItem() {throw Error();}}, fetch: async () => ok(osrm())});
   unavailableStorage.setEnabled(false); assert.equal((await unavailableStorage.request(from, to)).traffic, false);
 });
 
-test('connecting or forgetting a key updates the default without overwriting an explicit off choice', () => {
+test('connecting a key stays off until explicitly enabled, and remembers that choice', () => {
   const saved = storage(false), service = routing.create({storage: saved});
   assert.equal(service.enabled, false);
-  saved.setItem('gregle-maps-tomtom-key', key); assert.equal(service.enabled, true);
+  saved.setItem('gregle-maps-tomtom-key', key); assert.equal(service.enabled, false);
   service.setEnabled(false); assert.equal(service.enabled, false);
   saved.setItem('gregle-maps-tomtom-key', ''); assert.equal(service.enabled, false);
   saved.setItem('gregle-maps-tomtom-key', key); assert.equal(service.enabled, false);
+});
+
+test('the private default stays off until opted in and never exposes a key to the browser request', async () => {
+  const calls = [], service = routing.create({defaultAvailable: true, storage: storage(false), fetch: async (url, options) => {
+    calls.push({url, options}); return ok(url === '/api/maps/tomtom/route' ? traffic() : osrm());
+  }});
+  assert.equal(service.connected, true); assert.equal(service.enabled, false); assert.equal(service.hasOwnKey, false);
+  await service.request(from, to); assert(calls[0].url.includes('project-osrm'));
+  service.setEnabled(true); assert.equal((await service.request(from, to)).traffic, true);
+  assert.equal(calls[1].url, '/api/maps/tomtom/route'); assert.equal(calls[1].options.credentials, 'same-origin');
+  assert.equal(calls[1].options.headers['TomTom-Api-Key'], undefined);
+  assert.deepEqual(JSON.parse(calls[1].options.body), {from, to});
+});
+
+test('a personal key replaces the private default and never falls back to that default when declined', async () => {
+  const calls = [], service = routing.create({defaultAvailable: true, storage: storage(true), fetch: async (url, options) => {
+    calls.push({url, options}); return url.includes('tomtom.com') ? {ok: false, status: 403} : ok(osrm());
+  }});
+  service.setEnabled(true); assert.equal(service.hasOwnKey, true);
+  const route = await service.request(from, to); assert.equal(route.traffic, false);
+  assert.equal(calls[0].options.headers['TomTom-Api-Key'], key);
+  assert.equal(calls.length, 2); assert(calls[1].url.includes('project-osrm'));
+  assert(!calls.some(c => c.url === '/api/maps/tomtom/route'));
+});
+
+test('a malformed personal override cannot silently spend the shared default allowance', async () => {
+  const saved = storage(false), calls = [];
+  saved.setItem('gregle-maps-tomtom-key', 'invalid-personal-key!');
+  const service = routing.create({defaultAvailable: true, storage: saved, fetch: async url => {calls.push(url); return url.includes('tomtom.com') ? {ok: false, status: 403} : ok(osrm());}});
+  service.setEnabled(true); await service.request(from, to);
+  assert.equal(service.hasOwnKey, true); assert.equal(calls.length, 2);
+  assert(!calls.includes('/api/maps/tomtom/route'));
 });
