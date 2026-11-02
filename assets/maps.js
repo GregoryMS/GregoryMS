@@ -16,7 +16,7 @@
     placesURL: 'https://overpass.private.coffee/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, drawer, layerControl, placeDetails, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
+  let map, drawer, layerControl, placeDetails, busyness, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -47,6 +47,7 @@
   function renderPin(point, lookup = true, nearby = false) {
     const changed = point && (!selected || point.lat !== selected.lat || point.lng !== selected.lng);
     selected = point;
+    busyness?.select(point);
     if ($('route-pin-actions')) $('route-pin-actions').hidden = !point;
     if (marker) { map.removeLayer(marker); marker = null; }
     if (accuracy) { map.removeLayer(accuracy); accuracy = null; }
@@ -152,6 +153,7 @@
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
   layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, getSelected: () => layerControl ? selected : initial.pin, onStreetViewOpen: () => { navigation?.close(); $('map-place').hidden = true; }, onStreetViewSelect: point => { intent++; cancelSearch(); hideSearch(); renderPin(point, false); $('map-place').hidden = true; updateURL(); }, onChange: () => { syncMapMode(); syncStreetView(); updateURL(); }, onOpen: () => drawer?.show('map-layers-panel', true) });
+  busyness = window.GregleMapBusyness?.();
   placeDetails = window.GregleMapPlaces({ map, config, onPlace: point => { renderPin(point, false); updateURL(); } });
   syncMapMode(false);
   renderPin(initial.pin); syncStreetView(); updateURL();
