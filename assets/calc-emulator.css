@@ -12,7 +12,7 @@
 .emulator-view {position:relative}
 .emu-display {position:relative;padding:8px;border:2px solid #14161b;border-radius:12px;background:#15171d;overflow:hidden}
 .emu-lcd {position:relative;width:100%;aspect-ratio:4/3;background:white;border-radius:3px;overflow:hidden}
-#emulatorCanvas {display:block;width:100%;height:100%;background:#fff;image-rendering:pixelated;outline-offset:-3px;touch-action:manipulation}
+.emu-lcd canvas {display:block;width:100%;height:100%;background:#fff;image-rendering:pixelated;outline-offset:-3px;touch-action:manipulation}
 .emu-overlay {position:absolute;inset:0;z-index:2;overflow:auto;padding:20px;background:#edf0ec;color:#23392f;font:14px/1.5 ui-monospace,monospace}
 .emu-overlay h2 {margin:0 0 14px;font:600 20px/1.3 ui-monospace,monospace}
 .emu-overlay p {margin:10px 0;font:13px/1.5 ui-monospace,monospace}
@@ -55,3 +55,19 @@
 .emu-keypad button,.emu-control-grid button,.emu-menu-keys button {touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .emu-credits {display:flex;justify-content:space-between;align-items:center;margin:18px 2px 0;color:#aaa5b5;font:8px/1.5 ui-monospace,monospace;letter-spacing:1px}
 .emu-credits a {color:inherit}
+
+.ti89-active #graphCalculator > :not(.graph-brand):not(#ti89View) {display:none!important}
+.ti89-active .trace-form {display:none}
+.ti89-view .emu-lcd {aspect-ratio:8/5;background:#bfcfad}
+.calculator-engine-controls {gap:6px}
+.calculator-engine-switch {gap:5px;padding-left:4px;font-size:9px}
+
+/* Titanium keys retain their physical rows; each arrow has its own full target. */
+.ti89-view .emu-menu-keys {margin-top:35px}
+.ti89-view .emu-menu-keys .emu-legend {display:grid;gap:3px;justify-content:center;font-size:8px}
+.ti89-view .emu-legend {font-size:8px;gap:1px}
+.ti89-view .emu-diamond-legend {color:#a6c6ff}
+.ti89-view .emu-control-grid .emu-legend {font-size:7px}
+.ti89-view [data-emu-key="shift"] {font-size:30px;line-height:1}
+.ti89-view .emu-menu-keys button {justify-self:center;width:52px;height:52px;min-height:52px;border-radius:50%;font-size:13px}
+.ti89-view .emu-menu-keys .emu-legend {left:50%;right:auto;width:82px;transform:translateX(-50%)}

@@ -21,7 +21,7 @@ function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,st
     if (url.pathname===fail) throw Error('Interrupted connection');
     const file=path.join(root,url.pathname==='/' ? 'calc.html' : url.pathname);
     let content=fs.readFileSync(file);
-    if (staleHTML && file.endsWith('calc.html')) content=content.toString().replace('calc-offline.js?v=20261031-offline2','calc-offline.js?v=another-release');
+    if (staleHTML && file.endsWith('calc.html')) content=content.toString().replace('calc-offline.js?v=20261102-ti89-5','calc-offline.js?v=another-release');
     const type=/\.wasm$/.test(file) ? 'application/wasm' : /\.(?:m?js)$/.test(file) ? 'text/javascript' : /\.html$/.test(file) ? 'text/html' : 'application/octet-stream';
     const response=new Response(content,{headers:{'content-type':type}});
     Object.defineProperty(response,'url',{value:url.href});
@@ -41,9 +41,10 @@ test('offline install saves the complete calculator including a never-opened emu
   const app=environment(); await app.lifecycle('install'); await app.lifecycle('activate');
   assert.equal((await app.status()).ready,true);
   for (const file of ['worker.mjs','cemu.mjs','cemu.wasm']) assert(app.requests.some(url => url.endsWith('/assets/ti84/'+file)));
+  for (const file of ['worker.js','ti68k.js','rom-source.mjs?v=20261102-ti89-5']) assert(app.requests.some(url => url.endsWith('/assets/ti89/'+file)));
   assert(app.requests.every(url => url.startsWith('https://calc.gregle.uk/')),'no ROM or other third-party resource in the service-worker cache');
   const count=app.requests.length;
-  for (const url of ['/?engine=ti84','/?popout=1','/calc.html?engine=ti84','/calc.html?popout=1']) assert.match(await (await app.request(url)).text(),/Calculator · Gregle/);
+  for (const url of ['/?engine=ti89','/calc.html?engine=ti89','/?engine=ti84','/?popout=1','/calc.html?engine=ti84','/calc.html?popout=1']) assert.match(await (await app.request(url)).text(),/Calculator · Gregle/);
   assert.equal(app.requests.length,count,'all launch URLs work without network');
 });
 test('calculator caching leaves other Gregle apps and unknown asset versions alone',async () => {

@@ -6,6 +6,7 @@ __pycache__/
 *.rom
 *.ROM
 *.gregle84
+*.gregle89
 
 # Runtime credentials stay in Cloudflare; local secret files are never published.
 .dev.vars
