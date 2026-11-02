@@ -1,4 +1,4 @@
-.graph-layout {--screen:#dce7df;--ink:#23392f;--screen-line:#bdcec2;--key:#3b3d46;--shell:#22242c;max-width:520px;margin:auto;padding:20px 22px 16px;border:1px solid #53555f;border-radius:30px 30px 48px 48px;background:linear-gradient(135deg,#333640,#22242c 70%);box-shadow:inset 0 2px 2px #ffffff18,inset 0 -8px 0 #00000025,0 20px 48px #00000024;color:#f5f5f7;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.graph-layout {--screen:#dce7df;--ink:#23392f;--screen-line:#bdcec2;--key:#3b3d46;--shell:#22242c;max-width:520px;margin:auto;padding:20px 22px 16px;border:1px solid #53555f;border-radius:30px 30px 48px 48px;background:linear-gradient(135deg,#333640,#22242c 70%);box-shadow:inset 0 1px 0 #ffffff18,inset 0 -8px 0 #00000025,0 20px 48px #00000024;color:#f5f5f7;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 #graphCalculator:focus {outline:none}
 .graph-layout [hidden],.calc-layout[hidden],.calc-help[hidden] {display:none!important}
 .graph-brand {display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 3px 14px}
@@ -87,7 +87,7 @@
 .trace-form button {border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--calc-accent);padding:7px 10px;font:inherit}
 .graph-help {max-width:520px;margin:12px auto 0;color:var(--muted);font-size:12px;line-height:1.7}.graph-help summary {cursor:pointer;padding:8px 0}.graph-help p {margin:10px 0}
 
-.calculator-fit .graph-layout {width:520px;max-width:none;margin:0;box-sizing:border-box;box-shadow:inset 0 2px 2px #ffffff18,inset 0 -8px 0 #00000025}
+.calculator-fit .graph-layout {width:520px;max-width:none;margin:0;box-sizing:border-box;box-shadow:inset 0 1px 0 #ffffff18,inset 0 -8px 0 #00000025}
 
 .alpha-key {background:linear-gradient(#77a890,#527b67);border-color:#96bda8;border-bottom-color:#191a20;color:#f6fff9}
 .alpha-key[aria-pressed="true"] {background:#b8e6cb;color:#193b2a;outline:2px solid #8dc7a5;outline-offset:2px}

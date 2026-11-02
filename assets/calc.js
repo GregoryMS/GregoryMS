@@ -197,8 +197,13 @@
     sizer.style.aspectRatio = `${baseWidth} / ${baseHeight + gutter*baseWidth/sizer.clientWidth}`;
     const availableHeight = Math.max(1,sizer.clientHeight-gutter);
     const scale = Math.min(sizer.clientWidth/baseWidth,availableHeight/baseHeight);
-    fit.style.top = `${availableHeight/2}px`;
-    fit.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    // Anchor the scaled case on physical pixels instead of fractional percentage
+    // translations, which soften its top border and small header controls.
+    const bounds = sizer.getBoundingClientRect(), pixels = window.devicePixelRatio || 1;
+    const align = (origin,offset) => Math.round((origin+offset)*pixels)/pixels-origin;
+    fit.style.left = `${align(bounds.left,(sizer.clientWidth-baseWidth*scale)/2)}px`;
+    fit.style.top = `${align(bounds.top,(availableHeight-baseHeight*scale)/2)}px`;
+    fit.style.transform = `scale(${scale})`;
     sizer.style.setProperty('--calculator-scale',String(scale));
     document.dispatchEvent(new Event('gregle-calc-resize'));
   }
