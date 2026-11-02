@@ -117,7 +117,7 @@
       button.hidden = true; back.hidden = false;
       content.replaceChildren(widget);
     }
-    async function search() {
+    async function search(choose = false) {
       if (!current || section.hasAttribute('aria-busy')) return;
       if (paused > Date.now()) { pauseMessage(); return; }
       paused = 0;
@@ -145,6 +145,8 @@
             button.hidden = false; button.disabled = false; button.textContent = 'Try popular times again';
             return;
           }
+          const match = !choose && core.singleMatch(current, widget.places);
+          if (match) { details(match); return; }
           message('Choose the matching business to see its popular times.');
         });
         widget.addEventListener('gmp-select', event => { if (isCurrent(token)) details(event.place); });
@@ -157,7 +159,7 @@
       }
     }
     button.addEventListener('click', () => { void search(); });
-    back.addEventListener('click', () => { stopPending(); void search(); });
+    back.addEventListener('click', () => { stopPending(); void search(true); });
 
     return {select(place) {
       const nextKey = core.identity(place);

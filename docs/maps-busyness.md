@@ -2,9 +2,11 @@
 
 Gregle keeps its existing OpenStreetMap/Leaflet map, Photon search, routing and
 layers. A separate **Popular times** section uses the standard Google Places UI
-Kit only after the visitor clicks **Show popular times** on an OSM place. The
-visitor confirms a Google business match before the graph loads. This avoids
-silently showing the wrong business. Google does not have data for every place.
+Kit only after the visitor clicks **Show popular times** on an OSM place. A single
+Google result within 150 metres of the pin opens the graph automatically. When
+there are multiple results, missing coordinates or a more distant result, the
+visitor confirms the business. **Choose another match** always opens the picker,
+including after an automatic match. Google does not have data for every place.
 
 The component uses `gmp-place-search` and full `gmp-place-details` with only name,
 address and `gmp-place-popular-times`. It does not create a Google map, use the

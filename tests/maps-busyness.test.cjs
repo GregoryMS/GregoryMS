@@ -47,6 +47,31 @@ test('business identity, search text and fallback URLs preserve names without in
   assert.equal(url.searchParams.get('query'), '<b>Coffee & Tea</b>, 12 Main St, Victoria near 48.42800,-123.36500');
 });
 
+test('only one nearby, located Google business can bypass the picker', () => {
+  const nearby = {id: 'nearby', location: {lat: () => shop.lat + 0.0002, lng: () => shop.lng}};
+  assert.equal(core.singleMatch(shop, [nearby]), nearby);
+  const literal = {id: 'literal', location: {lat: shop.lat, lng: shop.lng}};
+  assert.equal(core.singleMatch(shop, [literal]), literal);
+  for (const candidates of [[], [nearby, literal], [{id: 'missing-location'}], [{id: 'distant-branch', location: {lat: shop.lat + 0.01, lng: shop.lng}}], [{id: 'bad-location', location: {lat: NaN, lng: shop.lng}}], [{id: 'invalid-latitude', location: {lat: 91, lng: 0}}], [{location: literal.location}], [{id: 'unavailable', location: {lat() {throw Error('unavailable');}}}]]) {
+    assert.equal(core.singleMatch(shop, candidates), null);
+  }
+  assert.equal(core.singleMatch(null, [nearby]), null);
+});
+
+test('one click opens a unique nearby match; the user can still choose a different match without auto-opening it again', async () => {
+  const h = setup(); h.api.select(shop); h.get('busyness-show').click(); await flush();
+  const search = h.widget(), match = {id: 'nearby', location: {lat: () => shop.lat, lng: () => shop.lng}};
+  search.places = [match]; search.emit('gmp-load');
+  const details = h.widget(); assert.equal(details.tagName, 'gmp-place-details'); assert.equal(details.children[0].place, 'nearby');
+  search.emit('gmp-select', {place: {id: 'late-click'}}); assert.equal(h.widget(), details);
+  details.emit('gmp-load'); h.get('busyness-back').click(); await flush();
+  const picker = h.widget(); picker.places = [match]; picker.emit('gmp-load');
+  assert.equal(h.widget(), picker); assert.equal(picker.tagName, 'gmp-place-search');
+  assert.match(h.get('busyness-status').textContent, /Choose the matching/);
+  picker.emit('gmp-select', {place: match}); assert.equal(h.widget().tagName, 'gmp-place-details');
+  assert.equal(h.calls.length, 1); assert.deepEqual(h.imports, ['places']);
+});
+
 test('quota reset follows Pacific midnight on normal, spring and autumn daylight-saving days', () => {
   for (const [start, end] of [
     ['2026-11-02T20:00:00Z', '2026-11-03T08:00:00Z'],
