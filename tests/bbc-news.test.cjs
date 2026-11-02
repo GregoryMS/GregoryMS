@@ -16,7 +16,7 @@ function environment(fetch, parsedItems = []) {
   const timers = new Map();
   let timer = 0, frame;
   const elements = new Map();
-  const options = ['bbc', 'nrk'].map(id => ({ dataset: { newsSource: id }, setAttribute() {} }));
+  const options = ['bbc', 'nrk', 'radio-canada'].map(id => ({ dataset: { newsSource: id }, setAttribute() {} }));
   const context = vm.createContext({
     URL, AbortController, console, fetch, tickerTrack: track,
     document: {
@@ -192,4 +192,23 @@ test('unavailable storage and invalid source choices do not break source switchi
   await env.select('nrk');
   await env.select('toString');
   assert.match(env.track.innerHTML, /Siste nytt/);
+});
+
+test('Radio-Canada uses its official feed, preserves French titles and opens the Info site', async () => {
+  let requested;
+  const feed = { feeds: [{ url: 'https://ici.radio-canada.ca/info/rss/info/en-continu',
+    fetchedAt: new Date().toISOString(), xml: '<rss><channel/></rss>' }] };
+  const item = { title: 'Élections : l’actualité & les résultats', link: 'https://ici.radio-canada.ca/nouvelle/1234567/elections' };
+  const env = environment(async url => { requested = url; return response(feed); }, [item]);
+  await env.select('radio-canada');
+  assert.equal(requested, 'data/news-feeds.json');
+  assert.match(env.track.innerHTML, /Élections : l’actualité &amp; les résultats/);
+  assert.equal(env.elements.get('newsSourceLink').href, 'https://ici.radio-canada.ca/info');
+  assert.match(env.elements.get('newsSourceLink').innerHTML, /radio-canada-info.svg/);
+  for (const link of ['https://radio-canada.ca.evil.test/', 'https://user:password@ici.radio-canada.ca/', 'https://www.nrk.no/news']) {
+    const unsafe = environment(async () => response(feed), [{ ...item, link }]);
+    await unsafe.select('radio-canada');
+    assert.match(unsafe.track.innerHTML, /Open Radio-Canada Info/);
+    assert.match(unsafe.track.innerHTML, /Live headlines unavailable/);
+  }
 });
