@@ -570,13 +570,45 @@ Run `node --test tests/sports*.test.cjs` and `python3 -m unittest discover -s te
 
 ## Maps directions and live navigation
 
-The Directions map button opens a route planner with **Driving** and **Walking** modes. Search and explicitly choose both endpoints, use **My location** for the start, or select a map place / dropped pin and choose **Start here** or **Directions here**. Swap endpoints and clear the journey from the panel. Search uses Photon with map-centre bias and no automatic lookup while typing. **Show route** sends the endpoints to OSRM's driving server or FOSSGIS's dedicated pedestrian server (`routing.openstreetmap.de/routed-foot/route/v1/foot`). Walking uses pedestrian access rules, not a relabelled driving route. Requests time out after 15 seconds, are spaced by at least 1.1 seconds, and are cancelled or ignored when superseded. Routes and location history are not persisted.
+The Directions map button opens a route planner with **Driving** and **Walking** modes. Search and explicitly choose both endpoints, use **My location** for the start, or select a map place / dropped pin and choose **Start here** or **Directions here**. Swap endpoints and clear the journey from the panel. Search uses Photon with map-centre bias and no automatic lookup while typing. **Show route** sends driving endpoints to TomTom when a Routing-enabled key is connected and live traffic is enabled, otherwise OSRM's driving server. Walking uses FOSSGIS's dedicated pedestrian server (`routing.openstreetmap.de/routed-foot/route/v1/foot`). Walking uses pedestrian access rules, not a relabelled driving route. Requests time out after 15 seconds, are spaced by at least 1.1 seconds, and are cancelled or ignored when superseded. Routes and location history are not persisted.
 
-A purple route with A/B endpoints, estimated distance and duration, and expandable steps appears on the map; walking paths are dotted. **Start navigation** requests a fresh high-accuracy GPS watch, shows a moving location marker, next turn and distance, estimated arrival and remaining journey, and follows your position. Panning pauses following; **Recenter** resumes it. Optional **Voice on** uses the browser's speech synthesis when available. Sustained off-route fixes trigger recalculation after three seconds, at most once every 20 seconds; a starting location away from the preview route is recalculated immediately. Weak or stale GPS pauses turn guidance. Permission errors explain recovery. Stop, arrival and page exit release the GPS watch; stopping also aborts pending recalculation and speech. Navigation requires HTTPS (or localhost), location permission and connectivity. Location can pause when the browser is in the background. Estimates exclude live traffic and ferry waits; external Google/Apple links preserve the selected mode. Public routing services have no availability guarantee and require light use: https://routing.openstreetmap.de/about.html. No new key or server is required.
+A purple route with A/B endpoints, estimated distance and duration, and expandable steps appears on the map; walking paths are dotted. **Start navigation** requests a fresh high-accuracy GPS watch, shows a moving location marker, next turn and distance, estimated arrival and remaining journey, and follows your position. Panning pauses following; **Recenter** resumes it. Optional **Voice on** uses the browser's speech synthesis when available. Sustained off-route fixes trigger recalculation after three seconds, at most once every 20 seconds; a starting location away from the preview route is recalculated immediately. Weak or stale GPS pauses turn guidance. Permission errors explain recovery. Stop, arrival and page exit release the GPS watch; stopping also aborts pending recalculation and speech. Navigation requires HTTPS (or localhost), location permission and connectivity. Location can pause when the browser is in the background. With live traffic off or unavailable, estimates exclude live traffic and ferry waits; ferry waits can still vary with traffic-aware estimates. External Google/Apple links preserve the selected mode. Public routing services have no availability guarantee and require light use: https://routing.openstreetmap.de/about.html. Ordinary driving and walking routes require no key or server.
 
 **Car layout** enlarges touch controls, fields and navigation text, and remembers only that display preference. It activates automatically for a Tesla user agent and can be toggled on other devices. Available viewport width controls the layout, including Tesla's full and half-screen browser: a side panel above 700 pixels, the existing resizable drawer at 700 pixels and below, and a separate navigation card that remains visible outside the drawer. ResizeObserver notifies Leaflet when its container changes size. Real Tesla hardware has not been tested; GPS and speech availability depend on the vehicle browser.
 
-Run `node --test tests/maps-navigation*.test.cjs` for mode-specific routing, progress and arrival, handoff URLs, request cancellation, GPS lifecycle, weak and stale fixes, rerouting and cleanup checks.
+**Use live traffic** appears only with a displayed driving route, in its summary
+and in the live-navigation card. It is off and disabled when no TomTom key is
+connected. **Connect TomTom** in the route summary opens the existing key form;
+connecting for routing does not turn on the separate traffic tile layer. Enable
+Routing access for this key and restrict it to `maps.gregle.uk` and any other
+Gregle host where you use Maps. With a key, traffic defaults on unless explicitly
+switched off; the on/off choice is remembered locally. Removing the key turns it
+off again. Clearing the route, closing directions or switching to walking hides
+the controls. Arrival hides the live traffic control.
+
+Traffic-aware driving uses TomTom Orbis Routing v3 with `traffic: live`, departure
+`now`, fastest routing and its turn instructions. The key is read from the
+existing browser-only `gregle-maps-tomtom-key` setting and sent in a header directly
+to TomTom, not in shared links or the repository. Route times retain TomTom's
+progress timing through congested sections. While navigating, traffic refreshes
+at most every two minutes with a fresh, accurate GPS fix and a visible page.
+Switching traffic recalculates from the current position; stale requests cannot
+replace a newer choice. Stop, arrival and page exit abort pending work.
+
+Missing, denied, exhausted or temporarily unavailable traffic falls back to
+ordinary OSRM routing with an explicit notice that live traffic is excluded.
+Denied/exhausted keys stop automatic TomTom attempts in this page session until
+the key changes or traffic is explicitly re-enabled. Route-only traffic does not
+require the Google/TomTom traffic overlay to be on. The route remains purple.
+If an update fails entirely, the previous route stays visible with an update
+warning. Old traffic estimates are labelled after three minutes.
+
+TomTom's free-tier allowance and account-wide limits are enforced by TomTom;
+no paid plan or credit is configured by this feature. See [current pricing](https://docs.tomtom.com/pricing).
+API references: [Orbis routing](https://docs.tomtom.com/routing-api/documentation/tomtom-orbis-maps/v3/calculate-route)
+and [guidance](https://docs.tomtom.com/routing-api/documentation/tomtom-orbis-maps/v3/guidance-instructions).
+
+Run `node --test tests/maps-navigation*.test.cjs tests/maps-routing.test.cjs` for routing providers, credential defaults, quota fallback, traffic timing, mode-specific routing, progress and arrival, handoff URLs, request cancellation, GPS lifecycle, weak and stale fixes, rerouting and cleanup checks.
 
 ## Calculator
 

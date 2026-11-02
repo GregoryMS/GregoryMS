@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const core=require('../assets/maps-core.js');
 
-function setup({storage=new Map(),initial}={}) {
+function setup({storage=new Map(),initial,onTrafficKeyChange=()=>{}}={}) {
   const elements=new Map(),calls=[];
   const get=id=>{
     if(!elements.has(id))elements.set(id,{
@@ -27,10 +27,10 @@ function setup({storage=new Map(),initial}={}) {
   const L={TileLayer:{extend:()=>function(){}},tileLayer:()=>({on(){return this;},setZIndex(){return this;},addTo(){return this;}})};
   vm.runInNewContext(fs.readFileSync(__dirname+'/../assets/maps-layers.js','utf8'),{
     window,document,L,URL,AbortController,
-    localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)},
+    localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
     clearInterval(){},clearTimeout(){},setTimeout(){},setInterval(){}
   });
-  const api=window.GregleMapLayers({map:{removeLayer(){},closePopup(){}},config:{},initial,notify(){},onChange(){}});
+  const api=window.GregleMapLayers({map:{removeLayer(){},closePopup(){}},config:{},initial,notify(){},onChange(){},onTrafficKeyChange});
   const change=(id,value)=>{get(id).checked=value;get(id).events.change();};
   return {api,get,calls,storage,change};
 }
@@ -87,4 +87,12 @@ test('saved and shared ADS-B Exchange mode can restore the embedded map while pr
     assert(h.calls.some(c=>c[0]==='embed'&&c[1]==='adsbexchange'));
     assert(!h.calls.some(c=>c[0]==='aircraft'&&c[1]===true));
   }
+});
+
+test('connecting a key for routing leaves the tile overlay off and notifies routing on connect and forget',()=>{
+ let changes=0;const h=setup({onTrafficKeyChange:()=>changes++});
+ h.api.connectTraffic();assert.equal(h.get('traffic-key-form').hidden,false);
+ h.get('traffic-api-key').value='test-key-1234567890';h.get('traffic-key-form').events.submit({preventDefault(){}});
+ assert.equal(h.api.getState().traffic,false);assert.equal(changes,1);assert.equal(h.storage.get('gregle-maps-tomtom-key'),'test-key-1234567890');
+ h.get('traffic-forget').events.click();assert.equal(changes,2);assert.equal(h.storage.has('gregle-maps-tomtom-key'),false);
 });

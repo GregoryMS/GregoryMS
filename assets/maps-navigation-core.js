@@ -87,7 +87,10 @@
     const ratio = route.length ? Math.min(1, best.along / route.length) : 1;
     const next = route.steps.find(s => s.start > best.along + 8) || route.steps[route.steps.length - 1];
     const last = route.points[end], endDistance = meters(point, { lat: last[0], lng: last[1] });
-    return { ...best, next, turnDistance: Math.max(0, (next?.start ?? route.length) - best.along), remaining: route.distance * (1 - ratio), seconds: route.duration * (1 - ratio), arrived: ratio > .92 && endDistance < (mode === 'walking' ? 20 : 35) };
+    const span = route.cumulative[best.index + 1] - route.cumulative[best.index];
+    const fraction = span ? (best.along - route.cumulative[best.index]) / span : 0;
+    const elapsed = route.timings ? route.timings[best.index] + fraction * (route.timings[best.index + 1] - route.timings[best.index]) : route.duration * ratio;
+    return { ...best, next, turnDistance: Math.max(0, (next?.start ?? route.length) - best.along), remaining: route.distance * (1 - ratio), seconds: Math.max(0, route.duration - elapsed), arrived: ratio > .92 && endDistance < (mode === 'walking' ? 20 : 35) };
   }
   return { valid, routeURL, links, distance, duration, readRoute, instruction, meters, progress };
 });

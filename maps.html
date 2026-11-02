@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261102-busyness">
+  <link rel="stylesheet" href="assets/maps.css?v=20261102-route-traffic">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -48,14 +48,15 @@
   <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261102-no-streetview-layer" defer></script>
+  <script src="assets/maps-layers.js?v=20261102-route-traffic" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
-  <script src="assets/maps-navigation-core.js?v=20261022-live-navigation" defer></script>
-  <script src="assets/maps-navigation-live.js?v=20261022-live-navigation" defer></script>
-  <script src="assets/maps-navigation.js?v=20261022-live-navigation" defer></script>
+  <script src="assets/maps-navigation-core.js?v=20261102-route-traffic" defer></script>
+  <script src="assets/maps-routing.js?v=20261102-route-traffic" defer></script>
+  <script src="assets/maps-navigation-live.js?v=20261102-route-traffic" defer></script>
+  <script src="assets/maps-navigation.js?v=20261102-route-traffic" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261021-adsbexchange" defer></script>
-  <script src="assets/maps.js?v=20261102-busyness" defer></script>
+  <script src="assets/maps.js?v=20261102-route-traffic" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -131,13 +132,14 @@
       <ol id="directions-results" aria-label="Choose a route location"></ol>
       <div class="directions-actions"><button type="button" id="directions-route" disabled>Show route</button><button type="button" id="directions-clear">Clear route</button></div>
       <div id="directions-handoff" hidden><a id="directions-google" target="_blank" rel="noopener">Navigate in Google Maps ↗</a><a id="directions-apple" target="_blank" rel="noopener">Navigate in Apple Maps ↗</a></div>
-      <div id="directions-summary" hidden><strong id="directions-total"></strong><p id="directions-estimate-note">Estimated driving time excludes live traffic and ferry waits.</p><button type="button" id="directions-start" disabled>Start navigation</button><details><summary>Route steps</summary><ol id="directions-steps"></ol></details></div>
-      <p class="directions-credit">Routes: <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: Photon. Live navigation needs location permission and an internet connection. Route requests share your start and destination with the routing service.</p>
+      <div id="directions-summary" hidden><strong id="directions-total"></strong><div class="route-traffic-row" id="directions-traffic-row" hidden><span>Use live traffic</span><button class="route-traffic-switch" id="directions-traffic" type="button" role="switch" aria-label="Use live traffic" aria-checked="false" disabled aria-describedby="directions-estimate-note"></button></div><p id="directions-estimate-note">Estimated driving time excludes live traffic and ferry waits.</p><button type="button" id="directions-traffic-connect" hidden>Connect TomTom</button><button type="button" id="directions-start" disabled>Start navigation</button><details><summary>Route steps</summary><ol id="directions-steps"></ol></details></div>
+      <p class="directions-credit">Routes: <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a> / <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: Photon. Live navigation needs location permission and an internet connection. Route requests share your start and destination with the routing service.</p>
     </section>
     <section id="navigation-live" class="navigation-live map-glass" aria-label="Live navigation" hidden>
       <div class="navigation-turn"><span id="navigation-arrow" aria-hidden="true">↑</span><div><strong id="navigation-distance">Starting</strong><h2 id="navigation-instruction">Finding your location…</h2></div></div>
       <div class="navigation-trip"><span id="navigation-remaining"></span><span id="navigation-eta"></span></div>
       <p id="navigation-status" role="status"></p>
+      <div id="navigation-traffic-row" class="navigation-traffic-row" hidden><div class="route-traffic-row"><span>Use live traffic</span><button class="route-traffic-switch" id="navigation-traffic" type="button" role="switch" aria-label="Use live traffic" aria-checked="false" disabled aria-describedby="navigation-traffic-note"></button></div><p id="navigation-traffic-note" role="status"></p></div>
       <div class="navigation-controls"><button id="navigation-follow" type="button" aria-pressed="true">Following</button><button id="navigation-voice" type="button" aria-pressed="false">Voice off</button><button id="navigation-stop" type="button">Stop</button></div>
     </section>
     <div class="map-actions" role="group" aria-label="Map tools">
@@ -235,9 +237,9 @@
       <div class="traffic-legend" id="traffic-legend" aria-label="Traffic colours: red indicates slower traffic and green indicates faster traffic" hidden><span>Slower</span><i></i><span>Faster</span></div>
       <div class="traffic-options"><button id="traffic-connect" type="button">Connect TomTom</button><button id="traffic-refresh" type="button" hidden>Refresh traffic</button></div>
       <form id="traffic-key-form" class="traffic-key-form" hidden>
-        <label for="traffic-api-key">TomTom Traffic API key</label>
+        <label for="traffic-api-key">TomTom API key</label>
         <input id="traffic-api-key" type="password" autocomplete="off" spellcheck="false" minlength="16" maxlength="256" required placeholder="Enter your API key" aria-describedby="traffic-key-help">
-        <p id="traffic-key-help">Saved only in this browser. Requests go directly to TomTom. Restrict your key to gregle.uk in your TomTom settings.</p>
+        <p id="traffic-key-help">Saved only in this browser. Enable Routing access for traffic-aware directions. Requests go directly to TomTom. Restrict your key to maps.gregle.uk and gregle.uk in your TomTom settings.</p>
         <div><button class="traffic-save" type="submit">Connect traffic</button><button id="traffic-forget" type="button" hidden>Forget key</button></div>
         <a href="https://docs.tomtom.com/pricing" target="_blank" rel="noopener">TomTom free allowance &amp; sign-up ↗</a>
       </form>

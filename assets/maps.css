@@ -615,3 +615,17 @@
   .streetview-footer { justify-content: flex-end; }
 }
 
+
+/* Route traffic controls appear only with a displayed driving route. */
+.route-traffic-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; font: 500 14px/1.4 system-ui, sans-serif; }
+.map-directions button.route-traffic-switch, .route-traffic-switch { position: relative; flex: 0 0 52px; width: 52px; height: 44px; min-height: 44px; padding: 0; border: 0; border-radius: 12px; background: transparent; cursor: pointer; touch-action: manipulation; }
+.route-traffic-switch::before { content: ''; position: absolute; width: 44px; height: 26px; top: 9px; left: 4px; border-radius: 20px; background: var(--map-border); }
+.route-traffic-switch::after { content: ''; position: absolute; width: 20px; height: 20px; top: 12px; left: 7px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px #0003; }
+.route-traffic-switch[aria-checked="true"]::before { background: #7637cc; }
+.route-traffic-switch[aria-checked="true"]::after { transform: translateX(18px); }
+.route-traffic-switch:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 1px; }
+.navigation-traffic-row { margin: 0 0 12px; padding-top: 2px; border-top: 1px solid var(--map-border); }
+.navigation-traffic-row .route-traffic-row { margin-top: 2px; }
+#navigation-traffic-note { margin: 0 0 8px; color: var(--muted); font: 400 12px/1.5 system-ui, sans-serif; }
+#directions-traffic-connect { margin-bottom: 12px; }
+.navigation-live { max-height: calc(100% - 32px); overflow-y: auto; overscroll-behavior: contain; }

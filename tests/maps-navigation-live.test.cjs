@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs'), vm = require('node:vm');
 const core = require('../assets/maps-navigation-core.js');
+const traffic = require('../assets/maps-routing.js');
 const origin = { lat: 48.42, lng: -123.36 }, corner = { lat: 48.43, lng: -123.36 }, destination = { lat: 48.43, lng: -123.35 };
 function response() {
   return { code: 'Ok', routes: [{ geometry: { type: 'LineString', coordinates: [[origin.lng, origin.lat], [corner.lng, corner.lat], [destination.lng, destination.lat]] }, distance: 1850, duration: 300, legs: [{ steps: [
@@ -29,7 +30,7 @@ test('progress follows geometry, advances turns, detects deviation and arrival',
   assert.equal(core.progress(route, { lat: 48.43, lng: -123.352 }, before).arrived, false);
   assert.equal(core.progress(route, { lat: NaN, lng: 0 }), null);
 });
-function harness() {
+function harness({connected = false} = {}) {
   const elements = new Map(), events = {}, cleared = [], pending = [], markers = [], spoken = [], removed = [];
   let now = 1800000000000, success, failure, tick, stopMessage, routeUpdates = 0;
   class El {
@@ -40,15 +41,17 @@ function harness() {
   const el = id => { if (!elements.has(id)) elements.set(id, new El()); return elements.get(id); };
   const item = p => ({ point: { lat: p[0], lng: p[1] }, addTo() { markers.push(this); return this; }, getLatLng() { return this.point; }, setLatLng(p) { this.point = { lat: p[0], lng: p[1] }; }, setRadius() {}, getElement() { return null; } });
   class FakeDate extends Date { constructor(...args) { super(...(args.length ? args : [now])); } static now() { return now; } }
-  const context = { window: { GregleNavigation: core, addEventListener: (e, f) => { events[e] = f; }, speechSynthesis: { cancel() {}, speak(u) { spoken.push(u.text); } }, SpeechSynthesisUtterance: class { constructor(text) { this.text = text; } } },
+  const context = { window: { GregleNavigation: core, GregleMapRouting: traffic, addEventListener: (e, f) => { events[e] = f; }, speechSynthesis: { cancel() {}, speak(u) { spoken.push(u.text); } }, SpeechSynthesisUtterance: class { constructor(text) { this.text = text; } } },
     document: { getElementById: el, querySelector: () => el('stage'), hidden: false }, navigator: { geolocation: { watchPosition(s, f, options) { success = s; failure = f; assert.equal(options.maximumAge, 0); return 0; }, clearWatch(id) { cleared.push(id); } } },
     L: { marker: item, circle: item, divIcon: p => p }, Date: FakeDate, AbortController,
     setInterval: f => { tick = f; return 1; }, clearInterval() {}, setTimeout: () => 1, clearTimeout() {},
     fetch: (url, options) => new Promise(resolve => pending.push({ url, options, resolve })) };
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation-live.js'), 'utf8'), context);
   const map = { on: (e, f) => { events[e] = f; }, removeLayer: l => removed.push(l), panTo() {}, getSize: () => ({ x: 600, y: 800 }), project: () => ({ y: 100 }), unproject: p => p, setView() {} };
-  const live = context.window.GregleLiveNavigation({ map, onRoute: () => { routeUpdates++; }, onStop: m => { stopMessage = m; } });
-  return { el, live, pending, cleared, markers, spoken, removed, events, tick: () => tick(), advance: ms => { now += ms; }, routeUpdates: () => routeUpdates, message: () => stopMessage,
+  const routing = traffic.create({fetch: context.fetch, storage: { getItem: key => connected && key === 'gregle-maps-tomtom-key' ? 'test-key-1234567890' : null, setItem() {} }});
+  const request = routing.request; routing.request = async (...args) => ({...await request(...args), fetchedAt: now});
+  const live = context.window.GregleLiveNavigation({ map, routing, onRoute: () => { routeUpdates++; }, onStop: m => { stopMessage = m; } });
+  return { el, live, routing, context, pending, cleared, markers, spoken, removed, events, tick: () => tick(), advance: ms => { now += ms; }, routeUpdates: () => routeUpdates, message: () => stopMessage,
     fix: (p, accuracy = 5, age = 0) => success({ coords: { latitude: p.lat, longitude: p.lng, accuracy }, timestamp: now - age }), error: code => failure({ code }) };
 }
 test('GPS watch follows movement, recenter works, and stop clears watch ID zero', () => {
@@ -90,4 +93,40 @@ test('starting away from the preview route recalculates from the first live fix'
   const h = harness(); h.live.start(core.readRoute(response()), 'walking', destination);
   const other = { lat: 48.426, lng: -123.36 }; h.fix(other); assert.equal(h.pending.length, 1); assert(h.pending[0].url.includes('-123.360000,48.426000'));
   h.live.stop(); h.pending[0].resolve({ ok: true, json: async () => response() }); await new Promise(resolve => setImmediate(resolve)); assert.equal(h.routeUpdates(), 0);
+});
+
+const trafficResponse = () => ({routes: [{summary: {lengthInMeters: 1850, travelDurationInSeconds: 600, trafficDelayDurationInSeconds: 300},
+  legs: [{path: response().routes[0].geometry}], instructions: [
+    {maneuver: 'depart', routeOffsetInMeters: 0, message: 'Start on First Street'},
+    {maneuver: 'turnRight', routeOffsetInMeters: 1112, message: 'Turn right onto Second Street'},
+    {maneuver: 'arrive', routeOffsetInMeters: 1850, message: 'Arrive at your destination'}]}]});
+
+test('live traffic refreshes only with fresh visible GPS; stopping cancels a pending refresh', async () => {
+  const h = harness({connected: true}); h.live.start(core.readRoute(response()), 'driving', destination); h.fix(origin);
+  h.advance(121000); h.tick(); assert.equal(h.pending.length, 0);
+  h.fix(origin); h.tick(); assert.equal(h.pending.length, 1); assert(h.pending[0].url.includes('tomtom'));
+  h.pending[0].resolve({ok: true, status: 200, json: async () => trafficResponse()}); await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.routeUpdates(), 1); assert.match(h.el('navigation-traffic-note').textContent, /Live traffic included/);
+  h.context.document.hidden = true; h.advance(121000); h.fix(origin); h.tick(); assert.equal(h.pending.length, 1);
+  h.context.document.hidden = false; h.tick(); assert.equal(h.pending.length, 2);
+  h.live.stop(); assert.equal(h.pending[1].options.signal.aborted, true);
+  h.pending[1].resolve({ok: true, status: 200, json: async () => trafficResponse()}); await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.routeUpdates(), 1);
+});
+
+test('changing traffic mid-navigation aborts the old request and applies only the latest choice', async () => {
+  const h = harness({connected: true}); h.live.start(core.readRoute(response()), 'driving', destination); h.fix(origin);
+  h.routing.setEnabled(false); const first = h.live.refreshTraffic(); assert(h.pending[0].url.includes('project-osrm'));
+  h.routing.setEnabled(true); const second = h.live.refreshTraffic(); assert(h.pending[1].url.includes('tomtom')); assert.equal(h.pending[0].options.signal.aborted, true);
+  h.pending[0].resolve({ok: true, json: async () => response()}); await first; assert.equal(h.routeUpdates(), 0);
+  h.pending[1].resolve({ok: true, status: 200, json: async () => trafficResponse()}); await second;
+  assert.equal(h.routeUpdates(), 1); assert.equal(h.el('navigation-traffic').attributes['aria-checked'], 'true');
+  h.live.stop();
+});
+
+test('traffic is disabled without a key and hidden for walking or after arrival', () => {
+  const h = harness(); h.live.start(core.readRoute(response()), 'driving', destination);
+  assert.equal(h.el('navigation-traffic').disabled, true); assert.equal(h.el('navigation-traffic').attributes['aria-checked'], 'false');
+  h.fix(origin); h.fix(destination); assert.equal(h.el('navigation-traffic-row').hidden, true); h.live.stop();
+  h.live.start(core.readRoute(response()), 'walking', destination); assert.equal(h.el('navigation-traffic-row').hidden, true); h.live.stop();
 });
