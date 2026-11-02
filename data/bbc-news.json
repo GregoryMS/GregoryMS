@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-02T09:34:28+00:00",
-  "fetchedAt": "2026-11-02T09:34:44.084148+00:00",
+  "feedUpdatedAt": "2026-11-02T19:44:07+00:00",
+  "fetchedAt": "2026-11-02T19:44:15.838536+00:00",
   "items": [
     {
-      "title": "Mother told to book appointment to give birth to her dead baby",
+      "title": "Shop freezers in seven European countries hit by cyber-attack",
+      "link": "https://www.bbc.co.uk/news/articles/cq1kd1nee80eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'All this food is now useless': Piles of rubbish after shop freezers hit by cyber-attack",
+      "link": "https://www.bbc.co.uk/news/videos/cmwyvrgk9p0ro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Channel 4 documentary and journalists 'poisoned the well' against Russell Brand, court hears",
+      "link": "https://www.bbc.co.uk/news/articles/cwkg5dnypdn4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Russian bombing kills 24 people at Ukraine aid centre, Kyiv says",
+      "link": "https://www.bbc.co.uk/news/articles/cjy56dndlyz0o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Mother told to book appointment to give birth to her baby who had died",
       "link": "https://www.bbc.co.uk/news/articles/cm9dzn8e737jo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Nine killed as small jet crashes on Florida street",
-      "link": "https://www.bbc.co.uk/news/articles/cm369yy7lw73o?at_medium=RSS&at_campaign=rss"
+      "title": "MP Carla Lockhart quits DUP in Drumcree row",
+      "link": "https://www.bbc.co.uk/news/articles/cm87zn1vy28zo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Iran killed her teenage daughter - now she is facing up to the regime",
-      "link": "https://www.bbc.co.uk/news/articles/c3qjn8117kwjo?at_medium=RSS&at_campaign=rss"
+      "title": "Fighting returns to Kherson region after longest Ukraine war ceasefire",
+      "link": "https://www.bbc.co.uk/news/articles/ckg5jlyp66jzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Democrats have high hopes for US midterms - but are the polls right?",
-      "link": "https://www.bbc.co.uk/news/articles/cmg47p3edv4do?at_medium=RSS&at_campaign=rss"
+      "title": "Man who drugged and raped wife with strangers 'led double life'",
+      "link": "https://www.bbc.co.uk/news/articles/cwdr8vxl1nv1o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "North Carolina voters weigh up Trump's track record on cost of living",
-      "link": "https://www.bbc.co.uk/news/videos/cwly0eev3m44o?at_medium=RSS&at_campaign=rss"
+      "title": "Prosecutors hint at retrial for Lindsay Clancy on murder charges",
+      "link": "https://www.bbc.co.uk/news/articles/cjly0rgk34y2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "How 20-year-old Kimi Antonelli 'blew everyone away' to make Formula 1 history",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c6m2dj7ze9v2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Five teenagers stabbed at Halloween party",
-      "link": "https://www.bbc.co.uk/news/articles/c6n4ed1l2pn1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Parents' concerns to trigger urgent checks in A&E",
-      "link": "https://www.bbc.co.uk/news/articles/cw1m42zdnn3go?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Binance users withdraw $3.6bn after largest-ever crypto hack",
-      "link": "https://www.bbc.co.uk/news/articles/cwj34gdmnly4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Ryanair may freeze workers' pay and raise airfares",
-      "link": "https://www.bbc.co.uk/news/articles/cr0qkve1x224o?at_medium=RSS&at_campaign=rss"
+      "title": "A simple guide to the midterms",
+      "link": "https://www.bbc.co.uk/news/articles/c6wyz223j19po?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
