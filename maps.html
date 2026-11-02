@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261101-streetview">
+  <link rel="stylesheet" href="assets/maps.css?v=20261102-pin-actions">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -258,8 +258,11 @@
       <h2 id="place-name"></h2>
       <p id="place-detail"></p>
       <div id="place-tags" hidden></div>
-      <div class="route-pin-actions" id="route-pin-actions" hidden><button id="directions-from-pin" type="button">Start here</button><button id="directions-to-pin" type="button">Directions here</button></div>
-      <div class="route-pin-actions"><button id="place-streetview" type="button">Street View</button></div>
+      <div class="route-pin-actions" id="route-pin-actions" role="group" aria-label="Place actions" hidden>
+        <button id="directions-from-pin" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Start here</span></button>
+        <button id="directions-to-pin" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 9-9 9-9-9 9-9Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/></svg><span>Directions</span></button>
+        <button id="place-streetview" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m7 12 3-4h4l3 4h3M14 8l-2 6-4 7m4-7 4 3 1 4M6 5v4"/></svg><span>Street View</span></button>
+      </div>
       <div class="place-bottom" id="place-bottom" hidden><span id="place-coordinates"></span><button id="share-pin" type="button">Copy link <span aria-hidden="true">↗</span></button></div>
     </section>
     <section class="map-drawer map-glass" id="map-drawer" aria-label="Map details drawer" hidden>
@@ -283,3 +286,4 @@
   </main>
 </body>
 </html>
+

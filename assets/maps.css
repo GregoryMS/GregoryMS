@@ -357,7 +357,10 @@
 #directions-results strong, #directions-results span { display: block; overflow-wrap: anywhere; }
 #directions-results span { margin-top: 4px; font-size: 11px; color: var(--muted); }
 .directions-actions, .route-pin-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.route-pin-actions { margin-top: 14px; font-size: 12px; }
+.route-pin-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 14px; font-size: 11px; }
+.route-pin-actions button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 0; min-height: 64px; padding: 10px 4px; line-height: 1.35; text-align: center; }
+.route-pin-actions button:hover { background: var(--map-control-accent-soft); border-color: var(--map-accent); }
+.route-pin-actions svg { width: 20px; height: 20px; flex-shrink: 0; }
 #directions-route { background: #7637cc; color: #fff; border-color: #7637cc; }
 #directions-handoff { display: grid; gap: 10px; margin: 18px 0; }
 .map-directions a { color: var(--map-accent); text-underline-offset: 3px; }
@@ -597,3 +600,4 @@
   .streetview-active .leaflet-control-zoom a { width: 30px; height: 30px; line-height: 30px; }
   .streetview-footer { justify-content: flex-end; }
 }
+
