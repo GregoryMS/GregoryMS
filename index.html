@@ -334,11 +334,12 @@
       cursor: pointer;
     }
     .news-source-toggle svg { width: 10px; height: 10px; }
-    .news-source-toggle:hover { color: #98a2b3; background: rgba(152, 162, 179, 0.10); }
+    .news-source-toggle:hover, .news-source-toggle:focus-visible { color: #98a2b3; background: rgba(152, 162, 179, 0.10); }
     .news-source-toggle:focus-visible, .bbc-badge:focus-visible, .news-source-option:focus-visible {
-      outline: 2px solid #9850ff;
-      outline-offset: 2px;
+      outline: none;
+      box-shadow: none;
     }
+    .bbc-badge:focus-visible { opacity: 0.7; }
     .news-source-menu {
       position: absolute;
       top: calc(100% + 8px);
