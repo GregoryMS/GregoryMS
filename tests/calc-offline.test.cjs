@@ -28,7 +28,7 @@ function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,st
     return response;
   };
   const self={location:new URL(origin+'/calc-sw.js'),addEventListener(type,fn) {listeners[type]=fn;}};
-  vm.runInNewContext(version ? source.replace("const VERSION='20261031-offline-2'",`const VERSION='${version}'`) : source,{self,caches,fetch,URL,Request,Response,Set,Promise,Error});
+  vm.runInNewContext(version ? source.replace(/const VERSION='[^']+'/,`const VERSION='${version}'`) : source,{self,caches,fetch,URL,Request,Response,Set,Promise,Error});
   return {storage,requests,async lifecycle(type) {let work; listeners[type]({waitUntil(value) {work=value;}}); await work;},async request(url,{mode='navigate',method='GET'}={}) {
     let response;
     listeners.fetch({request:{url:new URL(url,origin).href,mode,method},respondWith(value) {response=value;}});

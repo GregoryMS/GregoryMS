@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261031-offline-2';
+const VERSION='20261101-dpad-1';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -10,7 +10,7 @@ const ASSETS=[
   '/assets/tools.css',
   '/assets/calc.css?v=20261031-offline1',
   '/assets/calc-graph.css?v=20261031-no-bottom-brand',
-  '/assets/calc-emulator.css?v=20261031-engine-switch',
+  '/assets/calc-emulator.css?v=20261101-dpad1',
   '/assets/site-menu.css?v=20261017-scroll-reorder',
   '/assets/theme.js?v=20261017-theme-switch',
   '/assets/site-menu.js?v=20261019-docs',
