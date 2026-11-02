@@ -273,9 +273,9 @@ Both sign feeds cache province-wide responses and filter locally when panning, p
 
 **Google Traffic (experimental)** is an opt-in, transparent image-tile overlay using the unofficial source described in [this OsmAnd guide](https://www.anselms.net/blog/osmand+-and-traffic-data.html). It runs directly in the browser without a key or backend and does not provide traffic-aware routing. The layer has Google attribution, a browser-saved opacity slider (75% initially), and a five-minute refresh while visible. Disabling the layer or hiding/leaving the page removes its tiles and stops refreshes; showing the page resumes only if the source has not failed. Failed or timed-out loads clear the overlay, display an unavailable message and pause automatic retries. A manual retry is available; normal manual refreshes have a five-minute cooldown. Requests share a five-minute cache bucket, and no tiles are prefetched or saved for offline use. Layer selection is saved in `gregle-maps-layers` and shared as `overlays=google`; opacity is local to the browser in `gregle-maps-google-opacity`. This is not Google's supported TrafficLayer API: the endpoint can change or stop working, and [Google Maps Platform terms](https://cloud.google.com/maps-platform/terms) restrict use with non-Google maps. Google Traffic is off by default.
 
-**TomTom Traffic** uses the current [Orbis v2 raster flow service](https://docs.tomtom.com/traffic-api/documentation/tomtom-orbis-maps/v2/traffic-flow/raster-flow-tiles). A user connects their own Traffic-enabled key through Layers; the key stays in `gregle-maps-tomtom-key` in that browser and is sent directly to TomTom in the `TomTom-Api-Key` header. No key is committed, sent to Gregle, embedded in tile URLs, or included in copied map links. Forget key removes it and turns traffic off. Use a key restricted to `gregle.uk` and the Traffic API, as described in [TomTom's key guidance](https://docs.tomtom.com/platform/documentation/api-best-practices/api-key-management-best-practices). TomTom offers a free usage allowance; current limits and sign-up are linked from the key form to its [pricing page](https://docs.tomtom.com/pricing).
+**TomTom Traffic** uses the current [Orbis v2 raster flow service](https://docs.tomtom.com/traffic-api/documentation/tomtom-orbis-maps/v2/traffic-flow/raster-flow-tiles). On `maps.gregle.uk`, a private default connection is provided by the existing site-router Worker. Its key is a Cloudflare secret and is never returned to the browser or committed. Traffic is off by default. The original key form and “API key required for traffic” description remain available. A visitor's own key, stored in `gregle-maps-tomtom-key` in that browser, replaces the default connection and goes directly to TomTom in a header. Forget key removes that override and turns the tile layer off. Personal keys should be restricted to the Gregle hosts and TomTom APIs used. See [key guidance](https://docs.tomtom.com/platform/documentation/api-best-practices/api-key-management-best-practices) and [pricing](https://docs.tomtom.com/pricing).
 
-TomTom traffic loads only when enabled and a key is present. It refreshes at most once per minute during normal visible use; timers pause while hidden, offscreen tile fetches are aborted, and Blob URLs are released when discarded. Failed, unauthorized or throttled layers are removed, show an explicit error, and pause automatic retries. A loaded time describes the fetched tiles, not an independently verified traffic observation time; blank roads may have no coverage. Key setup, header authentication, refresh cooldown, tab visibility, 403/429 responses and key removal were tested with simulated traffic tiles; live TomTom data requires the user's own authorized key. The real topographic, maritime and DriveBC sources were checked in the browser.
+TomTom traffic loads only when enabled and a personal or default connection is available. It refreshes at most once per minute during normal visible use; timers pause while hidden, offscreen tile fetches are aborted, and Blob URLs are released when discarded. Failed, unauthorized or throttled layers are removed, show an explicit error, and pause automatic retries. A loaded time describes fetched tiles; blank roads may have no coverage. The private proxy was checked with a live PNG response, and routing was checked with a public-landmark journey. See [private TomTom setup](docs/maps-tomtom.md) for deployment and limits.
 
 ### Canadian daily fuel prices
 
@@ -577,23 +577,25 @@ A purple route with A/B endpoints, estimated distance and duration, and expandab
 **Car layout** enlarges touch controls, fields and navigation text, and remembers only that display preference. It activates automatically for a Tesla user agent and can be toggled on other devices. Available viewport width controls the layout, including Tesla's full and half-screen browser: a side panel above 700 pixels, the existing resizable drawer at 700 pixels and below, and a separate navigation card that remains visible outside the drawer. ResizeObserver notifies Leaflet when its container changes size. Real Tesla hardware has not been tested; GPS and speech availability depend on the vehicle browser.
 
 **Use live traffic** appears only with a displayed driving route, in its summary
-and in the live-navigation card. It is off and disabled when no TomTom key is
-connected. **Connect TomTom** in the route summary opens the existing key form;
-connecting for routing does not turn on the separate traffic tile layer. Enable
-Routing access for this key and restrict it to `maps.gregle.uk` and any other
-Gregle host where you use Maps. With a key, traffic defaults on unless explicitly
-switched off; the on/off choice is remembered locally. Removing the key turns it
-off again. Clearing the route, closing directions or switching to walking hides
-the controls. Arrival hides the live traffic control.
+and in the live-navigation card. It defaults off, including when a TomTom key is
+available. A visitor's explicit on/off choice is remembered locally. The private
+default connection is detected from a same-origin availability endpoint; no key
+is sent to the browser. If neither connection is available, the switch stays off
+and disabled. **Add your own TomTom key** opens the existing key form. A personal
+key replaces the default connection in that browser, including when declined;
+there is no silent retry using the shared key. Connecting for routing does not
+turn on traffic tiles. Clearing the route, closing directions or switching to
+walking hides the controls; arrival hides the live traffic control.
 
 Traffic-aware driving uses TomTom Orbis Routing v3 with `traffic: live`, departure
-`now`, fastest routing and its turn instructions. The key is read from the
-existing browser-only `gregle-maps-tomtom-key` setting and sent in a header directly
-to TomTom, not in shared links or the repository. Route times retain TomTom's
-progress timing through congested sections. While navigating, traffic refreshes
-at most every two minutes with a fresh, accurate GPS fix and a visible page.
-Switching traffic recalculates from the current position; stale requests cannot
-replace a newer choice. Stop, arrival and page exit abort pending work.
+`now`, fastest routing and its turn instructions. With the default connection,
+only coordinates are sent to `/api/maps/tomtom/route`; the Worker adds its secret
+in an upstream header. With a personal key, requests go directly to TomTom.
+Route times retain TomTom's progress timing through congested sections. During
+navigation, traffic refreshes at most every two minutes with a fresh, accurate
+GPS fix and a visible page. Switching traffic recalculates from the current
+position; stale requests cannot replace a newer choice. Stop, arrival and page
+exit abort pending browser work.
 
 Missing, denied, exhausted or temporarily unavailable traffic falls back to
 ordinary OSRM routing with an explicit notice that live traffic is excluded.
@@ -608,7 +610,7 @@ no paid plan or credit is configured by this feature. See [current pricing](http
 API references: [Orbis routing](https://docs.tomtom.com/routing-api/documentation/tomtom-orbis-maps/v3/calculate-route)
 and [guidance](https://docs.tomtom.com/routing-api/documentation/tomtom-orbis-maps/v3/guidance-instructions).
 
-Run `node --test tests/maps-navigation*.test.cjs tests/maps-routing.test.cjs` for routing providers, credential defaults, quota fallback, traffic timing, mode-specific routing, progress and arrival, handoff URLs, request cancellation, GPS lifecycle, weak and stale fixes, rerouting and cleanup checks.
+Run `node --test tests/maps-navigation*.test.cjs tests/maps-routing.test.cjs tests/maps-tomtom-worker.test.cjs` for routing providers, credential defaults, quota fallback, traffic timing, mode-specific routing, progress and arrival, handoff URLs, request cancellation, GPS lifecycle, weak and stale fixes, rerouting and cleanup checks.
 
 ## Calculator
 

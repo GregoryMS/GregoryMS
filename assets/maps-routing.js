@@ -53,25 +53,30 @@
     }
     return { ...route, traffic: true, provider: 'tomtom', trafficDelay: number(summary.trafficDelayDurationInSeconds) ? summary.trafficDelayDurationInSeconds : 0, fetchedAt: Date.now() };
   }
-  function create({ fetch: send = globalThis.fetch, storage } = {}) {
+  function create({ fetch: send = globalThis.fetch, storage, defaultAvailable = false } = {}) {
     try { storage ??= globalThis.localStorage; } catch {}
-    let enabled = true, blockedKey = '';
-    try { enabled = storage?.getItem('gregle-maps-route-traffic') !== 'off'; } catch {}
+    let enabled = false, blockedKey = '';
+    try { enabled = storage?.getItem('gregle-maps-route-traffic') === 'on'; } catch {}
     function key() {
-      try { const value = storage?.getItem('gregle-maps-tomtom-key') || ''; return /^[A-Za-z0-9_-]{16,256}$/.test(value) ? value : ''; } catch { return ''; }
+      try { const value = storage?.getItem('gregle-maps-tomtom-key'); return typeof value === 'string' ? value.trim() : ''; } catch { return ''; }
     }
     async function request(from, to, mode = 'driving', { signal } = {}) {
       const standardURL = core.routeURL(from, to, mode), apiKey = key();
-      let reason = mode === 'walking' ? 'off' : !apiKey ? 'missing-key' : !enabled ? 'off' : 'unavailable';
-      if (mode === 'driving' && enabled && apiKey && apiKey !== blockedKey) {
+      const identity = apiKey || (defaultAvailable ? 'default' : '');
+      let reason = mode === 'walking' ? 'off' : !identity ? 'missing-key' : !enabled ? 'off' : 'unavailable';
+      if (mode === 'driving' && enabled && identity && identity !== blockedKey) {
         const controller = new AbortController(), abort = () => controller.abort();
         if (signal?.aborted) controller.abort();
         signal?.addEventListener('abort', abort, { once: true });
         const timer = setTimeout(abort, 8000);
         try {
-          const request = trafficRequest(from, to, apiKey);
+          // A visitor's key replaces the private default, including on failure.
+          const request = apiKey ? trafficRequest(from, to, apiKey) : {url: '/api/maps/tomtom/route', options: {
+            method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({from: {lat: from.lat, lng: from.lng}, to: {lat: to.lat, lng: to.lng}}),
+          }};
           const response = await send(request.url, { ...request.options, signal: controller.signal });
-          if ([401, 403, 429].includes(response.status)) blockedKey = apiKey;
+          if ([401, 403, 429].includes(response.status)) blockedKey = identity;
           if (!response.ok) throw new Error('Traffic unavailable.');
           const route = readTrafficRoute(await response.json());
           if (controller.signal.aborted) throw new DOMException('Aborted', 'AbortError');
@@ -86,7 +91,7 @@
       if (!response.ok && !['NoRoute', 'NoSegment'].includes(data?.code)) throw new Error('Routing is unavailable. Try again, or open your navigation app below.');
       return { ...core.readRoute(data, mode), traffic: false, trafficReason: reason, provider: mode === 'walking' ? 'fossgis' : 'osrm', fetchedAt: Date.now() };
     }
-    return { request, get enabled() { return enabled && !!key(); }, get connected() { return !!key(); }, setEnabled(value) {
+    return { request, get enabled() { return enabled && (!!key() || defaultAvailable); }, get connected() { return !!key() || defaultAvailable; }, get hasOwnKey() { return !!key(); }, setEnabled(value) {
       enabled = !!value; if (enabled) blockedKey = '';
       try { storage?.setItem('gregle-maps-route-traffic', enabled ? 'on' : 'off'); } catch {}
     } };
