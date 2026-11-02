@@ -20,13 +20,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261102-pin-actions">
+  <link rel="stylesheet" href="assets/maps.css?v=20261102-busyness">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261018-layer-switches">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="assets/maps-core.js?v=20261101-streetview" defer></script>
   <script src="assets/maps-places-core.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-places.js?v=20261021-nearest-address" defer></script>
+  <script src="assets/maps-busyness-core.js?v=20261102-busyness" defer></script>
+  <script src="assets/maps-busyness.js?v=20261102-busyness" defer></script>
   <script src="assets/maps-drivebc.js?v=20261017-signs" defer></script>
   <script src="assets/maps-ferries-core.js?v=20261017-ferries" defer></script>
   <script src="assets/maps-ferries.js?v=20261017-ferries" defer></script>
@@ -53,7 +55,7 @@
   <script src="assets/maps-navigation.js?v=20261022-live-navigation" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261021-adsbexchange" defer></script>
-  <script src="assets/maps.js?v=20261101-streetview" defer></script>
+  <script src="assets/maps.js?v=20261102-busyness" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -258,6 +260,16 @@
       <h2 id="place-name"></h2>
       <p id="place-detail"></p>
       <div id="place-tags" hidden></div>
+      <section id="place-busyness" class="map-busyness" aria-labelledby="busyness-title" hidden>
+        <h3 id="busyness-title">Popular times</h3>
+        <p id="busyness-status" role="status">See when this business is usually busiest.</p>
+        <div class="busyness-actions">
+          <button id="busyness-show" type="button">Show popular times</button>
+          <button id="busyness-back" type="button" hidden>Choose another match</button>
+        </div>
+        <div id="busyness-content" class="busyness-content"></div>
+        <a id="busyness-google-link" class="busyness-source" target="_blank" rel="noopener noreferrer">Open in Google Maps ↗</a>
+      </section>
       <div class="route-pin-actions" id="route-pin-actions" role="group" aria-label="Place actions" hidden>
         <button id="directions-from-pin" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Start here</span></button>
         <button id="directions-to-pin" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 9-9 9-9-9 9-9Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/></svg><span>Directions</span></button>

@@ -155,6 +155,10 @@ The shared nine-dot app launcher includes Radio, Dictionary and Cloud (https://c
 
 ## Maps
 
+Maps also offers Google **Popular times** on demand, using the standard Places
+UI Kit alongside the existing OSM map. See [setup and quota handling](docs/maps-busyness.md)
+for the restricted runtime browser key, Cloudflare secret and 300/day quota.
+
 `maps.html` provides a Gregle interface for OpenStreetMap using pinned Leaflet 1.9.4, with address/place search, purple pins dropped by double-clicking, double-tapping or touching and holding, optional device location, copyable map links, keyboard map controls and full screen where supported. It opens on Victoria unless a valid map link specifies another view. The `#map=zoom/latitude/longitude` fragment preserves the view; optional `pin` and `name` values preserve a selected place. Touch pin placement accepts a 450 ms double-tap interval and 32 px between taps, or a 550 ms hold. Movement beyond 15 px, pinch zoom and cancelled touches discard the gesture; controls, existing markers and popups retain their own interactions. Compatibility double-clicks are suppressed after touch input so a pin is placed once. Map movement replaces the fragment without filling browser history. The shared launcher and the homepage Maps link open this page.
 
 On screens up to 700 px wide, place details, search results, directions, layers, fuel prices, the vessel key, copy-link fallback and selected map-feature popups share one bottom drawer. Drag its header to any height, tap the header or chevron to minimize/expand, or switch between open panels with the tabs. The header also supports arrow keys, Page Up/Down, Home and End. Content scrolls independently; panning the map leaves the drawer height unchanged. Existing DOM nodes move back to their original desktop positions when the screen widens.

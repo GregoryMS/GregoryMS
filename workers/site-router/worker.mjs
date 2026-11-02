@@ -1,4 +1,5 @@
 import pages from '../../assets/site-routes.json' with {type: 'json'};
+import {mapsGoogleConfig} from './maps-config.mjs';
 
 const pageForHost = new Map(Object.entries(pages).map(([page, host]) => [host, page]));
 const pageForPath = new Map(Object.keys(pages).flatMap(page => [[`/${page}`, page], [`/${page.slice(0, -5)}`, page]]));
@@ -12,8 +13,9 @@ function redirect(host, search) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env = {}) {
     const url = new URL(request.url);
+    if (url.protocol === 'https:' && url.hostname === 'maps.gregle.uk' && url.pathname === '/api/maps/google-config') return mapsGoogleConfig(request, env);
     const page = pageForHost.get(url.hostname);
     // A wildcard route also sees existing Cloud, Docs and www hosts.
     // Let Cloudflare contact their original DNS origins unchanged.
