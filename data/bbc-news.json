@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-03T16:37:44+00:00",
-  "fetchedAt": "2026-11-03T16:37:55.384723+00:00",
+  "feedUpdatedAt": "2026-11-03T22:03:26+00:00",
+  "fetchedAt": "2026-11-03T22:03:34.976250+00:00",
   "items": [
     {
       "title": "How the US midterm results could unfold - as millions of Americans head to the polls",
       "link": "https://www.bbc.co.uk/news/articles/cq78pgn7em34o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Spanish transport minister resigns days after deadly train crash",
+      "link": "https://www.bbc.co.uk/news/articles/c6wydqd4yxdyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "King calls slave trade a 'shameful chapter' during Commonwealth address",
+      "link": "https://www.bbc.co.uk/news/articles/cr89znnnn7dno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Seven flights across Europe targeted by suspected bomb threats",
+      "link": "https://www.bbc.co.uk/news/articles/c6x2wd4v04eeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Celebrity loses injunction bid but will stay anonymous pending appeal",
       "link": "https://www.bbc.co.uk/news/articles/cqglwjdgg045o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Spanish footballer dies after collision with goalkeeper during match",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ck62yvz046pjo?at_medium=RSS&at_campaign=rss"
+      "title": "How 'mogging' went from toxic term to mainstream",
+      "link": "https://www.bbc.co.uk/news/articles/cqkgj371jjk8o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: Why is 'Mogging' the word of the year?",
-      "link": "https://www.bbc.co.uk/news/videos/cm3wv029jlxyo?at_medium=RSS&at_campaign=rss"
+      "title": "Andrew Mountbatten-Windsor called to give evidence in fraud trial in December",
+      "link": "https://www.bbc.co.uk/news/articles/c50me7ywd1wlo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Reform UK councillor charged with rape and sexual assault",
-      "link": "https://www.bbc.co.uk/news/articles/c63elky79np7o?at_medium=RSS&at_campaign=rss"
+      "title": "Death toll rises in Ukraine after Russia attacks aid centre, hospice and hospital",
+      "link": "https://www.bbc.co.uk/news/articles/c65ynez5y599o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Binance says fake job interviews used as part of $6.3bn crypto hack",
       "link": "https://www.bbc.co.uk/news/articles/ck5ynwz9gy67o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "MI5 will not face contempt of court charges despite admitting its evidence was a lie",
-      "link": "https://www.bbc.co.uk/news/articles/cq5yn64wn2y7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Third teen arrested after Halloween party stabbings",
       "link": "https://www.bbc.co.uk/news/articles/ckpdg7l2nd9wo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Mahmood refuses to put cost on care worker settlement climbdown",
-      "link": "https://www.bbc.co.uk/news/articles/cm75pgqdyzldo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "A simple guide to the midterms",
-      "link": "https://www.bbc.co.uk/news/articles/c6wyz223j19po?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
