@@ -1543,14 +1543,16 @@
       });
     }
 
+    // Scheduled feed refreshes can be delayed; use the same bounded window for every provider.
+    const NEWS_MAX_AGE = 6 * 60 * 60 * 1000;
     const NEWS_SOURCES = {
-      bbc: { name: 'BBC News', site: 'https://www.bbc.co.uk/news', file: 'data/bbc-news.json', maxAge: 6 * 60 * 60 * 1000,
+      bbc: { name: 'BBC News', site: 'https://www.bbc.co.uk/news', file: 'data/bbc-news.json', maxAge: NEWS_MAX_AGE,
         hosts: /(^|\.)bbc\.(co\.uk|com)$/, logo: '<span class="bbc-blocks"><span class="bbc-block">B</span><span class="bbc-block">B</span><span class="bbc-block">C</span></span><span class="bbc-text">News</span>' },
-      nrk: { name: 'NRK Nyheter', site: 'https://www.nrk.no/nyheter/', file: 'data/news-feeds.json', feed: 'https://www.nrk.no/toppsaker.rss', maxAge: 2 * 60 * 60 * 1000,
+      nrk: { name: 'NRK Nyheter', site: 'https://www.nrk.no/nyheter/', file: 'data/news-feeds.json', feed: 'https://www.nrk.no/toppsaker.rss', maxAge: NEWS_MAX_AGE,
         hosts: /(^|\.)nrk\.no$/, logo: '<img class="nrk-logo" src="assets/nrk-news.svg" width="58" height="22" alt=""><span class="bbc-text nrk-text">Nyheter</span>' },
-      svt: { name: 'SVT Nyheter', site: 'https://www.svt.se/nyheter/', file: 'data/news-feeds.json', feed: 'https://www.svt.se/nyheter/rss.xml', maxAge: 2 * 60 * 60 * 1000,
+      svt: { name: 'SVT Nyheter', site: 'https://www.svt.se/nyheter/', file: 'data/news-feeds.json', feed: 'https://www.svt.se/nyheter/rss.xml', maxAge: NEWS_MAX_AGE,
         hosts: /(^|\.)svt\.se$/, logo: '<img class="svt-logo" src="assets/svt-news.svg" width="116" height="18" alt="">' },
-      'radio-canada': { name: 'Radio-Canada Info', site: 'https://ici.radio-canada.ca/info', file: 'data/news-feeds.json', feed: 'https://ici.radio-canada.ca/info/rss/info/en-continu', maxAge: 2 * 60 * 60 * 1000,
+      'radio-canada': { name: 'Radio-Canada Info', site: 'https://ici.radio-canada.ca/info', file: 'data/news-feeds.json', feed: 'https://ici.radio-canada.ca/info/rss/info/en-continu', maxAge: NEWS_MAX_AGE,
         hosts: /(^|\.)radio-canada\.ca$/, logo: '<img class="radio-canada-logo" src="assets/radio-canada-info.svg" width="80" height="27" alt="">' }
     };
     let selectedNewsSource = 'bbc';

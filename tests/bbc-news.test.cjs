@@ -140,7 +140,7 @@ test('NRK uses the existing same-origin feed and its logo links directly to NRK 
 });
 
 test('NRK rejects expired snapshots, foreign links and unsafe XML', async () => {
-  for (const data of [null, { feeds: [] }, nrkFeed(new Date(Date.now() - 3 * 3600000).toISOString()),
+  for (const data of [null, { feeds: [] }, nrkFeed(new Date(Date.now() - 7 * 3600000).toISOString()),
     nrkFeed(new Date().toISOString(), '<!DOCTYPE rss><rss/>'),
     nrkFeed(new Date().toISOString(), 'x'.repeat(500001))]) {
     const env = environment(async () => response(data), [nrkItem]);
@@ -229,7 +229,7 @@ test('SVT uses its existing same-origin snapshot, Swedish headlines and linked o
 });
 
 test('SVT rejects stale snapshots and foreign or credentialed links with its own fallback', async () => {
-  const stale = environment(async () => response(svtFeed(new Date(Date.now() - 3 * 3600000).toISOString())), [svtItem]);
+  const stale = environment(async () => response(svtFeed(new Date(Date.now() - 7 * 3600000).toISOString())), [svtItem]);
   await stale.select('svt');
   assert.match(stale.track.innerHTML, /Open SVT Nyheter/);
   assert.match(stale.track.innerHTML, /Live headlines unavailable/);
@@ -238,5 +238,23 @@ test('SVT rejects stale snapshots and foreign or credentialed links with its own
     await env.select('svt');
     assert.match(env.track.innerHTML, /Open SVT Nyheter/);
     assert.match(env.track.innerHTML, /Live headlines unavailable/);
+  }
+});
+
+test('all RSS ticker providers tolerate delayed refreshes but reject expired snapshots', async () => {
+  for (const [id, url, item] of [
+    ['nrk', 'https://www.nrk.no/toppsaker.rss', nrkItem],
+    ['svt', 'https://www.svt.se/nyheter/rss.xml', svtItem],
+    ['radio-canada', 'https://ici.radio-canada.ca/info/rss/info/en-continu',
+      { title: 'Actualité en français', link: 'https://ici.radio-canada.ca/nouvelle/1234567/actualite' }]
+  ]) {
+    for (const hours of [3, 5, 7]) {
+      const feed = { feeds: [{ url, fetchedAt: new Date(Date.now() - hours * 3600000).toISOString(),
+        xml: '<rss><channel/></rss>' }] };
+      const env = environment(async () => response(feed), [item]);
+      await env.select(id);
+      assert.equal(env.track.innerHTML.includes('Live headlines unavailable'), hours > 6, `${id}: ${hours} hours`);
+      if (hours < 6) assert(env.track.innerHTML.includes(item.title.replace('&', '&amp;')));
+    }
   }
 });
