@@ -20,8 +20,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261103-news-logo">
-  <script src="assets/astro-news.js?v=20261103-news" defer></script>
+  <link rel="stylesheet" href="assets/astro.css?v=20261103-home-ticker">
+  <script src="assets/astro-news.js?v=20261103-home-ticker" defer></script>
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
@@ -85,12 +85,11 @@
         <div class="astro-clock"><span>Local</span><time id="local-clock" aria-label="Current time in your time zone">--:--:--</time></div>
       </div>
     </div>
-    <aside class="astro-news panel" id="astro-news" aria-label="Universe Today headlines">
-      <a class="astro-news-source" href="https://www.universetoday.com/" target="_blank" rel="noopener noreferrer" aria-label="Universe Today" title="Universe Today"><img class="astro-news-logo" src="assets/universe-today-logo.png" width="32" height="32" alt=""><span class="astro-news-source-name">Universe Today</span><span aria-hidden="true">↗</span></a>
+    <aside class="astro-news" id="astro-news" aria-label="Universe Today headlines">
+      <a class="astro-news-source" href="https://www.universetoday.com/" target="_blank" rel="noopener noreferrer" aria-label="Universe Today" title="Universe Today"><img class="astro-news-logo" src="assets/universe-today-logo.png" width="32" height="32" alt=""><span class="astro-news-source-name">Universe Today</span></a>
       <div class="astro-news-viewport" id="astro-news-viewport" tabindex="0" role="region" aria-label="Scrollable astronomy headlines">
         <div class="astro-news-track" id="astro-news-track"><span class="astro-news-message">Loading astronomy headlines…</span></div>
       </div>
-      <button class="astro-news-pause" id="astro-news-pause" type="button" aria-label="Pause headlines" aria-pressed="false" hidden>Ⅱ</button>
       <span class="astro-news-status" id="astro-news-status" role="status"></span>
       <noscript><a href="https://www.universetoday.com/">Read astronomy news ↗</a></noscript>
     </aside>

@@ -36,10 +36,10 @@
   const $ = id => document.getElementById(id);
   const track = $('astro-news-track'), viewport = $('astro-news-viewport');
   if (!track || !viewport) return;
-  const ticker = $('astro-news'), pause = $('astro-news-pause'), status = $('astro-news-status');
+  const ticker = $('astro-news'), status = $('astro-news-status');
   const reduced = root.matchMedia('(prefers-reduced-motion: reduce)');
   const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  let saved = null, pending = null, loading = false, hover = false, focus = false, paused = false;
+  let saved = null, pending = null, loading = false, hover = false, focus = false;
   let frame = null, last = 0, offset = 0, signature = '';
 
   function motion() {
@@ -47,12 +47,11 @@
     frame = null; last = 0;
     const still = reduced.matches || focus || (track.firstElementChild?.scrollWidth || 0) <= viewport.clientWidth;
     ticker.classList.toggle('is-static', still);
-    pause.hidden = still;
     if (still) { offset = 0; track.style.transform = 'translateX(0px)'; return; }
-    if (hover || paused || document.hidden) return;
+    if (hover || document.hidden) return;
     function step(time) {
       const width = track.firstElementChild?.scrollWidth || 0;
-      if (last && width) offset = (offset - Math.min(time - last, 100) * 0.065) % width;
+      if (last && width) offset = (offset - Math.min(time - last, 100) * 0.12) % width;
       last = time;
       track.style.transform = 'translateX(' + offset + 'px)';
       frame = requestAnimationFrame(step);
@@ -65,7 +64,7 @@
     const next = JSON.stringify(items);
     if (signature === next || focus) return;
     signature = next;
-    const markup = items.map(item => '<a href="' + escape(item.link) + '" target="_blank" rel="noopener noreferrer">' + escape(item.title) + '</a>').join('');
+    const markup = items.map(item => '<a href="' + escape(item.link) + '" target="_blank" rel="noopener noreferrer">' + escape(item.title) + '</a><span class="astro-news-sep" aria-hidden="true">•</span>').join('');
     track.innerHTML = '<div class="astro-news-group">' + markup + '</div><div class="astro-news-group astro-news-copy" aria-hidden="true">' + markup.replace(/<a /g, '<a tabindex="-1" ') + '</div>';
     offset = 0; viewport.scrollLeft = 0; motion();
   }
@@ -88,13 +87,6 @@
     } finally { clearTimeout(timer); loading = false; }
   }
 
-  pause.addEventListener('click', () => {
-    paused = !paused;
-    pause.setAttribute('aria-pressed', String(paused));
-    pause.setAttribute('aria-label', paused ? 'Resume headlines' : 'Pause headlines');
-    pause.textContent = paused ? '▶' : 'Ⅱ';
-    motion();
-  });
   viewport.addEventListener('mouseenter', () => { hover = true; motion(); });
   viewport.addEventListener('mouseleave', () => { hover = false; motion(); });
   viewport.addEventListener('focusin', () => { focus = true; motion(); });
