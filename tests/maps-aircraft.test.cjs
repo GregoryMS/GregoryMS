@@ -7,8 +7,8 @@ test('aircraft queries cover the viewport, handle wrapped worlds and stop at the
  const box=[-123.5,48.3,-123.2,48.5],a=core.area(box,13);assert(a);assert(core.covers(a,box));assert(a.radius>=10&&a.radius<=250);assert.equal(a.radius%10,0);
  const wrapped=core.area(box.map((x,i)=>i%2===0?x+360:x),13);assert.deepEqual(wrapped,a);
  const dateline=core.area([179.9,-.1,180.1,.1],13);assert(dateline);assert(core.covers(dateline,[179.9,-.1,180.1,.1]));assert(core.visible([0,-179.99],[179.9,-.1,180.1,.1]));assert(!core.visible([0,0],[179.9,-.1,180.1,.1]));
- for(const b of [[-180,-80,180,80],[0,0,20,20],[0,1,1,0],[NaN,0,1,1]])assert.equal(core.area(b,13),null);
- assert.equal(core.area(box,6),null);assert(!core.covers(a,[0,0,1,1]));
+ for(const b of [[-180,-80,180,80],[0,0,60,60],[0,1,1,0],[NaN,0,1,1]])assert.equal(core.area(b,13),null);
+ assert.equal(core.area(box,4),null);assert(core.area(box,6));assert(!core.covers(a,[0,0,1,1]));
 });
 test('feed validation rejects stale positions and vehicles, preserves zero values, deduplicates and bounds results',()=>{
  const result=core.read(packet(start,[aircraft(),aircraft({seen_pos:0,track:0,gs:0,alt_baro:0}),aircraft({hex:'a12346',category:'C1'}),aircraft({hex:'bad'}),aircraft({hex:'a12347',lat:null}),aircraft({hex:'a12348',seen_pos:121}),aircraft({hex:'~a12349',alt_baro:'ground'})]),start);
@@ -247,4 +247,41 @@ test('history preference still works when local storage is unavailable',async()=
  const h=setup({get(){throw Error('blocked');},set(){throw Error('blocked');}});
  assert.equal(h.historyToggle.checked,true);h.historyToggle.checked=false;assert.doesNotThrow(()=>h.historyToggle.events.change());
  h.api.setEnabled(true);await flush();h.markers()[0].events.popupopen();await flush();assert.equal(h.calls.length,1);
+});
+test('wide views cover the viewport with at most 16 valid source circles, including the dateline',()=>{
+ for(const box of [[-130,45,-116,53],[-138,40,-110,56],[170,40,195,55],[-12,49,20,60]]){
+  const plan=core.area(box,5);assert(plan?.tiles);assert(plan.tiles.length<=16);assert(core.covers(plan,box));
+  assert(!core.covers(plan,[box[0]-1,box[1],box[2],box[3]]));
+  assert(core.covers(plan,box.map((v,i)=>i%2===0?v+360:v)));
+  for(const tile of plan.tiles){assert(tile.radius>=10&&tile.radius<=250);assert(tile.lng>=-180&&tile.lng<=180);}
+  for(let x=0;x<=20;x++)for(let y=0;y<=20;y++){
+   const p=[box[1]+(box[3]-box[1])*y/20,box[0]+(box[2]-box[0])*x/20];
+   assert(plan.tiles.some(tile=>core.distance([tile.lat,tile.lng],p)<=tile.radius),`Uncovered ${p}`);
+  }
+ }
+});
+test('zoom level five loads aircraft throughout a wider view and deduplicates overlapping requests',async()=>{
+ const h=setup(),box=[-130,45,-116,53],tiles=core.area(box,5).tiles;
+ await h.move(box,5);let count=0;
+ h.setFetch(async url=>{
+  const query=new URL(url),i=++count;
+  return {ok:true,json:async()=>packet(h.calls.at(-1).time,[
+   aircraft({hex:i.toString(16).padStart(6,'0'),lat:+query.searchParams.get('lat'),lon:+query.searchParams.get('lon')}),
+   aircraft({seen_pos:i===1?10:0,lat:i===1?48.4:48.41})
+  ])};
+ });
+ h.api.setEnabled(true);await flush();assert.equal(h.calls.length,tiles.length);assert.equal(h.markers().length,tiles.length+1);
+ assert.equal(h.markers().find(m=>m.options.title.includes('TEST123')&&m.point[0]===48.41).point[0],48.41);
+ for(const call of h.calls)assert(+new URL(call.url).searchParams.get('radius')<=250);
+ assert.doesNotMatch(h.output.textContent,/Loading|Zoom in/);
+ await h.move(box,4);assert.equal(h.markers().length,0);assert.match(h.output.textContent,/Zoom in/);
+});
+test('wide-view batches cap concurrency and stop queued requests on disable or Retry-After',async()=>{
+ const box=[-138,40,-110,56],h=setup();await h.move(box,5);const releases=[];
+ h.setFetch(()=>new Promise(resolve=>releases.push(resolve)));h.api.setEnabled(true);await flush();assert.equal(h.calls.length,4);
+ h.api.setEnabled(false);assert(h.calls.every(c=>c.signal.aborted));
+ for(const release of releases)release({ok:true,json:async()=>packet(start)});await flush();assert.equal(h.calls.length,4);assert.equal(h.markers().length,0);
+ const failed=setup();await failed.move(box,5);failed.setFetch(async()=>({ok:false,headers:{get:()=> '120'}}));
+ failed.api.setEnabled(true);await flush();assert.equal(failed.calls.length,4);assert.match(failed.output.textContent,/unavailable/);
+ await failed.advance(119999);assert.equal(failed.calls.length,4);await failed.advance(1);assert.equal(failed.calls.length,8);
 });

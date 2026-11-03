@@ -145,7 +145,7 @@
     function render() {
       if (!enabled || suspended || document.hidden) return;
       const view = bounds(), area = core.area(view, map.getZoom()), now = Date.now();
-      if (!area) { clear(); report('Zoom in to show aircraft across this view (up to 250 nautical miles).'); return; }
+      if (!area) { clear(); report('Zoom in to show aircraft across this view.'); return; }
       const records = new Map((snapshot?.aircraft || []).filter(p => now - p.updated < core.maxAge && core.visible(p.point, view)).map(p => [p.id, p]));
       for (const [id, entry] of displayed) if (!records.has(id)) {
         if (id === pinnedAircraft) pinnedAircraft = null;
@@ -221,21 +221,37 @@
       const now = Date.now(), wait = Math.max(requestTime(area), retryAt) - now;
       if (wait > 0) { schedule(wait); return; }
       const token = version, request = { controller: new AbortController() }; active = request; lastRequestArea = area.key; nextRequest = now + interval;
-      const timeout = setTimeout(() => request.controller.abort(), 12000);
+      const tiles = area.tiles || [area];
+      const timeout = setTimeout(() => request.controller.abort(), tiles.length > 1 ? 45000 : 12000);
       render();
       try {
-        const url = new URL(endpoint); url.search = new URLSearchParams({ lat: area.lat, lon: area.lng, radius: area.radius });
-        const response = await fetch(url.href, { signal: request.controller.signal, credentials: 'omit' });
-        if (!response.ok) {
-          const error = new Error('Aircraft unavailable'), value = response.headers.get('Retry-After');
-          error.retryAfter = value && /^\d+$/.test(value) ? Number(value) * 1000 : Math.max(0, Date.parse(value || '') - Date.now()) || 0;
-          serverRetryAt = Math.max(serverRetryAt, Date.now() + Math.min(900000, error.retryAfter));
-          throw error;
+        const records = new Map(); let limited = false;
+        const readTile = async tile => {
+          const url = new URL(endpoint); url.search = new URLSearchParams({ lat: tile.lat, lon: tile.lng, radius: tile.radius });
+          const response = await fetch(url.href, { signal: request.controller.signal, credentials: 'omit' });
+          if (!response.ok) {
+            const error = new Error('Aircraft unavailable'), value = response.headers.get('Retry-After');
+            error.retryAfter = value && /^\d+$/.test(value) ? Number(value) * 1000 : Math.max(0, Date.parse(value || '') - Date.now()) || 0;
+            serverRetryAt = Math.max(serverRetryAt, Date.now() + Math.min(900000, error.retryAfter));
+            throw error;
+          }
+          return core.read(await response.json(), Date.now());
+        };
+        // Limit parallel requests and collapse overlapping circles to one marker per aircraft.
+        for (let offset = 0; offset < tiles.length; offset += 4) {
+          if (token !== version || request.controller.signal.aborted) return;
+          const results = await Promise.all(tiles.slice(offset, offset + 4).map(readTile));
+          if (token !== version) return;
+          for (const result of results) {
+            limited ||= result.limited;
+            for (const plane of result.aircraft) if (!records.has(plane.id) || records.get(plane.id).updated < plane.updated) records.set(plane.id, plane);
+          }
         }
-        const result = core.read(await response.json(), Date.now());
+        const result = {aircraft: [...records.values()].filter(p => core.visible(p.point, bounds())).slice(0, 1500), limited: limited || records.size > 1500};
         if (token !== version) return;
         snapshot = { ...result, area, time: Date.now() }; rememberPositions(result.aircraft); failures = 0; retryAt = 0; serverRetryAt = 0;
       } catch (error) {
+        request.controller.abort();
         if (token !== version) return;
         failures++;
         retryAt = Math.max(serverRetryAt, Date.now() + Math.min(60000, 30000 * 2 ** Math.min(failures - 1, 1)));

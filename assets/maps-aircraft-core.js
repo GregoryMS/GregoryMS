@@ -45,12 +45,31 @@
   }
   function area(bounds, zoom) {
     const [west, south, east, north] = bounds, width = east - west;
-    if (zoom < 7 || !bounds.every(Number.isFinite) || width <= 0 || width > 180 || south >= north || south < -85.05113 || north > 85.05113) return null;
+    if (zoom < 5 || !bounds.every(Number.isFinite) || width <= 0 || width > 180 || south >= north || south < -85.05113 || north > 85.05113) return null;
     const lat = Number(((south + north) / 2).toFixed(2)), lng = Number(wrap((west + east) / 2).toFixed(2));
     const radius = Math.max(10, Math.ceil((Math.max(...[[south, west], [south, east], [north, west], [north, east]].map(p => distance([lat, lng], p))) + 1) / 10) * 10);
-    return radius <= 250 ? { lat, lng, radius, key: `${lat}/${lng}/${radius}` } : null;
+    if (radius <= 250) return { lat, lng, radius, key: `${lat}/${lng}/${radius}` };
+    // Wider views use bounded source queries instead of dropping the whole layer.
+    const pending = [[west, south, east, north]], tiles = [];
+    while (pending.length) {
+      const box = pending.shift(), [w, s, e, n] = box;
+      const centre = [Number(((s + n) / 2).toFixed(2)), Number(wrap((w + e) / 2).toFixed(2))];
+      const r = Math.max(10, Math.ceil((Math.max(...[[s,w],[s,e],[n,w],[n,e]].map(p => distance(centre, p))) + 1) / 10) * 10);
+      if (r <= 250) { tiles.push({lat: centre[0], lng: centre[1], radius: r, key: `${centre[0]}/${centre[1]}/${r}`}); continue; }
+      if (tiles.length + pending.length + 2 > 16) return null;
+      if ((e - w) * Math.cos(centre[0] * Math.PI / 180) > n - s) {
+        const mid = (w + e) / 2; pending.push([w,s,mid,n], [mid,s,e,n]);
+      } else {
+        const mid = (s + n) / 2; pending.push([w,s,e,mid], [w,mid,e,n]);
+      }
+    }
+    return {tiles, bounds: [west, south, east, north], key: tiles.map(tile => tile.key).join(';')};
   }
   function covers(a, bounds) {
+    if (a?.tiles) {
+      const [w,s,e,n] = a.bounds, shift = 360 * Math.round((w - bounds[0]) / 360);
+      return bounds[0] + shift >= w && bounds[2] + shift <= e && bounds[1] >= s && bounds[3] <= n;
+    }
     return !!a && [[bounds[1], bounds[0]], [bounds[1], bounds[2]], [bounds[3], bounds[0]], [bounds[3], bounds[2]]].every(p => distance([a.lat, a.lng], p) <= a.radius);
   }
   function visible(point, bounds) {
