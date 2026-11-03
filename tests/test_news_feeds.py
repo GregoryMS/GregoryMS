@@ -110,6 +110,16 @@ class NewsFeedsTests(unittest.TestCase):
             {'feeds': [feed for feed in snapshot['feeds'] if feed is not radio_canada]},
             dt.datetime.now(dt.timezone.utc)))
 
+    def test_universe_today_is_refreshed_for_astro_without_changing_reader_defaults(self):
+        self.assertNotIn('universe-today', news.SOURCES)
+        snapshot, errors = news.update({}, lambda slug, url: XML)
+        self.assertEqual(errors, [])
+        feed = next(feed for feed in snapshot['feeds']
+                    if feed['url'] == 'https://www.universetoday.com/feed')
+        self.assertIn('ä ö å', feed['xml'])
+        astro = (ROOT / 'assets' / 'astro-news.js').read_text()
+        self.assertIn(feed['url'], astro)
+
     def test_command_warns_for_a_fresh_cached_feed_but_fails_when_it_is_stale_or_missing(self):
         now = dt.datetime.now(dt.timezone.utc)
         snapshot, _ = news.update({}, lambda slug, url: XML, now)
@@ -138,3 +148,4 @@ class NewsFeedsTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

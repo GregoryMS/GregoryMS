@@ -1,4 +1,24 @@
 .astro-page { width:min(100%,1160px); }
+.astro-news { display:flex; align-items:center; min-width:0; margin:0 0 24px; overflow:hidden; font-size:13px; }
+.astro-news-source { display:flex; align-items:center; gap:8px; align-self:stretch; flex-shrink:0; padding:14px 18px; border-right:1px solid var(--line); background:var(--soft); font-weight:500; text-decoration:none; }
+.astro-news-viewport { flex:1; min-width:0; overflow:hidden; }
+.astro-news-track { display:flex; width:max-content; will-change:transform; }
+.astro-news-group { display:flex; flex-shrink:0; align-items:center; }
+.astro-news-group a { display:block; flex-shrink:0; padding:14px 20px; white-space:nowrap; text-decoration:none; }
+.astro-news-group a::after { content:'•'; margin-left:36px; color:var(--muted); }
+.astro-news-group a:hover,.astro-news-source:hover { background:var(--soft); text-decoration:underline; }
+.astro-news-message { display:block; padding:14px 20px; color:var(--muted); }
+.astro-news-pause { align-self:stretch; flex-shrink:0; width:44px; border:0; border-left:1px solid var(--line); background:var(--panel); color:var(--text); font:inherit; cursor:pointer; }
+.astro-news-pause[hidden] { display:none; }
+.astro-news :focus-visible { outline:2px solid var(--text); outline-offset:-3px; }
+.astro-news.is-static .astro-news-viewport { overflow-x:auto; }
+.astro-news.is-static .astro-news-copy { display:none; }
+.astro-news-status { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+@media(max-width:600px) {
+  .astro-news { font-size:12px; }
+  .astro-news-source { padding:12px 10px; gap:4px; }
+  .astro-news-group a,.astro-news-message { padding:14px 12px; }
+}
 .astro-page section[id] { scroll-margin-top:calc(96px + env(safe-area-inset-top,0px)); }
 .astro-quick-links { position:sticky; top:calc(12px + env(safe-area-inset-top,0px)); z-index:1000; display:flow-root; padding:8px 12px; margin:0 0 26px; box-shadow:var(--shadow); }
 .astro-quick-links:not([open]) { width:max-content; max-width:100%; }
@@ -290,3 +310,4 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
 .moon-event time { color:var(--muted); font-size:12px; }
 @media(max-width:850px) { .moon-layout { grid-template-columns:1fr; } }
 @media(max-width:420px) { .moon-phase-dates { grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; } }
+

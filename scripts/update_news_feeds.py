@@ -18,9 +18,10 @@ SOURCES = {
     'cbc': 'https://www.cbc.ca/webfeed/rss/rss-topstories',
     'dw': 'https://rss.dw.com/xml/rss-de-all',
 }
-# Homepage sources can share the snapshot without changing News reader subscriptions.
+# Ticker sources share the snapshot without changing News reader subscriptions.
 TICKER_SOURCES = {
     'radio-canada': 'https://ici.radio-canada.ca/info/rss/info/en-continu',
+    'universe-today': 'https://www.universetoday.com/feed',
 }
 ALL_SOURCES = {**SOURCES, **TICKER_SOURCES}
 MAX_BYTES = 500_000
@@ -138,3 +139,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
