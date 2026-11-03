@@ -75,7 +75,7 @@
     }
     return { aircraft: [...records.values()].slice(0, 1500), limited: data.limited === true || records.size > 1500 || data.ac.length > 10000 };
   }
-  const trackAge = 2 * 60 * 60000, trackLimit = 2000;
+  const trackAge = 24 * 60 * 60000, trackLimit = 10000;
   function mergeTrack(previous, incoming, now = Date.now()) {
     const points = new Map();
     for (const point of [...previous, ...incoming]) {
@@ -87,7 +87,7 @@
   function readTrack(data, id, now = Date.now()) {
     if (!/^[a-f0-9]{6}$/.test(id) || typeof data?.icao24 !== 'string' || data.icao24.toLowerCase() !== id || data.synthetic !== false || data.reliable_track !== true || data.track_unavailable === true || data.source === 'synthetic') return [];
     const raw = Array.isArray(data.waypoints) ? data.waypoints : Array.isArray(data.points) ? data.points : [];
-    return mergeTrack([], raw.slice(0, 5000).filter(p => p?.synthetic === false && p.telemetry === true && p.reliable_track === true && !['origin', 'destination'].includes(p.phase)).map(p => ({
+    return mergeTrack([], raw.slice(0, 10000).filter(p => p?.synthetic === false && p.telemetry === true && p.reliable_track === true && !['origin', 'destination'].includes(p.phase)).map(p => ({
       updated: typeof p.time === 'number' ? p.time * 1000 : NaN,
       point: [p.lat, p.lng], altitude: number(p.alt, -609.6, 30480) ? p.alt / 0.3048 : null, ground: p.on_ground === true
     })), now);
@@ -106,3 +106,4 @@
   }
   return { maxAge, trackAge, trackLimit, mergeTrack, readTrack, trackSegments, altitudeColour, altitudeGradient, neutralColour, aircraftKind, distance, area, covers, visible, read };
 });
+

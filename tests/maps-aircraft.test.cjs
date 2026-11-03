@@ -34,19 +34,21 @@ test('aircraft symbols use model codes rather than flight names, speed or altitu
  for(const [values,kind] of cases)assert.equal(core.read(packet(start,[aircraft(values)]),start).aircraft[0].kind,kind,JSON.stringify(values));
 });
 const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
-function setup(){
+function setup(storage=new Map()){
  let now=start,box=[-123.5,48.3,-123.2,48.5],zoom=13,nextTimer=0,impl=async()=>({ok:true,json:async()=>packet(now)});
  const calls=[],timers=new Map(),events={},groups=[],credits=new Set(),nodes={};
  const element=()=>({style:{},children:[],events:{},dataset:{},textContent:'',append(...items){this.children.push(...items);},addEventListener(k,f){this.events[k]=f;}});
  const output=nodes['aircraft-layer-status']=element(),refresh=nodes['aircraft-refresh']=element();
  nodes['aircraft-altitude-gradient']=element();nodes['aircraft-altitude-neutral']=element();
+ const historyToggle=nodes['aircraft-history']=element();
  const map={getBounds:()=>({getWest:()=>box[0],getSouth:()=>box[1],getEast:()=>box[2],getNorth:()=>box[3]}),getCenter:()=>({lng:(box[0]+box[2])/2}),getZoom:()=>zoom,getSize:()=>({x:390,y:700}),on:(k,f)=>events[k]=f,removeLayer(){},attributionControl:{addAttribution:c=>credits.add(c),removeAttribution:c=>credits.delete(c)}};
  const L={polyline:(points,options)=>({points,options,addTo(g){g.children.add(this);return this;}}),layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,events:{},on(k,f){this.events[k]=f;return this;},pop:{options:{}},bindPopup(fn){this.popup=fn;return this;},getPopup(){return this.pop;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
  const c={L,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleAircraftCore:core,document:{hidden:false,getElementById:id=>nodes[id],createElement:element,addEventListener:(k,f)=>events[k]=f},addEventListener:(k,f)=>events[k]=f,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout:id=>timers.delete(id),fetch(url,opts){calls.push({url,...opts,time:now});return impl(url,opts);}};
+ c.localStorage={getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,value)};
  c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-aircraft.js'),'utf8'),c);const api=c.GregleAircraft({map,notify(){}});
  async function advance(ms){const end=now+ms;for(let i=0;i<1000;i++){const due=[...timers].filter(([,t])=>t.due<=end).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=end;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
- return {api,calls,output,refresh,events,credits,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],paths:()=>[...groups[1].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
+ return {api,calls,output,refresh,historyToggle,events,credits,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],paths:()=>[...groups[1].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
 }
 test('aircraft stay opt-in, load new areas promptly and rate-limit repeated refreshes',async()=>{
  const h=setup();await h.advance(60000);assert.equal(h.calls.length,0);h.api.setEnabled(true);await flush();assert.equal(h.calls.length,1);assert.equal(h.markers().length,1);const marker=h.markers()[0];assert.equal(h.credits.size,1);
@@ -126,7 +128,7 @@ test('past paths accept only real telemetry for the correct plane and validate p
  const data=trackData('a12345',{waypoints:[...trackData().waypoints,bad,{...bad,synthetic:false,telemetry:false},{...bad,synthetic:false,lat:95},{...bad,synthetic:false,time:(start+1)/1000},{...bad,synthetic:false,time:(start-core.trackAge-1)/1000}]});
  assert.equal(core.readTrack(data,'a12345',start).length,2);
  assert.equal(core.mergeTrack(points,[points[0]],start).length,2);
- assert.equal(core.mergeTrack([],Array.from({length:core.trackLimit+100},(_,i)=>({...points[0],updated:start-3000000+i*1000})),start).length,core.trackLimit);
+ assert.equal(core.mergeTrack([],Array.from({length:core.trackLimit+100},(_,i)=>({...points[0],updated:start-(core.trackLimit+100-i)*1000})),start).length,core.trackLimit);
 });
 test('paths leave coverage gaps and implausible jumps open and cross the dateline without spanning the world',()=>{
  const p=(updated,point)=>({updated,point,altitude:10000,ground:false});
@@ -134,17 +136,18 @@ test('paths leave coverage gaps and implausible jumps open and cross the datelin
  assert.equal(valid[0].colour,core.altitudeColour(10000));
  for(const pair of [[p(0,[0,0]),p(181000,[0,.01])],[p(0,[0,0]),p(15000,[40,40])],[p(0,[0,0]),p(15000,[0,0])]])assert.equal(core.trackSegments(pair,0).length,0);
 });
-test('paths retain real telemetry beyond 30 minutes and expire it after two hours',()=>{
+test('paths retain real telemetry beyond two hours and expire it after 24 hours',()=>{
  const point=trackData().waypoints[0];
  const data=trackData('a12345',{waypoints:[
-  {...point,time:(start-2*60*60000-1)/1000},
-  {...point,time:(start-2*60*60000)/1000},
+  {...point,time:(start-24*60*60000-1)/1000},
+  {...point,time:(start-24*60*60000)/1000},
+  {...point,time:(start-12*60*60000)/1000},
   {...point,time:(start-60*60000)/1000},
   {...point,time:(start-60000)/1000}
  ]});
  const points=core.readTrack(data,'a12345',start);
- assert.equal(points.length,3);assert.equal(points[0].updated,start-2*60*60000);
- assert.equal(core.mergeTrack(points,[],start+1).length,2);
+ assert.equal(points.length,4);assert.equal(points[0].updated,start-24*60*60000);
+ assert.equal(core.mergeTrack(points,[],start+1).length,3);
 });
 test('hover previews wait for a dwell, hide on leave, and reuse history when clicked',async()=>{
  const h=setup();h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?trackData():packet(start)}));
@@ -204,4 +207,44 @@ test('unavailable or synthetic history falls back to a trail of observed live po
  h.api.setEnabled(true);await flush();const marker=h.markers()[0];marker.events.popupopen();await flush();assert.equal(h.paths().length,0);
  tick+=15000;await h.advance(15000);assert(h.paths().length>0);const text=e=>e.textContent+' '+e.children.map(text).join(' ');assert.match(text(marker.popup()),/Live trail/);assert.match(text(marker.popup()),/Earlier history unavailable/);
  h.setFetch(async()=>({ok:false,headers:{get:()=> '600'}}));await h.advance(125000);assert.equal(h.paths().length,0);
+});
+
+test('selected history refreshes each minute and merges earlier observations',async()=>{
+ const h=setup();let history=trackData();
+ h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?history:packet(h.calls.at(-1).time)}));
+ h.api.setEnabled(true);await flush();const marker=h.markers()[0];marker.events.popupopen();await flush();
+ history=trackData('a12345',{waypoints:[{...trackData().waypoints[1],time:(start+15000)/1000,lat:48.425,lng:-123.375}]});
+ await h.advance(59999);assert.equal(h.calls.filter(c=>c.url.includes('/track/')).length,1);
+ await h.advance(1);assert.equal(h.calls.filter(c=>c.url.includes('/track/')).length,2);
+ assert(h.paths().some(p=>JSON.stringify(p.points).includes('[48.4,-123.4]')));
+ assert(h.paths().some(p=>JSON.stringify(p.points).includes('[48.425,-123.375]')));
+ marker.events.popupclose();await h.advance(120000);assert.equal(h.calls.filter(c=>c.url.includes('/track/')).length,2);
+});
+test('history toggle cancels pending history, hides trails, preserves live markers and restores the selection',async()=>{
+ const storage=new Map(),h=setup(storage);let release;
+ h.setFetch(async url=>url.includes('/track/')?new Promise(resolve=>release=resolve):{ok:true,json:async()=>packet(h.calls.at(-1).time)});
+ h.api.setEnabled(true);await flush();const marker=h.markers()[0];marker.events.popupopen();await flush();
+ h.historyToggle.checked=false;h.historyToggle.events.change();assert(h.calls[1].signal.aborted);
+ release({ok:true,json:async()=>trackData()});await flush();assert.equal(h.paths().length,0);
+ await h.advance(120000);assert.equal(h.calls.filter(c=>c.url.includes('/track/')).length,1);assert.equal(h.markers().length,1);
+ const text=e=>e.textContent+' '+e.children.map(text).join(' ');assert.match(text(marker.popup()),/Aircraft history is off/);
+ assert.equal(setup(storage).historyToggle.checked,false);
+ h.setFetch(async url=>({ok:true,json:async()=>url.includes('/track/')?trackData():packet(h.calls.at(-1).time)}));
+ h.historyToggle.checked=true;h.historyToggle.events.change();await flush();assert(h.paths().length>0);
+ h.historyToggle.checked=false;h.historyToggle.events.change();assert.equal(h.paths().length,0);
+ marker.events.popupclose();marker.events.mouseover();await h.advance(150);marker.events.popupopen();await flush();
+ await h.advance(60000);assert.equal(h.calls.filter(c=>c.url.includes('/track/')).length,2);assert.equal(h.paths().length,0);
+ assert.equal(setup(storage).historyToggle.checked,false);
+});
+test('periodic history retry honours Retry-After and pauses when the page is hidden',async()=>{
+ const h=setup();let attempts=0;
+ h.setFetch(async url=>url.includes('/track/')? (++attempts===1?{ok:false,headers:{get:()=> '180'}}:{ok:true,json:async()=>trackData()}):{ok:true,json:async()=>packet(h.calls.at(-1).time)});
+ h.api.setEnabled(true);await flush();h.markers()[0].events.popupopen();await flush();
+ await h.advance(179999);assert.equal(attempts,1);await h.advance(1);assert.equal(attempts,2);
+ h.document.hidden=true;h.events.visibilitychange();await h.advance(120000);assert.equal(attempts,2);assert.equal(h.paths().length,0);
+});
+test('history preference still works when local storage is unavailable',async()=>{
+ const h=setup({get(){throw Error('blocked');},set(){throw Error('blocked');}});
+ assert.equal(h.historyToggle.checked,true);h.historyToggle.checked=false;assert.doesNotThrow(()=>h.historyToggle.events.change());
+ h.api.setEnabled(true);await flush();h.markers()[0].events.popupopen();await flush();assert.equal(h.calls.length,1);
 });

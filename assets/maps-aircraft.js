@@ -7,6 +7,10 @@
     document.getElementById('aircraft-altitude-neutral').style.background = core.neutralColour;
     const group = L.layerGroup(), displayed = new Map(), pathGroup = L.layerGroup();
     const histories = new Map(), tracks = new Map();
+    const historyToggle = document.getElementById('aircraft-history'), historyPreference = 'gregle-maps-aircraft-history';
+    let historyEnabled = true, trackTimer;
+    try { historyEnabled = localStorage.getItem(historyPreference) !== 'off'; } catch {}
+    if (historyToggle) historyToggle.checked = historyEnabled;
     let selectedAircraft = null, pinnedAircraft = null, hoveredAircraft = null, hoverTimer, trackRequest = null, trackVersion = 0, trackRetryAt = 0, pathState = '';
     const credit = 'Aircraft: <a href="https://pocketworld.org/api" target="_blank" rel="noopener">PocketWorld</a> / <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> / <a href="https://opensky-network.org" target="_blank" rel="noopener">OpenSky</a> / <a href="https://adsb.lol" target="_blank" rel="noopener">ADSB.lol</a>';
     const endpoint = 'https://gregle-aircraft.square-rain-5ded.workers.dev/aircraft', interval = 15000;
@@ -44,14 +48,15 @@
       return L.divIcon({ className: `aircraft-marker aircraft-${kind}`, iconSize: [34, 34], iconAnchor: [17, 17], html: `<svg viewBox="0 0 32 32" style="fill:${core.altitudeColour(plane.altitude, plane.ground)};transform:rotate(${plane.heading ?? 0}deg)" aria-hidden="true">${symbols[kind].shape}</svg>` });
     }
     function pathMessage(id) {
-      if (id !== selectedAircraft) return 'Hover over or click this aircraft to show up to two hours of its past flight path, where available.';
+      if (!historyEnabled) return 'Aircraft history is off. Turn it on in Layers to show past flight paths.';
+      if (id !== selectedAircraft) return 'Hover over or click this aircraft to show up to 24 hours of its past flight path, where available.';
       const points = core.mergeTrack(tracks.get(id)?.points || [], histories.get(id) || [], Date.now());
       const segments = core.trackSegments(points, displayed.get(id)?.worldLng ?? 0);
       if (segments.length) return `${tracks.get(id)?.points.length > 1 ? 'Past flight path' : 'Live trail'} · ${points.length} reported positions since ${clock(points[0].updated)}.${pathState === 'loading' ? ' Loading earlier history…' : pathState === 'unavailable' ? ' Earlier history unavailable.' : ''}`;
       return pathState === 'loading' ? 'Loading past flight path…' : 'No continuous past path available yet. A trail builds as new positions arrive.';
     }
-    function updatePathPopup() {
-      const entry = displayed.get(selectedAircraft);
+    function updatePathPopup(id = selectedAircraft) {
+      const entry = displayed.get(id);
       if (!entry) return;
       const card = entry.marker.getPopup(), autoPan = card.options.autoPan;
       card.options.autoPan = false;
@@ -61,7 +66,7 @@
     function renderPath() {
       pathGroup.clearLayers();
       const entry = displayed.get(selectedAircraft);
-      if (!entry || !enabled || suspended || document.hidden) return;
+      if (!entry || !enabled || !historyEnabled || suspended || document.hidden) return;
       const points = core.mergeTrack(tracks.get(selectedAircraft)?.points || [], histories.get(selectedAircraft) || [], Date.now());
       const segments = core.trackSegments(points, entry.worldLng);
       if (!segments.length) return;
@@ -70,9 +75,11 @@
       for (const segment of segments) L.polyline(segment.points, {...options, color: segment.colour, weight: 3, opacity: 1}).addTo(pathGroup);
     }
     function clearPath() {
+      clearTimeout(trackTimer);
       selectedAircraft = null; trackVersion++; trackRequest?.abort(); trackRequest = null; pathState = ''; pathGroup.clearLayers();
     }
     function rememberPositions(planes) {
+      if (!historyEnabled) return;
       const now = Date.now();
       for (const plane of planes) {
         const previous = histories.get(plane.id) || [];
@@ -81,13 +88,26 @@
       for (const [id, points] of histories) if (!points.length || now - points.at(-1).updated > core.trackAge) histories.delete(id);
       if (histories.has(selectedAircraft)) { const points = histories.get(selectedAircraft); histories.delete(selectedAircraft); histories.set(selectedAircraft, points); }
       while (histories.size > 300) histories.delete(histories.keys().next().value);
+      // Bound memory even when the layer stays open for a full day in busy airspace.
+      let count = [...histories.values()].reduce((sum, points) => sum + points.length, 0);
+      while (count > 100000 && histories.size > 1) {
+        const id = histories.keys().next().value;
+        count -= histories.get(id).length; histories.delete(id);
+      }
     }
-    async function selectAircraft(id) {
-      if (selectedAircraft === id) return;
-      clearPath(); selectedAircraft = id;
+    function scheduleTrackRefresh(id) {
+      clearTimeout(trackTimer);
+      if (enabled && historyEnabled && !suspended && !document.hidden && selectedAircraft === id) {
+        trackTimer = setTimeout(() => selectAircraft(id, true), Math.max(60000, trackRetryAt - Date.now()));
+      }
+    }
+    async function selectAircraft(id, refreshHistory = false) {
+      if (!enabled || !historyEnabled || suspended || document.hidden || selectedAircraft === id && (!refreshHistory || trackRequest)) return;
+      if (selectedAircraft !== id) { clearPath(); selectedAircraft = id; }
+      clearTimeout(trackTimer);
       const cached = tracks.get(id);
-      if (cached && Date.now() - cached.checked < 30000) { pathState = cached.state; renderPath(); updatePathPopup(); return; }
-      if (!/^[a-f0-9]{6}$/.test(id) || Date.now() < trackRetryAt) { pathState = 'unavailable'; renderPath(); updatePathPopup(); return; }
+      if (cached && Date.now() - cached.checked < 30000) { pathState = cached.state; renderPath(); updatePathPopup(); scheduleTrackRefresh(id); return; }
+      if (!/^[a-f0-9]{6}$/.test(id) || Date.now() < trackRetryAt) { pathState = 'unavailable'; renderPath(); updatePathPopup(); if (/^[a-f0-9]{6}$/.test(id)) scheduleTrackRefresh(id); return; }
       pathState = 'loading'; renderPath(); updatePathPopup();
       const controller = new AbortController(), token = trackVersion; trackRequest = controller;
       const timeout = setTimeout(() => controller.abort(), 12000);
@@ -110,12 +130,12 @@
         trackRetryAt = Math.max(trackRetryAt, Date.now() + 30000);
       } finally {
         clearTimeout(timeout);
-        if (token === trackVersion && selectedAircraft === id) { trackRequest = null; renderPath(); updatePathPopup(); }
+        if (token === trackVersion && selectedAircraft === id) { trackRequest = null; renderPath(); updatePathPopup(); scheduleTrackRefresh(id); }
       }
     }
     function updatePathSelection() {
       const id = hoveredAircraft || pinnedAircraft;
-      if (id) selectAircraft(id);
+      if (id && historyEnabled) selectAircraft(id);
       else clearPath();
     }
     function clear() {
@@ -232,6 +252,14 @@
       else { snapshot = null; clear(); histories.clear(); tracks.clear(); map.removeLayer(group); map.removeLayer(pathGroup); map.attributionControl.removeAttribution(credit); }
     }
     refresh.addEventListener('click', () => load(true));
+    historyToggle?.addEventListener('change', () => {
+      historyEnabled = historyToggle.checked;
+      try { localStorage.setItem(historyPreference, historyEnabled ? 'on' : 'off'); } catch {}
+      const previous = selectedAircraft;
+      updatePathSelection();
+      if (previous) updatePathPopup(previous);
+      if (pinnedAircraft && pinnedAircraft !== previous) updatePathPopup(pinnedAircraft);
+    });
     map.on('moveend', () => { if (enabled && !suspended && !document.hidden) { render(); schedule(650); } });
     document.addEventListener('visibilitychange', () => {
       if (!enabled) return;
@@ -243,3 +271,4 @@
     return { setEnabled };
   };
 })();
+
