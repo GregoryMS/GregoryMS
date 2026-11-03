@@ -9,6 +9,11 @@ export default {
       return new Response('Gregle app router ready', {headers: {'Cache-Control': 'no-store'}});
     }
     if (url.hostname === 'maps.gregle.uk' && url.pathname.startsWith('/api/maps/')) {
+      const localKey = url.pathname === '/api/maps/google-config'
+        ? env.GOOGLE_MAPS_BROWSER_KEY : env.TOMTOM_API_KEY;
+      if (typeof localKey === 'string' && localKey.trim()) {
+        return router.fetch(request, env);
+      }
       try {
         return await env.MAPS_API.fetch(request);
       } catch {
@@ -21,6 +26,6 @@ export default {
         });
       }
     }
-    return router.fetch(request, {});
+    return router.fetch(request, env);
   },
 };

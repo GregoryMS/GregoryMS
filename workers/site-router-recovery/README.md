@@ -12,11 +12,16 @@ showed no blocked-content notice. The reason for the killed state is unknown;
 redeploying did not clear it.
 
 The recovery Worker serves existing GitHub Pages content using the original
-router. It delegates Maps API requests to the original Worker, retaining the
-original secrets there. If that call throws, provider configuration reports
-disabled and other API calls return a controlled 503. Basic OpenStreetMap
-functionality remains available. The original API will work again through the
-service binding if Cloudflare restores that Worker.
+router. Google Maps and TomTom credentials have now been configured as secrets
+on the recovery Worker, so it serves those APIs directly with the original
+validation and rate limits. Secret values must never be committed to the repo.
+`GOOGLE_MAPS_BROWSER_KEY` is the browser-restricted Google key; `TOMTOM_API_KEY`
+stays server-side. Deployments must preserve both secret bindings.
+
+If a provider key is missing, the Worker can still delegate to the original
+Worker through `MAPS_API`. If that call throws, configuration reports disabled
+and other API requests return a controlled 503. The original Worker is retained
+for diagnosis; restoring Maps no longer depends on clearing its killed state.
 
 Do not deploy `workers/site-router/wrangler.jsonc` or
 `workers/calculator/wrangler.jsonc` with their routes until their Workers are
@@ -25,5 +30,7 @@ The calculator's automatic TI-89 ROM proxy remains unavailable; existing saved
 ROMs and local ROM import still work.
 
 Verification: all 21 app subdomain roots, the apex, and four key assets returned
-HTTP 200 without redirecting to the apex. Maps rendered in a browser. Run
+HTTP 200 without redirecting to the apex. Google Places loaded in a browser;
+both provider configurations, a TomTom traffic PNG, and a TomTom route returned
+HTTP 200. Run
 `node --test tests/site-router-recovery.test.cjs tests/site-router.test.cjs tests/maps-tomtom-worker.test.cjs`.

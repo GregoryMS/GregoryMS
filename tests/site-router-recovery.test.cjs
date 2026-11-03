@@ -30,3 +30,15 @@ test('workers.dev health requests cannot recursively fetch the same Worker', asy
   assert.equal(response.status, 200);
   assert.equal(await response.text(), 'Gregle app router ready');
 });
+
+test('replacement provider secrets restore configuration without calling the killed backend', async () => {
+  const router = await worker;
+  const env = {GOOGLE_MAPS_BROWSER_KEY: 'test_google_browser_key_12345', TOMTOM_API_KEY: 'test_tomtom_private_key_12345',
+    MAPS_API: {fetch() {assert.fail('Must use the replacement credentials');}}};
+  const google = await router.fetch(new Request('https://maps.gregle.uk/api/maps/google-config'), env);
+  assert.deepEqual(await google.json(), {enabled: true, browserKey: env.GOOGLE_MAPS_BROWSER_KEY});
+  const tomtom = await router.fetch(new Request('https://maps.gregle.uk/api/maps/tomtom-config'), env);
+  assert.deepEqual(await tomtom.json(), {enabled: true});
+  const forbidden = await router.fetch(new Request('https://maps.gregle.uk/api/maps/google-config', {headers: {Origin: 'https://example.com'}}), env);
+  assert.equal(forbidden.status, 403);
+});
