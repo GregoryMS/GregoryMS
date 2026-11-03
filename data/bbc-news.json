@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-02T19:44:07+00:00",
-  "fetchedAt": "2026-11-02T19:44:15.838536+00:00",
+  "feedUpdatedAt": "2026-11-03T01:49:42+00:00",
+  "fetchedAt": "2026-11-03T01:49:54.950409+00:00",
   "items": [
+    {
+      "title": "Mahmood scraps settlement plans for migrant care workers",
+      "link": "https://www.bbc.co.uk/news/articles/c6lye8g4w7g1o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Shop freezers in seven European countries hit by cyber-attack",
       "link": "https://www.bbc.co.uk/news/articles/cq1kd1nee80eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'All this food is now useless': Piles of rubbish after shop freezers hit by cyber-attack",
-      "link": "https://www.bbc.co.uk/news/videos/cmwyvrgk9p0ro?at_medium=RSS&at_campaign=rss"
+      "title": "Thousands of European troops to rehearse Ukraine deployment in event of peace",
+      "link": "https://www.bbc.co.uk/news/articles/cm3wv085ne6po?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Channel 4 documentary and journalists 'poisoned the well' against Russell Brand, court hears",
-      "link": "https://www.bbc.co.uk/news/articles/cwkg5dnypdn4o?at_medium=RSS&at_campaign=rss"
+      "title": "PM plans debt re-set for Commonwealth nations as slavery apology talks begin",
+      "link": "https://www.bbc.co.uk/news/articles/c58jzn1ve0kjo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Russian bombing kills 24 people at Ukraine aid centre, Kyiv says",
+      "title": "Plane may have broken apart ahead of deadly Florida jet crash, say investigators",
+      "link": "https://www.bbc.co.uk/news/articles/cm369yy7lw73o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "What Florida jet audio and flight data tells us about its final moments",
+      "link": "https://www.bbc.co.uk/news/videos/c52e9lgxjz82o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Russian bombing kills 26 people at Ukraine aid centre, Kyiv says",
       "link": "https://www.bbc.co.uk/news/articles/cjy56dndlyz0o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mother told to book appointment to give birth to her baby who had died",
-      "link": "https://www.bbc.co.uk/news/articles/cm9dzn8e737jo?at_medium=RSS&at_campaign=rss"
+      "title": "North Korea denies being behind record $6.3bn Binance hack",
+      "link": "https://www.bbc.co.uk/news/articles/c6rey4v53exgo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "MP Carla Lockhart quits DUP in Drumcree row",
-      "link": "https://www.bbc.co.uk/news/articles/cm87zn1vy28zo?at_medium=RSS&at_campaign=rss"
+      "title": "Two boys arrested after Halloween party stabbings",
+      "link": "https://www.bbc.co.uk/news/articles/cked3j229j43o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Fighting returns to Kherson region after longest Ukraine war ceasefire",
-      "link": "https://www.bbc.co.uk/news/articles/ckg5jlyp66jzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Man who drugged and raped wife with strangers 'led double life'",
-      "link": "https://www.bbc.co.uk/news/articles/cwdr8vxl1nv1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Prosecutors hint at retrial for Lindsay Clancy on murder charges",
-      "link": "https://www.bbc.co.uk/news/articles/cjly0rgk34y2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "A simple guide to the midterms",
-      "link": "https://www.bbc.co.uk/news/articles/c6wyz223j19po?at_medium=RSS&at_campaign=rss"
+      "title": "Legal challenge to Australia's social media ban to start in High Court",
+      "link": "https://www.bbc.co.uk/news/articles/ck79py02p1jlo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
