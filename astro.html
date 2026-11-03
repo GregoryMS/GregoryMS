@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261030-space-weather">
+  <link rel="stylesheet" href="assets/astro.css?v=20261102-sticky-menu">
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
@@ -85,12 +85,12 @@
       </div>
     </div>
     <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner</h1></div></div>
-    <nav class="astro-quick-links panel" aria-label="Page sections">
-      <span class="astro-quick-label">Jump to</span>
-      <div class="astro-quick-scroll">
+    <details class="astro-quick-links panel" open>
+      <summary class="astro-quick-label">Jump to<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary>
+      <nav class="astro-quick-scroll" aria-label="Page sections">
         <a href="#observing-location">Location</a><a href="#hourly-forecast">48-hour forecast</a><a href="#clear-sky-sites">Clear sky sites</a><a href="#clear-sky-chart">Sky chart</a><a href="#current-conditions">Conditions</a><a href="#space-weather">Space weather</a><a href="#aurora-forecast">Aurora forecast</a><a href="#moon-phases">Moon phases</a><a href="#astro-calendar">Events</a><a href="#satellite-tracker">Satellites</a>
-      </div>
-    </nav>
+      </nav>
+    </details>
     <section id="observing-location" class="location-section" aria-label="Choose an observing location">
       <form id="location-form" class="location-form">
         <label for="location-query">Find a city</label>

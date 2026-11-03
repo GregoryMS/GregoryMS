@@ -1,7 +1,17 @@
 .astro-page { width:min(100%,1160px); }
-.astro-page section[id] { scroll-margin-top:24px; }
-.astro-quick-links { display:flex; align-items:center; gap:14px; padding:8px 12px 8px 18px; margin:0 0 26px; }
-.astro-quick-label { flex-shrink:0; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; }
+.astro-page section[id] { scroll-margin-top:calc(96px + env(safe-area-inset-top,0px)); }
+.astro-quick-links { position:sticky; top:calc(12px + env(safe-area-inset-top,0px)); z-index:1000; display:flow-root; padding:8px 12px; margin:0 0 26px; box-shadow:var(--shadow); }
+.astro-quick-links:not([open]) { width:max-content; max-width:100%; }
+.astro-quick-label { float:left; display:flex; align-items:center; gap:8px; min-height:44px; margin-right:14px; padding:10px 8px; border-radius:999px; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; list-style:none; cursor:pointer; }
+.astro-quick-links:not([open]) .astro-quick-label { margin-right:0; }
+.astro-quick-label::-webkit-details-marker { display:none; }
+.astro-quick-label:hover { background:var(--soft); }
+.astro-quick-label:focus-visible { outline:2px solid var(--text); outline-offset:-2px; }
+.astro-quick-label svg { flex-shrink:0; }
+.astro-quick-links:not([open]) .astro-quick-label svg { transform:rotate(-90deg); }
+@media(min-width:1400px) {
+  .astro-quick-links:not([open]) { transform:translateX(calc(-100% - 16px)); }
+}
 .astro-quick-scroll { display:flex; align-items:center; gap:5px; min-width:0; overflow-x:auto; padding:3px; scrollbar-width:thin; }
 .astro-quick-scroll a { display:block; flex-shrink:0; padding:10px 12px; border-radius:999px; font-size:12px; white-space:nowrap; text-decoration:none; }
 .astro-quick-scroll a:hover,.astro-quick-scroll a:focus-visible { background:var(--soft); }
@@ -34,7 +44,7 @@
 .aurora-intervals caption { padding:14px; color:var(--muted); font-size:12px; text-align:left; }
 .aurora-intervals td[data-storm="true"] { background:var(--soft); font-weight:500; }
 @media(max-width:700px) {
-  .astro-quick-links { gap:6px; padding-left:12px; }
+  .astro-quick-label { margin-right:6px; }
   .astro-quick-scroll a { padding-inline:10px; }
   .space-weather-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .aurora-layout { grid-template-columns:minmax(0,1fr); }
