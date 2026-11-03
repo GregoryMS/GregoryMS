@@ -1,6 +1,7 @@
 .astro-page { width:min(100%,1160px); }
-.astro-news { display:flex; align-items:center; min-width:0; margin:0 0 24px; overflow:hidden; font-size:13px; }
+.astro-news { display:flex; align-items:center; min-width:0; margin:20px 0 24px; overflow:hidden; font-size:13px; }
 .astro-news-source { display:flex; align-items:center; gap:8px; align-self:stretch; flex-shrink:0; padding:14px 18px; border-right:1px solid var(--line); background:var(--soft); font-weight:500; text-decoration:none; }
+.astro-news-logo { display:block; width:32px; height:32px; flex-shrink:0; object-fit:contain; }
 .astro-news-viewport { flex:1; min-width:0; overflow:hidden; }
 .astro-news-track { display:flex; width:max-content; will-change:transform; }
 .astro-news-group { display:flex; flex-shrink:0; align-items:center; }
@@ -17,6 +18,7 @@
 @media(max-width:600px) {
   .astro-news { font-size:12px; }
   .astro-news-source { padding:12px 10px; gap:4px; }
+  .astro-news-source-name { display:none; }
   .astro-news-group a,.astro-news-message { padding:14px 12px; }
 }
 .astro-page section[id] { scroll-margin-top:calc(96px + env(safe-area-inset-top,0px)); }

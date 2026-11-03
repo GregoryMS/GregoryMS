@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261103-news">
+  <link rel="stylesheet" href="assets/astro.css?v=20261103-news-logo">
   <script src="assets/astro-news.js?v=20261103-news" defer></script>
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -85,9 +85,8 @@
         <div class="astro-clock"><span>Local</span><time id="local-clock" aria-label="Current time in your time zone">--:--:--</time></div>
       </div>
     </div>
-    <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner</h1></div></div>
     <aside class="astro-news panel" id="astro-news" aria-label="Universe Today headlines">
-      <a class="astro-news-source" href="https://www.universetoday.com/" target="_blank" rel="noopener noreferrer">Universe Today <span aria-hidden="true">↗</span></a>
+      <a class="astro-news-source" href="https://www.universetoday.com/" target="_blank" rel="noopener noreferrer" aria-label="Universe Today" title="Universe Today"><img class="astro-news-logo" src="assets/universe-today-logo.png" width="32" height="32" alt=""><span class="astro-news-source-name">Universe Today</span><span aria-hidden="true">↗</span></a>
       <div class="astro-news-viewport" id="astro-news-viewport" tabindex="0" role="region" aria-label="Scrollable astronomy headlines">
         <div class="astro-news-track" id="astro-news-track"><span class="astro-news-message">Loading astronomy headlines…</span></div>
       </div>
@@ -95,6 +94,7 @@
       <span class="astro-news-status" id="astro-news-status" role="status"></span>
       <noscript><a href="https://www.universetoday.com/">Read astronomy news ↗</a></noscript>
     </aside>
+    <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner</h1></div></div>
     <details class="astro-quick-links panel" open>
       <summary class="astro-quick-label">Jump to<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary>
       <nav class="astro-quick-scroll" aria-label="Page sections">
