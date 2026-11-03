@@ -30,6 +30,24 @@
   function magnetic(data, now) {
     return latest(data, row => row.active === true && row.overall_quality === 0 && finite(row.bz_gsm, -500, 500), now);
   }
+  function sunspots(text, now = Date.now()) {
+    if (typeof text !== 'string' || !/^:Product:\s+Daily Solar Data\b/m.test(text)) throw new Error('Invalid daily solar data');
+    const today = Math.floor(now / (24 * HOUR)) * 24 * HOUR;
+    const rows = [];
+    for (const line of text.split(/\r?\n/)) {
+      const date = /^(\d{4}) (\d{2}) (\d{2})\s/.exec(line);
+      // NOAA's fixed-width SESC field stays blank when observations are missing.
+      // Splitting on whitespace would read the following area field as a number.
+      const value = line.slice(16, 22).trim();
+      if (!date || !/^\d{1,4}$/.test(value)) continue;
+      const iso = date.slice(1).join('-'), time = Date.parse(iso + 'T00:00:00Z'), number = Number(value);
+      if (!Number.isFinite(time) || new Date(time).toISOString().slice(0, 10) !== iso || number > 1000) continue;
+      if (time > today || time < today - 3 * 24 * HOUR) continue;
+      rows.push({time, number});
+    }
+    if (!rows.length) throw new Error('Recent daily sunspot number unavailable');
+    return rows.sort((a, b) => b.time - a.time)[0];
+  }
   function forecast(data, now = Date.now()) {
     if (!Array.isArray(data)) throw new Error('Invalid forecast data');
     const rows = data.filter(row => row && ['estimated','predicted'].includes(row.observed) && finite(row.kp, 0, 9))
@@ -57,5 +75,5 @@
     if (value >= 3) return 'Unsettled geomagnetic conditions';
     return 'Quiet geomagnetic conditions';
   }
-  return {timestamp, kp, wind, magnetic, forecast, activity};
+  return {timestamp, kp, wind, magnetic, sunspots, forecast, activity};
 });

@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261102-sticky-menu">
+  <link rel="stylesheet" href="assets/astro.css?v=20261102-sun">
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin="anonymous" defer></script>
@@ -37,8 +37,8 @@
   <script src="assets/vendor/satellite.min.js?v=6.0.1" defer></script>
   <script src="assets/astro-satellite-core.js?v=20261005-orbits" defer></script>
   <script src="assets/astro-satellite.js?v=20261005-orbits" defer></script>
-  <script src="assets/astro-space-weather-core.js?v=20261030" defer></script>
-  <script src="assets/astro-space-weather.js?v=20261030" defer></script>
+  <script src="assets/astro-space-weather-core.js?v=20261102-sun" defer></script>
+  <script src="assets/astro-space-weather.js?v=20261102-sun" defer></script>
   <script src="assets/astro.js?v=20261030-space-weather" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261017-scroll-reorder">
@@ -166,6 +166,22 @@
       </div>
       <div class="space-weather-links"><a class="pill" href="https://spaceweather.com/" target="_blank" rel="noopener">SpaceWeather.com ↗</a><a href="https://www.spaceweather.gov/products/solar-wind" target="_blank" rel="noopener">NOAA solar wind ↗</a><a href="https://www.spaceweather.gov/products/planetary-k-index" target="_blank" rel="noopener">NOAA Kp chart ↗</a></div>
       <details class="space-weather-guide"><summary>What do these readings mean?</summary><p>Kp measures global geomagnetic activity on a scale from 0 to 9; higher values can mean a wider auroral oval. It is an estimate of a three-hour index, not a local visibility forecast. Faster solar wind and a sustained negative (southward) Bz can favour auroral activity. Density is the number of solar wind protons per cubic centimetre. Solar wind readings are taken upstream of Earth and do not describe conditions at the ground.</p></details>
+      <div class="sun-section" role="region" aria-labelledby="sun-heading">
+        <h3 id="sun-heading">Sun</h3>
+        <p class="meta">Sunspot activity and the latest solar views. Select either image to open it full size.</p>
+        <div class="sun-layout">
+          <figure class="sun-card panel">
+            <div class="sun-card-heading"><div><h4>Sunspots</h4><p id="sw-sunspots-detail" class="meta" role="status">Loading the latest daily number…</p></div><div class="sunspot-number"><span>Sunspot number</span><strong id="sw-sunspots">—</strong></div></div>
+            <a id="sunspots-image-link" class="sun-image-frame" href="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_HMIIC.jpg" target="_blank" rel="noopener"><img id="sunspots-image" src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_HMIIC.jpg" alt="NASA SDO HMI visible-light solar disc showing dark sunspots; observation time is printed on the image" width="1024" height="1024" loading="lazy" decoding="async"><span id="sunspots-image-fallback" hidden>Sunspot image unavailable · Open NASA image ↗</span></a>
+            <figcaption class="meta"><p id="sunspots-image-status" role="status">NASA SDO/HMI · Check the UTC observation time printed on the image.</p><p>The daily sunspot number is an index combining spots and groups, rather than a count of the dark marks in this image.</p><a href="https://sdo.gsfc.nasa.gov/data/" target="_blank" rel="noopener">NASA solar images ↗</a> · <a href="https://services.swpc.noaa.gov/text/daily-solar-indices.txt" target="_blank" rel="noopener">NOAA daily sunspot data ↗</a></figcaption>
+          </figure>
+          <figure class="sun-card panel">
+            <div class="sun-card-heading"><div><h4>Coronal holes</h4><p class="meta">Extreme ultraviolet · AIA 193 Å</p></div></div>
+            <a id="coronal-holes-image-link" class="sun-image-frame" href="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0193.jpg" target="_blank" rel="noopener"><img id="coronal-holes-image" src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0193.jpg" alt="NASA SDO AIA 193 angstrom solar corona, where coronal holes appear dark; observation time is printed on the image" width="1024" height="1024" loading="lazy" decoding="async"><span id="coronal-holes-image-fallback" hidden>Coronal-hole image unavailable · Open NASA image ↗</span></a>
+            <figcaption class="meta"><p id="coronal-holes-image-status" role="status">NASA SDO/AIA · Check the UTC observation time printed on the image.</p><p>Coronal holes appear as dark regions in the corona. Their open magnetic fields can release fast solar wind.</p><a href="https://sdo.gsfc.nasa.gov/data/" target="_blank" rel="noopener">NASA solar images ↗</a> · <a href="https://www.spaceweather.gov/phenomena/coronal-holes" target="_blank" rel="noopener">About coronal holes ↗</a></figcaption>
+          </figure>
+        </div>
+      </div>
       <noscript><p>Enable JavaScript for observations, or visit <a href="https://spaceweather.com/">SpaceWeather.com</a> and <a href="https://www.spaceweather.gov/">NOAA space weather</a>.</p></noscript>
     </section>
     <section id="aurora-forecast" class="aurora-section" aria-labelledby="aurora-heading">

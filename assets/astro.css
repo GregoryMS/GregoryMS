@@ -22,6 +22,25 @@
 .space-weather-links { display:flex; align-items:center; flex-wrap:wrap; gap:12px 20px; margin-top:16px; font-size:12px; }
 .space-weather-guide { margin-top:18px; }
 .space-weather-guide p { color:var(--muted); font-size:13px; line-height:1.8; }
+.sun-section { margin-top:28px; }
+.sun-section h3 { margin:0; font-size:20px; font-weight:500; letter-spacing:-.4px; }
+.sun-section > .meta { margin:6px 0 16px; }
+.sun-layout { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.sun-card { min-width:0; margin:0; overflow:hidden; }
+.sun-card-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:114px; padding:18px 20px; }
+.sun-card h4 { margin:0; font-size:17px; font-weight:500; }
+.sun-card-heading .meta { margin:6px 0 0; }
+.sunspot-number { flex-shrink:0; text-align:right; }
+.sunspot-number span,.sunspot-number strong { display:block; }
+.sunspot-number span { color:var(--muted); font-size:11px; }
+.sunspot-number strong { font-size:34px; line-height:1.3; font-weight:500; font-variant-numeric:tabular-nums; }
+.sun-image-frame { display:grid; place-items:center; aspect-ratio:1; background:#000; color:#ccc; text-align:center; text-decoration:none; }
+.sun-image-frame img { display:block; width:100%; height:auto; aspect-ratio:1; object-fit:contain; }
+.sun-image-frame [hidden] { display:none; }
+.sun-image-frame span { padding:24px; font-size:14px; }
+.sun-image-frame:focus-visible { outline:2px solid var(--text); outline-offset:-4px; }
+.sun-card figcaption { padding:16px 20px 20px; }
+.sun-card figcaption p { margin:0 0 10px; }
 .aurora-layout { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:16px; margin-top:18px; align-items:start; }
 .aurora-map { margin:0; overflow:hidden; }
 .aurora-map-controls { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:14px 18px; font-size:12px; }
@@ -47,6 +66,7 @@
   .astro-quick-label { margin-right:6px; }
   .astro-quick-scroll a { padding-inline:10px; }
   .space-weather-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .sun-layout { grid-template-columns:minmax(0,1fr); }
   .aurora-layout { grid-template-columns:minmax(0,1fr); }
   .aurora-outlook { padding:18px; }
 }

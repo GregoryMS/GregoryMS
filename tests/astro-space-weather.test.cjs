@@ -49,3 +49,74 @@ test('fractional Kp storm categories match NOAA thirds', () => {
   assert.match(C.activity(8.67), /^G4/);
   assert.match(C.activity(9), /^G5/);
 });
+
+const solarData = (...rows) => ':Product: Daily Solar Data            DSD.txt\n' + rows.join('\n');
+const solarRow = '2026 10 30   90     36      100      1    -999      *   0  0  0  1  0  0  0';
+
+test('daily sunspot numbers use the SESC column, retain zero and select the newest UTC date', () => {
+  const yesterday = solarRow.replace('10 30', '10 29').replace('    36', '    22');
+  const result = C.sunspots(solarData(solarRow, yesterday), now);
+  assert.equal(result.number, 36);
+  assert.equal(result.time, Date.parse('2026-10-30T00:00:00Z'));
+  assert.equal(C.sunspots(solarData(solarRow.replace('    36', '     0')), now).number, 0);
+});
+
+test('blank and invalid sunspot readings never turn the following area field into a count', () => {
+  for (const value of ['      ', '  -999', '   3.6', '  1001']) {
+    const row = solarRow.slice(0, 16) + value + solarRow.slice(22);
+    assert.throws(() => C.sunspots(solarData(row), now));
+  }
+  assert.throws(() => C.sunspots('<html>NOAA unavailable</html>', now));
+});
+
+test('daily sunspot observations reject future, impossible and expired dates', () => {
+  for (const date of ['2026 10 31', '2026 10 26', '2026 02 30']) {
+    assert.throws(() => C.sunspots(solarData(date + solarRow.slice(10)), now));
+  }
+  const missing = solarRow.slice(0, 16) + '      ' + solarRow.slice(22);
+  const previous = solarRow.replace('10 30', '10 29');
+  assert.equal(C.sunspots(solarData(previous, missing), now).time, Date.parse('2026-10-29T00:00:00Z'));
+});
+
+function sunHarness(text = solarData(solarRow)) {
+  const fs = require('node:fs'), vm = require('node:vm');
+  const nodes = new Map(), requests = [];
+  const get = id => {
+    if (!nodes.has(id)) nodes.set(id, {textContent:'', hidden:false, complete:false, listeners:{}, addEventListener(name, fn) { this.listeners[name] = fn; }, replaceChildren() {}});
+    return nodes.get(id);
+  };
+  const document = {getElementById:get, hidden:false, addEventListener(){}, createElement:() => ({})};
+  class FixedDate extends Date { static now() { return now; } }
+  let fail = false, interval;
+  const context = {document, window:{GregleSpaceWeatherCore:{...C, sunspots:value => C.sunspots(value, now)}}, Date:FixedDate, Intl, AbortController, setTimeout, clearTimeout,
+    setInterval(fn) { interval = fn; }, fetch:async url => {
+      requests.push(url);
+      return {ok:!fail, text:async () => text, json:async () => []};
+    }};
+  vm.runInNewContext(fs.readFileSync('assets/astro-space-weather.js', 'utf8'), context);
+  return {get, requests, interval:() => interval(), fail() { fail = true; }};
+}
+
+test('solar number loads independently, and failed manual refresh clears it while retrying both images', async () => {
+  const h = sunHarness();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.get('sw-sunspots').textContent, '36');
+  assert.match(h.get('sw-sunspots-detail').textContent, /30 Oct 2026 \(UTC\)/);
+  assert.equal(h.get('sw-kp').textContent, '—');
+  h.get('sunspots-image').onload();
+  h.get('coronal-holes-image').onerror();
+  assert.equal(h.get('sunspots-image').hidden, false);
+  assert.equal(h.get('coronal-holes-image').hidden, true);
+  assert.equal(h.get('coronal-holes-image-fallback').hidden, false);
+  const before = h.requests.length;
+  h.interval();
+  assert.equal(h.requests.length, before);
+  h.fail();
+  await h.get('space-weather-refresh').listeners.click();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.get('sw-sunspots').textContent, '—');
+  assert.match(h.get('sw-sunspots-detail').textContent, /unavailable/);
+  assert.match(h.get('sunspots-image').src, /latest_1024_HMIIC.jpg\?v=/);
+  assert.match(h.get('coronal-holes-image').src, /latest_1024_0193.jpg\?v=/);
+  assert.equal(h.get('coronal-holes-image-fallback').hidden, true);
+});

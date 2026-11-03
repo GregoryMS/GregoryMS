@@ -9,9 +9,11 @@
     kp:'json/planetary_k_index_1m.json',
     wind:'json/rtsw/rtsw_wind_1m.json',
     magnetic:'json/rtsw/rtsw_mag_1m.json',
-    forecast:'products/noaa-planetary-k-index-forecast.json'
+    forecast:'products/noaa-planetary-k-index-forecast.json',
+    sunspots:'text/daily-solar-indices.txt'
   };
   let lastAttempt = 0, running = false, controllers = [], hemisphere = 'north', mapVersion = 0;
+  let solarImageBucket = null, solarImageVersion = 0;
   function el(tag, text, className) {
     const node = document.createElement(tag);
     if (text !== undefined) node.textContent = text;
@@ -25,6 +27,7 @@
   function unavailable(key) {
     const ids = {kp:['kp'], wind:['speed','density'], magnetic:['bz']}[key];
     for (const id of ids || []) metric(id, '—', 'Recent reading unavailable');
+    if (key === 'sunspots') metric('sunspots', '—', 'Daily number unavailable. See NOAA’s daily data below.');
     if (key === 'forecast') {
       $('aurora-days').replaceChildren();
       $('aurora-intervals').replaceChildren(el('p', 'Forecast unavailable. Open NOAA’s full forecast using the link above.', 'empty'));
@@ -59,9 +62,15 @@
     try {
       const response = await fetch(base + endpoints[key], {signal:controller.signal, credentials:'omit'});
       if (!response.ok) throw new Error('NOAA data unavailable');
-      const data = await response.json();
+      const data = key === 'sunspots' ? await response.text() : await response.json();
       if (document.hidden || controller.signal.aborted) throw new Error('Refresh interrupted');
       if (key === 'forecast') { renderForecast(data); return; }
+      if (key === 'sunspots') {
+        const row = C.sunspots(data);
+        const date = new Intl.DateTimeFormat('en-GB', {timeZone:'UTC', year:'numeric', month:'short', day:'numeric'}).format(row.time);
+        metric('sunspots', String(row.number), 'Daily NOAA index · ' + date + ' (UTC)');
+        return;
+      }
       const row = C[key](data), time = utc(row.time);
       if (key === 'kp') metric('kp', row.estimated_kp.toFixed(2), C.activity(row.estimated_kp) + ' · ' + time);
       if (key === 'wind') {
@@ -92,12 +101,40 @@
     };
     image.src = url + '?v=' + Math.floor(Date.now() / refreshEvery);
   }
+  function loadSolarImages(force = false) {
+    const bucket = Math.floor(Date.now() / (15 * 60000));
+    if (!force && bucket === solarImageBucket) return;
+    const initial = solarImageBucket === null, version = ++solarImageVersion;
+    solarImageBucket = bucket;
+    for (const [id, channel, source] of [['sunspots', 'HMI', 'HMIIC'], ['coronal-holes', 'AIA', '0193']]) {
+      const image = $(id + '-image'), fallback = $(id + '-image-fallback'), status = $(id + '-image-status');
+      image.onload = () => {
+        if (version !== solarImageVersion) return;
+        image.hidden = false; fallback.hidden = true;
+        status.textContent = 'NASA SDO/' + channel + ' · Check the UTC observation time printed on the image.';
+      };
+      image.onerror = () => {
+        if (version !== solarImageVersion) return;
+        image.hidden = true; fallback.hidden = false;
+        status.textContent = 'Solar image unavailable. Select the image area to open NASA directly, or try Refresh space weather.';
+      };
+      // Keep the HTML source on first load, including its no-JavaScript fallback.
+      if (initial && !force) {
+        if (image.complete) image.naturalWidth ? image.onload() : image.onerror();
+      } else {
+        image.hidden = false; fallback.hidden = true;
+        status.textContent = 'Loading NASA solar image…';
+        image.src = 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_' + source + '.jpg?v=' + (force ? Date.now() : bucket);
+      }
+    }
+  }
   async function refresh(force = false) {
     if (document.hidden || running || (!force && Date.now() - lastAttempt < refreshEvery)) return;
     lastAttempt = Date.now(); running = true;
     $('space-weather-refresh').disabled = true;
     $('space-weather-status').textContent = 'Refreshing NOAA observations…';
     loadMap();
+    loadSolarImages(force);
     const results = await Promise.allSettled(Object.keys(endpoints).map(read));
     const failed = results.slice(0, 3).filter(result => result.status === 'rejected').length;
     $('space-weather-status').textContent = failed === 3 ? 'Recent NOAA readings unavailable. Try refreshing or open the source links below.' :
