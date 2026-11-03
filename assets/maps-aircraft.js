@@ -14,7 +14,7 @@
     let selectedAircraft = null, pinnedAircraft = null, hoveredAircraft = null, hoverTimer, trackRequest = null, trackVersion = 0, trackRetryAt = 0, pathState = '';
     const credit = 'Aircraft: <a href="https://pocketworld.org/api" target="_blank" rel="noopener">PocketWorld</a> / <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> / <a href="https://opensky-network.org" target="_blank" rel="noopener">OpenSky</a> / <a href="https://adsb.lol" target="_blank" rel="noopener">ADSB.lol</a>';
     const endpoint = 'https://gregle-aircraft.square-rain-5ded.workers.dev/aircraft', interval = 15000;
-    let enabled = false, suspended = false, active, snapshot, timer, expiryTimer, version = 0, nextRequest = 0, retryAt = 0, serverRetryAt = 0, failures = 0, lastRequestArea = '';
+    let enabled = false, suspended = false, active, snapshot, timer, expiryTimer, version = 0, nextRequest = 0, retryAt = 0, serverRetryAt = 0, failures = 0, lastRequestArea = '', lastInterval = interval;
     const bounds = () => { const b = map.getBounds(); return [b.getWest(), Math.max(-85.05113, b.getSouth()), b.getEast(), Math.min(85.05113, b.getNorth())]; };
     const report = (message, error = false) => { output.textContent = message; output.dataset.state = error ? 'error' : 'ready'; refresh.textContent = failures ? 'Retry aircraft' : 'Refresh aircraft'; };
     const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
@@ -195,7 +195,7 @@
       const count = records.size, message = `${count} aircraft in this view.`;
       if (failures) report(`${message} Aircraft feed unavailable; retrying after a short pause. Positions disappear after two minutes.`, true);
       else if (active || !snapshot || !core.covers(snapshot.area, view)) report(`${count ? message + ' ' : ''}Loading aircraft for this area…`);
-      else report(`${message} Updated ${clock(snapshot.time)} · refreshes every 15 seconds. Coverage varies.${snapshot.limited ? ' Results limited; zoom in for more.' : ''}`);
+      else report(`${message} Updated ${clock(snapshot.time)} · refreshes every ${snapshot.refresh / 1000} seconds. Coverage varies.${snapshot.limited ? ' Results limited; zoom in for more.' : ''}`);
     }
     function scheduleExpiry() {
       clearTimeout(expiryTimer);
@@ -204,7 +204,7 @@
     function cancel() { version++; active?.controller.abort(); active = null; clearTimeout(timer); clearTimeout(expiryTimer); }
     function requestTime(area) {
       // New map areas need not wait for the periodic refresh of the previous area.
-      return area?.key === lastRequestArea ? nextRequest : nextRequest - interval + 1200;
+      return area?.key === lastRequestArea ? nextRequest : nextRequest - lastInterval + 1200;
     }
     function schedule(delay = interval) {
       clearTimeout(timer);
@@ -220,9 +220,9 @@
       if (manual === true) retryAt = serverRetryAt;
       const now = Date.now(), wait = Math.max(requestTime(area), retryAt) - now;
       if (wait > 0) { schedule(wait); return; }
-      const token = version, request = { controller: new AbortController() }; active = request; lastRequestArea = area.key; nextRequest = now + interval;
-      const tiles = area.tiles || [area];
-      const timeout = setTimeout(() => request.controller.abort(), tiles.length > 1 ? 45000 : 12000);
+      const tiles = area.tiles || [area], cadence = tiles.length > 4 ? 60000 : interval;
+      const token = version, request = { controller: new AbortController() }; active = request; lastRequestArea = area.key; lastInterval = cadence; nextRequest = now + cadence;
+      const timeout = setTimeout(() => request.controller.abort(), tiles.length > 1 ? 60000 : 12000);
       render();
       try {
         const records = new Map(); let limited = false;
@@ -249,7 +249,7 @@
         }
         const result = {aircraft: [...records.values()].filter(p => core.visible(p.point, bounds())).slice(0, 1500), limited: limited || records.size > 1500};
         if (token !== version) return;
-        snapshot = { ...result, area, time: Date.now() }; rememberPositions(result.aircraft); failures = 0; retryAt = 0; serverRetryAt = 0;
+        snapshot = { ...result, area, refresh: cadence, time: Date.now() }; rememberPositions(result.aircraft); failures = 0; retryAt = 0; serverRetryAt = 0;
       } catch (error) {
         request.controller.abort();
         if (token !== version) return;
@@ -258,7 +258,7 @@
         if (failures === 1) notify('Live aircraft are temporarily unavailable. Open Layers to retry.', 'aircraft');
       } finally {
         clearTimeout(timeout);
-        if (token === version) { active = null; render(); schedule(core.area(bounds(), map.getZoom())?.key === area.key ? interval : 650); }
+        if (token === version) { active = null; render(); schedule(core.area(bounds(), map.getZoom())?.key === area.key ? cadence : 650); }
       }
     }
     function setEnabled(value) {

@@ -56,7 +56,7 @@
       const centre = [Number(((s + n) / 2).toFixed(2)), Number(wrap((w + e) / 2).toFixed(2))];
       const r = Math.max(10, Math.ceil((Math.max(...[[s,w],[s,e],[n,w],[n,e]].map(p => distance(centre, p))) + 1) / 10) * 10);
       if (r <= 250) { tiles.push({lat: centre[0], lng: centre[1], radius: r, key: `${centre[0]}/${centre[1]}/${r}`}); continue; }
-      if (tiles.length + pending.length + 2 > 16) return null;
+      if (tiles.length + pending.length + 2 > 64) return null;
       if ((e - w) * Math.cos(centre[0] * Math.PI / 180) > n - s) {
         const mid = (w + e) / 2; pending.push([w,s,mid,n], [mid,s,e,n]);
       } else {

@@ -7,7 +7,7 @@ test('aircraft queries cover the viewport, handle wrapped worlds and stop at the
  const box=[-123.5,48.3,-123.2,48.5],a=core.area(box,13);assert(a);assert(core.covers(a,box));assert(a.radius>=10&&a.radius<=250);assert.equal(a.radius%10,0);
  const wrapped=core.area(box.map((x,i)=>i%2===0?x+360:x),13);assert.deepEqual(wrapped,a);
  const dateline=core.area([179.9,-.1,180.1,.1],13);assert(dateline);assert(core.covers(dateline,[179.9,-.1,180.1,.1]));assert(core.visible([0,-179.99],[179.9,-.1,180.1,.1]));assert(!core.visible([0,0],[179.9,-.1,180.1,.1]));
- for(const b of [[-180,-80,180,80],[0,0,60,60],[0,1,1,0],[NaN,0,1,1]])assert.equal(core.area(b,13),null);
+ for(const b of [[-180,-80,180,80],[0,-60,180,60],[0,1,1,0],[NaN,0,1,1]])assert.equal(core.area(b,13),null);
  assert.equal(core.area(box,4),null);assert(core.area(box,6));assert(!core.covers(a,[0,0,1,1]));
 });
 test('feed validation rejects stale positions and vehicles, preserves zero values, deduplicates and bounds results',()=>{
@@ -33,7 +33,7 @@ test('aircraft symbols use model codes rather than flight names, speed or altitu
  ];
  for(const [values,kind] of cases)assert.equal(core.read(packet(start,[aircraft(values)]),start).aircraft[0].kind,kind,JSON.stringify(values));
 });
-const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
+const flush=async()=>{for(let i=0;i<100;i++)await Promise.resolve();};
 function setup(storage=new Map()){
  let now=start,box=[-123.5,48.3,-123.2,48.5],zoom=13,nextTimer=0,impl=async()=>({ok:true,json:async()=>packet(now)});
  const calls=[],timers=new Map(),events={},groups=[],credits=new Set(),nodes={};
@@ -248,9 +248,9 @@ test('history preference still works when local storage is unavailable',async()=
  assert.equal(h.historyToggle.checked,true);h.historyToggle.checked=false;assert.doesNotThrow(()=>h.historyToggle.events.change());
  h.api.setEnabled(true);await flush();h.markers()[0].events.popupopen();await flush();assert.equal(h.calls.length,1);
 });
-test('wide views cover the viewport with at most 16 valid source circles, including the dateline',()=>{
- for(const box of [[-130,45,-116,53],[-138,40,-110,56],[170,40,195,55],[-12,49,20,60]]){
-  const plan=core.area(box,5);assert(plan?.tiles);assert(plan.tiles.length<=16);assert(core.covers(plan,box));
+test('wide views cover the viewport with at most 64 valid source circles, including the dateline',()=>{
+ for(const box of [[-130,45,-116,53],[-138,40,-110,56],[170,40,195,55],[-12,49,20,60],[-152.4,34.9,-94.3,59.0]]){
+  const plan=core.area(box,5);assert(plan?.tiles);assert(plan.tiles.length<=64);assert(core.covers(plan,box));
   assert(!core.covers(plan,[box[0]-1,box[1],box[2],box[3]]));
   assert(core.covers(plan,box.map((v,i)=>i%2===0?v+360:v)));
   for(const tile of plan.tiles){assert(tile.radius>=10&&tile.radius<=250);assert(tile.lng>=-180&&tile.lng<=180);}
@@ -284,4 +284,11 @@ test('wide-view batches cap concurrency and stop queued requests on disable or R
  const failed=setup();await failed.move(box,5);failed.setFetch(async()=>({ok:false,headers:{get:()=> '120'}}));
  failed.api.setEnabled(true);await flush();assert.equal(failed.calls.length,4);assert.match(failed.output.textContent,/unavailable/);
  await failed.advance(119999);assert.equal(failed.calls.length,4);await failed.advance(1);assert.equal(failed.calls.length,8);
+});
+test('desktop-sized zoom-five views load fully and use a slower refresh cadence',async()=>{
+ const box=[-152.4,34.9,-94.3,59.0],h=setup(),count=core.area(box,5).tiles.length;
+ await h.move(box,5);h.setFetch(async()=>({ok:true,json:async()=>packet(h.calls.at(-1).time)}));
+ h.api.setEnabled(true);await flush();assert.equal(h.calls.length,count);assert.equal(h.markers().length,1);assert.match(h.output.textContent,/refreshes every 60 seconds/);
+ h.refresh.events.click();await h.advance(59999);assert.equal(h.calls.length,count);await h.advance(1);assert.equal(h.calls.length,2*count);
+ await h.move([-123.5,48.3,-123.2,48.5],13);await h.advance(550);assert.equal(h.calls.length,2*count+1);assert.match(h.output.textContent,/refreshes every 15 seconds/);
 });
