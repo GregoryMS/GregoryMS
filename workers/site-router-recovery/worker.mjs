@@ -1,7 +1,6 @@
 import router from '../site-router/worker.mjs';
 
-// Serve app pages independently while the original Worker reports
-// "This script has been killed." Its secrets remain on that Worker.
+// Serve app pages and Maps APIs with this Worker's own provider secrets.
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -14,17 +13,13 @@ export default {
       if (typeof localKey === 'string' && localKey.trim()) {
         return router.fetch(request, env);
       }
-      try {
-        return await env.MAPS_API.fetch(request);
-      } catch {
-        const config = ['/api/maps/google-config', '/api/maps/tomtom-config'].includes(url.pathname);
-        return new Response(request.method === 'HEAD' ? null : JSON.stringify(config
-          ? {enabled: false, reason: 'temporarily_unavailable'}
-          : {error: 'Map service temporarily unavailable'}), {
-          status: config ? 200 : 503,
-          headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'},
-        });
-      }
+      const config = ['/api/maps/google-config', '/api/maps/tomtom-config'].includes(url.pathname);
+      return new Response(request.method === 'HEAD' ? null : JSON.stringify(config
+        ? {enabled: false, reason: 'temporarily_unavailable'}
+        : {error: 'Map service temporarily unavailable'}), {
+        status: config ? 200 : 503,
+        headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'},
+      });
     }
     return router.fetch(request, env);
   },

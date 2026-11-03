@@ -15,9 +15,9 @@ The keypad follows the TI-89 Titanium, including all 50 hardware keys. Original
 TI-89 (2 MB) and TI-89 Titanium (4 MB) ROMs are detected separately; their
 snapshots cannot be interchanged. The supplied automatic download is the
 TI-89 Titanium from the supplied link. A local ROM can also be selected.
-Firmware is downloaded once through the fixed Gregle router endpoint,
-which retrieves the user-configured URL in `rom-source.mjs`. The upstream host
-does not allow direct cross-origin browser downloads. Firmware is
+Firmware is downloaded once directly from the public Gregle Cloud share
+configured in `rom-source.mjs`. That file permits cross-origin browser downloads;
+the retired calculator Worker is not required. Firmware is
 verified by size and SHA-256, then kept in device storage. Firmware and private
 backups are not included in this repository. A local ROM file can also be
 selected without uploading it. All runtime code is served by Gregle and cached

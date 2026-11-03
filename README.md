@@ -7,7 +7,8 @@ A static personal homepage and collection of browser tools, served at the domain
 GitHub Pages remains the only site host and this repository remains the only
 source. `assets/site-routes.json` maps each content page to its canonical
 hostname, for example `weather.gregle.uk` and `maps.gregle.uk`. The Cloudflare
-Worker in `workers/site-router/` fetches the existing page from `gregle.uk` for
+Worker in `workers/site-router-recovery/` uses the shared `workers/site-router/`
+code to fetch the existing page from `gregle.uk` for
 each app root and streams shared assets and generated data from the same origin.
 Its `*.gregle.uk/*` route passes unlisted hosts, including Cloud, Docs and www,
 to their existing origins. More-specific routes for `cloud.gregle.uk/*`,
@@ -27,7 +28,7 @@ and www origins.
 
 To add a page, add it to `assets/site-routes.json`, add a proxied CNAME for its
 hostname pointing to `gregle.uk`, regenerate the launcher, and redeploy the
-router with `npx wrangler deploy --config workers/site-router/wrangler.jsonc`.
+router with `npx wrangler deploy --config workers/site-router-recovery/wrangler.jsonc`.
 `workers/site-router/subdomains.zone` is the initial set of app DNS records;
 import with **Proxy imported DNS records** checked. Keep the existing seven
 apex/www/Cloud/Docs records. Reverting the router route and this change restores

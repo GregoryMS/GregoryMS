@@ -5,7 +5,6 @@
   "compatibility_flags": ["global_fetch_strictly_public"],
   "workers_dev": true,
   "routes": [{"pattern": "*.gregle.uk/*", "zone_name": "gregle.uk"}],
-  "services": [{"binding": "MAPS_API", "service": "gregle-site-router"}],
   "ratelimits": [
     {"name": "TOMTOM_ROUTE_LIMIT", "namespace_id": "2026110201", "simple": {"limit": 30, "period": 60}},
     {"name": "TOMTOM_TILE_LIMIT", "namespace_id": "2026110202", "simple": {"limit": 600, "period": 60}}

@@ -18,15 +18,15 @@ validation and rate limits. Secret values must never be committed to the repo.
 `GOOGLE_MAPS_BROWSER_KEY` is the browser-restricted Google key; `TOMTOM_API_KEY`
 stays server-side. Deployments must preserve both secret bindings.
 
-If a provider key is missing, the Worker can still delegate to the original
-Worker through `MAPS_API`. If that call throws, configuration reports disabled
-and other API requests return a controlled 503. The original Worker is retained
-for diagnosis; restoring Maps no longer depends on clearing its killed state.
+If a provider key is missing, configuration reports disabled and other API
+requests return a controlled 503. There is no dependency on the original Worker.
 
-Do not deploy `workers/site-router/wrangler.jsonc` or
-`workers/calculator/wrangler.jsonc` with their routes until their Workers are
-healthy: those configurations would reclaim routes from this recovery Worker.
-The legacy calculator ROM proxy remains unavailable. Automatic TI-89 setup now
+The killed `gregle-site-router` and `gregle-calculator` Workers were retired on
+2026-11-03 after their replacements were verified. Their deployment configs were
+removed to prevent recreating them or reclaiming the recovery router's routes.
+The shared router code remains in `workers/site-router/`; deploy only this
+recovery Worker's configuration. The unused calculator proxy source remains
+in `workers/calculator/` for reference. Automatic TI-89 setup now
 downloads directly from the public Gregle Cloud share, with CORS enabled only
 for that file; it does not depend on the legacy proxy.
 

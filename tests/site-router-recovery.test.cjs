@@ -2,9 +2,9 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const worker = import('../workers/site-router-recovery/worker.mjs').then(m => m.default);
 
-test('a killed Maps backend disables optional providers without breaking page startup', async () => {
+test('missing provider secrets disable optional providers without breaking page startup', async () => {
   const router = await worker;
-  const env = {MAPS_API: {fetch: async () => {throw Error('This script has been killed.');}}};
+  const env = {};
   for (const name of ['google', 'tomtom']) {
     const response = await router.fetch(new Request(`https://maps.gregle.uk/api/maps/${name}-config`), env);
     assert.equal(response.status, 200);
@@ -15,26 +15,15 @@ test('a killed Maps backend disables optional providers without breaking page st
   assert.equal((await response.text()).includes('killed'), false);
 });
 
-test('a recovered Maps backend receives the original request and returns its response', async () => {
-  const request = new Request('https://maps.gregle.uk/api/maps/tomtom-config');
-  const expected = Response.json({enabled: true});
-  const response = await (await worker).fetch(request, {MAPS_API: {fetch: async r => {
-    assert.equal(r, request);
-    return expected;
-  }}});
-  assert.equal(response, expected);
-});
-
 test('workers.dev health requests cannot recursively fetch the same Worker', async () => {
   const response = await (await worker).fetch(new Request('https://gregle-site-router-recovery.example.workers.dev/'), {});
   assert.equal(response.status, 200);
   assert.equal(await response.text(), 'Gregle app router ready');
 });
 
-test('replacement provider secrets restore configuration without calling the killed backend', async () => {
+test('provider secrets enable local Maps configuration with origin validation', async () => {
   const router = await worker;
-  const env = {GOOGLE_MAPS_BROWSER_KEY: 'test_google_browser_key_12345', TOMTOM_API_KEY: 'test_tomtom_private_key_12345',
-    MAPS_API: {fetch() {assert.fail('Must use the replacement credentials');}}};
+  const env = {GOOGLE_MAPS_BROWSER_KEY: 'test_google_browser_key_12345', TOMTOM_API_KEY: 'test_tomtom_private_key_12345'};
   const google = await router.fetch(new Request('https://maps.gregle.uk/api/maps/google-config'), env);
   assert.deepEqual(await google.json(), {enabled: true, browserKey: env.GOOGLE_MAPS_BROWSER_KEY});
   const tomtom = await router.fetch(new Request('https://maps.gregle.uk/api/maps/tomtom-config'), env);
