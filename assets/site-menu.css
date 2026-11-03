@@ -84,7 +84,9 @@
 .gregle-app-menu .gregle-app[aria-current="page"] { background: var(--gm-active); color: var(--gm-accent); font-weight: 600; }
 .gregle-app-menu .gregle-app img { display: block; width: 44px; height: 44px; max-width: none; object-fit: contain; border-radius: 12px; }
 .gregle-app-grid .gregle-app:focus-visible { outline-offset: -3px; }
-.gregle-app-grid .gregle-app[draggable="true"] { cursor: grab; }
+.gregle-app-grid .gregle-app[draggable="true"] { cursor: pointer; }
+.gregle-app-grid .gregle-app[draggable="true"]:active,
+.gregle-app-grid .gregle-app.gregle-app-dragging { cursor: grabbing; }
 .gregle-app-grid .gregle-app.gregle-app-dragging { opacity: .35; }
 .gregle-app-menu .gregle-drag-preview {
   position: fixed; z-index: 1200; margin: 0; pointer-events: none;
