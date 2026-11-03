@@ -26,8 +26,9 @@ for diagnosis; restoring Maps no longer depends on clearing its killed state.
 Do not deploy `workers/site-router/wrangler.jsonc` or
 `workers/calculator/wrangler.jsonc` with their routes until their Workers are
 healthy: those configurations would reclaim routes from this recovery Worker.
-The calculator's automatic TI-89 ROM proxy remains unavailable; existing saved
-ROMs and local ROM import still work.
+The legacy calculator ROM proxy remains unavailable. Automatic TI-89 setup now
+downloads directly from the public Gregle Cloud share, with CORS enabled only
+for that file; it does not depend on the legacy proxy.
 
 Verification: all 21 app subdomain roots, the apex, and four key assets returned
 HTTP 200 without redirecting to the apex. Google Places loaded in a browser;

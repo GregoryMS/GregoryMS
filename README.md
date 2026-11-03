@@ -702,19 +702,20 @@ rejection using a tiny original diagnostic image, without TI firmware.
 
 The TI-89 switch selects JavaScript TI-68k with the complete 50-key Titanium
 layout, circular F1–F5 keys and the same D-pad as the TI-84 CE. The supplied
-4 MB Titanium ROM downloads once through `/api/calculator/ti89-rom` and is
+4 MB Titanium ROM downloads once from the configured public Gregle Cloud share and is
 verified by SHA-256 before storage. Original TI-89 ROMs can also be imported.
 Each emulator has independent IndexedDB sessions and backups (`.gregle89` for
 TI-89); switching modes pauses and saves the outgoing calculator. Pop-out and
 launch URLs retain the selected engine. All emulator code is cached by the
 calculator service worker, and subsequent boots use the saved ROM offline.
 
-The calculator-specific Worker in `workers/calculator/` serves the existing
-GitHub Pages files at `calc.gregle.uk` and handles only the fixed firmware
-source. It does not accept arbitrary URLs, forward browser credentials, or
-commit firmware to this repository. Firmware responses are size-bounded,
-fingerprinted and sent with `no-store`; the browser keeps its private copy in
-IndexedDB. See `assets/ti89/README.md` for engine source and licence details.
+The browser downloads the public ROM with credentials omitted, verifies its
+size and fingerprint, and keeps its private copy in IndexedDB. A Cloudflare
+response-header rule enables CORS only for the exact public file URL and
+GET/HEAD requests. The URL includes `accept=zip`, but currently serves the raw
+ROM. Firmware is never committed to this repository. The legacy proxy in
+`workers/calculator/` is not required for setup. See `assets/ti89/README.md`
+for engine source and licence details.
 Run `node --test tests/calc-ti89.test.cjs tests/calc-rom-proxy.test.cjs tests/calc-offline.test.cjs`
 for CPU/snapshot restoration, all hardware key mappings, ROM validation and
 complete offline caching.

@@ -1,5 +1,5 @@
 // One fixed, fingerprinted download; firmware is never committed to the site.
-export const TI89_ROM_URL='https://pomf2.lain.la/f/0p0x8n9i.rom';
+export const TI89_ROM_URL='https://cloud.gregle.uk/public.php/dav/files/xN2iNF4ZP4Eo45b/?accept=zip';
 const SIZE=4194304, SHA256='2cc77d4dacfa9f32a08b4e72b236eeeb3ef884dfccd9d3e5fd8388261f2ca3a1';
 export async function calculatorRom(request,fetcher=(url,options) => globalThis.fetch(url,options)) {
   const url=new URL(request.url);

@@ -61,7 +61,7 @@ function createGregleEmulator(options) {
         <button type="button" class="emu-primary" id="emulatorDownload">Load calculator</button>
         <button type="button" id="emulatorImport">Choose ROM file</button>
         <button type="button" id="emulatorRestoreSetup">Restore backup</button>
-        ${is89 ? '<p class="emu-fine-print"><a href="https://pomf2.lain.la/f/0p0x8n9i.rom" target="_blank" rel="noopener noreferrer">Download ROM file</a> · then choose the downloaded file above if automatic setup is unavailable.</p>' : ''}
+        ${is89 ? '<p class="emu-fine-print"><a href="https://cloud.gregle.uk/public.php/dav/files/xN2iNF4ZP4Eo45b/?accept=zip" target="_blank" rel="noopener noreferrer">Download ROM file</a> · then choose the downloaded file above if automatic setup is unavailable.</p>' : ''}
         <p class="emu-fine-print">The first download comes from ${is89 ? 'your supplied ROM link' : 'Catbox'}. You can also choose your own TI-84 Plus CE .rom file; selected files are never uploaded.</p>
       </section>
       <section class="emu-overlay" id="emulatorSession" aria-labelledby="emulatorSessionTitle" hidden>
@@ -267,7 +267,7 @@ function createGregleEmulator(options) {
     if (onProgress) downloadListeners.add(onProgress);
     try {
       if (!romDownload) romDownload=(async () => {
-        const {downloadRom}=await import(new URL(is89 ? 'ti89/rom-source.mjs?v=20261102-ti89-5' : 'ti84/rom-source.mjs?v=20261031-hosted1',scriptURL));
+        const {downloadRom}=await import(new URL(is89 ? 'ti89/rom-source.mjs?v=20261102-ti89-6' : 'ti84/rom-source.mjs?v=20261031-hosted1',scriptURL));
         return downloadRom({onProgress:value => {for (const listener of downloadListeners) listener(value);}});
       })().finally(() => {romDownload=null;});
       return await romDownload;

@@ -1,6 +1,6 @@
 /* User-configured ROM download. SPDX-License-Identifier: GPL-3.0-or-later */
-export const ROM_SOURCE='https://pomf2.lain.la/f/0p0x8n9i.rom';
-export const ROM_DOWNLOAD=new URL('/api/calculator/ti89-rom',import.meta.url).href;
+export const ROM_SOURCE='https://cloud.gregle.uk/public.php/dav/files/xN2iNF4ZP4Eo45b/?accept=zip';
+export const ROM_DOWNLOAD=ROM_SOURCE;
 export const ROM_BYTES=4194304;
 export const ROM_SHA256='2cc77d4dacfa9f32a08b4e72b236eeeb3ef884dfccd9d3e5fd8388261f2ca3a1';
 

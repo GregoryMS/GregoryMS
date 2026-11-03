@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261102-heading-1';
+const VERSION='20261102-ti89-6';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -11,20 +11,20 @@ const ASSETS=[
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',
   '/assets/calc.css?v=20261102-heading1',
   '/assets/calc-graph.css?v=20261101-dpad-restored1',
-  '/assets/calc-emulator.css?v=20261102-ti89-5',
+  '/assets/calc-emulator.css?v=20261102-ti89-6',
   '/assets/site-menu.css?v=20261017-scroll-reorder',
   '/assets/theme.js?v=20261017-theme-switch',
   '/assets/site-menu.js?v=20261019-docs',
   '/assets/calc-core.js?v=20261029-graph',
-  '/assets/calc.js?v=20261102-ti89-5',
+  '/assets/calc.js?v=20261102-ti89-6',
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
-  '/assets/calc-emulator.js?v=20261102-ti89-5',
-  '/assets/calc-offline.js?v=20261102-ti89-5',
-  '/assets/calc-ti89.js?v=20261102-ti89-5',
+  '/assets/calc-emulator.js?v=20261102-ti89-6',
+  '/assets/calc-offline.js?v=20261102-ti89-6',
+  '/assets/calc-ti89.js?v=20261102-ti89-6',
   '/assets/ti89/worker.js',
   '/assets/ti89/ti68k.js',
-  '/assets/ti89/rom-source.mjs?v=20261102-ti89-5',
+  '/assets/ti89/rom-source.mjs?v=20261102-ti89-6',
   '/assets/ti89/README.md',
   '/assets/ti89/COPYING.txt',
   '/assets/ti84/worker.mjs',
