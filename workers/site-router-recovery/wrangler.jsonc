@@ -1,0 +1,10 @@
+{
+  "name": "gregle-site-router-recovery",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-21",
+  "compatibility_flags": ["global_fetch_strictly_public"],
+  "workers_dev": true,
+  "routes": [{"pattern": "*.gregle.uk/*", "zone_name": "gregle.uk"}],
+  "services": [{"binding": "MAPS_API", "service": "gregle-site-router"}],
+  "observability": {"enabled": true, "head_sampling_rate": 0.1, "redact_query_string": true}
+}
