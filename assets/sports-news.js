@@ -15,7 +15,21 @@
       } catch (_) { return false; }
     }).slice(0, 10);
   }
-  if (typeof module !== 'undefined' && module.exports) { module.exports = { usable }; return; }
+  function fromRSS(raw, Parser = root.DOMParser) {
+    if (typeof raw !== 'string' || raw.length > 500000 || /<!DOCTYPE|<!ENTITY/i.test(raw)) throw Error('Invalid feed');
+    const xml = new Parser().parseFromString(raw, 'application/xml');
+    if (xml.querySelector('parsererror')) throw Error('Invalid RSS');
+    const channel = xml.querySelector('rss > channel');
+    if (!channel) throw Error('Missing RSS channel');
+    return {
+      feedUpdatedAt: channel.querySelector('lastBuildDate')?.textContent,
+      items: Array.from(channel.querySelectorAll('item')).slice(0, 100).map(item => ({
+        title: item.querySelector('title')?.textContent.trim() || '',
+        link: item.querySelector('link')?.textContent.trim() || '',
+      })),
+    };
+  }
+  if (typeof module !== 'undefined' && module.exports) { module.exports = { usable, fromRSS }; return; }
   const $ = id => document.getElementById(id);
   const track = $('sport-news-track'), viewport = $('sport-news-window');
   if (!track || !viewport) return;
@@ -46,22 +60,33 @@
     track.innerHTML = '<div class="sport-ticker-group">' + markup + '</div><div class="sport-ticker-group ticker-copy" aria-hidden="true" inert>' + markup.replace(/<a /g, '<a tabindex="-1" ') + '</div>';
     offset = 0; viewport.scrollLeft = 0; motion();
   }
+  async function read(url, rss = false) {
+    const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 8000);
+    try {
+      const response = await fetch(url, { cache: 'no-cache', signal: controller.signal });
+      if (!response.ok) throw Error('Headlines unavailable');
+      const data = rss ? fromRSS(await response.text()) : await response.json();
+      if (!usable(data).length) throw Error('No fresh headlines');
+      return data;
+    } finally { clearTimeout(timer); }
+  }
   async function load() {
     if (loading) return;
     loading = true;
-    const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 8000);
     try {
-      const response = await fetch('data/bbc-sport.json', { cache: 'no-cache', signal: controller.signal });
-      if (!response.ok) throw Error('Headlines unavailable');
-      const data = await response.json(), items = usable(data);
-      if (!items.length) throw Error('No fresh headlines');
+      let data;
+      try { data = await read('/api/sports/headlines', true); }
+      catch (_) { data = await read('data/bbc-sport.json'); }
+      // A delayed static build must not replace newer headlines already loaded.
+      if (usable(saved).length && Date.parse(saved.feedUpdatedAt) > Date.parse(data.feedUpdatedAt)) data = saved;
+      const items = usable(data);
       saved = data; render(items);
       $('sport-news-status').textContent = 'BBC Sport headlines updated.';
     } catch (_) {
       const previous = usable(saved);
       render(previous.length ? previous : [{ title: 'Headlines unavailable · Read the latest on BBC Sport ↗', link: 'https://www.bbc.com/sport' }]);
       $('sport-news-status').textContent = previous.length ? 'BBC Sport refresh unavailable; recent headlines retained.' : 'BBC Sport headlines unavailable. Use the BBC Sport link.';
-    } finally { clearTimeout(timer); loading = false; }
+    } finally { loading = false; }
   }
   viewport.addEventListener('mouseenter', () => { hover = true; motion(); });
   viewport.addEventListener('mouseleave', () => { hover = false; motion(); });

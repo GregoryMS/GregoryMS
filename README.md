@@ -104,7 +104,14 @@ Run `node --test tests/bbc-news.test.cjs` and
 The sports dashboard uses the same validated generator with `--feed sport` and
 BBC Sport’s official `https://feeds.bbci.co.uk/sport/rss.xml` feed. The separate
 `bbc-sport.yml` workflow refreshes `data/bbc-sport.json` every 15 minutes and
-requests a Pages rebuild. The sports ticker polls every five minutes while
+requests a Pages rebuild. On `sports.gregle.uk`, the ticker first reads BBC’s
+current RSS feed through `/api/sports/headlines` in the existing app router,
+with a five-minute upstream cache, a five-second timeout and a 500 KB response
+limit. This avoids outages when GitHub’s scheduled refresh is delayed. The
+relay accepts only the fixed BBC Sport feed and forwards no visitor credentials.
+If it fails (or on static-only hosting), the ticker uses the validated static
+snapshot, then retains recent headlines already loaded. Both paths keep the
+six-hour freshness limit and trusted BBC links. The sports ticker polls every five minutes while
 visible, pauses on hover/focus, and respects reduced motion with manual
 horizontal scrolling. Its neutral background and rounded BBC blocks match the
 homepage ticker, with yellow branding for Sport. Failed or expired feeds link to BBC

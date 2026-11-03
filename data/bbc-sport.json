@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-03T08:33:48+00:00",
-  "fetchedAt": "2026-11-03T08:33:55.250027+00:00",
+  "feedUpdatedAt": "2026-11-03T15:04:14+00:00",
+  "fetchedAt": "2026-11-03T15:10:04.318205+00:00",
   "items": [
+    {
+      "title": "Tenerife striker De Miguel dies after on-field collision",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ck62yvz046pjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "West Ham approach Parker after sacking boss Nuno",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c63dj3zpl85go?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "England's Mitchell ruled out of Nations Championship",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6n4endjxqnko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "RFL backs Wilkin's £30m funding plea to Burnham",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cqn06nk1rx4xo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "McTominay returns as Penrice earns first Scotland call",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6wyvr870d8do?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "The referee who became a role model after bouncing back from Diaz error",
       "link": "https://www.bbc.co.uk/sport/football/articles/cdj4z0lwjzlo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Jeers again as home woes continue - Jaissle has big problems at Newcastle",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmly05n114gjo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "From nightmare debut season to Everton hero - Barry's revival",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqj346rvg3pzo?at_medium=RSS&at_campaign=rss"
+      "title": "Scrum, foul play, TMO - what can we expect from refs this autumn?",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cky83ewyq22zo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Emery looks to show Villa can compete with elite",
       "link": "https://www.bbc.co.uk/sport/football/articles/c5ev3m9ddzgmo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Horse sold by King Charles wins Melbourne Cup",
-      "link": "https://www.bbc.co.uk/sport/horse-racing/articles/cr3wv0476z5do?at_medium=RSS&at_campaign=rss"
+      "title": "Rahm was not 'willing to follow' LIV 2.0 path",
+      "link": "https://www.bbc.co.uk/sport/golf/articles/cmqlnxp5e9lqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Do Ferrari need rules of engagement? F1 Q&A",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c862y1en5vrzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Carrick says it's 'crazy' but he's looking forward to Roma game",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c933x04ryz4do?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Who has made Troy's Premier League team of the week?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c8dx37n11kv2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Fifa to share confidential World Cup sell-off plan documents",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6vgj0p4ey17o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Grealish can still have Everton future - Moyes",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm70pgrd22x4o?at_medium=RSS&at_campaign=rss"
+      "title": "Shaw among big names to miss out on FifPro World XI",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c8dx37gxzvgyo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
