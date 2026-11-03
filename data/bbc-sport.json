@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-02T19:00:29+00:00",
-  "fetchedAt": "2026-11-02T19:00:39.540406+00:00",
+  "feedUpdatedAt": "2026-11-03T01:32:38+00:00",
+  "fetchedAt": "2026-11-03T01:32:44.845747+00:00",
   "items": [
+    {
+      "title": "Jeers again as home woes continue - Jaissle has big problems at Newcastle",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmly05n114gjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "From nightmare debut season to Everton hero - Barry's revival",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqj346rvg3pzo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Grealish can still have Everton future - Moyes",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm70pgrd22x4o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Carrick says it's 'crazy' but he's looking forward to Roma game",
       "link": "https://www.bbc.co.uk/sport/football/articles/c933x04ryz4do?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "To dive or not to dive? Football's big dilemma",
-      "link": "https://www.bbc.co.uk/sport/football/articles/crvg69wn9490o?at_medium=RSS&at_campaign=rss"
+      "title": "Fifa to share confidential World Cup sell-off plan documents",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6vgj0p4ey17o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Russell says F1 title loss 'tough to deal with'",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmq8n95ppwd4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Who has made Troy's Premier League team of the week?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c8dx37n11kv2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Everton hold off Newcastle to move into seventh",
+      "link": "https://www.bbc.co.uk/sport/football/videos/cq5ynd70vlx3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Who produced the kind of performance Moyes loves? - player ratings",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmglwjxx45gjo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "England call up Spencer and Randall as injuries hit",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cvp8gxldn304o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "How Antonelli 'blew everyone away' to make F1 history",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c6m2dj7ze9v2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'We've got big problems' - Hamilton says Ferrari need 'serious talks'",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmwy7dl879gzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Can Alcaraz's ex-coach help Shelton challenge his former protege?",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/crz654jdzdqpo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Key questions as Pocognoli prepares to name Scotland squad",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ckpqg82yxqgyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Bottom club Sunderland to stick with manager Le Bris",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cj75pglrq794o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Borthwick turned down my offer to work with England - Edwards",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmp3g0j2dvklo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Were Arsenal 'lucky' not to concede penalty at Liverpool?",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cw7vpy99y606o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
