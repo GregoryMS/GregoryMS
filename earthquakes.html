@@ -18,7 +18,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/earthquakes-app/icon-192.png?v=20261002-radio">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/earthquakes.css">
+  <link rel="stylesheet" href="assets/earthquakes.css?v=20261103-heading">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="assets/earthquake-core.js?v=20261009-bulletin-text" defer></script>
@@ -57,7 +57,7 @@
 <!-- /Gregle app menu --></div>
   </header>
   <main class="page seismic-page">
-    <div class="seismic-heading"><div><p class="eyebrow">A moving planet</p><h1>Earthquakes &amp; tsunamis</h1><p class="intro">Recent activity, with a view of the coast and beyond.</p></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
+    <div class="seismic-heading"><div><p class="eyebrow">A moving planet</p><h1>Earthquakes &amp; tsunamis<span class="accent-dot">.</span></h1><p class="intro">Recent activity, with a view of the coast and beyond.</p></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
     <noscript><p>Enable JavaScript for the live map, or visit <a href="https://earthquake.usgs.gov/earthquakes/map/">USGS earthquakes</a> and <a href="https://www.tsunami.gov/">NOAA tsunami warnings</a>.</p></noscript>
     <section class="latest panel" aria-labelledby="latest-heading">
       <div><p class="eyebrow" id="latest-heading">Most recent earthquake · worldwide M2.5+</p><div id="latest-content" role="status">Checking USGS…</div></div>
