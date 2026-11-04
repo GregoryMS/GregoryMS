@@ -446,6 +446,7 @@
   .has-mobile-drawer .map-notice { bottom: calc(var(--map-drawer-height, 0px) + 32px); pointer-events: none; }
   .has-mobile-drawer .map-report { bottom: calc(var(--map-drawer-height, 0px) + 4px); left: 8px; font-size: 9px; }
   .has-mobile-drawer .leaflet-bottom.leaflet-right { bottom: var(--map-drawer-height, 0px); }
+  .has-mobile-drawer:has(> .map-drawer:not([hidden])) .leaflet-control-attribution { display: none; }
   .has-mobile-drawer .leaflet-popup { visibility: hidden; pointer-events: none; }
   #map-feature-details .leaflet-popup-content { width: auto !important; max-height: none !important; overflow: visible; margin: 0; color: var(--text); font: 13px/1.6 ui-sans-serif, system-ui, sans-serif; }
   #map-feature-details .leaflet-popup-content > div { width: auto !important; max-width: none; color: var(--text); }
