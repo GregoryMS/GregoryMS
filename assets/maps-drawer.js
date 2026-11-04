@@ -28,10 +28,10 @@ window.GregleMapDrawer = ({ map }) => {
     drawer.style.setProperty('--map-drawer-lift', `${lift}px`);
     // Leave the search/tools reachable; allow more room when the keyboard is open.
     const clearance = lift > 100 ? 84 : 148;
-    return { min: 64, max: Math.max(64, stage.clientHeight - lift - clearance - 24) };
+    return { min: 64, max: Math.max(64, stage.clientHeight - lift - clearance), lift };
   };
   function resize(value) {
-    const { min, max } = bounds();
+    const { min, max, lift } = bounds();
     height = Math.round(Math.max(min, Math.min(max, value)));
     drawer.style.height = `${height}px`;
     const compact = height < 112;
@@ -42,7 +42,7 @@ window.GregleMapDrawer = ({ map }) => {
     handle.setAttribute('aria-valuetext', `${height} pixels tall${compact ? ', compact' : ''}`);
     collapse.setAttribute('aria-label', compact ? 'Expand map details' : 'Minimize map details');
     collapse.setAttribute('aria-expanded', String(!compact));
-    stage.style.setProperty('--map-drawer-height', drawer.hidden ? '0px' : `${height + 24}px`);
+    stage.style.setProperty('--map-drawer-height', drawer.hidden ? '0px' : `${height + lift}px`);
   }
   function render() {
     if (!media.matches) return;

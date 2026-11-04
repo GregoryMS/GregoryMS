@@ -43,8 +43,8 @@ test('dragging resizes continuously, clamps at both ends, and leaves intermediat
   h.fire('pointerdown');h.fire('pointermove',{clientY:317});h.fire('pointerup',{clientY:317,type:'pointerup'});
   assert.equal(Number(handle.attrs['aria-valuenow']),before+83);
   h.refresh();assert.equal(Number(handle.attrs['aria-valuenow']),before+83);
-  h.fire('keydown',{key:'End'});assert.equal(handle.attrs['aria-valuenow'],'588');
-  h.fire('pointerdown');h.fire('pointermove',{clientY:-1000});h.fire('pointercancel');assert.equal(handle.attrs['aria-valuenow'],'588');
+  h.fire('keydown',{key:'End'});assert.equal(handle.attrs['aria-valuenow'],'612');
+  h.fire('pointerdown');h.fire('pointermove',{clientY:-1000});h.fire('pointercancel');assert.equal(handle.attrs['aria-valuenow'],'612');
   h.fire('keydown',{key:'Home'});assert.equal(handle.attrs['aria-valuenow'],'64');assert(h.get('map-drawer-body').inert);
   h.get('map-drawer-collapse').click();assert(!h.get('map-drawer-body').inert);
 });
@@ -75,11 +75,12 @@ test('the drawer stays above an on-screen keyboard and clamps to the remaining h
   const events={},viewport={height:844,offsetTop:0,addEventListener:(name,fn)=>events[name]=fn};
   const h=setup(viewport);h.open('map-directions');h.fire('keydown',{key:'End'});
   viewport.height=520;events.resize();
-  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'342');
+  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'366');
   assert.equal(h.get('map-drawer').style['--map-drawer-lift'],'310px');
+  assert.equal(h.stage.style['--map-drawer-height'],'676px','credits clear both the drawer and keyboard');
   viewport.height=844;events.resize();
   assert.equal(h.get('map-drawer').style['--map-drawer-lift'],'0px');
-  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'342','keyboard dismissal must not unexpectedly expand the panel');
+  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'366','keyboard dismissal must not unexpectedly expand the panel');
 });
 
 test('switching panels preserves each panel scroll position',()=>{
