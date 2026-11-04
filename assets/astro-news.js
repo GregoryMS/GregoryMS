@@ -2,7 +2,8 @@
   'use strict';
   const FEED = 'https://www.universetoday.com/feed';
   const SITE = 'https://www.universetoday.com/';
-  const MAX_AGE = 6 * 60 * 60 * 1000;
+  const FRESH_AGE = 6 * 60 * 60 * 1000;
+  const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
   function usable(data, now = Date.now()) {
     if (!data || !Array.isArray(data.items)) return [];
@@ -79,7 +80,12 @@
       const data = readSnapshot(await response.json()), items = usable(data);
       if (!items.length) throw Error('No fresh headlines');
       saved = data; render(items);
-      status.textContent = 'Universe Today headlines updated.';
+      const checked = new Date(data.feedUpdatedAt).toLocaleString();
+      const delayed = Date.now() - Date.parse(data.feedUpdatedAt) > FRESH_AGE;
+      ticker.title = 'Universe Today headlines · Last checked ' + checked;
+      status.textContent = delayed
+        ? 'Showing recent Universe Today headlines. Last checked ' + checked + '; refresh delayed.'
+        : 'Universe Today headlines updated.';
     } catch (_) {
       const previous = usable(saved);
       render(previous.length ? previous : [{ title: 'Headlines unavailable · Read the latest on Universe Today ↗', link: SITE }]);
