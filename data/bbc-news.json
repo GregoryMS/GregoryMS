@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-04T17:21:40+00:00",
-  "fetchedAt": "2026-11-04T17:21:47.050342+00:00",
+  "feedUpdatedAt": "2026-11-04T22:41:37+00:00",
+  "fetchedAt": "2026-11-04T22:41:48.332294+00:00",
   "items": [
     {
-      "title": "'This is a disaster': Angry Republicans blame Trump for midterms defeat",
-      "link": "https://www.bbc.co.uk/news/articles/c6x29rr8djy3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Anthony Zurcher: Democrats push deep into Trump heartland on historic night",
-      "link": "https://www.bbc.co.uk/news/articles/cwz0v5lv30lyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Five reasons why Republicans lost so badly",
-      "link": "https://www.bbc.co.uk/news/articles/cqkgjvr00zmyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Everything you need to know from the US midterm elections",
-      "link": "https://www.bbc.co.uk/news/articles/cmr4y92rgd9po?at_medium=RSS&at_campaign=rss"
+      "title": "Bowen: Trump's loss limits powers at home, but it will likely be different abroad",
+      "link": "https://www.bbc.co.uk/news/articles/crkg7wj8g201o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How America voted in maps and charts",
       "link": "https://www.bbc.co.uk/news/articles/cm4g1j0n92qdo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Huntingdon train attack passengers thought stabbing was a 'joke'",
-      "link": "https://www.bbc.co.uk/news/articles/cq8ez378661xo?at_medium=RSS&at_campaign=rss"
+      "title": "What Democrats can and can't do with their new power after taking Congress",
+      "link": "https://www.bbc.co.uk/news/articles/cq1kdgnn2xdeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Everything you need to know from the US midterm elections",
+      "link": "https://www.bbc.co.uk/news/articles/cmr4y92rgd9po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "How voter shifts in Texas helped elect a Democratic senator and governor",
+      "link": "https://www.bbc.co.uk/news/videos/cmy4xz081kxyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Ukraine says bodycam video shows deadly Russian double-tap bombing",
+      "link": "https://www.bbc.co.uk/news/articles/c98rz6penv86o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Chris Mason: The US elections will change Trump – how will Burnham react?",
+      "link": "https://www.bbc.co.uk/news/articles/c615j8pw1y81o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Pound rises to its highest level since the Brexit referendum",
+      "link": "https://www.bbc.co.uk/news/articles/c6lykq2qjn2vo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Brigitte Bardot inheritance row deepens after private letter to partner leaked",
       "link": "https://www.bbc.co.uk/news/articles/ck1ex56e5q8wo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "World must 'unite' to ease cost of living pressure, PM Burnham says after US midterms",
-      "link": "https://www.bbc.co.uk/news/articles/c6kgl0xk8en9o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "UK national tests positive for Ebola virus in DR Congo",
+      "title": "British man infected with Ebola in DR Congo to be flown back to UK",
       "link": "https://www.bbc.co.uk/news/articles/crq8nj7xqdv9o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'Most difficult days of my life,' says goalkeeper Owono after Tenerife player's death",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6zxjz40l280o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
