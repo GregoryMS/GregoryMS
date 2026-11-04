@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-04T09:21:27+00:00",
-  "fetchedAt": "2026-11-04T09:21:31.086550+00:00",
+  "feedUpdatedAt": "2026-11-04T17:21:40+00:00",
+  "fetchedAt": "2026-11-04T17:21:47.050342+00:00",
   "items": [
+    {
+      "title": "'This is a disaster': Angry Republicans blame Trump for midterms defeat",
+      "link": "https://www.bbc.co.uk/news/articles/c6x29rr8djy3o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Anthony Zurcher: Democrats push deep into Trump heartland on historic night",
       "link": "https://www.bbc.co.uk/news/articles/cwz0v5lv30lyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trump takes aim at Republicans but says Democrats did a 'good job'",
-      "link": "https://www.bbc.co.uk/news/articles/c6073l9y15xxo?at_medium=RSS&at_campaign=rss"
+      "title": "Five reasons why Republicans lost so badly",
+      "link": "https://www.bbc.co.uk/news/articles/cqkgjvr00zmyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Everything you need to know from the US midterm elections",
+      "link": "https://www.bbc.co.uk/news/articles/cmr4y92rgd9po?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How America voted in maps and charts",
       "link": "https://www.bbc.co.uk/news/articles/cm4g1j0n92qdo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Key moments from a night of midterm election firsts",
-      "link": "https://www.bbc.co.uk/news/articles/cmr4y92rgd9po?at_medium=RSS&at_campaign=rss"
+      "title": "Huntingdon train attack passengers thought stabbing was a 'joke'",
+      "link": "https://www.bbc.co.uk/news/articles/cq8ez378661xo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "James Talarico becomes first Democrat to win Texas Senate seat since 1988",
-      "link": "https://www.bbc.co.uk/news/articles/c6n8dnn09jg7o?at_medium=RSS&at_campaign=rss"
+      "title": "Brigitte Bardot inheritance row deepens after private letter to partner leaked",
+      "link": "https://www.bbc.co.uk/news/articles/ck1ex56e5q8wo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Miliband says slavery apology will not bring cost for UK taxpayers",
-      "link": "https://www.bbc.co.uk/news/articles/cm8ezneewr9lo?at_medium=RSS&at_campaign=rss"
+      "title": "World must 'unite' to ease cost of living pressure, PM Burnham says after US midterms",
+      "link": "https://www.bbc.co.uk/news/articles/c6kgl0xk8en9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'Multi-cancer' blood tests coming to some GP surgeries soon",
-      "link": "https://www.bbc.co.uk/news/articles/cm9qz93ew22no?at_medium=RSS&at_campaign=rss"
+      "title": "UK national tests positive for Ebola virus in DR Congo",
+      "link": "https://www.bbc.co.uk/news/articles/crq8nj7xqdv9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "No more rice grains in Kellogg's Rice Krispies due to changing weather",
-      "link": "https://www.bbc.co.uk/news/articles/cqvg0y44ym7vo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Scammers using AI-generated images of missing pets to demand reward money",
-      "link": "https://www.bbc.co.uk/news/articles/cdx8080nq74o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Poundland supplier 'will lose millions' if retailer collapses",
-      "link": "https://www.bbc.co.uk/news/articles/ck240mm3e42do?at_medium=RSS&at_campaign=rss"
+      "title": "'Most difficult days of my life,' says goalkeeper Owono after Tenerife player's death",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6zxjz40l280o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
