@@ -86,7 +86,12 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     live.start(currentRoute, mode, points.to);
     if (live.active) $('navigation-stop').focus({ preventScroll: true });
   });
-  toggle.addEventListener('click', () => { if (panel.hidden) { open(); inputs[active].focus(); } else close(); });
+  toggle.addEventListener('click', () => {
+    if (panel.hidden || panel.inert || panel.closest?.('.map-drawer.is-compact')) {
+      open();
+      if (!panel.closest?.('.map-drawer')) inputs[active].focus();
+    } else close();
+  });
   $('close-directions').addEventListener('click', close);
   panel.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } });
   for (const field of ['from', 'to']) {

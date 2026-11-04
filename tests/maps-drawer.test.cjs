@@ -15,6 +15,8 @@ function setup(viewport) {
     after(node) { const parent=this.parentNode;node.remove();parent.children.splice(parent.children.indexOf(this)+1,0,node);node.parentNode=parent; }
     replaceWith(node) { this.before(node);this.remove(); }
     setPointerCapture() {}
+    contains(node) { return this === node || this.children.some(child => child.contains(node)); }
+    scrollIntoView() { this.scrolledIntoView = true; }
     focus() { document.activeElement=this; }
     click() { this.events.click?.({}); }
   }
@@ -24,15 +26,15 @@ function setup(viewport) {
   const ids=['map-place','map-search-content','map-directions','map-layers-panel','map-fuel-card','vessels-legend','map-feature-details','map-link-copy'];
   for(const id of ids)stage.append(get(id));
   const media={matches:true,addEventListener(name,fn){this.changed=fn;}};
-  const map={on(name,fn){mapEvents[name]=fn;},closePopup(){mapEvents.popupclose?.({popup:popup});}};
+  const map={on(name,fn){mapEvents[name]=fn;},closePopup(){mapEvents.popupclose?.({popup:popup});},panInside(point,options){this.pan={point,options};}};
   let popup;
-  const context={window:{matchMedia:()=>media,visualViewport:viewport},document,MutationObserver:class{constructor(fn){observers.push(fn);}observe(){}},ResizeObserver:class{observe(){}}};
+  const context={window:{matchMedia:()=>media,visualViewport:viewport},document,requestAnimationFrame:fn=>fn(),cancelAnimationFrame(){},MutationObserver:class{constructor(fn){observers.push(fn);}observe(){}},ResizeObserver:class{observe(){}}};
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-drawer.js'),'utf8'),context);
   const api=context.window.GregleMapDrawer({map});
   const refresh=()=>observers.at(-1)();
   const open=id=>{get(id).hidden=false;refresh();};
   const fire=(name,extra={})=>{const e={isPrimary:true,button:0,pointerId:1,clientY:400,preventDefault(){},...extra};get('map-drawer-resize').events[name](e);};
-  return {get,stage,api,open,refresh,fire,media,mapEvents,desktop(){media.matches=false;media.changed();},mobile(){media.matches=true;media.changed();},popup(p){popup=p;mapEvents.popupopen({popup:p});}};
+  return {get,stage,api,open,refresh,fire,media,map,mapEvents,desktop(){media.matches=false;media.changed();},mobile(){media.matches=true;media.changed();},popup(p){popup=p;mapEvents.popupopen({popup:p});}};
 }
 
 test('dragging resizes continuously, clamps at both ends, and leaves intermediate heights intact',()=>{
@@ -41,8 +43,8 @@ test('dragging resizes continuously, clamps at both ends, and leaves intermediat
   h.fire('pointerdown');h.fire('pointermove',{clientY:317});h.fire('pointerup',{clientY:317,type:'pointerup'});
   assert.equal(Number(handle.attrs['aria-valuenow']),before+83);
   h.refresh();assert.equal(Number(handle.attrs['aria-valuenow']),before+83);
-  h.fire('keydown',{key:'End'});assert.equal(handle.attrs['aria-valuenow'],'660');
-  h.fire('pointerdown');h.fire('pointermove',{clientY:-1000});h.fire('pointercancel');assert.equal(handle.attrs['aria-valuenow'],'660');
+  h.fire('keydown',{key:'End'});assert.equal(handle.attrs['aria-valuenow'],'588');
+  h.fire('pointerdown');h.fire('pointermove',{clientY:-1000});h.fire('pointercancel');assert.equal(handle.attrs['aria-valuenow'],'588');
   h.fire('keydown',{key:'Home'});assert.equal(handle.attrs['aria-valuenow'],'64');assert(h.get('map-drawer-body').inert);
   h.get('map-drawer-collapse').click();assert(!h.get('map-drawer-body').inert);
 });
@@ -73,11 +75,36 @@ test('the drawer stays above an on-screen keyboard and clamps to the remaining h
   const events={},viewport={height:844,offsetTop:0,addEventListener:(name,fn)=>events[name]=fn};
   const h=setup(viewport);h.open('map-directions');h.fire('keydown',{key:'End'});
   viewport.height=520;events.resize();
-  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'350');
+  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'342');
   assert.equal(h.get('map-drawer').style['--map-drawer-lift'],'310px');
   viewport.height=844;events.resize();
   assert.equal(h.get('map-drawer').style['--map-drawer-lift'],'0px');
-  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'350','keyboard dismissal must not unexpectedly expand the panel');
+  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'342','keyboard dismissal must not unexpectedly expand the panel');
+});
+
+test('switching panels preserves each panel scroll position',()=>{
+  const h=setup(), body=h.get('map-drawer-body');
+  h.open('map-layers-panel');body.scrollTop=210;body.events.scroll();
+  h.get('map-layers-panel').hidden=true;h.refresh();
+  h.open('map-place');assert.equal(body.scrollTop,0);body.scrollTop=90;body.events.scroll();
+  h.open('map-layers-panel');
+  h.api.show('map-layers-panel');assert.equal(body.scrollTop,210);
+  h.api.show('map-place');assert.equal(body.scrollTop,90);
+});
+
+test('the focused field is scrolled into view after the keyboard changes the viewport',()=>{
+  const events={},viewport={height:844,offsetTop:0,addEventListener:(name,fn)=>events[name]=fn};
+  const h=setup(viewport);h.open('map-directions');
+  const field=h.get('directions-to');h.get('map-directions').append(field);field.focus();
+  viewport.height=520;events.resize();assert(field.scrolledIntoView);
+});
+
+test('selected pins use the exposed map area and do not pan desktop or Street View',()=>{
+  const h=setup();h.open('map-place');h.get('map-drawer').getBoundingClientRect=()=>({top:410});
+  h.api.revealPoint({lat:48.4,lng:-123.3});
+  assert.equal(JSON.stringify(h.map.pan),JSON.stringify({point:[48.4,-123.3],options:{paddingTopLeft:[24,148],paddingBottomRight:[24,444],animate:false}}));
+  h.map.pan=null;h.stage.classList.add('streetview-active');h.api.revealPoint({lat:48.4,lng:-123.3});assert.equal(h.map.pan,null);
+  h.stage.classList.remove('streetview-active');h.desktop();h.api.revealPoint({lat:48.4,lng:-123.3});assert.equal(h.map.pan,null);
 });
 
 test('embedded maps hide native details while keeping the layers drawer available for switching back',()=>{

@@ -66,13 +66,14 @@
       marker.on('click', () => placeDetails?.select(point, { nearby: !point.osm }));
     }
     if (lookup && !usingEmbed) placeDetails?.select(point, { nearby });
-    if (changed && lookup) drawer?.show('map-place', true);
+    if (changed && lookup) { drawer?.show('map-place', true); drawer?.revealPoint(point); }
   }
   function selectPoint(point, zoom = 16) {
     intent++;
     cancelSearch(); hideSearch();
     renderPin(point);
-    map.setView([Math.max(-85.051129, Math.min(85.051129, point.lat)), point.lng], zoom);
+    const mobile = document.querySelector('.map-stage').classList.contains('has-mobile-drawer');
+    map.setView([Math.max(-85.051129, Math.min(85.051129, point.lat)), point.lng], zoom, mobile ? { animate: false } : {});
     if (layerControl.getState().streetview) layerControl.openStreetView(point);
     updateURL();
     $('gregle-map').focus({ preventScroll: true });
@@ -194,6 +195,8 @@
     $('osm-search').href = fallback.href; $('osm-search').hidden = true;
     $('map-search-scope').hidden = true;
     searchContent.hidden = false;
+    drawer?.show('map-search-content', true);
+    if (searchContent.closest('.map-drawer')) query.blur();
     let timer;
     try {
       const bounds = map.getBounds();

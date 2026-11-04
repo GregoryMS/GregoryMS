@@ -268,8 +268,9 @@
       render();
       if (changed) { persist(); onChange(); }
     }
-    toggle.addEventListener('click', () => { if (panel.hidden) openPanel(); else closePanel(); });
-    embedToggle.addEventListener('click', () => { if (panel.hidden) openPanel(); else closePanel(); });
+    const togglePanel = () => { if (panel.hidden || panel.inert || panel.closest?.('.map-drawer.is-compact')) openPanel(); else closePanel(); };
+    toggle.addEventListener('click', togglePanel);
+    embedToggle.addEventListener('click', togglePanel);
     $('close-map-layers').addEventListener('click', () => closePanel(true));
     document.addEventListener('click', event => { if (!event.target.closest?.('#map-drawer') && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target) && !embedToggle.contains(event.target)) closePanel(); });
     document.addEventListener('keydown', event => {

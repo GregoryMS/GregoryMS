@@ -18,7 +18,7 @@ window.GregleMapDrawer = ({ map }) => {
     node.before(home); tab.type = 'button'; tab.textContent = label;
     tab.setAttribute('aria-controls', id); tab.setAttribute('aria-pressed', 'false');
     tabs.append(tab);
-    const entry = { id, label, close, node, home, tab, available: false, dismissed: false };
+    const entry = { id, label, close, node, home, tab, available: false, dismissed: false, scrollTop: 0 };
     tab.addEventListener('click', () => show(id, true));
     return entry;
   });
@@ -26,7 +26,9 @@ window.GregleMapDrawer = ({ map }) => {
     const viewport = window.visualViewport;
     const lift = viewport ? Math.max(0, stage.getBoundingClientRect().bottom - viewport.height - viewport.offsetTop) : 0;
     drawer.style.setProperty('--map-drawer-lift', `${lift}px`);
-    return { min: 64, max: Math.max(64, stage.clientHeight - lift - 100) };
+    // Leave the search/tools reachable; allow more room when the keyboard is open.
+    const clearance = lift > 100 ? 84 : 148;
+    return { min: 64, max: Math.max(64, stage.clientHeight - lift - clearance - 24) };
   };
   function resize(value) {
     const { min, max } = bounds();
@@ -46,7 +48,8 @@ window.GregleMapDrawer = ({ map }) => {
     if (!media.matches) return;
     const open = panels.filter(p => p.available);
     if (!open.includes(active)) active = open[0];
-    if (rendered !== active) { body.scrollTop = 0; rendered = active; }
+    const changed = rendered !== active;
+    if (changed && rendered && !rendered.node.hidden) rendered.scrollTop = body.scrollTop;
     drawer.hidden = !active;
     tabs.hidden = open.length < 2;
     for (const p of panels) {
@@ -55,8 +58,9 @@ window.GregleMapDrawer = ({ map }) => {
       p.node.classList.toggle('drawer-active-panel', p === active);
       p.node.inert = p !== active;
     }
-    title.textContent = active?.id === 'map-place' ? $('place-name').textContent || 'Place details' : active?.label || 'Map details';
-    resize(height || Math.min(320, stage.clientHeight * .42));
+    title.textContent = active?.label || 'Map details';
+    resize(height || Math.min(380, stage.clientHeight * .5));
+    if (changed) { body.scrollTop = active?.scrollTop || 0; rendered = active; }
   }
   function refresh() {
     if (!media.matches) return;
@@ -75,14 +79,25 @@ window.GregleMapDrawer = ({ map }) => {
     if (!media.matches) return;
     const p = panels.find(p => p.id === id);
     if (!p || p.node.hidden) return;
+    const changed = active !== p;
     p.dismissed = false;
     refresh(); active = p;
     if (reveal && height < 112) height = expandedHeight || 300;
+    if (reveal && changed && id === 'map-directions') height = Math.max(height, Math.min(420, bounds().max));
     render();
   }
   function minimize() {
     if (height < 112) resize(expandedHeight || 300);
     else { expandedHeight = height; resize(64); }
+  }
+  let revealFrame;
+  function revealPoint(point) {
+    cancelAnimationFrame(revealFrame);
+    revealFrame = requestAnimationFrame(() => {
+      if (!media.matches || drawer.hidden || stage.classList.contains('streetview-active') || stage.classList.contains('navigating')) return;
+      const bottom = stage.getBoundingClientRect().bottom - drawer.getBoundingClientRect().top + 24;
+      map.panInside([point.lat, point.lng], { paddingTopLeft: [24, 148], paddingBottomRight: [24, bottom], animate: false });
+    });
   }
   function closeActive() {
     if (!active) return;
@@ -122,6 +137,9 @@ window.GregleMapDrawer = ({ map }) => {
   });
   collapse.addEventListener('click', minimize);
   $('map-drawer-close').addEventListener('click', closeActive);
+  body.addEventListener('scroll', () => {
+    if (rendered && !rendered.node.hidden) rendered.scrollTop = body.scrollTop;
+  });
   drawer.addEventListener('keydown', event => {
     if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeActive(); }
   });
@@ -129,7 +147,7 @@ window.GregleMapDrawer = ({ map }) => {
   body.addEventListener('focusin', event => {
     if (event.target.matches('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea')) {
       resize(Math.max(height, Math.min(420, bounds().max)));
-      event.target.scrollIntoView({ block: 'nearest' });
+      event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   });
   function configurePopup(popup) {
@@ -182,8 +200,14 @@ window.GregleMapDrawer = ({ map }) => {
   }
   media.addEventListener('change', layout);
   new ResizeObserver(() => { if (media.matches) resize(height); }).observe(stage);
-  window.visualViewport?.addEventListener('resize', () => { if (media.matches) resize(height); });
+  window.visualViewport?.addEventListener('resize', () => {
+    if (!media.matches) return;
+    resize(height);
+    // The keyboard finishes opening after focusin; scroll again at its final size.
+    const focus = document.activeElement;
+    if (body.contains(focus)) focus.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  });
   window.visualViewport?.addEventListener('scroll', () => { if (media.matches) resize(height); });
   layout();
-  return { show };
+  return { show, revealPoint };
 };
