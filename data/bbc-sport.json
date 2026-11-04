@@ -1,31 +1,39 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-03T22:00:12+00:00",
-  "fetchedAt": "2026-11-03T22:00:14.841538+00:00",
+  "feedUpdatedAt": "2026-11-04T02:18:02+00:00",
+  "fetchedAt": "2026-11-04T02:18:08.592395+00:00",
   "items": [
     {
-      "title": "Tenerife striker De Miguel dies after on-field collision",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ck62yvz046pjo?at_medium=RSS&at_campaign=rss"
+      "title": "A half-time speech, a retaken penalty - and a win to save Carrick's job?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6q8n98y4023o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Emery takes positives, but Villa 'have work to do' to reach Barca level",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cjwy9496qe7ko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Fernandes critical of media 'lies' about Carrick relationship",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqkg5dgvygr1o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Man Utd beat Roma - the other great Champions League comebacks",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c64g1dg0d84ko?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "England's Mitchell ruled out of Nations Championship",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6n4endjxqnko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Saliba's back for Arsenal - how does Arteta solve his defensive dilemma?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cxj0l3pd9jy7o?at_medium=RSS&at_campaign=rss"
+      "title": "Death threats for Briton Burrage on WTA Tour return",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/cq62y9yzgzgeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Football world mourns Tenerife striker De Miguel",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6djv011mzlyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How sporting events are being impacted by Middle East conflict",
       "link": "https://www.bbc.co.uk/sport/articles/ck0j0l65nzlvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "West Ham approach Parker after sacking boss Nuno",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c63dj3zpl85go?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Death threats for Briton Burrage on WTA Tour return",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/cq62y9yzgzgeo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Man Utd eye Man City's Ait-Nouri - Wednesday's gossip",
@@ -34,14 +42,6 @@
     {
       "title": "Ocon dropped by Haas for rest of season after row",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/ck054q3g5jnpo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "England thrash USA to secure place in World Cup semi-finals",
-      "link": "https://www.bbc.co.uk/sport/rugby-league/videos/cxnv0n879vmno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Bears deliver statement victory against Seahawks",
-      "link": "https://www.bbc.co.uk/sport/american-football/videos/cwm24gx0z77xo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
