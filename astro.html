@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="assets/astro.css?v=20261104-heading">
+  <link rel="stylesheet" href="assets/astro.css?v=20261105-satellite-cards">
   <script src="assets/astro-navigation.js?v=20261105-navigation" defer></script>
   <script src="assets/astro-news.js?v=20261104-refresh-delay" defer></script>
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
@@ -269,6 +269,29 @@
     </section>
     <section id="satellite-tracker" tabindex="-1" class="satellite-section" aria-labelledby="satellite-heading">
       <div class="section-heading"><div><p class="eyebrow">In orbit right now</p><h2 id="satellite-heading">Satellite tracker</h2><p id="satellite-name" class="meta">International Space Station · NORAD 25544</p></div><button id="satellite-refresh" class="pill" type="button">↻ Reload orbit data</button></div>
+      <div class="satellite-resources" role="group" aria-labelledby="satellite-resources-heading">
+        <h3 id="satellite-resources-heading">Explore satellite trackers</h3>
+        <nav class="satellite-resource-grid" aria-label="Satellite tracking websites">
+          <a class="satellite-resource-card" href="https://app.keeptrack.space" target="_blank" rel="noopener">
+            <span class="satellite-resource-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-35 12 12)"/><path d="m17 3 2 1-1 2"/></svg></span>
+            <span class="satellite-resource-copy"><strong>KeepTrack</strong><small>app.keeptrack.space</small></span>
+            <span class="satellite-resource-arrow" aria-hidden="true">↗</span>
+            <span class="sr-only">(opens in a new tab)</span>
+          </a>
+          <a class="satellite-resource-card" href="https://www.n2yo.com" target="_blank" rel="noopener">
+            <span class="satellite-resource-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z"/></svg></span>
+            <span class="satellite-resource-copy"><strong>N2YO</strong><small>n2yo.com</small></span>
+            <span class="satellite-resource-arrow" aria-hidden="true">↗</span>
+            <span class="sr-only">(opens in a new tab)</span>
+          </a>
+          <a class="satellite-resource-card" href="https://www.heavens-above.com" target="_blank" rel="noopener">
+            <span class="satellite-resource-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/><path d="M20 3v4m-2-2h4"/></svg></span>
+            <span class="satellite-resource-copy"><strong>Heavens-Above</strong><small>heavens-above.com</small></span>
+            <span class="satellite-resource-arrow" aria-hidden="true">↗</span>
+            <span class="sr-only">(opens in a new tab)</span>
+          </a>
+        </nav>
+      </div>
       <div class="satellite-controls"><label for="satellite-select">Track a satellite</label><select id="satellite-select"><option value="25544">International Space Station (ISS)</option><option value="48274">Tiangong space station</option><option value="20580">Hubble Space Telescope</option><option value="25994">Terra</option><option value="27424">Aqua</option></select></div>
       <div class="satellite-panel panel">
         <div id="satellite-map" tabindex="0" role="region" aria-label="Position and projected path of International Space Station"><p class="empty">Loading satellite map…</p></div>
@@ -282,14 +305,6 @@
       <p class="meta">Positions are calculated from orbit data and update every 10 seconds while visible. The dashed orange line projects the next 90 minutes; the solid violet line builds a recent track as you watch. These are estimates, not live telemetry. Orbit data refreshes every six hours; older data is labelled, and data over seven days old is not used.</p>
       <p class="meta">Elevation is the angle above your selected location’s horizon, assuming sea level. A satellite above the horizon may still be invisible: check pass predictions, local darkness and clouds before heading outside.</p>
       <p class="meta">Orbit data: <a href="https://celestrak.org/" target="_blank" rel="noopener">CelesTrak</a> · Calculations: <a href="https://github.com/shashwatak/satellite-js" target="_blank" rel="noopener">Satellite.js</a> · Pass predictions: <a href="https://www.heavens-above.com/" target="_blank" rel="noopener">Heavens-Above</a>. Pass links default to UTC; check the time zone shown on the pass page. Opening pass predictions shares the selected observing coordinates with Heavens-Above.</p>
-      <div class="satellite-resources" role="group" aria-labelledby="satellite-resources-heading">
-        <h3 id="satellite-resources-heading">More satellite tracking tools</h3>
-        <nav class="satellite-links" aria-label="Satellite tracking websites">
-          <a class="pill" href="https://app.keeptrack.space" target="_blank" rel="noopener">KeepTrack ↗</a>
-          <a class="pill" href="https://www.n2yo.com" target="_blank" rel="noopener">N2YO ↗</a>
-          <a class="pill" href="https://www.heavens-above.com" target="_blank" rel="noopener">Heavens-Above ↗</a>
-        </nav>
-      </div>
       <noscript><p>Enable JavaScript for the tracker, or <a href="https://www.n2yo.com/">browse satellite maps directly</a>.</p></noscript>
     </section>
     </div>

@@ -385,3 +385,26 @@ h2 { font-size:22px; font-weight:500; letter-spacing:-.5px; margin:0; }
   .astro-content .sun-layout,.astro-content .aurora-layout { grid-template-columns:minmax(0,1fr); }
   .sun-card-heading { min-height:96px; padding:16px; }
 }
+
+/* External trackers sit above the local satellite controls. */
+.satellite-resources { margin:20px 0 24px; }
+.satellite-resources h3 { margin:0 0 12px; color:var(--muted); font-size:13px; font-weight:500; }
+.satellite-resource-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.satellite-resource-card { display:flex; align-items:center; gap:12px; min-width:0; min-height:92px; padding:16px; border:1px solid var(--line); border-radius:16px; background:var(--panel); color:var(--text); text-decoration:none; transition:background .18s,border-color .18s; }
+.satellite-resource-card:hover { border-color:var(--astro-accent); background:var(--astro-accent-soft); }
+.satellite-resource-card:focus-visible { outline:2px solid var(--astro-accent); outline-offset:3px; }
+.satellite-resource-icon { display:grid; place-items:center; flex:0 0 40px; width:40px; height:40px; border-radius:12px; background:var(--astro-accent-soft); color:var(--astro-accent); }
+.satellite-resource-icon svg { width:24px; height:24px; }
+.satellite-resource-copy { flex:1; min-width:0; }
+.satellite-resource-copy strong { display:block; font-size:14px; font-weight:500; line-height:1.5; }
+.satellite-resource-copy small { display:block; margin-top:3px; color:var(--muted); font-size:11px; overflow-wrap:anywhere; }
+.satellite-resource-arrow { flex-shrink:0; color:var(--astro-accent); font-size:19px; }
+@media(min-width:901px) and (max-width:1150px) {
+  .satellite-resource-card { flex-wrap:wrap; gap:10px; }
+  .satellite-resource-copy { flex-basis:calc(100% - 32px); order:2; }
+  .satellite-resource-arrow { margin-left:auto; }
+}
+@media(max-width:600px) {
+  .satellite-resource-grid { grid-template-columns:minmax(0,1fr); gap:8px; }
+  .satellite-resource-card { min-height:76px; padding:12px 16px; }
+}
