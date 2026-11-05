@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-04T22:52:17+00:00",
-  "fetchedAt": "2026-11-04T22:52:23.713803+00:00",
+  "feedUpdatedAt": "2026-11-05T03:12:11+00:00",
+  "fetchedAt": "2026-11-05T03:12:21.607974+00:00",
   "items": [
+    {
+      "title": "Another 'miracle' in Istanbul - but this one hurt Liverpool",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cwx28z712rd8o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "LIV to wind down after backers withdraw support",
       "link": "https://www.bbc.co.uk/sport/golf/articles/cq70pdjjgy5no?at_medium=RSS&at_campaign=rss"
@@ -10,10 +14,6 @@
     {
       "title": "Haaland scores winner as Man City beat Leipzig",
       "link": "https://www.bbc.co.uk/sport/football/videos/ckz65ey5q29zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Another 'miracle' in Istanbul - but this one hurt Liverpool",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cwx28z712rd8o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Arsenal survive late Slavia scare for hard-fought win",
@@ -32,16 +32,16 @@
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c5x2vzplg43go?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "World record 51 red cards shown in Brazilian youth game",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmy0rz7741ywo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Liverpool crumble at Kuyt's Fenerbahce",
       "link": "https://www.bbc.co.uk/sport/football/videos/cqy7ljmzx6d6o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Como score nine to make Champions League history",
       "link": "https://www.bbc.co.uk/sport/football/videos/c6wyr8gzzr1zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Valverde stunner earns Real Madrid late win at AEK Athens",
-      "link": "https://www.bbc.co.uk/sport/football/videos/ck7vpj0ggqr8o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
