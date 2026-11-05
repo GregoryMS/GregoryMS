@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
   <link rel="stylesheet" href="assets/astro.css?v=20261104-heading">
+  <script src="assets/astro-navigation.js?v=20261105-navigation" defer></script>
   <script src="assets/astro-news.js?v=20261104-refresh-delay" defer></script>
   <script src="assets/astro-display.js?v=20261005-clocks" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -47,6 +48,7 @@
   <link rel="canonical" href="https://astro.gregle.uk/">
 </head>
 <body>
+  <a class="astro-skip-link" href="#observing-location">Skip to planner</a>
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Astronomy</span></div>
     <div class="top-actions"><a class="pill astro-stellarium-link" href="https://stellarium-web.org/" target="_blank" rel="noopener" aria-label="Stellarium Web" title="Open Stellarium Web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg><span>Stellarium Web ↗</span></a>
@@ -79,11 +81,14 @@
 <!-- /Gregle app menu --></div>
   </header>
   <main class="page astro-page">
+    <div class="astro-heading" id="planner-top">
+      <div class="astro-title"><img src="/assets/astro-app/icon-192.png" width="64" height="64" alt=""><div><p class="eyebrow">A night under the stars</p><h1>Observation planner<span class="accent-dot">.</span></h1><p class="astro-intro">Find a darker sky. Choose a clearer night. See what’s overhead.</p></div></div>
     <div class="astro-display-controls" aria-label="Observing display">
       <div class="astro-clocks">
         <div class="astro-clock"><span>UTC</span><time id="utc-clock" aria-label="Current UTC time">--:--:--</time></div>
         <div class="astro-clock"><span>Local</span><time id="local-clock" aria-label="Current time in your time zone">--:--:--</time></div>
       </div>
+    </div>
     </div>
     <aside class="astro-news" id="astro-news" aria-label="Universe Today headlines">
       <a class="astro-news-source" href="https://www.universetoday.com/" target="_blank" rel="noopener noreferrer" aria-label="Universe Today" title="Universe Today"><img class="astro-news-logo" src="assets/universe-today-logo.png" width="32" height="32" alt=""><span class="astro-news-source-name">Universe Today</span></a>
@@ -93,14 +98,40 @@
       <span class="astro-news-status" id="astro-news-status" role="status"></span>
       <noscript><a href="https://www.universetoday.com/">Read astronomy news ↗</a></noscript>
     </aside>
-    <div class="astro-heading"><div><p class="eyebrow">A night under the stars</p><h1>Observation planner<span class="accent-dot">.</span></h1></div></div>
-    <details class="astro-quick-links panel" open>
-      <summary class="astro-quick-label">Jump to<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary>
-      <nav class="astro-quick-scroll" aria-label="Page sections">
-        <a href="#observing-location">Location</a><a href="#hourly-forecast">48-hour forecast</a><a href="#clear-sky-sites">Clear sky sites</a><a href="#clear-sky-chart">Sky chart</a><a href="#current-conditions">Conditions</a><a href="#space-weather">Space weather</a><a href="#aurora-forecast">Aurora forecast</a><a href="#moon-phases">Moon phases</a><a href="#astro-calendar">Events</a><a href="#satellite-tracker">Satellites</a>
+    <div class="astro-workspace">
+    <aside class="astro-navigation panel" aria-label="Planner navigation">
+      <div class="astro-mobile-navigation"><label for="astro-section-select">Jump to</label><select id="astro-section-select" aria-label="Jump to a planner section">
+        <option value="observing-location">Location</option>
+        <option value="current-conditions">Current conditions</option>
+        <option value="hourly-forecast">48-hour forecast</option>
+        <option value="clear-sky-sites">Clear sky sites</option>
+        <option value="clear-sky-chart">Sky chart</option>
+        <option value="space-weather">Space weather & Sun</option>
+        <option value="aurora-forecast">Aurora forecast</option>
+        <option value="moon-phases">Moon phases</option>
+        <option value="astro-calendar">Astronomical events</option>
+        <option value="satellite-tracker">Satellite tracker</option>
+      </select></div>
+      <nav class="astro-section-links" aria-label="Page sections">
+        <p class="astro-nav-group">Plan your night</p>
+        <a href="#observing-location"><span class="astro-nav-dot" aria-hidden="true"></span>Location</a>
+        <a href="#current-conditions"><span class="astro-nav-dot" aria-hidden="true"></span>Current conditions</a>
+        <a href="#hourly-forecast"><span class="astro-nav-dot" aria-hidden="true"></span>48-hour forecast</a>
+        <p class="astro-nav-group">Find a dark sky</p>
+        <a href="#clear-sky-sites"><span class="astro-nav-dot" aria-hidden="true"></span>Clear sky sites</a>
+        <a href="#clear-sky-chart"><span class="astro-nav-dot" aria-hidden="true"></span>Sky chart</a>
+        <p class="astro-nav-group">Explore the sky</p>
+        <a href="#space-weather"><span class="astro-nav-dot" aria-hidden="true"></span>Space weather & Sun</a>
+        <a href="#aurora-forecast"><span class="astro-nav-dot" aria-hidden="true"></span>Aurora forecast</a>
+        <a href="#moon-phases"><span class="astro-nav-dot" aria-hidden="true"></span>Moon phases</a>
+        <a href="#astro-calendar"><span class="astro-nav-dot" aria-hidden="true"></span>Astronomical events</a>
+        <a href="#satellite-tracker"><span class="astro-nav-dot" aria-hidden="true"></span>Satellite tracker</a>
       </nav>
-    </details>
-    <section id="observing-location" class="location-section" aria-label="Choose an observing location">
+      <a class="astro-back-top" href="#planner-top">↑ Back to top</a>
+    </aside>
+    <div class="astro-content">
+    <section id="observing-location" tabindex="-1" class="location-section panel" aria-label="Choose an observing location">
+      <div class="section-heading"><div><p class="eyebrow">Start here</p><h2>Your observing location</h2><p class="meta">Choose a city to update conditions, Moon times and nearby sky charts.</p></div></div>
       <form id="location-form" class="location-form">
         <label for="location-query">Find a city</label>
         <div class="location-search-row">
@@ -116,12 +147,25 @@
       <div class="shortcuts" aria-label="Quick locations"><button class="pill" data-place="victoria" type="button">Victoria</button><button class="pill" data-place="vancouver" type="button">Vancouver</button><button class="pill" data-place="chilliwack" type="button">Chilliwack</button><button class="pill" data-place="tofino" type="button">Tofino</button><button class="pill" data-place="oslo" type="button">Oslo</button><button class="pill" data-place="london" type="button">London</button><button class="pill" data-place="stockholm" type="button">Stockholm</button></div>
     </section>
     <noscript><p>Enable JavaScript for location search and forecasts. Visit <a href="https://weather.gc.ca/astro/index_e.html">Environment Canada astronomy</a> or the <a href="https://test.cleardarksky.com/browse/map.html">Clear Sky Chart map</a> directly.</p></noscript>
-    <section id="hourly-forecast" class="forecast-section" aria-labelledby="hourly-heading">
+    <section id="current-conditions" tabindex="-1" aria-labelledby="place-name">
+      <div class="section-heading"><div><p class="eyebrow">Current conditions</p><h2 id="place-name">Vancouver</h2><p id="place-detail" class="meta">British Columbia, Canada</p></div><a id="weather-link" class="pill" href="https://weather.gregle.uk/">Full weather ↗</a></div>
+      <p id="forecast-status" class="meta" role="status">Loading observation conditions…</p>
+      <div id="conditions" class="conditions" aria-label="Current modelled conditions"></div>
+      <div class="night-strip panel"><div><span class="meta">Sky now</span><strong id="sky-now">—</strong></div><div><span class="meta">Moon illumination</span><strong id="moon">—</strong></div><div><span class="meta">Moon above horizon</span><strong id="moon-up">—</strong></div><div><span class="meta">Next 48 hours · astronomical darkness</span><strong id="dark-window">Calculating…</strong></div></div>
+      <div class="night-strip rise-set-strip panel" role="group" aria-label="Sun and Moon rise and set times" aria-describedby="rise-set-date">
+        <div><span class="meta">Sunrise</span><strong id="sunrise">Calculating…</strong></div>
+        <div><span class="meta">Sunset</span><strong id="sunset">Calculating…</strong></div>
+        <div><span class="meta">Moonrise</span><strong id="moonrise">Calculating…</strong></div>
+        <div><span class="meta">Moonset</span><strong id="moonset">Calculating…</strong></div>
+      </div>
+      <p id="rise-set-date" class="meta">Today’s times for the selected location.</p>
+    </section>
+    <section id="hourly-forecast" tabindex="-1" class="forecast-section" aria-labelledby="hourly-heading">
       <div class="section-heading"><div class="forecast-heading-copy"><h2 id="hourly-heading">The next 48 hours</h2><p class="meta">Local times · Scroll across</p></div><div class="forecast-controls"><label class="check-label"><input type="checkbox" id="night-only" checked> Night &amp; twilight only</label><button class="pill" id="refresh" type="button">↻ Refresh</button></div></div>
       <div id="hourly" class="hourly-wrap panel" tabindex="0" role="region" aria-label="Scrollable hourly observing forecast"><p class="empty">Loading hourly forecast…</p></div>
-      <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and the Clear Sky Chart below. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>
+      <details><summary>How to read the observing outlook</summary><p>“Promising” means astronomical darkness (Sun below −18°), cloud cover at most 25%, rain probability below 20% and wind at most 15 km/h. “Poor” means clouds above 60%, rain probability at least 50% or wind above 30 km/h; other dark hours are “Mixed”. This is a simple planning guide, not a seeing or transparency forecast. Check the Moon and the Clear Sky Chart for more detail. Dew risk is high within 2°C of the dew point and moderate within 4°C. “—” and “Unknown” mean missing data.</p></details>
     </section>
-    <section id="clear-sky-sites" class="site-browser" aria-labelledby="map-heading">
+    <section id="clear-sky-sites" tabindex="-1" class="site-browser" aria-labelledby="map-heading">
       <div class="section-heading"><div><p class="eyebrow">Choose your observing spot</p><h2 id="map-heading">Clear sky sites</h2></div><a href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Original chart map ↗</a></div>
       <p id="directory-status" class="meta" role="status">Loading observing sites…</p>
       <div class="site-map-layout panel">
@@ -131,7 +175,7 @@
       <p id="map-status" class="meta" role="status"></p>
       <div class="sky-legend" aria-label="Light pollution colour guide"><span><i style="background:#111"></i>Darker</span><span><i style="background:#013edc"></i>Blue</span><span><i style="background:#316a1b"></i>Green</span><span><i style="background:#908c2e"></i>Yellow</span><span><i style="background:#ed3833"></i>Red</span><span><i style="background:#bfbfbf"></i>Brighter</span><a href="https://djlorenz.github.io/astronomy/lp/colors.html" target="_blank" rel="noopener">Scale explained ↗</a></div>
     </section>
-    <section id="clear-sky-chart" class="chart-section" aria-labelledby="chart-heading">
+    <section id="clear-sky-chart" tabindex="-1" class="chart-section" aria-labelledby="chart-heading">
       <div class="section-heading"><div><p class="eyebrow">The observing forecast</p><h2 id="chart-heading">Clear Sky Chart</h2><p id="chart-site" class="meta">Choose an observing site on the map.</p></div><a id="chart-source" href="https://test.cleardarksky.com/browse/map.html" target="_blank" rel="noopener">Chart details &amp; legend ↗</a></div>
       <p id="chart-status" class="meta" role="status">Loading chart sites…</p>
       <div id="chart-image" class="chart-image panel" tabindex="0" role="region" aria-label="Scrollable Clear Sky Chart"></div>
@@ -151,20 +195,7 @@
         </div>
       </details>
     </section>
-    <section id="current-conditions" aria-labelledby="place-name">
-      <div class="section-heading"><div><h2 id="place-name">Vancouver</h2><p id="place-detail" class="meta">British Columbia, Canada</p></div><a id="weather-link" class="pill" href="https://weather.gregle.uk/">Full weather ↗</a></div>
-      <p id="forecast-status" class="meta" role="status">Loading observation conditions…</p>
-      <div id="conditions" class="conditions" aria-label="Current modelled conditions"></div>
-      <div class="night-strip panel"><div><span class="meta">Sky now</span><strong id="sky-now">—</strong></div><div><span class="meta">Moon illumination</span><strong id="moon">—</strong></div><div><span class="meta">Moon above horizon</span><strong id="moon-up">—</strong></div><div><span class="meta">Next 48 hours · astronomical darkness</span><strong id="dark-window">Calculating…</strong></div></div>
-      <div class="night-strip rise-set-strip panel" role="group" aria-label="Sun and Moon rise and set times" aria-describedby="rise-set-date">
-        <div><span class="meta">Sunrise</span><strong id="sunrise">Calculating…</strong></div>
-        <div><span class="meta">Sunset</span><strong id="sunset">Calculating…</strong></div>
-        <div><span class="meta">Moonrise</span><strong id="moonrise">Calculating…</strong></div>
-        <div><span class="meta">Moonset</span><strong id="moonset">Calculating…</strong></div>
-      </div>
-      <p id="rise-set-date" class="meta">Today’s times for the selected location.</p>
-    </section>
-    <section id="space-weather" class="space-weather-section" aria-labelledby="space-weather-heading">
+    <section id="space-weather" tabindex="-1" class="space-weather-section" aria-labelledby="space-weather-heading">
       <div class="section-heading"><div><p class="eyebrow">From the Sun to Earth</p><h2 id="space-weather-heading">Space weather</h2><p class="meta">Latest geomagnetic activity and upstream solar wind measurements.</p></div><button id="space-weather-refresh" class="pill" type="button">↻ Refresh space weather</button></div>
       <p id="space-weather-status" class="meta" role="status">Loading NOAA observations…</p>
       <div class="space-weather-metrics" aria-label="Latest space weather observations">
@@ -193,7 +224,7 @@
       </div>
       <noscript><p>Enable JavaScript for observations, or visit <a href="https://spaceweather.com/">SpaceWeather.com</a> and <a href="https://www.spaceweather.gov/">NOAA space weather</a>.</p></noscript>
     </section>
-    <section id="aurora-forecast" class="aurora-section" aria-labelledby="aurora-heading">
+    <section id="aurora-forecast" tabindex="-1" class="aurora-section" aria-labelledby="aurora-heading">
       <div class="section-heading"><div><p class="eyebrow">Watch for the northern &amp; southern lights</p><h2 id="aurora-heading">Aurora forecast</h2><p class="meta">A short-term auroral oval and the next three days of global Kp guidance.</p></div><a href="https://www.spaceweather.gov/products/aurora-30-minute-forecast" target="_blank" rel="noopener">NOAA aurora forecast ↗</a></div>
       <div class="aurora-layout">
         <figure class="aurora-map panel">
@@ -213,14 +244,14 @@
       <p class="meta">Source: <a href="https://www.spaceweather.gov/" target="_blank" rel="noopener">NOAA Space Weather Prediction Center</a>. These are global model estimates, not a guarantee of aurora at your observing location. Observations and forecasts refresh every five minutes while this page is visible.</p>
       <noscript><p><a href="https://www.spaceweather.gov/products/3-day-forecast">Open the three-day forecast directly</a>.</p></noscript>
     </section>
-    <section id="moon-phases" class="moon-section" aria-labelledby="moon-heading">
+    <section id="moon-phases" tabindex="-1" class="moon-section" aria-labelledby="moon-heading">
       <div class="section-heading"><div><p class="eyebrow">Plan around the Moon</p><h2 id="moon-heading">Moon phases</h2></div></div>
       <div class="moon-layout panel">
         <div class="moon-current"><span id="moon-phase-icon" class="moon-symbol" aria-hidden="true"></span><div><span class="meta">Current phase</span><h3 id="moon-phase-name">Calculating…</h3><p id="moon-phase-detail" class="meta"></p></div></div>
         <div class="moon-upcoming"><h3>Upcoming phases</h3><ol id="moon-phase-dates" class="moon-phase-dates"></ol></div>
       </div>
     </section>
-    <section id="astro-calendar" class="astro-calendar" aria-labelledby="calendar-heading">
+    <section id="astro-calendar" tabindex="-1" class="astro-calendar" aria-labelledby="calendar-heading">
       <div class="section-heading"><div><p class="eyebrow">Plan your next night out</p><h2 id="calendar-heading">Astronomical events</h2></div><a id="calendar-export" class="pill" hidden>Download month (.ics)</a></div>
       <p class="calendar-meta">Moon phases, meteor showers, planetary oppositions, Mercury and Venus viewing windows, eclipses, equinoxes and solstices.</p>
       <p id="calendar-zone" class="calendar-meta"></p>
@@ -236,7 +267,7 @@
       <p class="calendar-meta">Calendar downloads are a snapshot, not a subscription. Open the .ics file in Apple Calendar, Outlook or another calendar app to import it.</p>
       <noscript><p>Enable JavaScript for the calendar, or browse <a href="https://aa.usno.navy.mil/data/MoonPhases">Moon phase dates</a> and <a href="https://science.nasa.gov/solar-system/meteors-meteorites/meteor-showers/">meteor showers</a>.</p></noscript>
     </section>
-    <section id="satellite-tracker" class="satellite-section" aria-labelledby="satellite-heading">
+    <section id="satellite-tracker" tabindex="-1" class="satellite-section" aria-labelledby="satellite-heading">
       <div class="section-heading"><div><p class="eyebrow">In orbit right now</p><h2 id="satellite-heading">Satellite tracker</h2><p id="satellite-name" class="meta">International Space Station · NORAD 25544</p></div><button id="satellite-refresh" class="pill" type="button">↻ Reload orbit data</button></div>
       <div class="satellite-controls"><label for="satellite-select">Track a satellite</label><select id="satellite-select"><option value="25544">International Space Station (ISS)</option><option value="48274">Tiangong space station</option><option value="20580">Hubble Space Telescope</option><option value="25994">Terra</option><option value="27424">Aqua</option></select></div>
       <div class="satellite-panel panel">
@@ -253,6 +284,8 @@
       <p class="meta">Orbit data: <a href="https://celestrak.org/" target="_blank" rel="noopener">CelesTrak</a> · Calculations: <a href="https://github.com/shashwatak/satellite-js" target="_blank" rel="noopener">Satellite.js</a> · Pass predictions: <a href="https://www.heavens-above.com/" target="_blank" rel="noopener">Heavens-Above</a>. Pass links default to UTC; check the time zone shown on the pass page. Opening pass predictions shares the selected observing coordinates with Heavens-Above.</p>
       <noscript><p>Enable JavaScript for the tracker, or <a href="https://www.n2yo.com/">browse satellite maps directly</a>.</p></noscript>
     </section>
+    </div>
+    </div>
     <dialog id="event-dialog" class="event-dialog" aria-labelledby="event-title" aria-describedby="event-time event-description event-timing">
       <div class="event-dialog-top"><span id="event-kind" class="eyebrow"></span><button id="event-close" class="pill" type="button" autofocus>Close</button></div>
       <h2 id="event-title"></h2><p id="event-time" class="calendar-meta"></p><p id="event-description"></p><p id="event-timing" class="calendar-meta"></p>
