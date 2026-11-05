@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-05T17:56:20+00:00",
-  "fetchedAt": "2026-11-05T17:56:22.042010+00:00",
+  "feedUpdatedAt": "2026-11-05T23:30:34+00:00",
+  "fetchedAt": "2026-11-05T23:30:40.939190+00:00",
   "items": [
+    {
+      "title": "Russell Brand found guilty of rape and sexual assault",
+      "link": "https://www.bbc.co.uk/news/articles/ckyvrze96y70o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Watch: Met Police release Brand interview footage",
       "link": "https://www.bbc.co.uk/news/videos/c693ze38vywxo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Russell Brand is being investigated over two new rape complaints, police say",
-      "link": "https://www.bbc.co.uk/news/articles/c6vgx8q09gg4o?at_medium=RSS&at_campaign=rss"
+      "title": "Major tech stocks plunge as US midterms add to fears of AI slowdown",
+      "link": "https://www.bbc.co.uk/news/articles/cmn04705rd8jo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Henry Nowak’s killer has minimum term increased to 25 years by Court of Appeal",
+      "link": "https://www.bbc.co.uk/news/articles/cmwy9z5423p2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "California governor commutes sentences for state's 548 death row inmates",
+      "link": "https://www.bbc.co.uk/news/articles/cqrkyyd2j8mvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "King relishes 'politically charged' deployments, Palace aide says",
+      "link": "https://www.bbc.co.uk/news/articles/c8n5vvr906dvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Messages reveal how hoax threat was passed on by air traffic control",
+      "link": "https://www.bbc.co.uk/news/videos/cq398m8w41lyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "UK doctor infected with Ebola being treated at London hospital",
+      "link": "https://www.bbc.co.uk/news/articles/cqj34d3l0zlmo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Police car set alight in Glasgow amid Bonfire Night trouble",
+      "link": "https://www.bbc.co.uk/news/articles/cm0ldd8kyn36o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Interest rates hiked to 4% in first increase in over three years",
       "link": "https://www.bbc.co.uk/news/articles/ck5ynw45jrgqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "British man infected with Ebola in DR Congo arrives in UK for treatment",
-      "link": "https://www.bbc.co.uk/news/articles/cqj34d3l0zlmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Married at First Sight UK cancelled after BBC revealed rape allegations",
-      "link": "https://www.bbc.co.uk/news/articles/cw33xm0de221o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "A bitter end for Ronaldo - the icon who transformed Portugal announces international retirement",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ckn9rwr2zzpvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'Flawed' training contributed to officer's death",
-      "link": "https://www.bbc.co.uk/news/articles/cvj6j4425p3zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Was an Italian chef really fired over refusal to put pineapple on pizza?",
-      "link": "https://www.bbc.co.uk/news/videos/cmvg9yy8wpweo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "The Russell Brand I saw in court was not the flamboyant character most people will know",
-      "link": "https://www.bbc.co.uk/news/articles/cwvgdjyg6qrqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: How rapist Brand was never far from controversy",
-      "link": "https://www.bbc.co.uk/news/videos/c9dr8713zjgyo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
