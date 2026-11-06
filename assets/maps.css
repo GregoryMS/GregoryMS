@@ -664,3 +664,6 @@
   .map-stage .leaflet-top.leaflet-right { top: 76px; bottom: auto; }
   .map-stage .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; }
 }
+
+/* Apply the dark palette only to the selected base tiles, preserving overlay colours. */
+#gregle-map .gregle-dark-basemap { filter:invert(1) hue-rotate(180deg) brightness(.85) saturate(.75); }

@@ -113,16 +113,17 @@
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
       embed.setBase(state.base);
       if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
-      const topographic = state.base === 'topographic';
+      const topographic = state.base === 'topographic', dark = state.base === 'dark';
       const layer = L.tileLayer(topographic ? config.topographicURL : config.tileURL, {
         ...layerOptions, maxNativeZoom: topographic ? 17 : 19,
+        className: dark ? 'gregle-dark-basemap' : '',
         attribution: topographic ? `${osmCredit}, SRTM | &copy; <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA</a>)` : osmCredit
       });
       baseLayer = layer;
       let failed = 0, loaded = 0;
       layer.on('loading', () => {
         failed = 0; loaded = 0;
-        if (layer === baseLayer) status('base-layer-status', `Loading ${topographic ? 'topographic' : 'street'} map…`);
+        if (layer === baseLayer) status('base-layer-status', `Loading ${topographic ? 'topographic' : dark ? 'dark' : 'street'} map…`);
       });
       layer.on('tileerror', () => { failed++; });
       layer.on('tileload', () => { loaded++; });
@@ -138,7 +139,7 @@
           status('base-layer-status', 'Some map tiles could not load. Try moving the map or switching layers.', true);
           notify('Some map tiles could not load. Try moving or zooming the map, or open OpenStreetMap.', 'map', true);
         } else {
-          status('base-layer-status', topographic ? 'OpenTopoMap · contours and terrain' : 'OpenStreetMap · street map');
+          status('base-layer-status', topographic ? 'OpenTopoMap · contours and terrain' : dark ? 'OpenStreetMap · dark map' : 'OpenStreetMap · street map');
           if ($('map-notice').dataset.kind === 'map') $('map-notice').hidden = true;
         }
       });
