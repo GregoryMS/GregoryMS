@@ -45,6 +45,34 @@
     }).sort((a, b) => COLOURS[b.colour] - COLOURS[a.colour] || b.issued - a.issued);
   }
 
+  function canadianDetailsURL(alert) {
+    const url = officialURL(alert.url);
+    const id = url && new URL(url).hash.slice(1);
+    // Bulletin IDs are shared by City Page Weather and the GeoMet alert features.
+    if (!/^\d+$/.test(id || '')) return null;
+    return 'https://api.weather.gc.ca/collections/weather-alerts/items?' + new URLSearchParams({
+      f:'json', limit:'1000', skipGeometry:'true',
+      properties:'alert_text_en,publication_datetime,expiration_datetime,status_en',
+      filter:`id LIKE '${id}_%'`
+    });
+  }
+  function canadianAlertText(data, alert, now = Date.now()) {
+    const id = new URL(alert.url).hash.slice(1);
+    if (!Array.isArray(data?.features)) throw Error('Alert text unavailable');
+    const texts = data.features.flatMap(feature => {
+      const item = feature?.properties;
+      if (!String(feature?.id || '').startsWith(id + '_') ||
+          /^(ended|cancelled|canceled)$/i.test(item?.status_en || '') ||
+          Math.floor(Date.parse(item?.publication_datetime) / 1000) !== Math.floor(alert.issued / 1000) ||
+          !(Date.parse(item?.expiration_datetime) > now) ||
+          typeof item?.alert_text_en !== 'string' || !item.alert_text_en.trim()) return [];
+      return [item.alert_text_en];
+    });
+    const unique = [...new Set(texts)];
+    if (unique.length !== 1) throw Error('Matching alert text unavailable');
+    return unique[0];
+  }
+
   function ukAlertsURL(location) {
     if (!Number.isFinite(location?.latitude) || Math.abs(location.latitude) > 90 ||
         !Number.isFinite(location.longitude) || Math.abs(location.longitude) > 180) throw Error('Invalid warning location');
@@ -86,13 +114,50 @@
     const doc = win.document, section = doc.getElementById('weatherAlerts');
     const list = doc.getElementById('weatherAlertList'), note = doc.getElementById('weatherAlertStatus');
     let location, station, directory, alerts = [], version = 0, controller, timer, lastCheck = 0;
+    const detailRequests = new Set(), expanded = new Set();
     const now = () => win.Date.now();
     const isUK = () => location?.country === 'GB';
     const supported = () => ['CA', 'GB'].includes(location?.country);
     const refreshPeriod = () => isUK() ? UK_REFRESH_MS : REFRESH_MS;
     const locationURL = () => isUK() ? UK_WARNINGS_URL : 'https://weather.gc.ca/en/location/index.html?coords=' + encodeURIComponent(`${location.latitude},${location.longitude}`);
     function clear() { alerts = []; list.replaceChildren(); section.hidden = true; }
-    function stop() { version++; controller?.abort(); controller = null; win.clearTimeout(timer); }
+    function stop() {
+      version++; controller?.abort(); controller = null; win.clearTimeout(timer);
+      for (const request of detailRequests) request.abort();
+      detailRequests.clear();
+    }
+    function canadianDetails(alert) {
+      const details = doc.createElement('details'), summary = doc.createElement('summary');
+      const content = doc.createElement('p'), key = alert.url + '|' + alert.issued;
+      details.className = 'weather-alert-details'; summary.textContent = 'Warning details';
+      content.textContent = 'Open to load the full Environment Canada bulletin.';
+      details.append(summary, content);
+      let loading = false, loaded = false;
+      details.addEventListener('toggle', async () => {
+        if (details.open) expanded.add(key); else expanded.delete(key);
+        if (!details.open || loading || loaded) return;
+        const url = canadianDetailsURL(alert);
+        if (!url) {
+          content.textContent = 'Bulletin text is unavailable here. Use the Environment Canada alert link above.';
+          return;
+        }
+        const current = version, request = new win.AbortController();
+        detailRequests.add(request); loading = true;
+        content.textContent = 'Loading the Environment Canada bulletin…';
+        const timeout = win.setTimeout(() => request.abort(), 10000);
+        try {
+          const data = await fetchJSON(url, request.signal);
+          if (current !== version || alert.expires <= now()) return;
+          content.textContent = canadianAlertText(data, alert, now()); loaded = true;
+        } catch (_) {
+          if (current === version) content.textContent = 'The bulletin text could not be loaded. Use the Environment Canada alert link above, or close and reopen these details to retry.';
+        } finally {
+          loading = false; detailRequests.delete(request); win.clearTimeout(timeout);
+        }
+      });
+      details.open = expanded.has(key);
+      return details;
+    }
     function timestamp(value) {
       return new win.Date(value).toLocaleString('en-CA', {month:'short', day:'numeric', hour:'2-digit',hourCycle:'h23', minute:'2-digit', timeZoneName:'short', timeZone:location.timezone || (isUK() ? 'Europe/London' : 'America/Vancouver')});
     }
@@ -109,6 +174,7 @@
         const link = doc.createElement('a'); link.className = 'weather-alert-link'; link.href = alert.url || locationURL();
         link.textContent = isUK() ? 'Read the Met Office warning ↗' : 'Read the Environment Canada alert ↗';
         card.append(badge, title, dates, link);
+        if (!isUK()) card.append(canadianDetails(alert));
         if (alert.details?.length) {
           const details = doc.createElement('details'), summary = doc.createElement('summary');
           details.className = 'weather-alert-details'; summary.textContent = 'Warning details'; details.append(summary);
@@ -184,6 +250,7 @@
     }
     function setLocation(selected) {
       stop(); clear(); note.hidden = true; note.replaceChildren(); station = null; lastCheck = 0;
+      expanded.clear();
       location = {...selected};
       return refresh();
     }
@@ -192,5 +259,5 @@
     });
     return {setLocation, refresh};
   }
-  return {activeAlerts, officialURL, ukAlerts, ukAlertsURL, createController, REFRESH_MS, UK_REFRESH_MS};
+  return {activeAlerts, officialURL, canadianDetailsURL, canadianAlertText, ukAlerts, ukAlertsURL, createController, REFRESH_MS, UK_REFRESH_MS};
 });

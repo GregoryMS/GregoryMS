@@ -1,6 +1,6 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const {activeAlerts, officialURL, ukAlerts, ukAlertsURL, createController, REFRESH_MS, UK_REFRESH_MS} = require('../assets/weather-alerts.js');
+const {activeAlerts, officialURL, canadianDetailsURL, canadianAlertText, ukAlerts, ukAlertsURL, createController, REFRESH_MS, UK_REFRESH_MS} = require('../assets/weather-alerts.js');
 const weather = require('../assets/weather-core.js');
 const NOW = Date.parse('2026-10-08T15:00:00Z');
 const iso = time => new Date(time).toISOString();
@@ -48,6 +48,7 @@ function harness() {
   const nodes=new Map(), listeners={}, timers=new Map(), calls=[];
   let clock=NOW, nextTimer=0, fetchImpl=async()=>response(feed());
   const element = tag => ({tagName:tag,hidden:true,children:[],textContent:'',innerHTML:'',
+    addEventListener(type,callback){this['on'+type]=callback;},
     append(...children){this.children.push(...children);}, replaceChildren(...children){this.children=children;}});
   const node=id=>{if(!nodes.has(id))nodes.set(id,element('div'));return nodes.get(id);};
   const document={hidden:false,getElementById:node,createElement:element,addEventListener(type,callback){listeners[type]=callback;}};
@@ -236,4 +237,62 @@ test('searched Canadian locations use the official nearby city and reuse the dir
   await h.controller.setLocation({country:'CA',name:'Central Toronto',latitude:43.65,longitude:-79.38,timezone:'America/Toronto'});
   assert.match(h.calls.at(-1).url,/items\/on-143/); assert.match(h.node('weatherAlertLocation').textContent,/Toronto/);
   await h.controller.refresh(); assert.equal(h.calls.filter(call=>call.url.includes('limit=1000')).length,1);
+});
+
+const bulletinId = '111306101148652760202611060502';
+const bulletinURL = 'https://weather.gc.ca/warnings/report_e.html?bc43#' + bulletinId;
+const bulletin = text => ({features:[{id:bulletinId+'_fea1-2319',properties:{
+  alert_text_en:text, publication_datetime:iso(NOW-3600000+645), expiration_datetime:iso(NOW+3600000), status_en:'continued'
+}}]});
+test('Canadian bulletin requests match the official ID and reject unrelated, stale or conflicting text',()=>{
+  const warning=activeAlerts(feed([alert({url:{en:bulletinURL}})]),NOW)[0];
+  const url=new URL(canadianDetailsURL(warning));
+  assert.equal(url.origin,'https://api.weather.gc.ca');
+  assert.equal(url.searchParams.get('filter'),`id LIKE '${bulletinId}_%'`);
+  assert.equal(canadianDetailsURL({...warning,url:'https://evil.example/#123'}),null);
+  assert.equal(canadianDetailsURL({...warning,url:bulletinURL+'x'}),null);
+  assert.equal(canadianAlertText(bulletin('Where: Victoria.\n\nSecure loose objects.'),warning,NOW),'Where: Victoria.\n\nSecure loose objects.');
+  const duplicate=bulletin('same');duplicate.features.push(duplicate.features[0]);
+  assert.equal(canadianAlertText(duplicate,warning,NOW),'same');
+  for (const data of [{}, {features:[]}, bulletin(''),
+    {features:[{...bulletin('wrong').features[0],id:'different_fea1-2319'}]},
+    {features:[...bulletin('one').features,...bulletin('two').features]}]) {
+    assert.throws(()=>canadianAlertText(data,warning,NOW));
+  }
+  for(const changes of [{publication_datetime:iso(NOW-7200000)},{expiration_datetime:iso(NOW)},{status_en:'ended'}]) {
+    const data=bulletin('old');Object.assign(data.features[0].properties,changes);
+    assert.throws(()=>canadianAlertText(data,warning,NOW));
+  }
+});
+test('Canadian details load on expansion, preserve plain text, and remain open across refreshes',async()=>{
+  const h=harness(),text='Strong winds.\n\n<script>not HTML</script>';
+  h.setFetch(async url=>response(url.includes('/weather-alerts/')?bulletin(text):feed([alert({url:{en:bulletinURL}})])));
+  await h.controller.setLocation(victoria);
+  let details=h.node('weatherAlertList').children[0].children[4];
+  assert.equal(details.tagName,'details'); assert.equal(h.calls.length,1);
+  details.open=true;await details.ontoggle();
+  assert.equal(h.calls.length,2);assert.equal(details.children[1].textContent,text);
+  assert.equal(details.children[1].innerHTML,'');
+  await details.ontoggle();assert.equal(h.calls.length,2);
+  await h.controller.refresh();
+  details=h.node('weatherAlertList').children[0].children[4];assert.equal(details.open,true);
+  await details.ontoggle();assert.equal(details.children[1].textContent,text);
+});
+test('Canadian detail failures retain the warning and allow retry; location changes cancel pending text',async()=>{
+  const h=harness(); let fail=true;
+  h.setFetch(async url=>{
+    if(url.includes('/weather-alerts/')) {if(fail)throw Error('Offline');return response(bulletin('Official text'));}
+    return response(feed([alert({url:{en:bulletinURL}})]));
+  });
+  await h.controller.setLocation(victoria);
+  const details=h.node('weatherAlertList').children[0].children[4];details.open=true;await details.ontoggle();
+  assert.equal(h.node('weatherAlerts').hidden,false);assert.match(details.children[1].textContent,/could not be loaded/);
+  details.open=false;await details.ontoggle();fail=false;details.open=true;await details.ontoggle();
+  assert.equal(details.children[1].textContent,'Official text');
+  await h.controller.refresh();const next=h.node('weatherAlertList').children[0].children[4];
+  let resolve;h.setFetch(()=>new Promise(r=>resolve=r));next.open=true;const pending=next.ontoggle();
+  const request=h.calls.at(-1);
+  await h.controller.setLocation({country:'NO',name:'Oslo'});assert.equal(request.signal.aborted,true);
+  resolve(response(bulletin('Late text')));await pending;
+  assert.equal(h.node('weatherAlertList').children.length,0);assert.equal(h.timers.size,0);
 });
