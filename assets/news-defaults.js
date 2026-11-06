@@ -4,21 +4,23 @@
   else root.GregleNewsDefaults = factory();
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  const version = 1;
+  const version = 2;
   const feeds = [
     {name:'BBC News',url:'https://feeds.bbci.co.uk/news/rss.xml',folder:''},
     {name:'SVT Nyheter',url:'https://www.svt.se/nyheter/rss.xml',folder:''},
     {name:'NRK',url:'https://www.nrk.no/toppsaker.rss',folder:''},
     {name:'Reuters',url:'https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-CA&gl=CA&ceid=CA%3Aen',folder:''},
     {name:'CBC News',url:'https://www.cbc.ca/webfeed/rss/rss-topstories',folder:''},
-    {name:'DW Deutsch',url:'https://rss.dw.com/xml/rss-de-all',folder:''}
+    {name:'DW Deutsch',url:'https://rss.dw.com/xml/rss-de-all',folder:''},
+    {name:'CHEK News',url:'https://cheknews.ca/feed/',folder:'',since:2},
+    {name:'Radio-Canada Info',url:'https://ici.radio-canada.ca/info/rss/info/en-continu',folder:'',since:2}
   ];
   function apply(state) {
-    // Add the starter selection once; later removals and imported subscriptions stay intact.
+    // Add only newly introduced defaults; previously removed sources stay removed.
     if (state.defaultFeedsVersion >= version) return state;
     const known = new Set(state.feeds.map(feed => feed.url));
-    const missing = feeds.filter(feed => !known.has(feed.url));
-    return {...state,feeds:[...state.feeds,...missing.map(feed => ({...feed}))].slice(0,500),defaultFeedsVersion:version};
+    const missing = feeds.filter(feed => (feed.since || 1) > (state.defaultFeedsVersion || 0) && !known.has(feed.url));
+    return {...state,feeds:[...state.feeds,...missing.map(({since,...feed}) => ({...feed}))].slice(0,500),defaultFeedsVersion:version};
   }
   function snapshots(data,now=Date.now()) {
     const result=new Map();

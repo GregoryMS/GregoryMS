@@ -3,24 +3,36 @@ const assert=require('node:assert/strict');
 const defaults=require('../assets/news-defaults.js');
 
 const empty=()=>({feeds:[],articles:[],read:[],saved:[],updated:null});
-test('new readers start with the requested six sources and original-language feeds',()=>{
+test('new readers start with eight sources and original-language feeds',()=>{
   const state=defaults.apply(empty());
-  assert.deepEqual(state.feeds.map(f=>f.name),['BBC News','SVT Nyheter','NRK','Reuters','CBC News','DW Deutsch']);
+  assert.deepEqual(state.feeds.map(f=>f.name),['BBC News','SVT Nyheter','NRK','Reuters','CBC News','DW Deutsch','CHEK News','Radio-Canada Info']);
   assert.equal(state.feeds[1].url,'https://www.svt.se/nyheter/rss.xml');
   assert.equal(state.feeds[2].url,'https://www.nrk.no/toppsaker.rss');
   assert.equal(state.feeds[5].url,'https://rss.dw.com/xml/rss-de-all');
   const reuters=new URL(state.feeds[3].url);
   assert.equal(reuters.hostname,'news.google.com');
   assert.equal(reuters.searchParams.get('q'),'site:reuters.com');
-  assert.equal(new Set(state.feeds.map(f=>f.url)).size,6);
+  assert.equal(new Set(state.feeds.map(f=>f.url)).size,8);
+  assert.equal(state.feeds[6].url,'https://cheknews.ca/feed/');
+  assert.equal(state.feeds[7].url,'https://ici.radio-canada.ca/info/rss/info/en-continu');
 });
 test('existing subscriptions, names, folders, saved articles and read history survive migration',()=>{
   const existing={...empty(),feeds:[{...defaults.feeds[0],name:'My BBC',folder:'World'},{url:'https://example.com/rss',name:'Custom',folder:'Personal'}],articles:[{id:'saved-story'}],read:['saved-story'],saved:['saved-story'],updated:123};
   const migrated=defaults.apply(existing);
-  assert.equal(migrated.feeds.length,7);
+  assert.equal(migrated.feeds.length,9);
   assert.deepEqual(migrated.feeds.slice(0,2),existing.feeds);
   for(const key of ['articles','read','saved','updated'])assert.equal(migrated[key],existing[key]);
   assert.equal(existing.feeds.length,2);
+});
+test('existing readers receive only the two new defaults, without duplicates or restoring removed sources',()=>{
+  const existing={...empty(),defaultFeedsVersion:1,feeds:[{...defaults.feeds[6],name:'My CHEK',folder:'Local'}],read:['read'],saved:['saved']};
+  const migrated=defaults.apply(existing);
+  assert.deepEqual(migrated.feeds.map(f=>f.name),['My CHEK','Radio-Canada Info']);
+  assert.deepEqual(migrated.feeds[0],existing.feeds[0]);
+  assert.equal(migrated.saved,existing.saved);
+  assert.equal(migrated.read,existing.read);
+  assert.equal(defaults.apply(migrated),migrated);
+  assert.deepEqual(defaults.apply({...empty(),defaultFeedsVersion:1}).feeds.map(f=>f.name),['CHEK News','Radio-Canada Info']);
 });
 test('removed defaults stay removed after reload, including an intentionally empty reader',()=>{
   const migrated=defaults.apply(empty());

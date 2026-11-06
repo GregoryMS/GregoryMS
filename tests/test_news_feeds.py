@@ -99,8 +99,8 @@ class NewsFeedsTests(unittest.TestCase):
                 self.assertEqual(news.unavailable_sources(changed, now), ['cbc'])
         self.assertEqual(news.unavailable_sources({'feeds': []}, now), list(news.ALL_SOURCES))
 
-    def test_radio_canada_is_refreshed_without_changing_reader_defaults(self):
-        self.assertNotIn('radio-canada', news.SOURCES)
+    def test_radio_canada_is_refreshed_as_a_reader_default(self):
+        self.assertIn('radio-canada', news.SOURCES)
         snapshot, errors = news.update({}, lambda slug, url: XML)
         self.assertEqual(errors, [])
         radio_canada = next(feed for feed in snapshot['feeds']
@@ -148,4 +148,3 @@ class NewsFeedsTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
