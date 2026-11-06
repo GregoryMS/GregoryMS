@@ -126,19 +126,19 @@
       for (const request of detailRequests) request.abort();
       detailRequests.clear();
     }
-    function canadianDetails(alert) {
+    function canadianDetails(alert, dates, link) {
       const details = doc.createElement('details'), summary = doc.createElement('summary');
       const content = doc.createElement('p'), key = alert.url + '|' + alert.issued;
-      details.className = 'weather-alert-details'; summary.textContent = 'Warning details';
+      details.className = 'weather-alert-details'; summary.textContent = alert.title;
       content.textContent = 'Open to load the full Environment Canada bulletin.';
-      details.append(summary, content);
+      details.append(summary, dates, content, link);
       let loading = false, loaded = false;
       details.addEventListener('toggle', async () => {
         if (details.open) expanded.add(key); else expanded.delete(key);
         if (!details.open || loading || loaded) return;
         const url = canadianDetailsURL(alert);
         if (!url) {
-          content.textContent = 'Bulletin text is unavailable here. Use the Environment Canada alert link above.';
+          content.textContent = 'Bulletin text is unavailable here. Use the Environment Canada link below.';
           return;
         }
         const current = version, request = new win.AbortController();
@@ -150,7 +150,7 @@
           if (current !== version || alert.expires <= now()) return;
           content.textContent = canadianAlertText(data, alert, now()); loaded = true;
         } catch (_) {
-          if (current === version) content.textContent = 'The bulletin text could not be loaded. Use the Environment Canada alert link above, or close and reopen these details to retry.';
+          if (current === version) content.textContent = 'The bulletin text could not be loaded. Use the Environment Canada link below, or close and reopen these details to retry.';
         } finally {
           loading = false; detailRequests.delete(request); win.clearTimeout(timeout);
         }
@@ -165,25 +165,27 @@
       alerts = alerts.filter(alert => alert.expires > now());
       const cards = alerts.map(alert => {
         const card = doc.createElement('article'); card.className = 'weather-alert weather-alert--' + alert.colour;
-        const badge = doc.createElement('p'); badge.className = 'weather-alert-badge';
-        badge.textContent = (alert.colour === 'neutral' ? '' : alert.colour + ' ') + alert.type;
-        if (alert.weatherType) badge.textContent += ' · ' + alert.weatherType;
-        const title = doc.createElement('h3'); title.textContent = alert.title;
         const dates = doc.createElement('p'); dates.className = 'weather-alert-dates'; dates.textContent = 'Issued ' + timestamp(alert.issued);
         if (alert.starts) dates.textContent += ' · Valid ' + timestamp(alert.starts) + ' – ' + timestamp(alert.expires);
         const link = doc.createElement('a'); link.className = 'weather-alert-link'; link.href = alert.url || locationURL();
-        link.textContent = isUK() ? 'Read the Met Office warning ↗' : 'Read the Environment Canada alert ↗';
-        card.append(badge, title, dates, link);
-        if (!isUK()) card.append(canadianDetails(alert));
-        if (alert.details?.length) {
-          const details = doc.createElement('details'), summary = doc.createElement('summary');
-          details.className = 'weather-alert-details'; summary.textContent = 'Warning details'; details.append(summary);
-          for (const [label, text] of alert.details) {
+        link.textContent = isUK() ? 'Open Met Office ↗' : 'Open Environment Canada ↗';
+        let details;
+        if (!isUK()) {
+          details = canadianDetails(alert, dates, link);
+        } else {
+          details = doc.createElement('details'); details.className = 'weather-alert-details';
+          const summary = doc.createElement('summary'); summary.textContent = alert.title;
+          details.append(summary, dates);
+          for (const [label, text] of alert.details || []) {
             const heading = doc.createElement('h4'), content = doc.createElement('p');
             heading.textContent = label; content.textContent = text; details.append(heading, content);
           }
-          card.append(details);
+          details.append(link);
         }
+        const source = doc.createElement('p'); source.className = 'weather-alert-origin';
+        source.textContent = (isUK() ? 'Met Office' : 'Environment Canada') + ' · ' + (station?.name || location.name);
+        details.insertBefore(source, details.children[1]);
+        card.append(details);
         return card;
       });
       list.replaceChildren(...cards); section.hidden = cards.length === 0;

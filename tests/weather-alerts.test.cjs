@@ -48,6 +48,7 @@ function harness() {
   const nodes=new Map(), listeners={}, timers=new Map(), calls=[];
   let clock=NOW, nextTimer=0, fetchImpl=async()=>response(feed());
   const element = tag => ({tagName:tag,hidden:true,children:[],textContent:'',innerHTML:'',
+    insertBefore(child,before){this.children.splice(this.children.indexOf(before),0,child);},
     addEventListener(type,callback){this['on'+type]=callback;},
     append(...children){this.children.push(...children);}, replaceChildren(...children){this.children=children;}});
   const node=id=>{if(!nodes.has(id))nodes.set(id,element('div'));return nodes.get(id);};
@@ -67,8 +68,8 @@ test('cards use text safely, link to official details, and clear after cancellat
   await h.controller.setLocation(victoria);
   assert.equal(h.node('weatherAlerts').hidden,false);
   const card=h.node('weatherAlertList').children[0];
-  assert.equal(card.children[1].textContent,'<img src=x> warning'); assert.equal(card.children[1].innerHTML,'');
-  assert.match(card.children[3].href,/^https:\/\/weather.gc.ca\/en\/location/);
+  assert.equal(card.children[0].children[0].textContent,'<img src=x> warning'); assert.equal(card.children[0].children[0].innerHTML,'');
+  assert.match(card.children[0].children.at(-1).href,/^https:\/\/weather.gc.ca\/en\/location/);
   assert.match(h.node('weatherAlertLocation').textContent,/Victoria/);
   assert.equal(h.node('weatherAlertStatus').hidden,true);
   assert.ok([...h.timers.values()].some(timer=>timer.ms===REFRESH_MS));
@@ -166,14 +167,14 @@ test('UK cards use the same warning layout, official source, local times and pla
   await h.controller.setLocation(london);
   const card=h.node('weatherAlertList').children[0];
   assert.equal(card.className,'weather-alert weather-alert--amber');
-  assert.equal(card.children[0].textContent,'amber warning · WIND');
-  assert.equal(card.children[1].textContent,'<img src=x> wind warning');
-  assert.equal(card.children[1].innerHTML,'');
-  assert.match(card.children[2].textContent,/Issued .* · Valid .* – /);
-  assert.equal(card.children[3].href,'https://weather.metoffice.gov.uk/warnings-and-advice/uk-warnings');
-  assert.equal(card.children[3].textContent,'Read the Met Office warning ↗');
-  assert.equal(card.children[4].children[2].textContent,'<script>unsafe()</script>');
-  assert.equal(card.children[4].children[2].innerHTML,'');
+  const details=card.children[0];
+  assert.equal(details.children[0].textContent,'<img src=x> wind warning');
+  assert.equal(details.children[0].innerHTML,'');
+  assert.match(details.children[2].textContent,/Issued .* · Valid .* – /);
+  assert.equal(details.children.at(-1).href,'https://weather.metoffice.gov.uk/warnings-and-advice/uk-warnings');
+  assert.equal(details.children.at(-1).textContent,'Open Met Office ↗');
+  assert.equal(details.children[4].textContent,'<script>unsafe()</script>');
+  assert.equal(details.children[4].innerHTML,'');
   assert.equal(h.node('weatherAlertLocation').textContent,'Met Office Weather Warnings · London');
   assert.equal(h.node('ukWarningSource').hidden,false);
   assert.match(h.node('ukWarningCopyright').textContent,/© British Crown copyright 2026, Met Office/);
@@ -268,15 +269,17 @@ test('Canadian details load on expansion, preserve plain text, and remain open a
   const h=harness(),text='Strong winds.\n\n<script>not HTML</script>';
   h.setFetch(async url=>response(url.includes('/weather-alerts/')?bulletin(text):feed([alert({url:{en:bulletinURL}})])));
   await h.controller.setLocation(victoria);
-  let details=h.node('weatherAlertList').children[0].children[4];
+  let details=h.node('weatherAlertList').children[0].children[0];
   assert.equal(details.tagName,'details'); assert.equal(h.calls.length,1);
+  assert.equal(details.children.at(-1).textContent,'Open Environment Canada ↗');
+  assert.equal(details.children.at(-1).tagName,'a');
   details.open=true;await details.ontoggle();
-  assert.equal(h.calls.length,2);assert.equal(details.children[1].textContent,text);
-  assert.equal(details.children[1].innerHTML,'');
+  assert.equal(h.calls.length,2);assert.equal(details.children[3].textContent,text);
+  assert.equal(details.children[3].innerHTML,'');
   await details.ontoggle();assert.equal(h.calls.length,2);
   await h.controller.refresh();
-  details=h.node('weatherAlertList').children[0].children[4];assert.equal(details.open,true);
-  await details.ontoggle();assert.equal(details.children[1].textContent,text);
+  details=h.node('weatherAlertList').children[0].children[0];assert.equal(details.open,true);
+  await details.ontoggle();assert.equal(details.children[3].textContent,text);
 });
 test('Canadian detail failures retain the warning and allow retry; location changes cancel pending text',async()=>{
   const h=harness(); let fail=true;
@@ -285,11 +288,11 @@ test('Canadian detail failures retain the warning and allow retry; location chan
     return response(feed([alert({url:{en:bulletinURL}})]));
   });
   await h.controller.setLocation(victoria);
-  const details=h.node('weatherAlertList').children[0].children[4];details.open=true;await details.ontoggle();
-  assert.equal(h.node('weatherAlerts').hidden,false);assert.match(details.children[1].textContent,/could not be loaded/);
+  const details=h.node('weatherAlertList').children[0].children[0];details.open=true;await details.ontoggle();
+  assert.equal(h.node('weatherAlerts').hidden,false);assert.match(details.children[3].textContent,/could not be loaded/);
   details.open=false;await details.ontoggle();fail=false;details.open=true;await details.ontoggle();
-  assert.equal(details.children[1].textContent,'Official text');
-  await h.controller.refresh();const next=h.node('weatherAlertList').children[0].children[4];
+  assert.equal(details.children[3].textContent,'Official text');
+  await h.controller.refresh();const next=h.node('weatherAlertList').children[0].children[0];
   let resolve;h.setFetch(()=>new Promise(r=>resolve=r));next.open=true;const pending=next.ontoggle();
   const request=h.calls.at(-1);
   await h.controller.setLocation({country:'NO',name:'Oslo'});assert.equal(request.signal.aborted,true);
