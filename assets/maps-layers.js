@@ -3,11 +3,15 @@
   window.GregleMapLayers = ({ map, config, initial, notify, onChange, onOpen = () => {}, getSelected = () => null, onStreetViewOpen = () => {}, onStreetViewSelect = () => {}, onTrafficKeyChange = () => {} }) => {
     const core = window.GregleMaps, $ = id => document.getElementById(id);
     const panel = $('map-layers-panel'), toggle = $('map-layers-toggle'), embedToggle = $('embedded-layers-toggle');
+    const basePanel = $('map-base-panel'), baseToggle = $('map-base-toggle');
     const preferenceKey = 'gregle-maps-layers', credentialKey = 'gregle-maps-tomtom-key';
     let saved, apiKey = '', connectForRouting = false;
     const hasTrafficAccess = () => !!apiKey || config.serverTomTom === true;
     try { saved = JSON.parse(localStorage.getItem(preferenceKey)); apiKey = localStorage.getItem(credentialKey) || ''; } catch {}
     let state = core.normalizeLayers(initial || (saved?.ev === true && saved.teslaDefault !== true ? {...saved, tesla: true} : saved));
+    let pageDark = document.documentElement.classList.contains('dark-mode');
+    let lightBase = state.base === 'dark' ? 'street' : state.base;
+    if (pageDark) state.base = 'dark';
     const drivebc = window.GregleDriveBC({ map, notify });
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
     const signs = window.GregleDriveBCSigns({ map, config, notify });
@@ -51,23 +55,38 @@
       $(id).dataset.state = error ? 'error' : 'ready';
     };
     const openPanel = (keyForm = false, routingOnly = false) => {
-      panel.hidden = false; toggle.setAttribute('aria-expanded', 'true'); embedToggle.setAttribute('aria-expanded', 'true');
+      closeBasePanel();
+      panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
       onOpen();
       if (keyForm) {
         connectForRouting = routingOnly;
         tomtomMenu.setOpen(true, true);
         $('traffic-api-key').focus();
-      } else panel.querySelector('input[name="map-base"]:checked')?.focus({ preventScroll: true });
+      } else panel.querySelector('.map-overlay-options input:not([disabled]), .map-overlay-options button')?.focus({ preventScroll: true });
     };
     const closePanel = (restoreFocus = false) => {
-      panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); embedToggle.setAttribute('aria-expanded', 'false');
-      if (restoreFocus) (core.isEmbeddedBase(state.base) ? embedToggle : toggle).focus();
+      panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) toggle.focus();
     };
+    function closeBasePanel(restoreFocus = false) {
+      basePanel.hidden = true;
+      baseToggle.setAttribute('aria-expanded', 'false');
+      embedToggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) (core.isEmbeddedBase(state.base) ? embedToggle : baseToggle).focus();
+    }
+    function openBasePanel() {
+      closePanel();
+      basePanel.hidden = false;
+      baseToggle.setAttribute('aria-expanded', 'true');
+      embedToggle.setAttribute('aria-expanded', 'true');
+      onOpen('map-base-panel');
+      basePanel.querySelector('input[name="map-base"]:checked')?.focus({ preventScroll: true });
+    }
     const render = () => {
       const embedded = core.isEmbeddedBase(state.base), overlays = panel.querySelector('.map-overlay-options');
       overlays.hidden = embedded; overlays.disabled = embedded;
       $('layers-footnote').textContent = embedded ? `Use ${state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
-      panel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
+      basePanel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
       $('map-vessels').setAttribute('aria-checked', String(state.vessels));
@@ -271,13 +290,20 @@
     }
     const togglePanel = () => { if (panel.hidden || panel.inert || panel.closest?.('.map-drawer.is-compact')) openPanel(); else closePanel(); };
     toggle.addEventListener('click', togglePanel);
-    embedToggle.addEventListener('click', togglePanel);
+    const toggleBasePanel = () => { if (basePanel.hidden || basePanel.inert || basePanel.closest?.('.map-drawer.is-compact')) openBasePanel(); else closeBasePanel(); };
+    baseToggle.addEventListener('click', toggleBasePanel);
+    embedToggle.addEventListener('click', toggleBasePanel);
+    $('close-map-base').addEventListener('click', () => closeBasePanel(true));
+    document.addEventListener('click', event => {
+      if (!event.target.closest?.('#map-drawer') && !basePanel.hidden && !basePanel.contains(event.target) && !baseToggle.contains(event.target) && !embedToggle.contains(event.target)) closeBasePanel();
+    });
     $('close-map-layers').addEventListener('click', () => closePanel(true));
     document.addEventListener('click', event => { if (!event.target.closest?.('#map-drawer') && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target) && !embedToggle.contains(event.target)) closePanel(); });
     document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !basePanel.hidden) { event.preventDefault(); closeBasePanel(true); }
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
-    panel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
+    basePanel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
     $('map-fuel').addEventListener('change', () => setState({...state, fuel: $('map-fuel').checked}, true));
     $('fuel-type').addEventListener('change', () => setState({...state, fuelType: $('fuel-type').value}, true));
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));
@@ -334,9 +360,20 @@
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
     window.addEventListener('pageshow', event => { if (event.persisted && !core.isEmbeddedBase(state.base) && state.traffic && hasTrafficAccess() && !trafficPaused) loadTraffic(); });
     setState(state);
+    new MutationObserver(() => {
+      const dark = document.documentElement.classList.contains('dark-mode');
+      if (dark === pageDark) return;
+      pageDark = dark;
+      if (dark) {
+        lightBase = state.base === 'dark' ? 'street' : state.base;
+        setState({ ...state, base: 'dark' }, true);
+      } else if (state.base === 'dark') {
+        setState({ ...state, base: lightBase }, true);
+      }
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return { getState: () => ({ ...state }), setState: next => setState(next, false), connectTraffic: () => openPanel(true, true), openStreetView: point => {
       setState({ ...state, base: core.isEmbeddedBase(state.base) ? 'street' : state.base, streetview: true }, true);
-      closePanel(); onStreetViewOpen(); streetView.showAt(point);
+      closePanel(); closeBasePanel(); onStreetViewOpen(); streetView.showAt(point);
     } };
   };
 })();

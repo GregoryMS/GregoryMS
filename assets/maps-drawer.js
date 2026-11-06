@@ -7,7 +7,7 @@ window.GregleMapDrawer = ({ map }) => {
   const media = window.matchMedia('(max-width: 700px)');
   const definitions = [
     ['map-place', 'Place', 'clear-pin'], ['map-search-content', 'Search'],
-    ['map-directions', 'Directions', 'close-directions'], ['map-layers-panel', 'Layers', 'close-map-layers'],
+    ['map-directions', 'Directions', 'close-directions'], ['map-base-panel', 'Base map', 'close-map-base'], ['map-layers-panel', 'Layers', 'close-map-layers'],
     ['map-fuel-card', 'Fuel'], ['vessels-legend', 'Vessel key', 'close-vessels-legend'],
     ['map-feature-details', 'Details'], ['map-link-copy', 'Copy link', 'close-map-link'],
   ];

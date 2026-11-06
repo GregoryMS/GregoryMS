@@ -48,15 +48,15 @@
   <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261105-dark-basemap" defer></script>
+  <script src="assets/maps-layers.js?v=20261105-base-button" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261102-private-tomtom" defer></script>
   <script src="assets/maps-routing.js?v=20261102-private-tomtom" defer></script>
   <script src="assets/maps-navigation-live.js?v=20261102-private-tomtom" defer></script>
   <script src="assets/maps-navigation.js?v=20261103-mobile-ui" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
-  <script src="assets/maps-drawer.js?v=20261103-drawer-glass" defer></script>
-  <script src="assets/maps.js?v=20261103-mobile-ui" defer></script>
+  <script src="assets/maps-drawer.js?v=20261105-base-button" defer></script>
+  <script src="assets/maps.js?v=20261105-base-button" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -100,7 +100,7 @@
       <div class="streetview-footer"><span id="streetview-coordinates"></span><button id="streetview-center" type="button">Use map centre</button><button id="streetview-retry" type="button">Reload</button></div>
     </section>
     <section class="embedded-map" id="embedded-map" aria-label="Embedded map" hidden>
-      <div class="embedded-toolbar"><strong id="embedded-title">Embedded map</strong><a id="embedded-full-map" href="https://www.plugshare.com/" target="_blank" rel="noopener">Open full map ↗</a><button id="embedded-layers-toggle" type="button" aria-expanded="false" aria-controls="map-layers-panel">Change map</button></div>
+      <div class="embedded-toolbar"><strong id="embedded-title">Embedded map</strong><a id="embedded-full-map" href="https://www.plugshare.com/" target="_blank" rel="noopener">Open full map ↗</a><button id="embedded-layers-toggle" type="button" aria-expanded="false" aria-controls="map-base-panel">Change map</button></div>
       <div class="embedded-frame" id="embedded-frame"><p class="map-glass" id="embedded-status" role="status" hidden></p><p class="map-glass" id="embedded-zoom-help" role="status" hidden>Use two-finger scrolling or the map’s zoom controls to zoom.</p></div>
     </section>
     <section class="map-search map-glass" aria-label="Find a place">
@@ -144,6 +144,7 @@
     </section>
     <div class="map-actions" role="group" aria-label="Map tools">
       <button class="map-icon-button" id="map-directions-toggle" type="button" aria-label="Directions" aria-expanded="false" aria-controls="map-directions" title="Directions" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/></svg></button>
+      <button class="map-icon-button" id="map-base-toggle" type="button" aria-label="Base map" aria-expanded="false" aria-controls="map-base-panel" title="Base map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/></svg></button>
       <button class="map-icon-button" id="map-layers-toggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="map-layers-panel" title="Map layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
       <button class="map-icon-button" id="map-locate" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button>
       <button class="map-icon-button" id="map-share" type="button" aria-label="Copy map link" title="Copy map link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 1)"/></svg></button>
@@ -155,8 +156,8 @@
       <ul class="vessels-legend-list" id="vessels-legend-list"></ul>
       <p>Colours show the reported AIS vessel type. Ferries use Passenger. Grey means other or unreported. A circle means the heading is unknown.</p>
     </section>
-    <section class="map-layers-panel map-glass" id="map-layers-panel" aria-labelledby="map-layers-heading" hidden>
-      <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><div id="car-layers-zoom" class="car-layers-zoom" role="group" aria-label="Map zoom" hidden></div><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
+    <section class="map-layers-panel map-base-panel map-glass" id="map-base-panel" aria-labelledby="map-base-heading" hidden>
+      <div class="layers-heading"><h2 id="map-base-heading">Base map</h2><button class="map-dismiss" id="close-map-base" type="button" aria-label="Close base map">×</button></div>
       <fieldset class="map-base-options"><legend>Base map</legend>
         <label><input type="radio" name="map-base" value="street" checked><span><strong>Street</strong><small>OpenStreetMap</small></span></label>
         <label><input type="radio" name="map-base" value="dark"><span><strong>Dark</strong><small>OpenStreetMap · dark style</small></span></label>
@@ -165,6 +166,9 @@
         <label><input type="radio" name="map-base" value="adsbexchange"><span><strong>ADS-B Exchange</strong><small>Live aircraft map</small></span></label>
       </fieldset>
       <p class="layer-status" id="base-layer-status" role="status"></p>
+    </section>
+    <section class="map-layers-panel map-glass" id="map-layers-panel" aria-labelledby="map-layers-heading" hidden>
+      <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><div id="car-layers-zoom" class="car-layers-zoom" role="group" aria-label="Map zoom" hidden></div><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
       <fieldset class="map-overlay-options"><legend>Overlays</legend>
         <div class="map-live-toggles" role="group" aria-label="Live traffic">
           <div class="map-live-control"><button class="gregle-theme-switch map-live-switch" id="map-aircraft" type="button" role="switch" aria-label="Live planes" aria-checked="false" aria-controls="aircraft-options" aria-describedby="aircraft-layer-status" title="Live planes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a1.5 1.5 0 0 0-1.5 1.5V9L3 14v2l7.5-2.5V19L8 21v1l4-1 4 1v-1l-2.5-2v-5.5L21 16v-2l-7.5-5V3.5A1.5 1.5 0 0 0 12 2Z"/></svg></button></div>
