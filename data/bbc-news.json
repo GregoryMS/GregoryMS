@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-06T03:35:38+00:00",
-  "fetchedAt": "2026-11-06T03:35:43.486502+00:00",
+  "feedUpdatedAt": "2026-11-06T11:25:16+00:00",
+  "fetchedAt": "2026-11-06T11:25:24.810747+00:00",
   "items": [
     {
-      "title": "Russell Brand found guilty of rape and sexual assault",
-      "link": "https://www.bbc.co.uk/news/articles/ckyvrze96y70o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Global tech stocks plunge as US midterms add to AI slowdown fears",
-      "link": "https://www.bbc.co.uk/news/articles/cmn04705rd8jo?at_medium=RSS&at_campaign=rss"
+      "title": "Did a data centre revolt affect the US midterm election results?",
+      "link": "https://www.bbc.co.uk/news/articles/crvg9yyz5437o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Met chief warns policing 'heading for failure' without reform",
       "link": "https://www.bbc.co.uk/news/articles/cvglww2r307ko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Firms told to publish salaries in job adverts ahead of new law",
+      "title": "'Misleading' student loans information left out examples of higher-salary repayments",
+      "link": "https://www.bbc.co.uk/news/articles/cqde8prpdge3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Firms should publish salaries in job adverts ahead of new law, says PM",
       "link": "https://www.bbc.co.uk/news/articles/cmd9343z3zw2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "California governor commutes sentences for state's 548 death row inmates",
-      "link": "https://www.bbc.co.uk/news/articles/cqrkyyd2j8mvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Thatcher's Right to Buy split my estate. Now its days could be numbered",
+      "title": "Thatcher's Right to Buy created a generation of homeowners - did it also fuel the housing crisis?",
       "link": "https://www.bbc.co.uk/news/articles/c699zde85xn7o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "White House denies Hegseth and Rubio to leave jobs after Republican election losses",
-      "link": "https://www.bbc.co.uk/news/articles/cqg7xxg4jdv5o?at_medium=RSS&at_campaign=rss"
+      "title": "Could the earliest weakening of the polar vortex on record bring UK snow?",
+      "link": "https://www.bbc.co.uk/weather/articles/cwyvrz09mnd6o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trump signs order preventing future presidents from changing Oval Office",
+      "title": "Met Police boss 'wouldn't be surprised' if more allegations made about Brand",
+      "link": "https://www.bbc.co.uk/news/articles/cmly00r44jgvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Two boys charged over Halloween party stabbings",
+      "link": "https://www.bbc.co.uk/news/articles/c8qlnx4x349zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Trump signs order to preserve Oval Office as national monument",
       "link": "https://www.bbc.co.uk/news/articles/cmy0eeg101djo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "King relishes 'politically charged' deployments, Palace aide says",
-      "link": "https://www.bbc.co.uk/news/articles/c8n5vvr906dvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Andrew received up to £2,000 per month from sub-letting, watchdog reports",
-      "link": "https://www.bbc.co.uk/news/articles/c6m2d7vpd0meo?at_medium=RSS&at_campaign=rss"
+      "title": "Chris vs Chris: Who's running and what's at stake this New Zealand election",
+      "link": "https://www.bbc.co.uk/news/videos/cr86zxe1q5j3o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
