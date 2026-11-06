@@ -1,23 +1,31 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-05T23:56:49+00:00",
-  "fetchedAt": "2026-11-05T23:56:56.539296+00:00",
+  "feedUpdatedAt": "2026-11-06T06:36:28+00:00",
+  "fetchedAt": "2026-11-06T06:36:37.258148+00:00",
   "items": [
     {
       "title": "A bitter end for Ronaldo - the icon who transformed Portugal",
       "link": "https://www.bbc.co.uk/sport/football/articles/ckn9rwr2zzpvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "What new Kane deal means for England and the Premier League record",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm93zvzzl33zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "England check on Palmer - what are Tuchel's other big choices?",
       "link": "https://www.bbc.co.uk/sport/football/articles/cw4g1rdn2nl8o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Duran & Osmand spark Celtic into life - but where does that leave Hogh?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cwd099ez7z4yo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Putting his doubters in their place' - Rooney lands pundit of year award",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ck4g1l4nj85zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "'I don't fear for my safety from online abuse - because we're so used to it'",
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cmq8nn2q01wdo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "What new Kane deal means for England and the Premier League record",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm93zvzzl33zo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Anderson could be given chance to join Surrey",
@@ -32,16 +40,8 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/cwg5jj6nvmnyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Everton's Grealish unavailable again after 'breach of discipline'",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm79p020d9yvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Keep or sell Konsa? - FPL gameweek 10 dilemmas",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm4g112qp051o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Sutton's predictions v Football Manager, the game",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ck5ynzry64p2o?at_medium=RSS&at_campaign=rss"
+      "title": "Who am I? Plus today's other quizzes",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm78p02288epo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
