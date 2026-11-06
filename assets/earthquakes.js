@@ -12,7 +12,7 @@
 
   function initialiseMap() {
     if (!window.L) { $('map-message').hidden = false; $('map-message').textContent = 'The map could not load. Earthquake details remain available in the list and on USGS.'; $('coast-view').disabled = true; $('world-view').disabled = true; return; }
-    map = L.map('quake-map', { scrollWheelZoom:false, worldCopyJump:true, minZoom:2 }).setView([46,-129],4);
+    map = L.map('quake-map', { scrollWheelZoom:true, worldCopyJump:true, minZoom:2 }).setView([46,-129],4);
     quakeLayer = L.layerGroup().addTo(map); tsunamiLayer = L.layerGroup().addTo(map);
     function mapTheme() {
       if (tiles) map.removeLayer(tiles);
