@@ -85,7 +85,7 @@
     const render = () => {
       const embedded = core.isEmbeddedBase(state.base), overlays = panel.querySelector('.map-overlay-options');
       overlays.hidden = embedded; overlays.disabled = embedded;
-      $('layers-footnote').textContent = embedded ? `Use ${state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
+      $('layers-footnote').textContent = embedded ? `Use ${state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
       basePanel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
@@ -131,7 +131,7 @@
     function changeBase() {
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
       embed.setBase(state.base);
-      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
+      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
       const topographic = state.base === 'topographic', dark = state.base === 'dark';
       const layer = L.tileLayer(topographic ? config.topographicURL : config.tileURL, {
         ...layerOptions, maxNativeZoom: topographic ? 17 : 19,

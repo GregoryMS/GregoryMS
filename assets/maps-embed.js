@@ -6,6 +6,7 @@
     const zoomHelp = $('embedded-zoom-help');
     const providers = {
       plugshare: { name: 'PlugShare', title: 'PlugShare EV charging stations', full: core.plugshareURL, embed: core.plugshareEmbedURL, allow: 'geolocation; fullscreen' },
+      shademap: { name: 'ShadeMap', title: 'ShadeMap sunlight and shadow map', full: core.shadeMapURL, embed: core.shadeMapURL, allow: 'fullscreen' },
       adsbexchange: { name: 'ADS-B Exchange', title: 'ADS-B Exchange live aircraft map', full: core.adsbExchangeURL, embed: core.adsbExchangeEmbedURL, allow: 'fullscreen' }
     };
     let base = null, frame, timer, helpTimer, viewKey;
