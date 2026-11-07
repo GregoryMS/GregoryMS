@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-07T06:20:12+00:00",
-  "fetchedAt": "2026-11-07T06:20:26.803771+00:00",
+  "feedUpdatedAt": "2026-11-07T13:23:15+00:00",
+  "fetchedAt": "2026-11-07T13:23:19.208763+00:00",
   "items": [
+    {
+      "title": "I left Man City for my mental wellbeing - Trafford",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ckly00wq495zo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Whole Australia team knew of sandpaper use - Khawaja",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/cjdx33kyzk3lo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "England 'disappointment' fuels Dewsbury-Hall's Everton heroics",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm4g114p9e7go?at_medium=RSS&at_campaign=rss"
+      "title": "Ponga-inspired New Zealand reach World Cup final",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cmvgx2e78xrro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Lampard feels hair pull should have led to Coventry penalty",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cr15jj0yy8xeo?at_medium=RSS&at_campaign=rss"
+      "title": "Non-league's greatest giant-killers eye another scalp",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqev332mv1lyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Ferrari's Hamilton-Leclerc problem - and other F1 stories to follow",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/cm62y4283534o?at_medium=RSS&at_campaign=rss"
+      "title": "My dream is to win Ballon d'Or - Gabriel",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmy4x9yq3xg3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "New Zealand sweep aside Samoa to reach Women's World Cup final",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/c680zz8k3nvvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Buatsi v Hutchinson 2 - world light-heavyweight title fight predictions",
+      "link": "https://www.bbc.co.uk/sport/boxing/articles/c674pek0yd2jo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Six tries and a big win - but were Ireland ruthless?",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmde88ppx39go?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "WTA chair apologises to Pegula for airing of 'diva' comment",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/ckpdgg87ye3po?at_medium=RSS&at_campaign=rss"
+      "title": "Who am I? Plus today's other quizzes",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cwg5jj21e519o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Barry scores twice as Everton fight back to beat Coventry",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c62l44geqvlyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Is Palmer's England career over under Tuchel?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c9e8ll62rp68o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'A beautiful story' as Bellingham brothers called up",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c5x2vvjy2rpeo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Alcaraz beats Fritz to help Jodar reach ATP finals",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/c6e9lldl3lpjo?at_medium=RSS&at_campaign=rss"
+      "title": "Lampard feels hair pull should have led to Coventry penalty",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cr15jj0yy8xeo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
