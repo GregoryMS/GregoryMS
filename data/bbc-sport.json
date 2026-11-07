@@ -1,8 +1,12 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-07T00:20:53+00:00",
-  "fetchedAt": "2026-11-07T00:20:59.342139+00:00",
+  "feedUpdatedAt": "2026-11-07T06:20:12+00:00",
+  "fetchedAt": "2026-11-07T06:20:26.803771+00:00",
   "items": [
+    {
+      "title": "Whole Australia team knew of sandpaper use - Khawaja",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cjdx33kyzk3lo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "England 'disappointment' fuels Dewsbury-Hall's Everton heroics",
       "link": "https://www.bbc.co.uk/sport/football/articles/cm4g114p9e7go?at_medium=RSS&at_campaign=rss"
@@ -10,10 +14,6 @@
     {
       "title": "Lampard feels hair pull should have led to Coventry penalty",
       "link": "https://www.bbc.co.uk/sport/football/articles/cr15jj0yy8xeo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Whole Australia team knew of sandpaper use - Khawaja",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/cjdx33kyzk3lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Ferrari's Hamilton-Leclerc problem - and other F1 stories to follow",
