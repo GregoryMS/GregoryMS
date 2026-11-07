@@ -1,11 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-07T19:39:13+00:00",
-  "fetchedAt": "2026-11-07T19:39:15.424881+00:00",
+  "feedUpdatedAt": "2026-11-07T23:05:36+00:00",
+  "fetchedAt": "2026-11-07T23:05:39.362323+00:00",
   "items": [
     {
-      "title": "What we know about Krakow mass shooting so far",
+      "title": "What we know so far after Krakow gun attack",
       "link": "https://www.bbc.co.uk/news/articles/cmd7q15drwgeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Israel's president tasks opposition leader Eisenkot with forming government",
+      "link": "https://www.bbc.co.uk/news/articles/cmy8367lj5xlo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "UK cannot 'cherry pick' EU single market deal, Barnier tells BBC",
@@ -28,20 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/ck5ynnj05z8no?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Can New Zealand's new government win over disillusioned voters?",
+      "link": "https://www.bbc.co.uk/news/articles/cxr5yyg2nj9eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Relief, tears and sadness: Married at First Sight UK cast react to show being axed",
       "link": "https://www.bbc.co.uk/news/articles/crx233lx94n7o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "This man refused life-saving treatment because of his religion - days later the rules changed",
-      "link": "https://www.bbc.co.uk/news/articles/cx5ynly549njo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "No clear winner after tight New Zealand general election",
       "link": "https://www.bbc.co.uk/news/articles/c3ewev11g1e0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Dolly Parton's manager drops lawsuit against her nephew",
-      "link": "https://www.bbc.co.uk/news/articles/cmkgekz0r0v9o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
