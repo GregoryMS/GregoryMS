@@ -1,23 +1,19 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-06T23:14:12+00:00",
-  "fetchedAt": "2026-11-06T23:14:16.669161+00:00",
+  "feedUpdatedAt": "2026-11-07T02:51:37+00:00",
+  "fetchedAt": "2026-11-07T02:51:46.901497+00:00",
   "items": [
     {
       "title": "Meghan's father Thomas Markle appears in court over child sex abuse material",
       "link": "https://www.bbc.co.uk/news/articles/cqgkvv8m8pgyo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "With Stephen Miller pick, Trump readies for a battle",
+      "link": "https://www.bbc.co.uk/news/articles/crp3gg2z171go?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Brand's barrister refers himself to regulator after report he confronted journalist",
       "link": "https://www.bbc.co.uk/news/articles/c8kgee9yxvn7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "How 2000s lad culture helped Russell Brand to hide in plain sight",
-      "link": "https://www.bbc.co.uk/news/articles/cm4g1jqwylvgo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Trump replaces White House chief of staff days after Republicans suffer midterm defeats",
-      "link": "https://www.bbc.co.uk/news/articles/cm9qzz5x9g5yo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "New wave of bomb threats hit European airlines",
@@ -28,20 +24,24 @@
       "link": "https://www.bbc.co.uk/news/articles/c8p3gg2ex4wlo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Child, 6, dies weeks after Waterford arson attack",
-      "link": "https://www.bbc.co.uk/news/articles/c62e99vm8ll7o?at_medium=RSS&at_campaign=rss"
+      "title": "What happens if all the lights go out? This is the plan for a 'Black Sky' event",
+      "link": "https://www.bbc.co.uk/news/articles/ck5ynnj05z8no?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Watch: Is it the end of the road for Tesla's Cybertruck?",
       "link": "https://www.bbc.co.uk/news/videos/cv8ezz9ll7nyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Manhunt after boy injured by sword, sparking Gloucester school lockdowns",
-      "link": "https://www.bbc.co.uk/news/articles/c6ly3343yj5po?at_medium=RSS&at_campaign=rss"
+      "title": "Paraguay's president impeached after collapse of bank",
+      "link": "https://www.bbc.co.uk/news/articles/c68jzzvjgdy9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Judge blocks construction of Trump's massive arch after federal agency approval",
-      "link": "https://www.bbc.co.uk/news/articles/cq99zd93ryvko?at_medium=RSS&at_campaign=rss"
+      "title": "Gladiator II stuntman sues over injuries from on-set explosion",
+      "link": "https://www.bbc.co.uk/news/articles/ck9dzwd85235o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Man, 41, and boy, 16, arrested after car damaged by gunshots",
+      "link": "https://www.bbc.co.uk/news/articles/cw0k00rp2e35o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
