@@ -1,31 +1,31 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-07T15:42:21+00:00",
-  "fetchedAt": "2026-11-07T15:42:31.837427+00:00",
+  "feedUpdatedAt": "2026-11-07T19:39:13+00:00",
+  "fetchedAt": "2026-11-07T19:39:15.424881+00:00",
   "items": [
+    {
+      "title": "What we know about Krakow mass shooting so far",
+      "link": "https://www.bbc.co.uk/news/articles/cmd7q15drwgeo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "UK cannot 'cherry pick' EU single market deal, Barnier tells BBC",
       "link": "https://www.bbc.co.uk/news/articles/c9kgjj206nzpo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Victims in rape cases must not feel like they are on trial, Burnham says",
-      "link": "https://www.bbc.co.uk/news/articles/crgj99j8y998o?at_medium=RSS&at_campaign=rss"
+      "title": "Andy Burnham wants to get closer to the EU - but he shouldn't expect a smooth ride",
+      "link": "https://www.bbc.co.uk/news/articles/cwjdmm0z74plo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Two men arrested after boy injured in sword attack",
-      "link": "https://www.bbc.co.uk/news/articles/cmwy99yzd0v9o?at_medium=RSS&at_campaign=rss"
+      "title": "Tens of thousands of tents flooded after heavy rains in Gaza",
+      "link": "https://www.bbc.co.uk/news/articles/cx240e5py64jo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Dana, please take the job!' - Trump asks UFC boss to be White House press secretary",
+      "link": "https://www.bbc.co.uk/news/articles/cvze47p9jeexo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "What happens if all the lights go out? This is the plan for a 'Black Sky' event",
       "link": "https://www.bbc.co.uk/news/articles/ck5ynnj05z8no?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "No clear winner after tight New Zealand general election",
-      "link": "https://www.bbc.co.uk/news/articles/c3ewev11g1e0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Monty Don bids 'final goodbye' to Gardeners' World after two decades",
-      "link": "https://www.bbc.co.uk/news/articles/c6wyrrwj9xlro?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Relief, tears and sadness: Married at First Sight UK cast react to show being axed",
@@ -36,12 +36,12 @@
       "link": "https://www.bbc.co.uk/news/articles/cx5ynly549njo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'My mortgage is going up £200': How rising interest rates are hitting people's pockets",
-      "link": "https://www.bbc.co.uk/news/articles/c617kjqjvk12o?at_medium=RSS&at_campaign=rss"
+      "title": "No clear winner after tight New Zealand general election",
+      "link": "https://www.bbc.co.uk/news/articles/c3ewev11g1e0o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "One of the year's most prolific meteor showers to light up the night sky this weekend",
-      "link": "https://www.bbc.co.uk/weather/articles/cmlykqq7zg9zo?at_medium=RSS&at_campaign=rss"
+      "title": "Dolly Parton's manager drops lawsuit against her nephew",
+      "link": "https://www.bbc.co.uk/news/articles/cmkgekz0r0v9o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
