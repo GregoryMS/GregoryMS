@@ -1,8 +1,36 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-06T20:36:45+00:00",
-  "fetchedAt": "2026-11-06T20:36:55.383568+00:00",
+  "feedUpdatedAt": "2026-11-07T00:20:53+00:00",
+  "fetchedAt": "2026-11-07T00:20:59.342139+00:00",
   "items": [
+    {
+      "title": "England 'disappointment' fuels Dewsbury-Hall's Everton heroics",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm4g114p9e7go?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Lampard feels hair pull should have led to Coventry penalty",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cr15jj0yy8xeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Whole Australia team knew of sandpaper use - Khawaja",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cjdx33kyzk3lo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Ferrari's Hamilton-Leclerc problem - and other F1 stories to follow",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cm62y4283534o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Six tries and a big win - but were Ireland ruthless?",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmde88ppx39go?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "WTA chair apologises to Pegula for airing of 'diva' comment",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/ckpdgg87ye3po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Barry scores twice as Everton fight back to beat Coventry",
+      "link": "https://www.bbc.co.uk/sport/football/videos/c62l44geqvlyo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Is Palmer's England career over under Tuchel?",
       "link": "https://www.bbc.co.uk/sport/football/articles/c9e8ll62rp68o?at_medium=RSS&at_campaign=rss"
@@ -12,36 +40,8 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c5x2vvjy2rpeo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Player-coach rift report will only galvanise England - George",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmx2qqyz4p1po?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Has Anderson lived up to the hype after Man City move?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqde8w0k2pz1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Scotland come full circle for another crack at All Blacks",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cw62yy06dejzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "The Fifa hopeful hoping to take Infantino down with 'samurai spirit'",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmwyvv7pkqrno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Portugal coach 'knew nothing' about Ronaldo retiring",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cwzd66r22j68o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Two-year ban for 'Clicky Ponting' cricketer",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c62keenz7dzjo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "McIlroy fires 63 to move into Abu Dhabi contention",
-      "link": "https://www.bbc.co.uk/sport/golf/articles/cq78ppmj0zm3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Westwood worried for DP World Tour after LIV collapse",
-      "link": "https://www.bbc.co.uk/sport/golf/articles/cwm244d55pdpo?at_medium=RSS&at_campaign=rss"
+      "title": "Alcaraz beats Fritz to help Jodar reach ATP finals",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/c6e9lldl3lpjo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
