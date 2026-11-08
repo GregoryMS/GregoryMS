@@ -1,8 +1,32 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-08T07:57:46+00:00",
-  "fetchedAt": "2026-11-08T07:57:57.533417+00:00",
+  "feedUpdatedAt": "2026-11-08T15:09:09+00:00",
+  "fetchedAt": "2026-11-08T15:09:18.055841+00:00",
   "items": [
+    {
+      "title": "'That's Reece' - World Cup semi-final brings out best and worst of Walsh",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cm93zrw2wz9go?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "I haven't thrown anyone under the bus - Khawaja",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/c65yn1j4lrgno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'I can't believe he is one of us' - inside Salah's life in Trabzon",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmwyqzy934lxo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "The oldest club in London making FA Cup history",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cv8ez3pe5x41o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Australia reach World Cup final after Fiji scare",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/c6vg02klk084o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Rahm pips Hatton & McIlroy to Abu Dhabi title",
+      "link": "https://www.bbc.co.uk/sport/golf/articles/c6y0exdrp2xeo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Delap double inspires Forest to stunning win over Man City",
       "link": "https://www.bbc.co.uk/sport/football/videos/crp3gewxj77eo?at_medium=RSS&at_campaign=rss"
@@ -18,30 +42,6 @@
     {
       "title": "Muniz strike denies Newcastle and Jaissle much-needed win",
       "link": "https://www.bbc.co.uk/sport/football/videos/cm2d69p2x3g7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Barry scores twice as Everton fight back to beat Coventry",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c62l44geqvlyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Maresca's dream start turns into nightmare as title hopes hit",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm93z0l03n8vo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Another 1-0 for relentless Arsenal - but did Odegaard spare VAR blushes?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6rmyg7xpnj1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Qualifying conditions borderline - but Norris and Russell hoping for more rain",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmde81d9nkxko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'The worst conditions in my 35-year career' - commentating in the FA Cup fog",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqev3rdvyvm1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Hutchinson beats Buatsi to win WBC light-heavyweight title",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/cqx2vw8demexo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
