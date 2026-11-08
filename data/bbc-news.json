@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-08T02:20:18+00:00",
-  "fetchedAt": "2026-11-08T02:20:21.207563+00:00",
+  "feedUpdatedAt": "2026-11-08T09:10:00+00:00",
+  "fetchedAt": "2026-11-08T09:10:05.416516+00:00",
   "items": [
     {
-      "title": "Briton among six killed in 'far-right' shooting in Krakow",
-      "link": "https://www.bbc.co.uk/news/articles/c6n9r01d2709o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Israel's president tasks opposition leader Eisenkot with forming government",
-      "link": "https://www.bbc.co.uk/news/articles/cmy8367lj5xlo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Germans wrestle with what to do with Hitler's destroyed Eagle's Nest retreat",
-      "link": "https://www.bbc.co.uk/news/articles/cm74pk1g51nko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Andy Burnham wants to get closer to the EU - but he shouldn't expect a smooth ride",
-      "link": "https://www.bbc.co.uk/news/articles/cwjdmm0z74plo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'Dana, please take the job!' - Trump asks UFC boss to be White House press secretary",
-      "link": "https://www.bbc.co.uk/news/articles/cvze47p9jeexo?at_medium=RSS&at_campaign=rss"
+      "title": "Veterans shouldn't sleep rough this Christmas, Burnham says",
+      "link": "https://www.bbc.co.uk/news/articles/c6pwg4ddwkzeo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Royal Family join veterans and families at Festival of Remembrance",
       "link": "https://www.bbc.co.uk/news/articles/cxvgd2nr3e30o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Gaza wedding festival sees 250 couples married at the same time",
-      "link": "https://www.bbc.co.uk/news/videos/ckr5ygm78j76o?at_medium=RSS&at_campaign=rss"
+      "title": "Two seriously hurt in 30-vehicle crash on the M20 in Kent",
+      "link": "https://www.bbc.co.uk/news/articles/ck87z9exex2lo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Germans wrestle with what to do with Hitler's destroyed Eagle's Nest retreat",
+      "link": "https://www.bbc.co.uk/news/articles/cm74pk1g51nko?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "My parents chose to die together and I was left to grieve alone",
       "link": "https://www.bbc.co.uk/news/articles/c81dwllzv113o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Labubu hype seemed unstoppable, now the fluffy monster mania is dying",
+      "title": "Andy Burnham wants to get closer to the EU - but he shouldn't expect a smooth ride",
+      "link": "https://www.bbc.co.uk/news/articles/cwjdmm0z74plo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Labubu hype seemed unstoppable, now the fluffy monster mania is fading",
       "link": "https://www.bbc.co.uk/news/articles/cmvg652l927lo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Can the Zelda remake capture the magic of the original?",
+      "link": "https://www.bbc.co.uk/news/articles/cm8xznl0n1q4o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Ambika Mod says the 'glass ceiling is always getting higher' for South Asian actors",
       "link": "https://www.bbc.co.uk/news/articles/c6rmy9jvgwleo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Soap operas on steroids': Microdramas are going mainstream",
+      "link": "https://www.bbc.co.uk/news/articles/cm87zv70jg9no?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
