@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-08T01:27:11+00:00",
-  "fetchedAt": "2026-11-08T01:27:21.193946+00:00",
+  "feedUpdatedAt": "2026-11-08T07:57:46+00:00",
+  "fetchedAt": "2026-11-08T07:57:57.533417+00:00",
   "items": [
     {
       "title": "Delap double inspires Forest to stunning win over Man City",
@@ -36,12 +36,12 @@
       "link": "https://www.bbc.co.uk/sport/formula1/articles/cmde81d9nkxko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Hutchinson beats Buatsi to win WBC light-heavyweight title",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/cqx2vw8demexo?at_medium=RSS&at_campaign=rss"
+      "title": "'The worst conditions in my 35-year career' - commentating in the FA Cup fog",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqev3rdvyvm1o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Wales let themselves down despite win - Lake",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/crgj9323we9go?at_medium=RSS&at_campaign=rss"
+      "title": "Hutchinson beats Buatsi to win WBC light-heavyweight title",
+      "link": "https://www.bbc.co.uk/sport/boxing/articles/cqx2vw8demexo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
