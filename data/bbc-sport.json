@@ -1,12 +1,8 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-07T22:08:37+00:00",
-  "fetchedAt": "2026-11-07T22:08:48.159278+00:00",
+  "feedUpdatedAt": "2026-11-08T01:27:11+00:00",
+  "fetchedAt": "2026-11-08T01:27:21.193946+00:00",
   "items": [
-    {
-      "title": "Match of the Day",
-      "link": "https://www.bbc.co.uk/iplayer/episode/l00592bk?at_medium=RSS&at_campaign=rss"
-    },
     {
       "title": "Delap double inspires Forest to stunning win over Man City",
       "link": "https://www.bbc.co.uk/sport/football/videos/crp3gewxj77eo?at_medium=RSS&at_campaign=rss"
@@ -36,8 +32,12 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c6rmyg7xpnj1o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Norris takes pole in rain-delayed qualifying",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c6gell5l7l3zo?at_medium=RSS&at_campaign=rss"
+      "title": "Qualifying conditions borderline - but Norris and Russell hoping for more rain",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmde81d9nkxko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Hutchinson beats Buatsi to win WBC light-heavyweight title",
+      "link": "https://www.bbc.co.uk/sport/boxing/articles/cqx2vw8demexo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Wales let themselves down despite win - Lake",
