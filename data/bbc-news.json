@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-08T16:00:01+00:00",
-  "fetchedAt": "2026-11-08T16:00:07.672804+00:00",
+  "feedUpdatedAt": "2026-11-08T20:20:52+00:00",
+  "fetchedAt": "2026-11-08T20:21:04.356561+00:00",
   "items": [
+    {
+      "title": "Surgeon having lunch near Krakow shooting undoubtedly saved officer's life, colleague says",
+      "link": "https://www.bbc.co.uk/news/articles/c5x2vw4e1gx1o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "King leads solemn Remembrance Sunday service at Cenotaph",
       "link": "https://www.bbc.co.uk/news/articles/cqy8l0gyvvv2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: Royals and veterans reflect at Remembrance ceremony",
-      "link": "https://www.bbc.co.uk/news/videos/cw1l307v4edlo?at_medium=RSS&at_campaign=rss"
+      "title": "Seven dead and more than 100 injured after trains collide in Egypt",
+      "link": "https://www.bbc.co.uk/news/articles/cwvgr20mmmevo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Footage shows derailed carriages after fatal train crash in Egypt",
+      "link": "https://www.bbc.co.uk/news/videos/cw78p2km7d94o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Nandy defends linking Erasmus student scheme to Remembrance Sunday after backlash",
+      "link": "https://www.bbc.co.uk/news/articles/cmvg72p1zgvlo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "'Time is up': Minister warns media industry to take abuse seriously in wake of Brand case",
       "link": "https://www.bbc.co.uk/news/articles/ckn9r0zd0ynwo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Vinted and eBay could be included in under-16 social media ban, minister says",
+      "title": "Iran executes three men for 'armed unrest' after January protests",
+      "link": "https://www.bbc.co.uk/news/articles/ckly0ex633ydo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Government looking at banning under-16s from Vinted and eBay",
       "link": "https://www.bbc.co.uk/news/articles/cmzxjvpqrjxro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "My parents chose to die together and I was left to grieve alone",
-      "link": "https://www.bbc.co.uk/news/articles/c81dwllzv113o?at_medium=RSS&at_campaign=rss"
+      "title": "Homes and temples glow across India to mark Diwali",
+      "link": "https://www.bbc.co.uk/news/articles/cm70pdwz122ro?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "The Trump coalition is shattered - what will Republicans do now?",
-      "link": "https://www.bbc.co.uk/news/articles/cm3r5gnxqz3jo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "He spent $50,000 on Labubus but now the craze is dying",
-      "link": "https://www.bbc.co.uk/news/articles/cmvg652l927lo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Ambika Mod wants to change how South Asian women are seen on-screen",
-      "link": "https://www.bbc.co.uk/news/articles/c6rmy9jvgwleo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Can the Zelda remake capture the magic of the original?",
-      "link": "https://www.bbc.co.uk/news/articles/cm8xznl0n1q4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Microdramas: The 'snackable' shows made for the scrolling age",
-      "link": "https://www.bbc.co.uk/news/articles/cm87zv70jg9no?at_medium=RSS&at_campaign=rss"
+      "title": "Two arrested after police officers hurt in brawl outside bare-knuckle fighting event",
+      "link": "https://www.bbc.co.uk/news/articles/c8zxl9417e5vo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
