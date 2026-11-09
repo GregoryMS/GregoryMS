@@ -1,0 +1,926 @@
+{
+  "selectedTripId": "20261109_11:56_ca-bc-Victoria-Transit_11737412:14558847:14593649",
+  "selectedRouteId": "ca-bc-Victoria-Transit_21-VIC",
+  "legs": [
+    {
+      "from": {
+        "name": "UVic Exch Bay G",
+        "stopId": "ca-bc-Victoria-Transit_100405",
+        "lat": 48.46625,
+        "lon": -123.30886999999998,
+        "stopCode": "100405"
+      },
+      "to": {
+        "name": "Fairfield Rd at Blanshard St Bay A",
+        "stopId": "ca-bc-Victoria-Transit_100025",
+        "lat": 48.42189,
+        "lon": -123.36409,
+        "stopCode": "100025"
+      },
+      "headsign": "Downtown - to 21 Interurban",
+      "routeId": "ca-bc-Victoria-Transit_7-VIC",
+      "tripId": "20261109_11:30_ca-bc-Victoria-Transit_11737410:14548800:14593649",
+      "displayName": "7",
+      "intermediateStops": [
+        {
+          "name": "Ring Rd at University Club",
+          "stopId": "ca-bc-Victoria-Transit_101011",
+          "lat": 48.46369,
+          "lon": -123.31635,
+          "stopCode": "101011"
+        },
+        {
+          "name": "Ring Rd at Fine Arts Building",
+          "stopId": "ca-bc-Victoria-Transit_100991",
+          "lat": 48.46192,
+          "lon": -123.31606000000001,
+          "stopCode": "100991"
+        },
+        {
+          "name": "Henderson Rd at Frederick Norris Rd",
+          "stopId": "ca-bc-Victoria-Transit_100950",
+          "lat": 48.457789999999996,
+          "lon": -123.31586999999999,
+          "stopCode": "100950"
+        },
+        {
+          "name": "Henderson Rd at Avondale Rd",
+          "stopId": "ca-bc-Victoria-Transit_100932",
+          "lat": 48.45529,
+          "lon": -123.31441000000001,
+          "stopCode": "100932"
+        },
+        {
+          "name": "Henderson Rd at Kendal Ave",
+          "stopId": "ca-bc-Victoria-Transit_100897",
+          "lat": 48.452659999999995,
+          "lon": -123.31551,
+          "stopCode": "100897"
+        },
+        {
+          "name": "Foul Bay Rd at University Woods",
+          "stopId": "ca-bc-Victoria-Transit_100826",
+          "lat": 48.44971,
+          "lon": -123.31797,
+          "stopCode": "100826"
+        },
+        {
+          "name": "Foul Bay Rd at Camosun College",
+          "stopId": "ca-bc-Victoria-Transit_100752",
+          "lat": 48.44745999999999,
+          "lon": -123.32137999999999,
+          "stopCode": "100752"
+        },
+        {
+          "name": "Foul Bay Rd at Lansdowne Rd",
+          "stopId": "ca-bc-Victoria-Transit_100725",
+          "lat": 48.44546,
+          "lon": -123.32189,
+          "stopCode": "100725"
+        },
+        {
+          "name": "Foul Bay Rd at Forrester St",
+          "stopId": "ca-bc-Victoria-Transit_100702",
+          "lat": 48.44334,
+          "lon": -123.32197,
+          "stopCode": "100702"
+        },
+        {
+          "name": "Foul Bay Rd at Neil St",
+          "stopId": "ca-bc-Victoria-Transit_100681",
+          "lat": 48.44171,
+          "lon": -123.32207999999999,
+          "stopCode": "100681"
+        },
+        {
+          "name": "Foul Bay Rd at Townley St",
+          "stopId": "ca-bc-Victoria-Transit_100659",
+          "lat": 48.440059999999995,
+          "lon": -123.32216999999999,
+          "stopCode": "100659"
+        },
+        {
+          "name": "Foul Bay Rd at Kings Rd",
+          "stopId": "ca-bc-Victoria-Transit_100625",
+          "lat": 48.43738,
+          "lon": -123.32229,
+          "stopCode": "100625"
+        },
+        {
+          "name": "Foul Bay Rd at Haultain St",
+          "stopId": "ca-bc-Victoria-Transit_100602",
+          "lat": 48.43546,
+          "lon": -123.32236999999998,
+          "stopCode": "100602"
+        },
+        {
+          "name": "Foul Bay Rd at Fort St",
+          "stopId": "ca-bc-Victoria-Transit_100559",
+          "lat": 48.43176,
+          "lon": -123.32254999999999,
+          "stopCode": "100559"
+        },
+        {
+          "name": "Foul Bay Rd at Bourchier St",
+          "stopId": "ca-bc-Victoria-Transit_100550",
+          "lat": 48.429950000000005,
+          "lon": -123.32262999999999,
+          "stopCode": "100550"
+        },
+        {
+          "name": "Foul Bay Rd at Leighton Rd",
+          "stopId": "ca-bc-Victoria-Transit_100533",
+          "lat": 48.428580000000004,
+          "lon": -123.32274999999998,
+          "stopCode": "100533"
+        },
+        {
+          "name": "Foul Bay Rd at Oak Bay Ave",
+          "stopId": "ca-bc-Victoria-Transit_100517",
+          "lat": 48.425760000000004,
+          "lon": -123.32276999999998,
+          "stopCode": "100517"
+        },
+        {
+          "name": "900 Blk Foul Bay Rd",
+          "stopId": "ca-bc-Victoria-Transit_100511",
+          "lat": 48.42226,
+          "lon": -123.32252,
+          "stopCode": "100511"
+        },
+        {
+          "name": "Foul Bay Rd at Richardson St",
+          "stopId": "ca-bc-Victoria-Transit_100489",
+          "lat": 48.42053000000001,
+          "lon": -123.32346999999999,
+          "stopCode": "100489"
+        },
+        {
+          "name": "Foul Bay Rd at Runnymede Ave",
+          "stopId": "ca-bc-Victoria-Transit_100475",
+          "lat": 48.4188,
+          "lon": -123.32458,
+          "stopCode": "100475"
+        },
+        {
+          "name": "Foul Bay Rd at Fairfield Rd",
+          "stopId": "ca-bc-Victoria-Transit_100432",
+          "lat": 48.41576,
+          "lon": -123.32768,
+          "stopCode": "100432"
+        },
+        {
+          "name": "Fairfield Rd at Robertson St",
+          "stopId": "ca-bc-Victoria-Transit_100383",
+          "lat": 48.415110000000006,
+          "lon": -123.33203999999999,
+          "stopCode": "100383"
+        },
+        {
+          "name": "Fairfield Rd at Lillian Rd",
+          "stopId": "ca-bc-Victoria-Transit_100340",
+          "lat": 48.413199999999996,
+          "lon": -123.33420000000001,
+          "stopCode": "100340"
+        },
+        {
+          "name": "Fairfield Rd at St Charles St",
+          "stopId": "ca-bc-Victoria-Transit_100303",
+          "lat": 48.412279999999996,
+          "lon": -123.33767,
+          "stopCode": "100303"
+        },
+        {
+          "name": "Fairfield Rd at Arnold Ave",
+          "stopId": "ca-bc-Victoria-Transit_100269",
+          "lat": 48.41207,
+          "lon": -123.34105000000001,
+          "stopCode": "100269"
+        },
+        {
+          "name": "Fairfield Rd at Memorial Cres",
+          "stopId": "ca-bc-Victoria-Transit_100236",
+          "lat": 48.412310000000005,
+          "lon": -123.34341,
+          "stopCode": "100236"
+        },
+        {
+          "name": "Fairfield Rd at Kipling St",
+          "stopId": "ca-bc-Victoria-Transit_100205",
+          "lat": 48.413999999999994,
+          "lon": -123.34565,
+          "stopCode": "100205"
+        },
+        {
+          "name": "Fairfield Rd at Cornwall St",
+          "stopId": "ca-bc-Victoria-Transit_102215",
+          "lat": 48.416079999999994,
+          "lon": -123.34993,
+          "stopCode": "102215"
+        },
+        {
+          "name": "Fairfield Rd at Linden Ave",
+          "stopId": "ca-bc-Victoria-Transit_100137",
+          "lat": 48.41711,
+          "lon": -123.35248999999999,
+          "stopCode": "100137"
+        },
+        {
+          "name": "Fairfield Rd at Cook St",
+          "stopId": "ca-bc-Victoria-Transit_100091",
+          "lat": 48.41816,
+          "lon": -123.35623,
+          "stopCode": "100091"
+        },
+        {
+          "name": "Fairfield Rd at Vancouver St",
+          "stopId": "ca-bc-Victoria-Transit_100073",
+          "lat": 48.41838,
+          "lon": -123.35801,
+          "stopCode": "100073"
+        },
+        {
+          "name": "Fairfield Rd at Quadra St",
+          "stopId": "ca-bc-Victoria-Transit_100035",
+          "lat": 48.420210000000004,
+          "lon": -123.36075,
+          "stopCode": "100035"
+        }
+      ],
+      "legGeometry": {
+        "points": "sscm{AjsdejFoAjCoK{OS{EvBkHvo@nx@fJvLbBvGz@bL{Ozh@sIjz@?~nAjMffAfTfr@nPv[fc@zh@~k@v[RsDzh@nFbcA_SzEgJnd@sg@rXco@fJ_DfJbBrjA~p@b~@rb@zYjCjiA_q@zaAcj@~Mz@zJoFznBbo@rg@b[f@sDvkBfw@j\\zOnPbQjWzh@bBfYvBoAzTzr@zh@nx@vo@faAfOfTbGvQbBsDjMrN~RnKnvAjHvGkCrhBjCbQ~CrtA?fOzE?gEjxAjCvLnFRgEv|AvBbhA~H?sDr~AvBjWzE?sDj`CfErjAbBfYnF?sD~nAjCb`@fErIkC~iAzJRgEfpARvhArDrSf@{@gE~z@wj@fJ{EfJoAfc@jCnx@~Wjk@jM?{EzY?vGnAfJnKbLzYvQvQj\\rDrv@Sns@~dAnA_DbLrNfJjWzEzYbGngAbLb`@vG~Hn}@vGv~@nF?gEnPR{EnhCz@nUvVjxAjCv[vBoAbBfJzErNju@rv@fr@~u@zJfEbVbe@zTryA~Crl@kCfc@vBRkH~iAjCz|@jMvhAvBoAjM~u@f@zOg@vQwB~Mk\\jk@cB~Hos@ngA_q@nx@bBfEka@jk@oPnqAwGn_@gw@jsAgOnPbBjC_IfO_l@zsBoKnU_b@rcBsSfaA_IzaAwLfnBjCf@wBb`@_v@fuAsNbVsDrDkW~HkMzJvBrD_DbG_g@zdBw~@b|A",
+        "precision": 6,
+        "length": 156
+      }
+    },
+    {
+      "from": {
+        "name": "Fairfield Rd at Blanshard St Bay A",
+        "stopId": "ca-bc-Victoria-Transit_100025",
+        "lat": 48.42189,
+        "lon": -123.36409,
+        "stopCode": "100025"
+      },
+      "to": {
+        "name": "Camosun Interurban Loop",
+        "stopId": "ca-bc-Victoria-Transit_102612",
+        "lat": 48.490570000000005,
+        "lon": -123.41863000000001,
+        "stopCode": "102612"
+      },
+      "headsign": "Interurban to Camosun only",
+      "routeId": "ca-bc-Victoria-Transit_21-VIC",
+      "tripId": "20261109_11:56_ca-bc-Victoria-Transit_11737412:14558847:14593649",
+      "displayName": "21",
+      "intermediateStops": [
+        {
+          "name": "Douglas St at Fort St",
+          "stopId": "ca-bc-Victoria-Transit_100032",
+          "lat": 48.42437,
+          "lon": -123.36532,
+          "stopCode": "100032"
+        },
+        {
+          "name": "Douglas St at Johnson St",
+          "stopId": "ca-bc-Victoria-Transit_100051",
+          "lat": 48.42671000000001,
+          "lon": -123.36467,
+          "stopCode": "100051"
+        },
+        {
+          "name": "Douglas St at Herald St",
+          "stopId": "ca-bc-Victoria-Transit_100394",
+          "lat": 48.42996,
+          "lon": -123.3644,
+          "stopCode": "100394"
+        },
+        {
+          "name": "Douglas St at Discovery St",
+          "stopId": "ca-bc-Victoria-Transit_100146",
+          "lat": 48.43218,
+          "lon": -123.36449,
+          "stopCode": "100146"
+        },
+        {
+          "name": "Douglas St at Bay St",
+          "stopId": "ca-bc-Victoria-Transit_100178",
+          "lat": 48.434689999999996,
+          "lon": -123.36477,
+          "stopCode": "100178"
+        },
+        {
+          "name": "Douglas St at Kings Rd",
+          "stopId": "ca-bc-Victoria-Transit_100198",
+          "lat": 48.43707,
+          "lon": -123.36611,
+          "stopCode": "100198"
+        },
+        {
+          "name": "Burnside Rd E at Douglas St",
+          "stopId": "ca-bc-Victoria-Transit_100292",
+          "lat": 48.442190000000004,
+          "lon": -123.36956,
+          "stopCode": "100292"
+        },
+        {
+          "name": "Burnside Rd E at Finlayson St",
+          "stopId": "ca-bc-Victoria-Transit_100346",
+          "lat": 48.44501,
+          "lon": -123.37540999999999,
+          "stopCode": "100346"
+        },
+        {
+          "name": "Burnside Rd E at Alpha St",
+          "stopId": "ca-bc-Victoria-Transit_100380",
+          "lat": 48.44614,
+          "lon": -123.37778999999999,
+          "stopCode": "100380"
+        },
+        {
+          "name": "Burnside Rd E at Dupplin Rd",
+          "stopId": "ca-bc-Victoria-Transit_100414",
+          "lat": 48.447239999999994,
+          "lon": -123.38002999999999,
+          "stopCode": "100414"
+        },
+        {
+          "name": "Burnside Rd E at Eldon Place",
+          "stopId": "ca-bc-Victoria-Transit_100452",
+          "lat": 48.44866,
+          "lon": -123.38280999999999,
+          "stopCode": "100452"
+        },
+        {
+          "name": "Burnside Rd W at Albion Rd",
+          "stopId": "ca-bc-Victoria-Transit_100523",
+          "lat": 48.45037,
+          "lon": -123.38628,
+          "stopCode": "100523"
+        },
+        {
+          "name": "Burnside Rd W at Millgrove St",
+          "stopId": "ca-bc-Victoria-Transit_100587",
+          "lat": 48.45173,
+          "lon": -123.38892,
+          "stopCode": "100587"
+        },
+        {
+          "name": "Burnside Rd W at Albina St",
+          "stopId": "ca-bc-Victoria-Transit_100620",
+          "lat": 48.45311,
+          "lon": -123.39152000000001,
+          "stopCode": "100620"
+        },
+        {
+          "name": "Burnside Rd W at Tillicum Rd",
+          "stopId": "ca-bc-Victoria-Transit_100670",
+          "lat": 48.45516,
+          "lon": -123.39353,
+          "stopCode": "100670"
+        },
+        {
+          "name": "Burnside Rd W at Interurban Rd",
+          "stopId": "ca-bc-Victoria-Transit_100716",
+          "lat": 48.4569,
+          "lon": -123.39460000000001,
+          "stopCode": "100716"
+        },
+        {
+          "name": "Interurban Rd at Dumeresq St",
+          "stopId": "ca-bc-Victoria-Transit_100797",
+          "lat": 48.462360000000004,
+          "lon": -123.39536,
+          "stopCode": "100797"
+        },
+        {
+          "name": "Interurban Rd at Columbine Way",
+          "stopId": "ca-bc-Victoria-Transit_100860",
+          "lat": 48.46416,
+          "lon": -123.39704,
+          "stopCode": "100860"
+        },
+        {
+          "name": "Interurban Rd at Marigold Rd",
+          "stopId": "ca-bc-Victoria-Transit_100938",
+          "lat": 48.467079999999996,
+          "lon": -123.40165000000002,
+          "stopCode": "100938"
+        },
+        {
+          "name": "Interurban Rd at Hyacinth Ave",
+          "stopId": "ca-bc-Victoria-Transit_100987",
+          "lat": 48.4692,
+          "lon": -123.40334,
+          "stopCode": "100987"
+        },
+        {
+          "name": "Interurban Rd at Grange Rd",
+          "stopId": "ca-bc-Victoria-Transit_101022",
+          "lat": 48.47248,
+          "lon": -123.40592000000001,
+          "stopCode": "101022"
+        },
+        {
+          "name": "Interurban Rd at Meadowview Pl",
+          "stopId": "ca-bc-Victoria-Transit_101061",
+          "lat": 48.474619999999994,
+          "lon": -123.40759000000001,
+          "stopCode": "101061"
+        },
+        {
+          "name": "Interurban Rd at Wilkinson Rd",
+          "stopId": "ca-bc-Victoria-Transit_101136",
+          "lat": 48.47725,
+          "lon": -123.40971,
+          "stopCode": "101136"
+        },
+        {
+          "name": "Interurban Rd at Dunsterville Ave",
+          "stopId": "ca-bc-Victoria-Transit_101158",
+          "lat": 48.4797,
+          "lon": -123.41160000000002,
+          "stopCode": "101158"
+        },
+        {
+          "name": "Interurban Rd at Charlton Rd",
+          "stopId": "ca-bc-Victoria-Transit_101263",
+          "lat": 48.484049999999996,
+          "lon": -123.41440000000001,
+          "stopCode": "101263"
+        },
+        {
+          "name": "Interurban Rd at Alan Rd",
+          "stopId": "ca-bc-Victoria-Transit_101302",
+          "lat": 48.4869,
+          "lon": -123.41548,
+          "stopCode": "101302"
+        },
+        {
+          "name": "Interurban Rd at Hector Rd",
+          "stopId": "ca-bc-Victoria-Transit_101347",
+          "lat": 48.48903,
+          "lon": -123.41763000000002,
+          "stopCode": "101347"
+        }
+      ],
+      "legGeometry": {
+        "points": "c_mj{ArnphjFvBvBgEzJoP~gBs`AwQkdA_XSfEgaA_SknA{YSnFoqAwQstASka@_D?fE{fAz@{aAoA?fEknAz@kk@?c`@jHz@zEgaAzc@ksA~f@f@rD{pAfm@sDvBgEScqDn`B_DjHcQ~HgYvj@vBvBo~BvfG_g@jsAoKvLvBvBwj@ryAs]ju@bBbBsq@vfBgTb`@bBvBsb@vhA{c@bhAkRbV~CrD_v@jlB{c@vhA_Sb[vBvBox@noBg^vo@jC~Cwe@rjA{c@zaA_N~MjCjCwGzO_DbB{^nn@{uAvt@z@zEo{A~u@cQ~C_SzOct@z@oqAc[oZ_DcmAfO_oArl@nAfEo{AroAoUbQbBrD_DrDo_@~dAoi@z_BsDbLg^vj@sq@vj@cQjHocCrhBz@rDw~@~p@knAz|@w~@vj@f@~Co`BfkAod@bVz@~Cgw@~k@_{@bo@_q@ja@ku@nn@gpAz|@oPvGobA~u@soAjp@stAvt@ce@zOf@rDk}Anx@{TrIc~@gEf@fEkMjC{r@fc@on@vcAsSvQjCfEkWzc@sq@vo@kMwt@_DwB_DvBg@vG?rN",
+        "precision": 6,
+        "length": 117
+      }
+    },
+    {
+      "from": {
+        "name": "Camosun Interurban Loop",
+        "stopId": "ca-bc-Victoria-Transit_102612",
+        "lat": 48.490570000000005,
+        "lon": -123.41863000000001,
+        "stopCode": "102612"
+      },
+      "to": {
+        "name": "Douglas St at View St",
+        "stopId": "ca-bc-Victoria-Transit_100042",
+        "lat": 48.42555000000001,
+        "lon": -123.36518,
+        "stopCode": "100042"
+      },
+      "headsign": "Downtown - to 7 UVic",
+      "routeId": "ca-bc-Victoria-Transit_21-VIC",
+      "tripId": "20261109_12:45_ca-bc-Victoria-Transit_11737417:14537602:14593649",
+      "displayName": "21",
+      "intermediateStops": [
+        {
+          "name": "Interurban Rd at Hector Rd",
+          "stopId": "ca-bc-Victoria-Transit_101341",
+          "lat": 48.489110000000004,
+          "lon": -123.41806000000001,
+          "stopCode": "101341"
+        },
+        {
+          "name": "Interurban Rd at Alan Rd",
+          "stopId": "ca-bc-Victoria-Transit_101293",
+          "lat": 48.48607,
+          "lon": -123.41572000000001,
+          "stopCode": "101293"
+        },
+        {
+          "name": "Interurban Rd at Charlton Rd",
+          "stopId": "ca-bc-Victoria-Transit_101264",
+          "lat": 48.483579999999996,
+          "lon": -123.41432000000002,
+          "stopCode": "101264"
+        },
+        {
+          "name": "Interurban Rd at Dunsterville Ave",
+          "stopId": "ca-bc-Victoria-Transit_101155",
+          "lat": 48.47925,
+          "lon": -123.41144000000001,
+          "stopCode": "101155"
+        },
+        {
+          "name": "Interurban Rd at Wilkinson Rd",
+          "stopId": "ca-bc-Victoria-Transit_101133",
+          "lat": 48.477689999999996,
+          "lon": -123.41025000000002,
+          "stopCode": "101133"
+        },
+        {
+          "name": "Interurban Rd at Meadowview Pl",
+          "stopId": "ca-bc-Victoria-Transit_101056",
+          "lat": 48.47431,
+          "lon": -123.40753000000001,
+          "stopCode": "101056"
+        },
+        {
+          "name": "Interurban Rd at Grange Rd",
+          "stopId": "ca-bc-Victoria-Transit_101008",
+          "lat": 48.471639999999994,
+          "lon": -123.40546,
+          "stopCode": "101008"
+        },
+        {
+          "name": "Interurban Rd at Edge Pl",
+          "stopId": "ca-bc-Victoria-Transit_100984",
+          "lat": 48.46945,
+          "lon": -123.40377,
+          "stopCode": "100984"
+        },
+        {
+          "name": "Interurban Rd at Marigold Rd",
+          "stopId": "ca-bc-Victoria-Transit_100924",
+          "lat": 48.4664,
+          "lon": -123.40127000000001,
+          "stopCode": "100924"
+        },
+        {
+          "name": "Interurban Rd at Columbine Way",
+          "stopId": "ca-bc-Victoria-Transit_100855",
+          "lat": 48.46403,
+          "lon": -123.39712000000002,
+          "stopCode": "100855"
+        },
+        {
+          "name": "Burnside Rd W at Interurban Rd",
+          "stopId": "ca-bc-Victoria-Transit_100743",
+          "lat": 48.45821,
+          "lon": -123.39495000000001,
+          "stopCode": "100743"
+        },
+        {
+          "name": "Burnside Rd W at Tillicum Rd",
+          "stopId": "ca-bc-Victoria-Transit_100662",
+          "lat": 48.45461999999999,
+          "lon": -123.39358,
+          "stopCode": "100662"
+        },
+        {
+          "name": "Burnside Rd W at Albina St",
+          "stopId": "ca-bc-Victoria-Transit_100623",
+          "lat": 48.45315,
+          "lon": -123.39202,
+          "stopCode": "100623"
+        },
+        {
+          "name": "Burnside Rd W at Millgrove St",
+          "stopId": "ca-bc-Victoria-Transit_100572",
+          "lat": 48.451769999999996,
+          "lon": -123.38935,
+          "stopCode": "100572"
+        },
+        {
+          "name": "Burnside Rd W at Wascana St",
+          "stopId": "ca-bc-Victoria-Transit_100527",
+          "lat": 48.450489999999995,
+          "lon": -123.38686,
+          "stopCode": "100527"
+        },
+        {
+          "name": "Burnside Rd E at Harriet Rd",
+          "stopId": "ca-bc-Victoria-Transit_100486",
+          "lat": 48.4492,
+          "lon": -123.38427,
+          "stopCode": "100486"
+        },
+        {
+          "name": "Burnside Rd E at Balfour Ave",
+          "stopId": "ca-bc-Victoria-Transit_100446",
+          "lat": 48.44814,
+          "lon": -123.3822,
+          "stopCode": "100446"
+        },
+        {
+          "name": "Burnside Rd E at Washington Ave",
+          "stopId": "ca-bc-Victoria-Transit_100399",
+          "lat": 48.44667,
+          "lon": -123.37919,
+          "stopCode": "100399"
+        },
+        {
+          "name": "Burnside Rd E at Napier Lane",
+          "stopId": "ca-bc-Victoria-Transit_100362",
+          "lat": 48.44545,
+          "lon": -123.37662999999999,
+          "stopCode": "100362"
+        },
+        {
+          "name": "Burnside Rd E at Jutland Rd",
+          "stopId": "ca-bc-Victoria-Transit_100323",
+          "lat": 48.44387,
+          "lon": -123.37334999999999,
+          "stopCode": "100323"
+        },
+        {
+          "name": "Burnside Rd E at Dunedin St",
+          "stopId": "ca-bc-Victoria-Transit_100290",
+          "lat": 48.44204,
+          "lon": -123.36957,
+          "stopCode": "100290"
+        },
+        {
+          "name": "Douglas St at Gorge Rd E / Hillside Ave",
+          "stopId": "ca-bc-Victoria-Transit_100195",
+          "lat": 48.43868,
+          "lon": -123.36729000000001,
+          "stopCode": "100195"
+        },
+        {
+          "name": "Douglas St at Bay St",
+          "stopId": "ca-bc-Victoria-Transit_100177",
+          "lat": 48.435300000000005,
+          "lon": -123.36532999999999,
+          "stopCode": "100177"
+        },
+        {
+          "name": "Douglas St at Discovery St",
+          "stopId": "ca-bc-Victoria-Transit_100132",
+          "lat": 48.432320000000004,
+          "lon": -123.3647,
+          "stopCode": "100132"
+        },
+        {
+          "name": "Douglas St at Pandora Ave",
+          "stopId": "ca-bc-Victoria-Transit_100082",
+          "lat": 48.42868,
+          "lon": -123.36458,
+          "stopCode": "100082"
+        }
+      ],
+      "legGeometry": {
+        "points": "scsn{Aj_{kjFvBoAzJbe@~RcLrv@cy@oAwBrjAsmBzr@gc@jWoFrg@zJRkHrIRfuAkp@by@k\\g@sDvwAsv@nvAwt@~sAw~@rIg@{@_Dvt@gh@rl@c[{@sDzaAos@ngAcy@~p@_g@vVwLngAo}@j_Akp@~\\oPfJ_NjnA{|@fm@w[{@sDraCshBz|@_l@?_D~f@sg@nPoZ~a@soAn_@sjAbLwV~HgEjMcVfzA_oAns@kf@~dA_Xja@kCzaAbQja@bQRgEbGbBr{@SnlA{h@nlA_g@g@gEr]kRfm@{r@fO_S{@_Ifw@cfBz^wt@cBcBzc@ogAfm@_oAcBwBbo@g_Brb@{|@oAcBfc@{fAn_@ku@wBkCnlAszCbQc[cBcBzm@g_Bn_@s{@~f@_yAnd@knAfTsb@vmAclDrb@c~@rD_SbGcQ~tC_tAfm@kRg@sDrIgE~CgEn~BogAjdA{^g@sDngAwe@zuASb[rD?{ErjAwBfiBcBrl@fE?oFv|A~Mrv@zJfm@bQ",
+        "precision": 6,
+        "length": 103
+      }
+    },
+    {
+      "from": {
+        "name": "Douglas St at View St",
+        "stopId": "ca-bc-Victoria-Transit_100042",
+        "lat": 48.42555000000001,
+        "lon": -123.36518,
+        "stopCode": "100042"
+      },
+      "to": {
+        "name": "UVic Exch Bay F",
+        "stopId": "ca-bc-Victoria-Transit_102426",
+        "lat": 48.46609,
+        "lon": -123.30906999999999,
+        "stopCode": "102426"
+      },
+      "headsign": "UVic via Fairfield",
+      "routeId": "ca-bc-Victoria-Transit_7-VIC",
+      "tripId": "20261109_13:11_ca-bc-Victoria-Transit_11737422:14578452:14593649",
+      "displayName": "7",
+      "intermediateStops": [
+        {
+          "name": "Burdett Ave at Douglas St",
+          "stopId": "ca-bc-Victoria-Transit_100017",
+          "lat": 48.422050000000006,
+          "lon": -123.36546,
+          "stopCode": "100017"
+        },
+        {
+          "name": "Fairfield Rd at Quadra St",
+          "stopId": "ca-bc-Victoria-Transit_100039",
+          "lat": 48.420190000000005,
+          "lon": -123.36101000000001,
+          "stopCode": "100039"
+        },
+        {
+          "name": "Fairfield Rd at Vancouver St",
+          "stopId": "ca-bc-Victoria-Transit_100056",
+          "lat": 48.41836,
+          "lon": -123.35866,
+          "stopCode": "100056"
+        },
+        {
+          "name": "Fairfield Rd at Cook St",
+          "stopId": "ca-bc-Victoria-Transit_100092",
+          "lat": 48.41801,
+          "lon": -123.35575999999999,
+          "stopCode": "100092"
+        },
+        {
+          "name": "Fairfield Rd at Linden Ave",
+          "stopId": "ca-bc-Victoria-Transit_100141",
+          "lat": 48.41674,
+          "lon": -123.35186,
+          "stopCode": "100141"
+        },
+        {
+          "name": "Fairfield Rd at Moss St",
+          "stopId": "ca-bc-Victoria-Transit_100162",
+          "lat": 48.41555,
+          "lon": -123.34939,
+          "stopCode": "100162"
+        },
+        {
+          "name": "Fairfield Rd at Kipling St",
+          "stopId": "ca-bc-Victoria-Transit_100210",
+          "lat": 48.41367999999999,
+          "lon": -123.34553,
+          "stopCode": "100210"
+        },
+        {
+          "name": "Fairfield Rd at Memorial Cres",
+          "stopId": "ca-bc-Victoria-Transit_100241",
+          "lat": 48.412150000000004,
+          "lon": -123.34342000000001,
+          "stopCode": "100241"
+        },
+        {
+          "name": "Fairfield Rd at Stannard Ave",
+          "stopId": "ca-bc-Victoria-Transit_100279",
+          "lat": 48.41222,
+          "lon": -123.33997,
+          "stopCode": "100279"
+        },
+        {
+          "name": "Fairfield Rd at St Charles St",
+          "stopId": "ca-bc-Victoria-Transit_100313",
+          "lat": 48.41217,
+          "lon": -123.33685,
+          "stopCode": "100313"
+        },
+        {
+          "name": "Fairfield Rd at Lillian Rd",
+          "stopId": "ca-bc-Victoria-Transit_100345",
+          "lat": 48.41313,
+          "lon": -123.33407,
+          "stopCode": "100345"
+        },
+        {
+          "name": "Fairfield Rd at Richmond Ave",
+          "stopId": "ca-bc-Victoria-Transit_100390",
+          "lat": 48.41529,
+          "lon": -123.33095,
+          "stopCode": "100390"
+        },
+        {
+          "name": "Foul Bay Rd at Fairfield Rd",
+          "stopId": "ca-bc-Victoria-Transit_100436",
+          "lat": 48.415859999999995,
+          "lon": -123.32749,
+          "stopCode": "100436"
+        },
+        {
+          "name": "Foul Bay Rd at Runnymede Ave",
+          "stopId": "ca-bc-Victoria-Transit_100477",
+          "lat": 48.419,
+          "lon": -123.3241,
+          "stopCode": "100477"
+        },
+        {
+          "name": "Foul Bay Rd at Richardson St",
+          "stopId": "ca-bc-Victoria-Transit_100493",
+          "lat": 48.4206,
+          "lon": -123.32332999999998,
+          "stopCode": "100493"
+        },
+        {
+          "name": "Foul Bay Rd at Granite St",
+          "stopId": "ca-bc-Victoria-Transit_100522",
+          "lat": 48.42539000000001,
+          "lon": -123.32230999999999,
+          "stopCode": "100522"
+        },
+        {
+          "name": "Foul Bay Rd at Milton St",
+          "stopId": "ca-bc-Victoria-Transit_100546",
+          "lat": 48.42922,
+          "lon": -123.32252,
+          "stopCode": "100546"
+        },
+        {
+          "name": "Foul Bay Rd at Goldsmith St",
+          "stopId": "ca-bc-Victoria-Transit_100556",
+          "lat": 48.43078,
+          "lon": -123.32238999999998,
+          "stopCode": "100556"
+        },
+        {
+          "name": "Foul Bay Rd at Cadboro Bay Rd",
+          "stopId": "ca-bc-Victoria-Transit_100575",
+          "lat": 48.4328,
+          "lon": -123.32229999999998,
+          "stopCode": "100575"
+        },
+        {
+          "name": "Foul Bay Rd at Haultain St",
+          "stopId": "ca-bc-Victoria-Transit_100605",
+          "lat": 48.43565,
+          "lon": -123.32216999999999,
+          "stopCode": "100605"
+        },
+        {
+          "name": "Foul Bay Rd at Kings Rd",
+          "stopId": "ca-bc-Victoria-Transit_100626",
+          "lat": 48.43756,
+          "lon": -123.32207999999999,
+          "stopCode": "100626"
+        },
+        {
+          "name": "Foul Bay Rd at Townley St",
+          "stopId": "ca-bc-Victoria-Transit_100665",
+          "lat": 48.44053,
+          "lon": -123.32193,
+          "stopCode": "100665"
+        },
+        {
+          "name": "Foul Bay Rd at Neil St",
+          "stopId": "ca-bc-Victoria-Transit_100689",
+          "lat": 48.44222,
+          "lon": -123.32182999999999,
+          "stopCode": "100689"
+        },
+        {
+          "name": "Foul Bay Rd at Mid-Downe Rd",
+          "stopId": "ca-bc-Victoria-Transit_100717",
+          "lat": 48.444579999999995,
+          "lon": -123.32176,
+          "stopCode": "100717"
+        },
+        {
+          "name": "Foul Bay Rd at Camosun College",
+          "stopId": "ca-bc-Victoria-Transit_100763",
+          "lat": 48.448,
+          "lon": -123.32036,
+          "stopCode": "100763"
+        },
+        {
+          "name": "Foul Bay Rd at University Woods",
+          "stopId": "ca-bc-Victoria-Transit_100827",
+          "lat": 48.44954,
+          "lon": -123.31802,
+          "stopCode": "100827"
+        },
+        {
+          "name": "Henderson Rd at Dundrum Rd",
+          "stopId": "ca-bc-Victoria-Transit_100864",
+          "lat": 48.451299999999996,
+          "lon": -123.31601,
+          "stopCode": "100864"
+        },
+        {
+          "name": "Henderson Rd at Kendal Ave",
+          "stopId": "ca-bc-Victoria-Transit_100913",
+          "lat": 48.45354,
+          "lon": -123.31487,
+          "stopCode": "100913"
+        },
+        {
+          "name": "Henderson Rd at Avondale Rd",
+          "stopId": "ca-bc-Victoria-Transit_100937",
+          "lat": 48.455459999999995,
+          "lon": -123.31426000000002,
+          "stopCode": "100937"
+        },
+        {
+          "name": "Henderson Rd at Frederick Norris Rd",
+          "stopId": "ca-bc-Victoria-Transit_100951",
+          "lat": 48.45791,
+          "lon": -123.31569,
+          "stopCode": "100951"
+        },
+        {
+          "name": "University Dr at Ring Rd",
+          "stopId": "ca-bc-Victoria-Transit_100071",
+          "lat": 48.45977,
+          "lon": -123.31452000000002,
+          "stopCode": "100071"
+        },
+        {
+          "name": "Ring Rd at Bob Wright Centre",
+          "stopId": "ca-bc-Victoria-Transit_101036",
+          "lat": 48.46177,
+          "lon": -123.30836,
+          "stopCode": "101036"
+        }
+      ],
+      "legGeometry": {
+        "points": "{ctj{AvrrhjFf@{EvaBv[nx@fOfr@jM~H_b@kCg@zJwcA~p@olAvy@saCbLc[jW_IrDsDn}@{_BvGgESgEnU_nDSwVf@wLja@oeBv`@{uArI{OcBcBnd@{_B~f@ku@cBkCni@w~@fY_rBfr@cy@cBkCzaAgzAz^gc@oAkCzTsg@vB_Nf@wQg@{OoZ_wBcBz@gEco@~HwdCnA_NwBRoPg_BcGsXs]os@{@~Cwt@{r@kp@kp@_DgE_Xo{AcBz@wL{r@{@oUzEshB?{^wVgE?rDox@g@o}@wGwG_IcLc`@cGogA{E{YgJkWc[sg@oA~Cod@_l@_{@cG{JvBcLSwQwQcL{YgJoK_oA_Iox@_Xgc@kCgJnAgm@b[z@rDsD~CoUnKoPjCwhAsD{fA?_q@wGkz@nAce@sI?nFovA_Dwe@cGSfEopDkM?fEkdAcB_q@wGSzEg|@wBckB_DsNoF?fE_yAwBsNwGSbGovAkCkz@cG?fEs~AcB{m@kC_S{J_Xc[gYgm@wBrD_jAoeBoPkp@wBnA_I{^kW{h@oPcQku@gc@g@rDsjAkf@c~@od@s{@{Ykz@gJRfE{fAjk@cy@~f@cGvBsN_DRnFkHf@sI{@ka@wQo}@g|@oAvGo_@{T_D{EcB{EcBgJRcQ~Hwo@?kiAsIk_AsN{m@c~@k}A{@fE_X{Og|@cLoZ~C{w@z^kf@rq@_I~CcGoAcG_IwLbL{Eg@gJwV",
+        "precision": 6,
+        "length": 158
+      }
+    }
+  ]
+}

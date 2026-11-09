@@ -13,6 +13,15 @@
 .transit-departures { list-style: none; margin: 0; padding: 0; }
 .transit-departures li { display: grid; grid-template-columns: auto 1fr; gap: 2px 9px; padding: 10px 0; border-bottom: 1px solid var(--map-border); }
 .transit-route { grid-row: span 2; align-self: start; padding: 3px 7px; border-radius: 6px; color: var(--map-accent); background: var(--map-accent-soft); max-width: 100px; }
+.transit-departures button.transit-route { min-width: 44px; min-height: 40px; border: 1px solid var(--map-border); font: inherit; font-weight: 600; cursor: pointer; }
+.transit-departures button.transit-route:hover { border-color: var(--map-accent); }
+.transit-route-card { position: absolute; z-index: 470; left: 20px; bottom: 110px; width: 330px; max-width: calc(100% - 100px); padding: 18px 20px; border-radius: 20px; font-size: 13px; }
+.transit-route-card p { margin: 8px 0 0; line-height: 1.5; overflow-wrap: anywhere; }
+#transit-route-detail { color: var(--muted); font-size: 11px; }
+.transit-route-active .leaflet-tile-pane { filter: grayscale(.85); opacity: .55; }
+.dark-mode .transit-route-active .leaflet-tile-pane { opacity: .4; }
+.map-stage:has(#transit-route-card:not([hidden])) .transit-map-hint { display: none; }
+@media(max-width:700px) { .transit-route-card { left: 12px; bottom: 92px; width: auto; max-width: calc(100% - 104px); padding: 14px 16px; } }
 .transit-destination { font-weight: 500; }
 .transit-departures time { font-variant-numeric: tabular-nums; }
 .transit-departures small { grid-column: 2; color: var(--muted); }

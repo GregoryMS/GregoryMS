@@ -9,6 +9,18 @@ const departure=(extra={})=>({tripId:'trip1',displayName:'5',headsign:'Willows',
 const sharedStop=require('./fixtures/transit-shared-bus-stop.json');
 const pandora={id:'ca-bc-Cowichan-Valley-Transit_100082',name:'Douglas & Pandora (Victoria City Hall)',lat:48.42867,lng:-123.36457,code:'100082',modes:['BUS'],scope:'bc',zone:'America/Vancouver'};
 
+test('route geometry follows the exact departure and excludes interlined routes and opposite directions',()=>{
+ const data=require('./fixtures/transit-route-trip.json'),selected={id:'ca-bc-Victoria-Transit_100025',code:'100025',lat:48.42189,lng:-123.36409,modes:['BUS'],scope:'bc'},row={tripId:data.selectedTripId,routeId:data.selectedRouteId,route:'21',headsign:'Interurban to Camosun only'};
+ const url=new URL(core.tripURL(row));assert.equal(url.searchParams.get('joinInterlinedLegs'),'false');assert.equal(url.searchParams.get('detailedLegs'),'true');
+ const trip=core.readTrip(data,row,selected);
+ assert.equal(trip.route,'21');assert.match(trip.headsign,/Interurban/);assert(trip.points.length>100);assert(trip.stops.some(stop=>stop.selected));assert(!trip.stops.some(stop=>/University Club/.test(stop.name)),'onward/previous route 7 must not be drawn');
+ assert(trip.points.every(([lat,lng])=>lat>48&&lat<49&&lng< -123&&lng> -124));
+ assert.throws(()=>core.readTrip(data,{...row,tripId:'not-in-response'},selected));
+ assert.throws(()=>core.readTrip(data,row,{...selected,id:'other',code:'other',lat:0,lng:0}));
+ assert.throws(()=>core.decodeGeometry({points:'?',precision:6}));assert.throws(()=>core.decodeGeometry({points:'~~~~~~',precision:6}));assert.throws(()=>core.decodeGeometry({points:'abc',precision:7}));
+ assert.deepEqual(core.decodeGeometry({points:'_p~iF~ps|U_ulLnnqC_mqNvxq`@',precision:5}),[[38.5,-120.2],[40.7,-120.95],[43.252,-126.453]]);
+});
+
 test('transit scope rejects other regions, oversized views and low zooms, including wrapped maps',()=>{
  assert.equal(core.area([-123.38,48.42,-123.35,48.44],12),null);
  assert.equal(core.area([-130,48,-120,55],13),null);

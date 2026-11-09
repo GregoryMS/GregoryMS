@@ -89,6 +89,7 @@
         const text = clean(alert?.descriptionText || alert?.headerText); if (text) alerts.add(text);
       }
       rows.push({time, scheduled, live, cancelled:item.cancelled === true || item.tripCancelled === true || place.cancelled === true,
+        tripId:typeof item.tripId === 'string' && item.tripId.length<=2000 ? item.tripId.trim() : '', routeId:clean(item.routeId),
         route:clean(item.displayName || item.routeShortName || item.routeLongName || item.mode) || 'Transit',
         headsign:clean(item.headsign || item.tripTo?.name) || 'Destination not supplied',
         platform:clean(place.track || place.scheduledTrack), stopName:clean(place.name),
@@ -97,9 +98,39 @@
     return {rows:rows.sort((a,b) => a.time-b.time).slice(0,50), alerts:[...alerts].slice(0,4), next:clean(data.nextPageCursor), zone:zone||stop.zone};
   }
   const major = stop => stop.modes.some(mode => mode !== 'BUS' && mode !== 'COACH');
+  function tripURL(row) {
+    if (!row.tripId || row.tripId.length>2000) throw Error('Trip identifier unavailable');
+    const url=new URL('v6/trip',endpoint);
+    url.search=new URLSearchParams({tripId:row.tripId,detailedLegs:'true',joinInterlinedLegs:'false'});
+    return url.href;
+  }
+  function decodeGeometry(geometry) {
+    if (!geometry || typeof geometry.points!=='string' || geometry.points.length>200000 || ![5,6].includes(geometry.precision)) throw Error('Route geometry unavailable');
+    const text=geometry.points,points=[];let index=0,lat=0,lon=0;
+    function number() {
+      let value=0,shift=0,byte;
+      do { if(index>=text.length||shift>45)throw Error('Invalid route geometry');byte=text.charCodeAt(index++)-63;if(byte<0||byte>63)throw Error('Invalid route geometry');value+=(byte&31)*2**shift;shift+=5; }while(byte>=32);
+      return value%2 ? -(Math.floor(value/2)+1) : value/2;
+    }
+    while(index<text.length){lat+=number();lon+=number();const point=[lat/10**geometry.precision,lon/10**geometry.precision];if(!valid(...point)||points.length>=20000)throw Error('Invalid route coordinates');points.push(point);}
+    if(points.length<2)throw Error('Route geometry unavailable');
+    return points;
+  }
+  function readTrip(data,row,stop) {
+    if(!Array.isArray(data?.legs)||data.legs.length>50)throw Error('Invalid trip response');
+    // One vehicle can continue under another route number. Match the exact
+    // selected trip rather than drawing all joined services or both directions.
+    const leg=data.legs.find(item=>item?.tripId===row.tripId);
+    if(!leg||!Array.isArray(leg.intermediateStops)||leg.intermediateStops.length>1000)throw Error('Selected trip unavailable');
+    const places=[leg.from,...leg.intermediateStops,leg.to];
+    if(!places.some(place=>matchesStop(place,stop)))throw Error('Selected stop missing from trip');
+    const seen=new Set(),stops=places.filter(place=>place&&valid(place.lat,place.lon)&&clean(place.name)&&!seen.has(place.stopId)&&seen.add(place.stopId)).map(place=>({id:clean(place.stopId),name:clean(place.name),lat:place.lat,lng:place.lon,selected:matchesStop(place,stop)}));
+    const points=decodeGeometry(leg.legGeometry);
+    return {points,stops,route:clean(leg.displayName||leg.routeShortName)||row.route,headsign:clean(leg.headsign)||row.headsign,from:clean(leg.from?.name),to:clean(leg.to?.name)};
+  }
   function clock(value, zone) {
     try { return new Date(value).toLocaleString(undefined,{timeZone:zone,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZoneName:'short'}); }
     catch { return new Date(value).toLocaleString(undefined,{timeZone:'UTC',hourCycle:'h23'}) + ' UTC'; }
   }
-  return {region, area, stopsURL, readStops, departuresURL, readDepartures, safeURL, major, clock};
+  return {region, area, stopsURL, readStops, departuresURL, readDepartures, safeURL, major, clock, tripURL, readTrip, decodeGeometry};
 });

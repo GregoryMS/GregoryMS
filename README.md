@@ -617,6 +617,20 @@ Rail and ferry platforms share their parent station's board. Base-map labels
 come from OpenStreetMap and can include stops absent from the timetable feeds;
 those labels do not by themselves establish current scheduled service.
 
+Tap a route number in a departure board to highlight that departure's full path,
+direction and stops. The base map is subdued and the selected line uses a blue
+stroke with a white outline. The route card names the direction and endpoints;
+**Fit route** restores its extent and **×** clears the highlight. Stop dots show
+names on hover, with the original boarding stop emphasised. This uses the
+selected trip's geometry, not every branch or both directions with that number.
+Interlined onward services with other numbers are excluded. An unavailable
+geometry shows a retry message rather than an invented straight-line route.
+
+The trip endpoint is requested only on route selection. It uses the same
+timeouts, cancellation and provider backoff as departure boards, with an
+eight-trip, five-minute in-memory cache. Leaving Transit map clears the route.
+There are no new keys or background requests.
+
 The browser uses the versioned [Transitous MOTIS API](https://transitous.org/api/),
 which includes TransLink, BC Transit and London feeds. This personal,
 noncommercial, publicly open-source site meets its light-use policy. Requests

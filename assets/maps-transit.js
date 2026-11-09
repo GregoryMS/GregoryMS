@@ -10,6 +10,7 @@
     const link = (text,url) => {const el=make('a',text);el.href=url;el.target='_blank';el.rel='noopener noreferrer';return el;};
     const report = (text,retry=false,zoom=false) => {status.textContent=text;retryButton.hidden=!retry;zoomButton.hidden=!zoom;};
     const bounds = () => {const b=map.getBounds();return [b.getWest(),b.getSouth(),b.getEast(),b.getNorth()];};
+    const routeView=window.GregleTransitRoute?.({map,requestJSON:json,canRequest:()=>Date.now()>=retryAt});
     function cancelBoard() {boardVersion++;departureController?.abort();departureController=null;clearTimeout(staleTimer);}
     function cancel() {version++;controller?.abort();controller=null;clearTimeout(debounce);cancelBoard();}
     async function json(url,signal) {
@@ -68,7 +69,7 @@
       for(const button of [refresh,back,later]){button.type='button';actions.append(button);}
       back.hidden=true;later.hidden=true;
       const official=stop.scope==='london'?'https://tfl.gov.uk/plan-a-journey/':stop.id.startsWith('ca-bc-TransLink_')?'https://www.translink.ca/schedules-and-maps':'https://www.bctransit.com/';
-      box.append(heading,note,content,actions,link('Operator schedules & service information ↗',official),make('p','Times are local to this stop. Live estimates appear only when supplied by the operator.','transit-meta'),link('Transitous · data sources & licences ↗','https://transitous.org/sources/'));
+      box.append(heading,note,make('p','Tap a route number to highlight its path and stops.','transit-meta'),content,actions,link('Operator schedules & service information ↗',official),make('p','Times are local to this stop. Live estimates appear only when supplied by the operator.','transit-meta'),link('Transitous · data sources & licences ↗','https://transitous.org/sources/'));
       let start=new Date().toISOString(),cursor='',history=[],next='',lastAction=0;
       function display(board,checked) {
         const zone=board.zone||stop.zone;
@@ -79,7 +80,8 @@
         if(!board.rows.length)content.append(make('p','No departures returned for this stop in this time window. Check the operator for service information.'));
         const list=make('ol',null,'transit-departures');
         for(const row of board.rows){
-          const li=make('li'),route=make('strong',row.route,'transit-route');
+          const li=make('li'),route=make(routeView&&row.tripId?'button':'strong',row.route,'transit-route');
+          if(routeView&&row.tripId){route.type='button';route.title=`Show route ${row.route} toward ${row.headsign}`;route.setAttribute('aria-label',route.title);route.addEventListener('click',()=>routeView.show(row,stop));}
           const time=make('time',core.clock(row.time,zone));time.dateTime=new Date(row.time).toISOString();
           const state=row.cancelled?'Cancelled':row.live?(old?'Earlier estimate':'Live estimate'):'Scheduled';
           li.append(route,make('span',row.headsign,'transit-destination'),time,make('small',`${state}${row.platform?' · Platform '+row.platform:''}${row.operator?' · '+row.operator:''}`));
@@ -117,6 +119,7 @@
     function setEnabled(value) {
       if(enabled===(value===true))return;
       enabled=value===true;cancel();hint.hidden=!enabled;options.hidden=!enabled;
+      routeView?.setEnabled(enabled);
       if(enabled){group.addTo(map);map.attributionControl.addAttribution(credit);load();}
       else{group.clearLayers();map.removeLayer(group);map.attributionControl.removeAttribution(credit);selectedMarker=null;}
     }
