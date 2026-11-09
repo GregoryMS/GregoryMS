@@ -4,8 +4,9 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const core=require('../assets/maps-core.js');
 
-function setup({storage=new Map(),initial,config={},onTrafficKeyChange=()=>{}}={}) {
-  const elements=new Map(),calls=[];
+function setup({storage=new Map(),initial,config={},dark=false,onTrafficKeyChange=()=>{}}={}) {
+  const elements=new Map(),calls=[],tiles=[],timers=[],notices=[];
+  let themeObserver;
   const get=id=>{
     if(!elements.has(id))elements.set(id,{
       checked:false,hidden:true,value:'',dataset:{},events:{},
@@ -23,16 +24,17 @@ function setup({storage=new Map(),initial,config={},onTrafficKeyChange=()=>{}}={
   });
   const window={GregleMaps:core,addEventListener(){}};
   for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed'}))window[name]=provider(key);
-  const document={getElementById:get,addEventListener(){},hidden:false};
-  const L={TileLayer:{extend:()=>function(){}},tileLayer:()=>({on(){return this;},setZIndex(){return this;},addTo(){return this;}})};
+  const document={documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
+  const L={TileLayer:{extend:()=>function(){}},tileLayer:(url,options)=>{const tile={url,options,events:{},on(name,fn){this.events[name]=fn;return this;},setZIndex(){return this;},addTo(){return this;}};tiles.push(tile);return tile;}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/../assets/maps-layers.js','utf8'),{
     window,document,L,URL,AbortController,
+    MutationObserver:class {constructor(fn){themeObserver=fn;}observe(){}},
     localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
-    clearInterval(){},clearTimeout(){},setTimeout(){},setInterval(){}
+    clearInterval(){},clearTimeout(){},setTimeout(fn){timers.push(fn);},setInterval(){}
   });
-  const api=window.GregleMapLayers({map:{removeLayer(){},closePopup(){}},config,initial,notify(){},onChange(){},onTrafficKeyChange});
+  const api=window.GregleMapLayers({map:{removeLayer(){},closePopup(){}},config,initial,notify(...args){notices.push(args);},onChange(){},onTrafficKeyChange});
   const change=(id,value)=>{get(id).checked=value;get(id).events.change();};
-  return {api,get,calls,storage,change};
+  return {api,get,calls,storage,change,tiles,notices,flush:()=>{while(timers.length)timers.shift()();},theme:value=>{dark=value;themeObserver();}};
 }
 
 test('the DriveBC switch starts every non-webcam provider and turns the group off together',()=>{
@@ -103,4 +105,29 @@ test('the shared TomTom connection stays off and keeps the personal-key UI and r
  assert.equal(h.get('traffic-layer-description').textContent,'API key required for traffic');
  assert.equal(h.get('traffic-connect').textContent,'Connect TomTom');
  h.api.connectTraffic();assert.equal(h.get('traffic-key-form').hidden,false);
+});
+
+
+test('satellite uses the secret-free relay with Esri credits, saves and shares the base, and retains overlays',()=>{
+  const config={satelliteURL:'https://gregle-esri.square-rain-5ded.workers.dev/tiles/{z}/{x}/{y}.jpg'};
+  const initial=core.normalizeLayers({base:'satellite',maritime:true,aircraft:true});
+  const h=setup({config,initial});
+  const tile=h.tiles[0];
+  assert.equal(tile.url,config.satelliteURL);assert.equal(tile.options.crossOrigin,'anonymous');
+  assert.equal(tile.options.maxNativeZoom,19);assert.match(tile.options.attribution,/Powered by.*Esri/);assert.match(tile.options.attribution,/Vantor/);
+  tile.events.loading();tile.events.tileload();tile.events.load();
+  assert.equal(h.get('base-layer-status').textContent,'Esri World Imagery · satellite map');
+  assert(h.calls.some(c=>c[0]==='aircraft'&&c[1]===true));
+  assert.equal(core.readLayers(core.makeHash(core.defaultView,null,h.api.getState())).base,'satellite');
+  h.change('map-maritime',false);
+  assert.equal(setup({config,storage:h.storage}).api.getState().base,'satellite');
+});
+
+test('satellite survives dark theme startup and changes, and all failed tiles fall back to street',()=>{
+  const h=setup({initial:{base:'satellite'},dark:true,config:{tileURL:'street',satelliteURL:'satellite'}});
+  assert.equal(h.api.getState().base,'satellite');
+  h.theme(false);h.theme(true);assert.equal(h.api.getState().base,'satellite');
+  const tile=h.tiles[0];tile.events.loading();tile.events.tileerror();tile.events.load();h.flush();
+  assert.equal(h.api.getState().base,'street');assert.equal(h.tiles.at(-1).url,'street');
+  assert.match(h.notices.at(-1)[0],/Satellite imagery.*unavailable/);
 });

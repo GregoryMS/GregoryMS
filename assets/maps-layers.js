@@ -11,7 +11,7 @@
     let state = core.normalizeLayers(initial || (saved?.ev === true && saved.teslaDefault !== true ? {...saved, tesla: true} : saved));
     let pageDark = document.documentElement.classList.contains('dark-mode');
     let lightBase = state.base === 'dark' ? 'street' : state.base;
-    if (pageDark) state.base = 'dark';
+    if (pageDark && state.base !== 'satellite') state.base = 'dark';
     const drivebc = window.GregleDriveBC({ map, notify });
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
     const signs = window.GregleDriveBCSigns({ map, config, notify });
@@ -132,33 +132,34 @@
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
       embed.setBase(state.base);
       if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
-      const topographic = state.base === 'topographic', dark = state.base === 'dark';
-      const layer = L.tileLayer(topographic ? config.topographicURL : config.tileURL, {
+      const satellite = state.base === 'satellite', topographic = state.base === 'topographic', dark = state.base === 'dark';
+      const layer = L.tileLayer(satellite ? config.satelliteURL : topographic ? config.topographicURL : config.tileURL, {
         ...layerOptions, maxNativeZoom: topographic ? 17 : 19,
+        crossOrigin: satellite ? 'anonymous' : false,
         className: dark ? 'gregle-dark-basemap' : '',
-        attribution: topographic ? `${osmCredit}, SRTM | &copy; <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA</a>)` : osmCredit
+        attribution: satellite ? 'Powered by <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a> | Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community' : topographic ? `${osmCredit}, SRTM | &copy; <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA</a>)` : osmCredit
       });
       baseLayer = layer;
       let failed = 0, loaded = 0;
       layer.on('loading', () => {
         failed = 0; loaded = 0;
-        if (layer === baseLayer) status('base-layer-status', `Loading ${topographic ? 'topographic' : dark ? 'dark' : 'street'} map…`);
+        if (layer === baseLayer) status('base-layer-status', `Loading ${satellite ? 'satellite' : topographic ? 'topographic' : dark ? 'dark' : 'street'} map…`);
       });
       layer.on('tileerror', () => { failed++; });
       layer.on('tileload', () => { loaded++; });
       layer.on('load', () => {
         if (layer !== baseLayer) return;
-        if (failed && topographic && !loaded) {
+        if (failed && (topographic || satellite) && !loaded) {
           setTimeout(() => {
             if (layer !== baseLayer) return;
             setState({ ...state, base: 'street' }, true);
-            notify('Topographic tiles are unavailable. Showing the street map instead.', 'layer');
+            notify(`${satellite ? 'Satellite imagery is' : 'Topographic tiles are'} unavailable. Showing the street map instead.`, 'layer');
           }, 0);
         } else if (failed) {
           status('base-layer-status', 'Some map tiles could not load. Try moving the map or switching layers.', true);
           notify('Some map tiles could not load. Try moving or zooming the map, or open OpenStreetMap.', 'map', true);
         } else {
-          status('base-layer-status', topographic ? 'OpenTopoMap · contours and terrain' : dark ? 'OpenStreetMap · dark map' : 'OpenStreetMap · street map');
+          status('base-layer-status', satellite ? 'Esri World Imagery · satellite map' : topographic ? 'OpenTopoMap · contours and terrain' : dark ? 'OpenStreetMap · dark map' : 'OpenStreetMap · street map');
           if ($('map-notice').dataset.kind === 'map') $('map-notice').hidden = true;
         }
       });
@@ -364,7 +365,7 @@
       const dark = document.documentElement.classList.contains('dark-mode');
       if (dark === pageDark) return;
       pageDark = dark;
-      if (dark) {
+      if (dark && state.base !== 'satellite') {
         lightBase = state.base === 'dark' ? 'street' : state.base;
         setState({ ...state, base: 'dark' }, true);
       } else if (state.base === 'dark') {

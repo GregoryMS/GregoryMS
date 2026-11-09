@@ -580,6 +580,12 @@ Run `node --test tests/sports*.test.cjs` and `python3 -m unittest discover -s te
 
 
 
+## Maps satellite imagery
+
+Choose **Base map → Satellite** for Esri World Imagery. The Esri key stays in an
+encrypted Cloudflare Worker secret; browsers receive only image tiles. See
+[setup and deployment](docs/maps-esri.md).
+
 ## Maps directions and live navigation
 
 The Directions map button opens a route planner with **Driving** and **Walking** modes. Search and explicitly choose both endpoints, use **My location** for the start, or select a map place / dropped pin and choose **Start here** or **Directions here**. Swap endpoints and clear the journey from the panel. Search uses Photon with map-centre bias and no automatic lookup while typing. **Show route** sends driving endpoints to TomTom when a Routing-enabled key is connected and live traffic is enabled, otherwise OSRM's driving server. Walking uses FOSSGIS's dedicated pedestrian server (`routing.openstreetmap.de/routed-foot/route/v1/foot`). Walking uses pedestrian access rules, not a relabelled driving route. Requests time out after 15 seconds, are spaced by at least 1.1 seconds, and are cancelled or ignored when superseded. Routes and location history are not persisted.

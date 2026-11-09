@@ -1,0 +1,9 @@
+{
+  "name": "gregle-esri",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-09",
+  "workers_dev": true,
+  "secrets": {"required": ["ESRI_API_KEY"]},
+  "ratelimits": [{"name": "TILE_LIMITER", "namespace_id": "10073", "simple": {"limit": 240, "period": 60}}],
+  "observability": {"enabled": true, "head_sampling_rate": 0.1, "redact_query_string": true, "traces": {"enabled": true, "head_sampling_rate": 0.1}}
+}

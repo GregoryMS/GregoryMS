@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-  <script src="assets/maps-core.js?v=20261105-shademap" defer></script>
+  <script src="assets/maps-core.js?v=20261109-esri" defer></script>
   <script src="assets/maps-places-core.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-places.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-busyness-core.js?v=20261102-busyness-one-click" defer></script>
@@ -48,7 +48,7 @@
   <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261105-shademap" defer></script>
+  <script src="assets/maps-layers.js?v=20261109-esri" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261102-private-tomtom" defer></script>
   <script src="assets/maps-routing.js?v=20261102-private-tomtom" defer></script>
@@ -57,7 +57,7 @@
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261105-base-button" defer></script>
   <script src="assets/maps-context-menu.js?v=20261108-share-location" defer></script>
-  <script src="assets/maps.js?v=20261108-share-location" defer></script>
+  <script src="assets/maps.js?v=20261109-esri" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -177,6 +177,7 @@
       <fieldset class="map-base-options"><legend>Base map</legend>
         <label><input type="radio" name="map-base" value="street" checked><span><strong>Street</strong><small>OpenStreetMap</small></span></label>
         <label><input type="radio" name="map-base" value="dark"><span><strong>Dark</strong><small>OpenStreetMap · dark style</small></span></label>
+        <label><input type="radio" name="map-base" value="satellite"><span><strong>Satellite</strong><small>Esri World Imagery</small></span></label>
         <label><input type="radio" name="map-base" value="topographic"><span><strong>Topographic</strong><small>Contours &amp; terrain</small></span></label>
         <label><input type="radio" name="map-base" value="plugshare"><span><strong>PlugShare</strong><small>EV charging map</small></span></label>
         <label><input type="radio" name="map-base" value="shademap"><span><strong>ShadeMap</strong><small>Sunlight &amp; shadows</small></span></label>
