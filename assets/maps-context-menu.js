@@ -1,5 +1,5 @@
 'use strict';
-window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onPin }) => {
+window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onPin, onShare }) => {
   const $ = id => document.getElementById(id), core = window.GregleMaps;
   const container = $('gregle-map'), stage = container.parentElement;
   const menu = $('map-context-menu'), panel = $('map-measure');
@@ -36,6 +36,7 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
     const point = { ...target };
     dismiss(true); onAction(); callback(point);
   }
+  $('map-context-share').addEventListener('click', () => act(point => onShare(point)));
   $('map-context-pin').addEventListener('click', () => act(point => { clear(); onPin(point); }));
   $('map-context-start').addEventListener('click', () => act(point => { clear(); navigation?.choosePoint('from', point); }));
   $('map-context-navigate').addEventListener('click', () => act(point => { clear(); navigation?.navigateTo(point); }));

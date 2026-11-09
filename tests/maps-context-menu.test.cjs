@@ -12,7 +12,7 @@ function harness() {
       addEventListener(name, fn) { this.events[name] = fn; },
       click() { this.events.click(); }, focus() { document.activeElement = this; },
       getBoundingClientRect: () => ({ left: 0, top: 0 }),
-      contains: () => false, querySelectorAll: () => ['pin','navigate','start','measure'].map(s => el('map-context-' + s))
+      contains: () => false, querySelectorAll: () => ['pin','navigate','start','measure','share'].map(s => el('map-context-' + s))
     });
     return els.get(id);
   }
@@ -31,7 +31,7 @@ function harness() {
   const window = { GregleMaps: core, addEventListener() {} };
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-context-menu.js'), 'utf8'), { window, document, L });
   const api = window.GregleMapContextMenu({ map, enabled: () => true, ignore: () => false,
-    onAction() {}, onPin: p => calls.push(['pin', p]),
+    onAction() {}, onPin: p => calls.push(['pin', p]), onShare: p => calls.push(['share',p]),
     navigation: { choosePoint: (f,p) => calls.push([f,p]), navigateTo: p => calls.push(['to',p]) }
   });
   const rightClick = (lat=0,lng=181) => events.get('contextmenu')({ latlng: {lat,lng}, originalEvent: {preventDefault(){}} });
@@ -67,4 +67,24 @@ test('Escape dismisses menu before measurement and prevents global pin-clearing 
   const escape = () => h.docEvents.get('keydown')({key:'Escape',preventDefault(){},stopImmediatePropagation(){stopped++;}});
   escape(); assert.equal(h.el('map-context-menu').hidden,true); assert.equal(h.api.measuring,true);
   escape(); assert.equal(h.api.measuring,false); assert.equal(stopped,2);
+});
+
+test('share my location shares the right-clicked spot and dismisses the menu', () => {
+  const h=harness(); h.rightClick(); h.el('map-context-share').click();
+  assert.equal(h.calls.at(-1)[0],'share'); assert.equal(h.calls.at(-1)[1].lat,0); assert.equal(h.calls.at(-1)[1].lng,-179); assert.equal(h.el('map-context-menu').hidden,true);
+});
+
+test('sharing links pin the supplied point and support native, clipboard and manual fallback', async () => {
+  const source=fs.readFileSync(require.resolve('../assets/maps.js'),'utf8');
+  const shareSource=source.slice(source.indexOf('  async function shareLocation(point) {'),source.indexOf('  const controls = ['));
+  let shared,copied,shown; const els=new Map();
+  const el=id=>{if(!els.has(id))els.set(id,{focus(){},select(){}});return els.get(id);};
+  const navigator={share:async data=>{shared=data;},clipboard:{writeText:async url=>{copied=url;}}};
+  const share=vm.runInNewContext(shareSource+';shareLocation',{URL,navigator,location:{origin:'https://maps.gregle.uk',pathname:'/'},core,$:el,notify(){},drawer:{show:id=>{shown=id;}}});
+  const point={lat:48.5,lng:-123.4,name:'Dropped pin'};
+  await share(point); const decoded=core.readHash(new URL(shared.url).hash);
+  assert.equal(decoded.pin.lat,point.lat); assert.equal(decoded.pin.lng,point.lng); assert.equal(decoded.view.lat,point.lat);
+  navigator.share=undefined; await share(point); assert.equal(copied,shared.url);
+  navigator.clipboard.writeText=async()=>{throw new Error('Unavailable');};
+  await share(point); assert.equal(el('map-link-input').value,shared.url); assert.equal(shown,'map-link-copy');
 });

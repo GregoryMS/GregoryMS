@@ -134,6 +134,21 @@
       $('map-link-input').focus(); $('map-link-input').select();
     }
   }
+  async function shareLocation(point) {
+    const url = new URL(location.pathname, location.origin);
+    url.hash = core.makeHash({ lat: point.lat, lng: point.lng, zoom: 15 }, point);
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Location · Gregle Maps', url: url.href }); return; }
+      catch (error) { if (error.name === 'AbortError') return; }
+    }
+    try { await navigator.clipboard.writeText(url.href); notify('Location link copied.'); }
+    catch {
+      $('map-link-copy').hidden = false;
+      $('map-link-input').value = url.href;
+      drawer?.show('map-link-copy', true);
+      $('map-link-input').focus(); $('map-link-input').select();
+    }
+  }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-base-toggle'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
   if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GregleMapEmbed || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleStreetView || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces || !window.GregleMapPinGestures) {
@@ -178,7 +193,7 @@
   });
   map.on('dblclick', event => { if (!pinGestures.ignoreDoubleClick(event.originalEvent)) dropPin(event); });
   contextTools = window.GregleMapContextMenu?.({
-    map, navigation, enabled: () => !usingEmbed,
+    map, navigation, enabled: () => !usingEmbed, onShare: shareLocation,
     ignore: event => pinGestures.ignoreDoubleClick(event),
     onAction: () => { intent++; cancelSearch(); hideSearch(); },
     onPin: point => { renderPin(point, true, true); updateURL(); },
