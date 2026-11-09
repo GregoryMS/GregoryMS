@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261105-dark-basemap">
+  <link rel="stylesheet" href="assets/maps.css?v=20261108-context-menu">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -53,10 +53,11 @@
   <script src="assets/maps-navigation-core.js?v=20261102-private-tomtom" defer></script>
   <script src="assets/maps-routing.js?v=20261102-private-tomtom" defer></script>
   <script src="assets/maps-navigation-live.js?v=20261102-private-tomtom" defer></script>
-  <script src="assets/maps-navigation.js?v=20261103-mobile-ui" defer></script>
+  <script src="assets/maps-navigation.js?v=20261108-context-menu" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261105-base-button" defer></script>
-  <script src="assets/maps.js?v=20261105-base-button" defer></script>
+  <script src="assets/maps-context-menu.js?v=20261108-context-menu" defer></script>
+  <script src="assets/maps.js?v=20261108-context-menu" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
@@ -92,7 +93,21 @@
     </div>
   </header>
   <main class="map-stage" aria-label="Gregle Maps">
-    <div id="gregle-map" aria-label="Interactive OpenStreetMap. Double-click, double-tap, or touch and hold to drop a pin. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
+    <div id="gregle-map" aria-label="Interactive OpenStreetMap. Right-click for map actions and coordinates. Double-click, double-tap, or touch and hold to drop a pin. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
+    <section class="map-context-menu map-glass" id="map-context-menu" aria-label="Map point actions" hidden>
+      <div role="menu" aria-label="Actions at this point">
+        <button type="button" role="menuitem" id="map-context-pin">Drop pin</button>
+        <button type="button" role="menuitem" id="map-context-navigate">Navigate here</button>
+        <button type="button" role="menuitem" id="map-context-start">Start here</button>
+        <button type="button" role="menuitem" id="map-context-measure">Measure distance</button>
+      </div>
+      <div class="map-context-coordinates"><span id="map-context-lat"></span><span id="map-context-lng"></span></div>
+    </section>
+    <section class="map-measure map-glass" id="map-measure" aria-label="Measure distance" hidden>
+      <div><strong id="map-measure-total" role="status" aria-live="polite">0 m</strong><button type="button" id="map-measure-clear" aria-label="Clear measurement">×</button></div>
+      <p id="map-measure-help">Click the map to add points. Distance is measured in a straight line.</p>
+      <div><button type="button" id="map-measure-undo">Undo point</button><button type="button" id="map-measure-finish">Finish</button></div>
+    </section>
     <section class="streetview-panel" id="streetview-panel" aria-labelledby="streetview-heading" hidden>
       <div class="streetview-toolbar"><h2 id="streetview-heading">Street View</h2><a id="streetview-google" href="https://www.google.com/maps/" target="_blank" rel="noopener">Google Maps ↗</a><button id="streetview-close" type="button" aria-label="Close Street View">Back to map</button></div>
       <p class="streetview-help">Tap a street on the map to explore. Drag to look around; use the panorama’s arrows to move. Coverage varies.</p>

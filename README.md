@@ -187,6 +187,8 @@ The shared nine-dot app launcher includes Radio, Dictionary and Cloud (https://c
 
 ## Maps
 
+Right-click the map for **Drop pin**, **Navigate here**, **Start here**, **Measure distance**, and the clicked latitude/longitude. Navigate here uses the chosen starting point or requests device location, then previews the route for starting navigation. Measure distance adds straight-line segments with each map click; use Undo point, Finish or × to clear. Escape dismisses the menu first, then cancels an active measurement.
+
 Maps also offers Google **Popular times** on demand, using the standard Places
 UI Kit alongside the existing OSM map. See [setup and quota handling](docs/maps-busyness.md)
 for the restricted runtime browser key, Cloudflare secret and 300/day quota.

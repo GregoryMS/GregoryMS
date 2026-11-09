@@ -16,7 +16,7 @@
     placesURL: 'https://overpass.private.coffee/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, drawer, layerControl, placeDetails, busyness, navigation, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
+  let map, drawer, layerControl, placeDetails, busyness, navigation, contextTools, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
   const cache = new Map();
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
@@ -89,6 +89,7 @@
     if (embedded === usingEmbed) return;
     usingEmbed = embedded; intent++; cancelSearch(); hideSearch();
     if (embedded) {
+      contextTools?.clear();
       navigation?.close();
       placeDetails?.clear();
       if (document.activeElement?.closest('.map-search, .map-place, .map-actions, #gregle-map')) $('embedded-layers-toggle').focus({ preventScroll: true });
@@ -167,7 +168,7 @@
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
   const dropPin = event => {
-    if (usingEmbed || layerControl.getState().streetview || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
+    if (contextTools?.measuring || usingEmbed || layerControl.getState().streetview || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
     if (core.validPoint(point.lat, point.lng)) { intent++; cancelSearch(); hideSearch(); renderPin(point, true, true); updateURL(); }
   };
@@ -176,6 +177,12 @@
     onPin: touch => dropPin({ latlng: map.mouseEventToLatLng(touch), originalEvent: { target: touch.target } }),
   });
   map.on('dblclick', event => { if (!pinGestures.ignoreDoubleClick(event.originalEvent)) dropPin(event); });
+  contextTools = window.GregleMapContextMenu?.({
+    map, navigation, enabled: () => !usingEmbed,
+    ignore: event => pinGestures.ignoreDoubleClick(event),
+    onAction: () => { intent++; cancelSearch(); hideSearch(); },
+    onPin: point => { renderPin(point, true, true); updateURL(); },
+  });
   window.addEventListener('hashchange', () => {
     intent++; cancelSearch(); hideSearch();
     const state = core.readHash(location.hash);

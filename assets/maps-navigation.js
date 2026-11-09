@@ -67,6 +67,17 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     if ($('map-layers-toggle').getAttribute('aria-expanded') === 'true') $('close-map-layers').click();
     onOpen();
   }
+  function choosePoint(field, point) {
+    if (!['from', 'to'].includes(field) || !core.valid(point)) return;
+    open(); setPoint(field, point);
+    active = field === 'from' ? 'to' : 'from'; inputs[active].focus();
+  }
+  function navigateTo(point) {
+    if (!core.valid(point)) return;
+    choosePoint('to', point);
+    if (points.from) return calculateRoute();
+    else useLocation(true);
+  }
   function close() {
     invalidate('Directions paused. Show route to calculate again.');
     panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
@@ -98,8 +109,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     inputs[field].addEventListener('focus', () => { active = field; $('directions-search').textContent = `Find ${field === 'from' ? 'starting point' : 'destination'}`; });
     inputs[field].addEventListener('input', () => { points[field] = null; invalidate('Search and choose a matching place.'); });
     $(`directions-${field}-pin`).addEventListener('click', () => {
-      const p = getSelected(); if (!core.valid(p)) return;
-      open(); setPoint(field, p); active = field === 'from' ? 'to' : 'from'; inputs[active].focus();
+      choosePoint(field, getSelected());
     });
   }
   $('directions-swap').addEventListener('click', () => {
@@ -109,7 +119,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   $('directions-clear').addEventListener('click', () => {
     points.from = points.to = null; inputs.from.value = inputs.to.value = ''; invalidate(); active = 'from'; inputs.from.focus();
   });
-  $('directions-location').addEventListener('click', () => {
+  function useLocation(routeAfter = false) {
     invalidate();
     if (!navigator.geolocation) { status('Location is unavailable. Search for a starting point instead.'); return; }
     const token = version; locating = true; $('directions-location').disabled = true; status('Finding your starting location…');
@@ -118,8 +128,10 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       const p = { lat: position.coords.latitude, lng: position.coords.longitude, name: 'My location' };
       if (!core.valid(p)) { invalidate('Your location was invalid. Search for a starting point.'); return; }
       setPoint('from', p); active = 'to'; inputs.to.focus();
+      if (routeAfter && points.to) calculateRoute();
     }, () => { if (token === version) invalidate('Location could not be shared. Allow location access or search for a starting point.'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
-  });
+  }
+  $('directions-location').addEventListener('click', () => useLocation());
   $('directions-search-form').addEventListener('submit', async e => {
     e.preventDefault(); const field = active, term = inputs[field].value.trim();
     invalidate();
@@ -187,5 +199,5 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     syncTraffic();
   }
   syncTraffic();
-  return { close, refreshTraffic };
+  return { close, refreshTraffic, choosePoint, navigateTo };
 };

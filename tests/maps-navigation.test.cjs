@@ -17,7 +17,7 @@ function harness({connected=false,defaultAvailable=false}={}){
  class El{constructor(){this.hidden=false;this.value='';this.children=[];this.events={};this.attrs={};this.classList={add(){},remove(){}};}addEventListener(e,f){(this.events[e]??=[]).push(f);}getAttribute(k){return this.attrs[k];}setAttribute(k,v){this.attrs[k]=v;}removeAttribute(k){delete this.attrs[k];}replaceChildren(...c){this.children=c;}append(...c){this.children.push(...c);}focus(){}async fire(e){for(const f of this.events[e]||[])await f({preventDefault(){},stopPropagation(){}});}click(){return this.fire('click');}}
  const el=id=>{if(!els.has(id))els.set(id,new El());return els.get(id);};el('map-directions').hidden=true;const pending=[];
  const ctx={window:{GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s){geoSuccess=s;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
- vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess};
 }
 async function endpoints(h){await h.el('directions-from-pin').click();h.select(b);await h.el('directions-to-pin').click();}
 test('editing during a route request rejects stale geometry and links',async()=>{
@@ -43,4 +43,19 @@ test('private default routing keeps the route switch off but available, alongsid
  const h=harness({defaultAvailable:true});await endpoints(h);const work=h.el('directions-route').click();h.pending[0].resolve({ok:true,json:async()=>data()});await work;
  assert.equal(h.el('directions-traffic').attrs['aria-checked'],'false');assert.equal(h.el('directions-traffic').disabled,false);
  assert.equal(h.el('directions-traffic-connect').hidden,false);assert.equal(h.el('directions-traffic-connect').textContent,'Add your own TomTom key');
+});
+
+
+test('context actions route from an explicit start without changing the selected pin', async()=>{
+ const h=harness(); h.api.choosePoint('from',a);
+ const work=h.api.navigateTo(b); assert.equal(h.pending.length,1);
+ assert(h.pending[0].url.includes('-123.365600,48.428400;-123.380000,48.450000'));
+ h.pending[0].resolve({ok:true,json:async()=>data()}); await work;
+ assert.equal(h.el('map-directions').hidden,false); assert.equal(h.el('directions-summary').hidden,false);
+});
+test('navigate here uses location when needed and closing cancels a late result',()=>{
+ const h=harness(); h.api.navigateTo(b); assert.equal(typeof h.geo(),'function');
+ assert.equal(h.el('directions-to').value,'Destination'); assert.equal(h.pending.length,0);
+ h.api.close(); h.geo()({coords:{latitude:a.lat,longitude:a.lng}});
+ assert.equal(h.pending.length,0); assert.equal(h.el('directions-from').value,'');
 });
