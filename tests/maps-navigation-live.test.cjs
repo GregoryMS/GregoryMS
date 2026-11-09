@@ -164,3 +164,28 @@ test('a failed 3D map load returns to 2D without ending GPS navigation', async (
   assert(h.live.active); assert(exited); assert.match(h.el('navigation-status').textContent,/Continuing navigation in 2D/);
   assert.equal(h.el('navigation-3d').attributes['aria-pressed'],'false'); h.live.stop();
 });
+
+test('navigation requests fullscreen and restores the page when stopped', async () => {
+  const h=harness(), classes=new Set(); let entered=0, exited=0;
+  h.context.document.body={classList:{add:name=>classes.add(name),remove:name=>classes.delete(name)}};
+  h.context.document.fullscreenEnabled=true;
+  h.el('stage').requestFullscreen=async()=>{entered++;h.context.document.fullscreenElement=h.el('stage');};
+  h.context.document.exitFullscreen=async()=>{exited++;h.context.document.fullscreenElement=null;};
+  h.live.start(core.readRoute(response()),'driving',destination);
+  await new Promise(resolve=>setImmediate(resolve));
+  assert(classes.has('navigation-fullscreen'));assert.equal(entered,1);
+  h.live.stop();assert(!classes.has('navigation-fullscreen'));assert.equal(exited,1);
+  // A user-entered fullscreen view belongs to the user, including after Stop.
+  h.context.document.fullscreenElement=h.el('stage');
+  h.live.start(core.readRoute(response()),'driving',destination);h.live.stop();
+  assert.equal(entered,1);assert.equal(exited,1);
+});
+
+test('a pending fullscreen request cannot leave the stopped page in fullscreen', async () => {
+  const h=harness();let finish,exited=0;
+  h.context.document.fullscreenEnabled=true;
+  h.el('stage').requestFullscreen=()=>new Promise(resolve=>finish=()=>{h.context.document.fullscreenElement=h.el('stage');resolve();});
+  h.context.document.exitFullscreen=async()=>{exited++;h.context.document.fullscreenElement=null;};
+  h.live.start(core.readRoute(response()),'driving',destination);h.live.stop();finish();
+  await new Promise(resolve=>setImmediate(resolve));assert.equal(exited,1);
+});

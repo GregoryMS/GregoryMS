@@ -5,6 +5,19 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   let running = false, session = 0, watch = null, timer, route, mode, destination, lastFix = 0;
   let previous = null, marker, halo, follow = true, voice = false, spoken = '', controller, lastReroute = 0, offSince = 0, firstFix = true, ended = false;
   let trafficChangePending = false, lastTrafficAttempt = 0, updatingTraffic = false;
+  let ownsFullscreen = false;
+  function enterFullscreen() {
+    document.body?.classList.add('navigation-fullscreen');
+    // iPhone Safari can use the viewport layout even without element fullscreen.
+    if (document.fullscreenElement || !document.fullscreenEnabled || !stage.requestFullscreen) return;
+    try {
+      Promise.resolve(stage.requestFullscreen()).then(() => {
+        if (document.fullscreenElement !== stage) return;
+        if (running || ended) ownsFullscreen = true;
+        else return document.exitFullscreen();
+      }).catch(() => {});
+    } catch {}
+  }
   const liveStatus = text => { $('navigation-status').textContent = text; };
   let wants3D = false, switchVersion = 0, lastCoords = null;
   const threeD = window.GregleNavigation3D?.({onBrowse: () => setFollow(false), onError: () => {
@@ -49,6 +62,11 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     window.speechSynthesis.speak(utterance);
   }
   function cleanup() {
+    document.body?.classList.remove('navigation-fullscreen');
+    if (ownsFullscreen && document.fullscreenElement === stage) {
+      try { Promise.resolve(document.exitFullscreen()).catch(() => {}); } catch {}
+    }
+    ownsFullscreen = false;
     disable3D(); lastCoords = null;
     session++; running = false; ended = false; trafficChangePending = false; updatingTraffic = false;
     if (watch !== null) navigator.geolocation.clearWatch(watch);
@@ -177,6 +195,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     cleanup(); route = nextRoute; mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; spoken = ''; lastTrafficAttempt = Date.now();
     running = true; const token = session; setFollow(true); card.hidden = false;
     stage.classList.add('navigating'); $('navigation-stop').textContent = 'Stop';
+    enterFullscreen();
     $('navigation-distance').textContent = 'Starting'; $('navigation-instruction').textContent = 'Finding your location…';
     $('navigation-remaining').textContent = `${core.distance(route.distance)} · ${core.duration(route.duration)}`;
     $('navigation-eta').textContent = ''; $('navigation-arrow').textContent = '↑'; liveStatus('Allow location access to start live guidance.');
