@@ -169,7 +169,7 @@
   } catch {}
   config.serverTomTom = await serverTomTom;
   const initial = core.readHash(location.hash);
-  map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, tapHold: false, minZoom: 2, maxZoom: 19, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
+  map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, tapHold: false, minZoom: 2, maxZoom: 23, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   drawer = window.GregleMapDrawer?.({ map });
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);

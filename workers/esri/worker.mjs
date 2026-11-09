@@ -34,12 +34,12 @@ export default {
     const match = /^\/tiles\/(0|[1-9]\d?)\/(0|[1-9]\d{0,9})\/(0|[1-9]\d{0,9})\.jpg$/.exec(url.pathname);
     if (!match || url.search) return error('Not found', 404);
     const [z, x, y] = match.slice(1).map(Number);
-    if (z > 19 || x >= 2 ** z || y >= 2 ** z) return error('Invalid tile', 400);
+    if (z > 23 || x >= 2 ** z || y >= 2 ** z) return error('Invalid tile', 400);
     if (request.method === 'OPTIONS') return new Response(null, {status: 204, headers: {...headers, 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Max-Age': '86400'}});
     if (request.method !== 'GET') return new Response('GET required', {status: 405, headers: {...headers, Allow: 'GET, OPTIONS'}});
     if (!env.ESRI_API_KEY) return error('Satellite imagery is not configured', 503);
     const cache = caches.default;
-    const cacheKey = new Request(`${url.origin}/cache/esri-v1/${z}/${x}/${y}.jpg`);
+    const cacheKey = new Request(`${url.origin}/cache/esri-v2/${z}/${x}/${y}.jpg`);
     const send = response => {
       const h = new Headers(response.headers);
       h.set('Access-Control-Allow-Origin', origin); h.set('Vary', 'Origin');
@@ -53,6 +53,7 @@ export default {
       const allowed = await env.TILE_LIMITER.limit({key: 'esri-tile-misses'});
       if (!allowed.success) return new Response('Satellite imagery is busy; retry shortly', {status: 429, headers: {...headers, 'Retry-After': '60'}});
       const upstream = new URL(`https://ibasemaps-api.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`);
+      upstream.searchParams.set('blankTile', 'false');
       upstream.searchParams.set('token', env.ESRI_API_KEY);
       const response = await fetch(upstream, {headers: {Accept: 'image/jpeg, image/png'}, redirect: 'manual', signal: AbortSignal.timeout(10000)});
       if (!response.ok || !/^image\/(jpeg|png)(;|$)/i.test(response.headers.get('Content-Type') || '')) {

@@ -28,6 +28,7 @@ test('only the upstream request contains the key, XYZ becomes Esri ZYX, and cach
     assert.deepEqual(new Uint8Array(await result.arrayBuffer()),jpeg);
     const upstream=new URL(h.calls[0][0]);
     assert.equal(upstream.hostname,'ibasemaps-api.arcgis.com');assert.match(upstream.pathname,/tile\/13\/2833\/1288$/);
+    assert.equal(upstream.searchParams.get('blankTile'),'false');
     assert.equal(upstream.searchParams.get('token'),secret);assert.equal(h.calls[0][1].redirect,'manual');
     assert(!JSON.stringify([...result.headers]).includes(secret));
     await Promise.all(h.pending);
@@ -43,7 +44,7 @@ test('invalid origins, paths, coordinates, methods, extra parameters and missing
   await fixture(async h=>{
     for(const [tile,options,status] of [
       [undefined,{headers:{Origin:'https://attacker.example'}},403],
-      [undefined,{headers:{}},403],['/tiles/20/0/0.jpg',{},400],['/tiles/1/2/0.jpg',{},400],
+      [undefined,{headers:{}},403],['/tiles/24/0/0.jpg',{},400],['/tiles/1/2/0.jpg',{},400],
       ['/tiles/13/-1/0.jpg',{},404],['/tiles/13/0/0.jpg?url=https://attacker.example',{},404],
       [undefined,{method:'POST'},405]
     ]) assert.equal((await h.get(tile,options)).status,status);
@@ -74,4 +75,13 @@ test('provider errors, redirects, JSON, fake images, oversized images and except
     assert(!(await response.text()).includes(secret));assert.equal(response.headers.get('Location'),null);
     assert.equal(response.headers.get('Cache-Control'),'no-store');assert.equal(h.entries.size,0);
   },upstream);
+});
+
+
+test('high-detail tile levels through 23 reach Esri with bounded coordinates',async()=>{
+  await fixture(async h=>{
+    for(const zoom of [20,21,22,23])assert.equal((await h.get(`/tiles/${zoom}/0/0.jpg`)).status,200);
+    assert.equal(h.calls.length,4);
+    assert.equal((await h.get('/tiles/23/8388608/0.jpg')).status,400);
+  });
 });

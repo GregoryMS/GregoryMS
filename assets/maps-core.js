@@ -19,7 +19,7 @@
     let view = { ...defaultView };
     if (parts.length === 3 && parts.every(part => part.trim() !== '')) {
       const [zoom, lat, lng] = parts.map(Number);
-      if (Number.isInteger(zoom) && zoom >= 2 && zoom <= 19 && validPoint(lat, lng) && Math.abs(lat) <= 85.05113) view = { lat, lng, zoom };
+      if (Number.isInteger(zoom) && zoom >= 2 && zoom <= 23 && validPoint(lat, lng) && Math.abs(lat) <= 85.05113) view = { lat, lng, zoom };
     }
     const coords = (params.get('pin') || '').split(',');
     const [lat, lng] = coords.map(Number);
@@ -29,7 +29,7 @@
     return { view, pin };
   }
   function viewHash(view) {
-    return `map=${Math.max(2, Math.min(19, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
+    return `map=${Math.max(2, Math.min(23, Math.round(view.zoom)))}/${Math.max(-85.051129, Math.min(85.051129, view.lat)).toFixed(5)}/${wrapLongitude(view.lng).toFixed(5)}`;
   }
   function normalizeLayers(value) {
     return { fuel: value?.fuel === true, fuelType: ['regular','midgrade','premium','diesel'].includes(value?.fuelType) ? value.fuelType : 'regular', evSource: value?.evSource === 'openstreetmap' ? 'openstreetmap' : 'openchargemap', base: ['street', 'dark', 'satellite', 'topographic', 'plugshare', 'adsbexchange', 'shademap'].includes(value?.base) ? value.base : 'street', maritime: value?.maritime === true, aviation: value?.aviation === true, aircraft: value?.aircraft === true, vessels: value?.vessels === true, ev: value?.ev === true, tesla: value?.tesla === true || value?.ev === true && value?.tesla === undefined, drivebc: value?.drivebc === true, future: value?.future === true, webcams: value?.webcams === true, speed: value?.speed === true, messages: value?.messages === true, ferries: value?.ferries === true, traffic: value?.traffic === true, google: value?.google === true, streetview: value?.streetview === true };

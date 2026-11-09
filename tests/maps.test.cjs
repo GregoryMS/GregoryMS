@@ -32,7 +32,7 @@ test('map links preserve the view, pin and names containing URL characters', () 
 });
 
 test('invalid or empty coordinates cannot create a pin or unusable view', () => {
-  for (const hash of ['', '#map=0/1/2', '#map=20/1/2', '#map=13/NaN/2', '#map=13/90/2', '#map=13/4/181', '#map=13//']) {
+  for (const hash of ['', '#map=0/1/2', '#map=24/1/2', '#map=13/NaN/2', '#map=13/90/2', '#map=13/4/181', '#map=13//']) {
     assert.deepEqual(maps.readHash(hash).view, maps.defaultView, hash);
   }
   for (const hash of ['#pin=,', '#pin=1,', '#pin=,2', '#pin=91,0', '#pin=0,181', '#pin=1,2,3', '#pin=null,2']) assert.equal(maps.readHash(hash).pin, null, hash);
@@ -49,7 +49,7 @@ test('panning around the world normalizes longitude and clamps map bounds', () =
   const state = maps.readHash(maps.makeHash({ lat: 89, lng: 541, zoom: 22 }));
   assert.equal(state.view.lat, 85.05113);
   assert.equal(state.view.lng, -179);
-  assert.equal(state.view.zoom, 19);
+  assert.equal(state.view.zoom, 22);
 });
 
 const feature = (properties = {}, coordinates = [-123.3656, 48.4284]) => ({ type: 'Feature', properties, geometry: { type: 'Point', coordinates } });
@@ -246,4 +246,14 @@ test('DriveBC supports legacy points and samples long road geometries while reta
   assert.equal(results[0].severity, 'UNKNOWN');
   assert.equal(results[0].updated, null);
   assert.deepEqual(results[1].point, [50, -124]);
+});
+
+
+test('satellite share links preserve close zoom through level 23',()=>{
+  for(const zoom of [20,21,22,23]){
+    const hash=maps.makeHash({...maps.defaultView,zoom},null,{base:'satellite'});
+    assert.equal(maps.readHash(hash).view.zoom,zoom);
+    assert.equal(maps.readLayers(hash).base,'satellite');
+  }
+  assert.equal(maps.readHash(maps.makeHash({...maps.defaultView,zoom:99})).view.zoom,23);
 });

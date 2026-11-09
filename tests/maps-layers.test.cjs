@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const core=require('../assets/maps-core.js');
 
-function setup({storage=new Map(),initial,config={},dark=false,onTrafficKeyChange=()=>{}}={}) {
+function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom=13,onTrafficKeyChange=()=>{}}={}) {
   const elements=new Map(),calls=[],tiles=[],timers=[],notices=[];
   let themeObserver;
   const get=id=>{
@@ -22,7 +22,7 @@ function setup({storage=new Map(),initial,config={},dark=false,onTrafficKeyChang
     setSelection(...args){calls.push([name,...args]);},setSource(){},hasKey:()=>true,
     setBase(value){calls.push(['embed',value]);}
   });
-  const window={GregleMaps:core,addEventListener(){}};
+  const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener(){}};
   for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed'}))window[name]=provider(key);
   const document={documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
   const L={TileLayer:{extend:()=>function(){}},tileLayer:(url,options)=>{const tile={url,options,events:{},on(name,fn){this.events[name]=fn;return this;},setZIndex(){return this;},addTo(){return this;}};tiles.push(tile);return tile;}};
@@ -32,7 +32,7 @@ function setup({storage=new Map(),initial,config={},dark=false,onTrafficKeyChang
     localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
     clearInterval(){},clearTimeout(){},setTimeout(fn){timers.push(fn);},setInterval(){}
   });
-  const api=window.GregleMapLayers({map:{removeLayer(){},closePopup(){}},config,initial,notify(...args){notices.push(args);},onChange(){},onTrafficKeyChange});
+  const api=window.GregleMapLayers({map:{getZoom:()=>zoom,setMaxZoom(value){calls.push(['maxZoom',value]);zoom=Math.min(zoom,value);},removeLayer(){},closePopup(){}},config,initial,notify(...args){notices.push(args);},onChange(){},onTrafficKeyChange});
   const change=(id,value)=>{get(id).checked=value;get(id).events.change();};
   return {api,get,calls,storage,change,tiles,notices,flush:()=>{while(timers.length)timers.shift()();},theme:value=>{dark=value;themeObserver();}};
 }
@@ -114,7 +114,7 @@ test('satellite uses the secret-free relay with Esri credits, saves and shares t
   const h=setup({config,initial});
   const tile=h.tiles[0];
   assert.equal(tile.url,config.satelliteURL);assert.equal(tile.options.crossOrigin,'anonymous');
-  assert.equal(tile.options.maxNativeZoom,19);assert.match(tile.options.attribution,/Powered by.*Esri/);assert.match(tile.options.attribution,/Vantor/);
+  assert.equal(tile.options.maxNativeZoom,23);assert.match(tile.options.attribution,/Powered by.*Esri/);assert.match(tile.options.attribution,/Vantor/);
   tile.events.loading();tile.events.tileload();tile.events.load();
   assert.equal(h.get('base-layer-status').textContent,'Esri World Imagery · satellite map');
   assert(h.calls.some(c=>c[0]==='aircraft'&&c[1]===true));
@@ -127,7 +127,26 @@ test('satellite survives dark theme startup and changes, and all failed tiles fa
   const h=setup({initial:{base:'satellite'},dark:true,config:{tileURL:'street',satelliteURL:'satellite'}});
   assert.equal(h.api.getState().base,'satellite');
   h.theme(false);h.theme(true);assert.equal(h.api.getState().base,'satellite');
-  const tile=h.tiles[0];tile.events.loading();tile.events.tileerror();tile.events.load();h.flush();
+  const tile=h.tiles[0];tile.events.loading();tile.events.tileerror({});tile.events.load();h.flush();
   assert.equal(h.api.getState().base,'street');assert.equal(h.tiles.at(-1).url,'street');
   assert.match(h.notices.at(-1)[0],/Satellite imagery.*unavailable/);
+});
+
+
+test('Retina satellite tiles use higher source detail, cap at 23, and fall back without losing the view',()=>{
+  const h=setup({initial:{base:'satellite'},pixelRatio:2,zoom:23});
+  assert(h.calls.some(c=>c[0]==='maxZoom'&&c[1]===23));
+  let tile=h.tiles.at(-1);
+  assert.equal(tile.options.tileSize,128);assert.equal(tile.options.zoomOffset,1);
+  assert.equal(tile.options.maxZoom,23);assert.equal(tile.options.maxNativeZoom,22);
+  for(const sourceZoom of [23,22,21,20]){
+    tile.events.loading();tile.events.tileerror({coords:{z:sourceZoom-1}});tile.events.load();h.flush();
+    tile=h.tiles.at(-1);
+    assert.equal(tile.options.maxNativeZoom,sourceZoom-2);
+    assert.equal(h.api.getState().base,'satellite');
+  }
+  tile.events.loading();tile.events.tileload();tile.events.load();
+  assert.match(h.get('base-layer-status').textContent,/using available detail/);
+  h.api.setState({base:'street'});
+  assert.deepEqual(h.calls.at(-2),['maxZoom',19]);
 });

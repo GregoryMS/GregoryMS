@@ -128,28 +128,42 @@
       if (!hasTrafficAccess()) status('traffic-layer-status', 'TomTom offers a free allowance; add your API key to connect.');
       else if (!state.traffic) status('traffic-layer-status', apiKey ? 'Connected in this browser. Turn on Traffic to display it.' : 'TomTom is off. Turn on Traffic to display it, or add your own API key to replace the default connection.');
     };
-    function changeBase() {
+    function changeBase(satelliteNativeZoom = 23) {
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
+      map.setMaxZoom(state.base === 'satellite' ? 23 : 19);
       embed.setBase(state.base);
       if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
       const satellite = state.base === 'satellite', topographic = state.base === 'topographic', dark = state.base === 'dark';
+      const retinaOffset = satellite && window.devicePixelRatio > 1 ? 1 : 0;
       const layer = L.tileLayer(satellite ? config.satelliteURL : topographic ? config.topographicURL : config.tileURL, {
-        ...layerOptions, maxNativeZoom: topographic ? 17 : 19,
+        ...layerOptions, maxZoom: satellite ? 23 : 19,
+        // Match Leaflet's Retina tiling, but cap the requested source zoom at 23.
+        tileSize: retinaOffset ? 128 : 256, zoomOffset: retinaOffset,
+        maxNativeZoom: satellite ? satelliteNativeZoom - retinaOffset : topographic ? 17 : 19,
         crossOrigin: satellite ? 'anonymous' : false,
         className: dark ? 'gregle-dark-basemap' : '',
         attribution: satellite ? 'Powered by <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a> | Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community' : topographic ? `${osmCredit}, SRTM | &copy; <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA</a>)` : osmCredit
       });
       baseLayer = layer;
-      let failed = 0, loaded = 0;
+      let failed = 0, loaded = 0, failedZoom = Infinity;
       layer.on('loading', () => {
-        failed = 0; loaded = 0;
+        failed = 0; loaded = 0; failedZoom = Infinity;
         if (layer === baseLayer) status('base-layer-status', `Loading ${satellite ? 'satellite' : topographic ? 'topographic' : dark ? 'dark' : 'street'} map…`);
       });
-      layer.on('tileerror', () => { failed++; });
+      layer.on('tileerror', event => {
+        failed++;
+        failedZoom = Math.min(failedZoom, Math.min(event.coords?.z ?? Math.round(map.getZoom()), layer.options.maxNativeZoom) + retinaOffset);
+      });
       layer.on('tileload', () => { loaded++; });
       layer.on('load', () => {
         if (layer !== baseLayer) return;
-        if (failed && (topographic || satellite) && !loaded) {
+        if (failed && satellite && failedZoom > 19) {
+          // Reuse lower-zoom imagery at the same view when detailed tiles are absent.
+          setTimeout(() => {
+            if (layer !== baseLayer) return;
+            changeBase(failedZoom - 1);
+          }, 0);
+        } else if (failed && (topographic || satellite) && !loaded) {
           setTimeout(() => {
             if (layer !== baseLayer) return;
             setState({ ...state, base: 'street' }, true);
@@ -159,7 +173,7 @@
           status('base-layer-status', 'Some map tiles could not load. Try moving the map or switching layers.', true);
           notify('Some map tiles could not load. Try moving or zooming the map, or open OpenStreetMap.', 'map', true);
         } else {
-          status('base-layer-status', satellite ? 'Esri World Imagery · satellite map' : topographic ? 'OpenTopoMap · contours and terrain' : dark ? 'OpenStreetMap · dark map' : 'OpenStreetMap · street map');
+          status('base-layer-status', satellite ? `Esri World Imagery · ${satelliteNativeZoom < 23 ? 'using available detail' : 'satellite map'}` : topographic ? 'OpenTopoMap · contours and terrain' : dark ? 'OpenStreetMap · dark map' : 'OpenStreetMap · street map');
           if ($('map-notice').dataset.kind === 'map') $('map-notice').hidden = true;
         }
       });
