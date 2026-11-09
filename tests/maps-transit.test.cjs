@@ -6,6 +6,8 @@ const NOW=Date.parse('2026-11-09T18:00:00Z');
 const stop={id:'ca-bc-Victoria-Transit_100032',name:'Douglas St at Fort St',lat:48.42437,lng:-123.36532,scope:'bc',zone:'America/Vancouver',modes:['BUS']};
 const rawStop={stopId:stop.id,name:stop.name,lat:stop.lat,lon:stop.lng,modes:['BUS']};
 const departure=(extra={})=>({tripId:'trip1',displayName:'5',headsign:'Willows',realTime:false,place:{stopId:stop.id,departure:'2026-11-09T18:06:00Z',scheduledDeparture:'2026-11-09T18:03:00Z',pickupType:'NORMAL'},...extra});
+const sharedStop=require('./fixtures/transit-shared-bus-stop.json');
+const pandora={id:'ca-bc-Cowichan-Valley-Transit_100082',name:'Douglas & Pandora (Victoria City Hall)',lat:48.42867,lng:-123.36457,code:'100082',modes:['BUS'],scope:'bc',zone:'America/Vancouver'};
 
 test('transit scope rejects other regions, oversized views and low zooms, including wrapped maps',()=>{
  assert.equal(core.area([-123.38,48.42,-123.35,48.44],12),null);
@@ -33,6 +35,24 @@ test('departure board distinguishes real-time, scheduled, cancelled and unsafe d
 });
 
 const flush=async()=>{for(let i=0;i<25;i++)await Promise.resolve();};
+
+test('shared local/commuter stops include the same coded boarding point across feeds',()=>{
+ const url=new URL(core.departuresURL(pandora,new Date(NOW).toISOString(),'LATER|123'));
+ assert.equal(url.searchParams.get('stopId'),pandora.id);assert.equal(url.searchParams.get('radius'),'35');assert.equal(url.searchParams.get('exactRadius'),'true');assert.equal(url.searchParams.get('pageCursor'),'LATER|123');
+ const board=core.readDepartures(sharedStop,pandora);
+ assert.equal(board.rows.length,3);assert(board.rows.every(row=>row.operator==='BCTransit'));assert(board.rows.some(row=>row.route==='22A'));
+ // Apply the rule to arbitrary BC and London feed IDs, not a Victoria name list.
+ for(const scope of ['bc','london']){
+  const selected={...pandora,scope,id:scope==='bc'?'ca-bc-commuter_42':'gb-commuter_42',code:'42',lat:scope==='bc'?48.42:51.5,lng:scope==='bc'?-123.36:-.12};
+  const local=scope==='bc'?'ca-bc-local_42':'gb-local_42';
+  const row=departure({place:{stopId:local,stopCode:'42',lat:selected.lat+.00001,lon:selected.lng,scheduledDeparture:'2026-11-09T18:03:00Z'}});
+  assert.equal(core.readDepartures({stopTimes:[row]},selected).rows.length,1);
+  for(const extra of [{stopCode:'43'},{lat:selected.lat+.001},{lat:null},{lon:undefined},{stopCode:undefined},{stopId:'us-wa_42'}])assert.equal(core.readDepartures({stopTimes:[{...row,place:{...row.place,...extra}}]},selected).rows.length,0,JSON.stringify(extra));
+ }
+ const rail={...pandora,modes:['SUBWAY']},uncoded={...pandora,code:''};
+ for(const selected of [rail,uncoded]){assert.equal(new URL(core.departuresURL(selected,new Date(NOW).toISOString())).searchParams.has('radius'),false);assert.equal(core.readDepartures(sharedStop,selected).rows.length,0);}
+});
+
 function setup(){
  let now=NOW,box=[-123.38,48.42,-123.35,48.44],zoom=16,timerId=0,fetchImpl=async()=>({ok:true,json:async()=>[rawStop]});
  const timers=new Map(),events={},elements=new Map(),calls=[],credits=new Set(),groups=[];
@@ -65,4 +85,14 @@ test('rate-limit backoff survives toggles and station boards show real departure
  await h.advance(60001);assert.match(text(popup),/Earlier estimate/);
  let release;h.setFetch(()=>new Promise(resolve=>release=resolve));const refresh=popup.children.find(el=>el.className==='transit-actions').children[0];refresh.events.click();await flush();assert.equal(h.calls.length,3);marker.events.popupclose();assert(h.calls.at(-1).signal.aborted);release({ok:true,json:async()=>({stopTimes:[]})});await flush();assert.match(text(popup),/Willows/);
  h.setFetch(async()=>({ok:false,headers:{get:()=> '600'}}));await h.move([-.14,51.49,-.11,51.51]);const failedCount=h.calls.length;h.api.setEnabled(false);h.api.setEnabled(true);await flush();assert.equal(h.calls.length,failedCount);assert.match(h.get('transit-map-status').textContent,/temporarily unavailable/);
+});
+
+test('clicking the Douglas & Pandora commuter marker renders regular local departures',async()=>{
+ const h=setup();
+ h.setFetch(async url=>({ok:true,json:async()=>url.includes('/stoptimes?')?sharedStop:[{stopId:pandora.id,name:pandora.name,lat:pandora.lat,lon:pandora.lng,stopCode:pandora.code,modes:pandora.modes}]}));
+ h.api.setEnabled(true);await flush();const marker=h.markers()[0];assert.equal(marker.transitStop.id,pandora.id);
+ const popup=marker.popup();marker.events.popupopen();await h.advance(0);
+ const text=el=>(el.textContent||'')+' '+el.children.map(text).join(' ');
+ assert.match(text(popup),/Douglas & Pandora \(Victoria City Hall\)/);assert.match(text(popup),/BCTransit/);assert.match(text(popup),/Hillside Ctr via Strawberry Vale/);assert.doesNotMatch(text(popup),/No departures returned/);
+ assert.equal(new URL(h.calls[1].url).searchParams.get('radius'),'35');
 });

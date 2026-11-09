@@ -1,0 +1,123 @@
+{
+  "stopTimes": [
+    {
+      "place": {
+        "name": "Douglas St at Pandora Ave",
+        "stopId": "ca-bc-Victoria-Transit_100082",
+        "importance": 6.1034475947963074e-05,
+        "lat": 48.42868,
+        "lon": -123.36458,
+        "tz": "America/Vancouver",
+        "arrival": "2026-11-09T19:34:00Z",
+        "departure": "2026-11-09T19:34:00Z",
+        "scheduledArrival": "2026-11-09T19:34:00Z",
+        "scheduledDeparture": "2026-11-09T19:34:00Z",
+        "stopCode": "100082",
+        "vertexType": "TRANSIT",
+        "pickupType": "NORMAL",
+        "dropoffType": "NORMAL",
+        "cancelled": false,
+        "arrivalTimestampReason": "NO_RT_DATA",
+        "departureTimestampReason": "NO_RT_DATA",
+        "modes": [
+          "BUS"
+        ]
+      },
+      "mode": "BUS",
+      "realTime": false,
+      "headsign": "Hillside Ctr via Strawberry Vale",
+      "agencyName": "BCTransit",
+      "agencyUrl": "https://www.bctransit.com/",
+      "routeId": "ca-bc-Victoria-Transit_22A-VIC",
+      "routeUrl": "",
+      "tripId": "20261109_11:00_ca-bc-Victoria-Transit_11739423:14568451:14828512",
+      "displayName": "22A",
+      "cancelled": false,
+      "tripCancelled": false
+    },
+    {
+      "place": {
+        "name": "Douglas St at Pandora Ave",
+        "stopId": "ca-bc-Victoria-Transit_100082",
+        "importance": 6.1034475947963074e-05,
+        "lat": 48.42868,
+        "lon": -123.36458,
+        "tz": "America/Vancouver",
+        "arrival": "2026-11-09T19:38:00Z",
+        "departure": "2026-11-09T19:38:00Z",
+        "scheduledArrival": "2026-11-09T19:38:00Z",
+        "scheduledDeparture": "2026-11-09T19:38:00Z",
+        "stopCode": "100082",
+        "vertexType": "TRANSIT",
+        "pickupType": "NORMAL",
+        "dropoffType": "NORMAL",
+        "cancelled": false,
+        "arrivalTimestampReason": "NO_RT_DATA",
+        "departureTimestampReason": "NO_RT_DATA",
+        "modes": [
+          "BUS"
+        ]
+      },
+      "mode": "BUS",
+      "realTime": false,
+      "headsign": "Downtown via Saanichton",
+      "agencyName": "BCTransit",
+      "agencyUrl": "https://www.bctransit.com/",
+      "routeId": "ca-bc-Victoria-Transit_72-VIC",
+      "routeUrl": "",
+      "tripId": "20261109_10:27_ca-bc-Victoria-Transit_11744805:14822845:14826850",
+      "displayName": "72",
+      "cancelled": false,
+      "tripCancelled": false
+    },
+    {
+      "place": {
+        "name": "Douglas St at Pandora Ave",
+        "stopId": "ca-bc-Victoria-Transit_100082",
+        "importance": 6.1034475947963074e-05,
+        "lat": 48.42868,
+        "lon": -123.36458,
+        "tz": "America/Vancouver",
+        "arrival": "2026-11-09T19:41:00Z",
+        "departure": "2026-11-09T19:41:00Z",
+        "scheduledArrival": "2026-11-09T19:41:00Z",
+        "scheduledDeparture": "2026-11-09T19:41:00Z",
+        "stopCode": "100082",
+        "vertexType": "TRANSIT",
+        "pickupType": "NORMAL",
+        "dropoffType": "NORMAL",
+        "cancelled": false,
+        "arrivalTimestampReason": "NO_RT_DATA",
+        "departureTimestampReason": "NO_RT_DATA",
+        "modes": [
+          "BUS"
+        ]
+      },
+      "mode": "BUS",
+      "realTime": false,
+      "headsign": "Blink - to Downtown",
+      "agencyName": "BCTransit",
+      "agencyUrl": "https://www.bctransit.com/",
+      "routeId": "ca-bc-Victoria-Transit_95-VIC",
+      "routeUrl": "",
+      "tripId": "20261109_11:07_ca-bc-Victoria-Transit_11898765:14552041:14829054",
+      "displayName": "95",
+      "cancelled": false,
+      "tripCancelled": false
+    }
+  ],
+  "place": {
+    "name": "Douglas & Pandora (Victoria City Hall)",
+    "stopId": "ca-bc-Cowichan-Valley-Transit_100082",
+    "importance": 4.132769220177579e-07,
+    "lat": 48.428670000000004,
+    "lon": -123.36457,
+    "stopCode": "100082",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  "previousPageCursor": "EARLIER|1794252780",
+  "nextPageCursor": "LATER|1794256620"
+}

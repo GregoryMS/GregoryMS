@@ -627,6 +627,13 @@ At most 500 visible markers are drawn, prioritising rail/ferry stations. Departu
 requests happen only when opening or navigating a station board, have 15-second
 timeouts and retain at most twenty results for thirty seconds. Station/platform
 IDs filter out neighbouring stations included in upstream interchange groups.
+For bus stops with a published stop code, the same query also includes records
+within 35 metres. Cross-feed departures qualify only when their boarding-stop
+code matches and their coordinates are within that distance. This includes
+regular BC Transit departures at stops also listed under Cowichan commuter
+services, even when the feed names differ (for example, Douglas & Pandora / City
+Hall). Nearby stops with other codes and reused codes farther away are excluded;
+rail/ferry parent-station matching remains unchanged.
 Requests are cancelled when superseded, hidden, closed or disabled. HTTP errors
 back off for at least thirty seconds and honour Retry-After up to one hour.
 There is no periodic provider polling. Times use each stop's supplied timezone,

@@ -39,8 +39,22 @@
   function departuresURL(stop, time, cursor = '') {
     const url = new URL('v6/stoptimes',endpoint);
     url.search = new URLSearchParams({stopId:stop.id, time, n:'24', arriveBy:'false'});
+    // Shared bus stops can have separate local and commuter feed IDs and names.
+    // Ask for their physical location as well; readDepartures still requires
+    // the same boarding-stop code and a nearby coordinate before accepting one.
+    if (codedBus(stop)) { url.searchParams.set('radius','35'); url.searchParams.set('exactRadius','true'); }
     if (cursor) url.searchParams.set('pageCursor',cursor);
     return url.href;
+  }
+  const codedBus = stop => !!clean(stop.code) && Array.isArray(stop.modes) && stop.modes.includes('BUS') && stop.modes.every(mode => ['BUS','COACH'].includes(mode));
+  function matchesStop(place, stop) {
+    if (!place) return false;
+    if (place.stopId === stop.id || place.parentId === stop.id) return true;
+    if (!codedBus(stop) || clean(place.stopCode) !== clean(stop.code) || !valid(stop.lat,stop.lng) || !valid(place.lat,place.lon)) return false;
+    const id = clean(place.stopId);
+    if (!(stop.scope === 'bc' ? id.startsWith('ca-bc-') : stop.scope === 'london' && id.startsWith('gb-'))) return false;
+    const metres = Math.hypot(wrap(place.lon-stop.lng)*111320*Math.cos(stop.lat*Math.PI/180),(place.lat-stop.lat)*111320);
+    return metres <= 35;
   }
   function safeURL(raw) {
     try { const url = new URL(raw); return url.protocol === 'https:' && !url.username && !url.password ? url.href : null; } catch { return null; }
@@ -51,9 +65,9 @@
     let zone = clean(data.place?.tz);
     for (const item of data.stopTimes) {
       const place = item?.place;
-      // Some station groups also include connected neighbouring stations. Keep
-      // this stop and its platforms, rather than silently showing another stop.
-      if (!place || place.stopId !== stop.id && place.parentId !== stop.id) continue;
+      // Keep this stop, its platforms and verified cross-feed bus-stop aliases.
+      // A nearby stop or matching name alone does not identify the boarding point.
+      if (!matchesStop(place,stop)) continue;
       zone ||= clean(place.tz);
       const scheduled = Date.parse(place.scheduledDeparture), estimated = Date.parse(place.departure);
       if (!Number.isFinite(scheduled) || place.pickupType === 'NOT_ALLOWED') continue;
