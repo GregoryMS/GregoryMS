@@ -21,6 +21,7 @@
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
   let map, drawer, layerControl, placeDetails, busyness, navigation, contextTools, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
   const cache = new Map();
+  let suggestionTimer,composing=false;
   const notify = (message, kind = 'action', persistent = false) => {
     clearTimeout(noticeTimer);
     $('map-notice').textContent = message;
@@ -41,6 +42,7 @@
   };
   const hideSearch = () => { searchContent.hidden = true; };
   const cancelSearch = () => {
+    clearTimeout(suggestionTimer);suggestionTimer=null;
     searchVersion++;
     searchController?.abort();
     searchController = null;
@@ -211,9 +213,9 @@
     if (layerControl.getState().streetview && !usingEmbed) layerControl.openStreetView(state.pin || state.view);
     syncStreetView(); updateURL();
   });
-  async function search(worldwide = false) {
+  async function search(worldwide = false, automatic = false) {
     const term = query.value.trim();
-    if (term.length < 2) { query.focus(); return; }
+    if (term.length < (automatic?3:2)||automatic&&(composing||document.hidden||usingEmbed)) return;
     intent++; cancelSearch();
     const version = searchVersion;
     const fallback = new URL(core.osmURL(view())); fallback.pathname = '/search'; fallback.searchParams.set('query', term);
@@ -221,7 +223,7 @@
     $('map-search-scope').hidden = true;
     searchContent.hidden = false;
     drawer?.show('map-search-content', true);
-    if (searchContent.closest('.map-drawer')) query.blur();
+    if (!automatic&&searchContent.closest('.map-drawer')) query.blur();
     let timer;
     try {
       const bounds = map.getBounds();
@@ -230,7 +232,7 @@
       const cacheURL = new URL(url); cacheURL.searchParams.set('q', term.toLocaleLowerCase());
       const key = cacheURL.href;
       if (cache.has(key)) { showResults(cache.get(key), worldwide); return; }
-      if (Date.now() < nextSearch) { $('map-search-status').textContent = 'Please wait a moment, then search again.'; showScopeAction(worldwide); return; }
+      if (Date.now() < nextSearch) { if(automatic){suggestionTimer=setTimeout(()=>search(worldwide,true),nextSearch-Date.now());$('map-search-status').textContent='Finding suggestions…';}else{$('map-search-status').textContent = 'Please wait a moment, then search again.'; showScopeAction(worldwide);}return; }
       nextSearch = Date.now() + 1000;
       searchController = new AbortController();
       const controller = searchController;
@@ -254,7 +256,10 @@
   }
   $('map-search-form').addEventListener('submit', event => { event.preventDefault(); search(); });
   $('map-search-scope').addEventListener('click', () => search($('map-search-scope').dataset.worldwide === 'true'));
-  query.addEventListener('input', () => { intent++; cancelSearch(); hideSearch(); });
+  function suggest(){intent++;cancelSearch();hideSearch();if(!composing&&query.value.trim().length>=3)suggestionTimer=setTimeout(()=>search(false,true),450);}
+  query.addEventListener('input', event => {if(!event.isComposing)suggest();else{intent++;cancelSearch();hideSearch();}});
+  query.addEventListener('compositionstart',()=>{composing=true;cancelSearch();hideSearch();});
+  query.addEventListener('compositionend',()=>{composing=false;suggest();});
   query.addEventListener('keydown', event => {
     if (event.key === 'ArrowDown' && !searchContent.hidden) {
       const first = resultsList.querySelector('button');
@@ -269,14 +274,16 @@
   });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
-      if (selected) clearPin();
-      if (!searchContent.hidden) { cancelSearch(); hideSearch(); query.focus(); }
+      if (!searchContent.hidden||suggestionTimer) { event.preventDefault();cancelSearch(); hideSearch(); query.focus(); }
+      else if (selected) clearPin();
     }
     if (event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.target.closest('input, textarea, [contenteditable="true"]')) {
       event.preventDefault(); query.focus();
     }
   });
-  document.addEventListener('click', event => { if (!event.target.closest('.map-search, #map-search-content, #map-drawer')) hideSearch(); });
+  document.addEventListener('click', event => { if (!event.target.closest('.map-search, #map-search-content, #map-drawer')) {cancelSearch();hideSearch();} });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelSearch();hideSearch();}});
+  window.addEventListener('pagehide',cancelSearch);
   $('place-streetview').addEventListener('click', () => { if (selected) layerControl.openStreetView(selected); });
   $('clear-pin').addEventListener('click', clearPin);
   $('map-locate').addEventListener('click', () => {

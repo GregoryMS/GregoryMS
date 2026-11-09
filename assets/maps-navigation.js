@@ -14,6 +14,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     routeHasTrafficCredit = enabled;
   }
   let active = 'from', version = 0, controller, locating = false, nextSearch = 0, nextRoute = 0, mode = 'driving', currentRoute = null;
+  let suggestionTimer,lookupField=null,resultsField=null;const composing=new Set(),searchCache=new Map();
   const status = text => { $('directions-status').textContent = text; };
   function showNavigationResult(message) {
     open(); status(message);
@@ -58,6 +59,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     onConnectTraffic();
   });
   function invalidate(message = 'Choose locations, then show your route.') {
+    clearTimeout(suggestionTimer);suggestionTimer=null;lookupField=null;resultsField=null;
     if (live?.active) live.stop();
     if(transitLive?.active)transitLive.stop();
     journeyAlignmentVersion++;journeyAlignment?.abort();journeyAlignment=null;
@@ -138,8 +140,15 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   $('close-directions').addEventListener('click', close);
   panel.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } });
   for (const field of ['from', 'to']) {
-    inputs[field].addEventListener('focus', () => { active = field; $('directions-search').textContent = `Find ${field === 'from' ? 'starting point' : 'destination'}`; });
-    inputs[field].addEventListener('input', () => { points[field] = null; invalidate('Search and choose a matching place.'); });
+    inputs[field].addEventListener('focus', () => {if(active!==field){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();else if(resultsField!==field){$('directions-results').replaceChildren();resultsField=null;}} active = field; $('directions-search').textContent = `Find ${field === 'from' ? 'starting point' : 'destination'}`; });
+    const suggest=()=>{active=field;points[field]=null;invalidate('Search and choose a matching place.');if(!composing.has(field)&&inputs[field].value.trim().length>=3)suggestionTimer=setTimeout(()=>searchPlaces(field,true),450);};
+    inputs[field].addEventListener('input',event=>{if(!event.isComposing)suggest();else{points[field]=null;invalidate();}});
+    inputs[field].addEventListener('compositionstart',()=>{composing.add(field);points[field]=null;invalidate();});
+    inputs[field].addEventListener('compositionend',()=>{composing.delete(field);suggest();});
+    inputs[field].addEventListener('keydown',event=>{
+      if(event.key==='ArrowDown'&&resultsField===field){const first=$('directions-results').querySelector('button');if(first){event.preventDefault();first.focus();}}
+      if(event.key==='Escape'&&(suggestionTimer||lookupField||resultsField)){event.preventDefault();event.stopPropagation();invalidate('Suggestions dismissed. Keep typing to search.');}
+    });
     $(`directions-${field}-pin`).addEventListener('click', () => {
       choosePoint(field, getSelected());
     });
@@ -164,20 +173,26 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     }, () => { if (token === version) invalidate('Location could not be shared. Allow location access or search for a starting point.'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
   }
   $('directions-location').addEventListener('click', () => useLocation());
-  $('directions-search-form').addEventListener('submit', async e => {
-    e.preventDefault(); const field = active, term = inputs[field].value.trim();
+  async function searchPlaces(field=active,automatic=false) {
+    if(automatic&&(document.hidden||panel.hidden||composing.has(field)||active!==field))return;
+    const term = inputs[field].value.trim();
     invalidate();
-    if (term.length < 2) { status('Enter at least two characters to search.'); inputs[field].focus(); return; }
-    if (Date.now() < nextSearch) { status('Please wait a moment, then search again.'); return; }
-    nextSearch = Date.now() + 1000;
-    const token = version; controller = new AbortController(); const current = controller;
-    const timer = setTimeout(() => current.abort(), 10000);
-    panel.setAttribute('aria-busy', 'true'); status(`Finding ${field === 'from' ? 'starting points' : 'destinations'}…`);
+    if (term.length < (automatic?3:2)) { if(!automatic){status('Enter at least two characters to search.');inputs[field].focus();}return; }
+    const token = version;let timer,current;
     try {
       const url = new URL(window.GregleMaps.searchURL(config.searchURL, term));
       const center = map.getCenter(); url.searchParams.set('lat', center.lat); url.searchParams.set('lon', window.GregleMaps.wrapLongitude(center.lng));
-      const response = await fetch(url, { signal: current.signal }); if (!response.ok) throw new Error();
-      const results = window.GregleMaps.readResults(await response.json()); if (token !== version) return;
+      const key=url.href;let results=searchCache.get(key);
+      if(!results){
+        if(Date.now()<nextSearch){if(automatic)suggestionTimer=setTimeout(()=>searchPlaces(field,true),nextSearch-Date.now());else status('Please wait a moment, then search again.');return;}
+        nextSearch=Date.now()+1000;controller=new AbortController();current=controller;lookupField=field;timer=setTimeout(()=>current.abort(),10000);
+        panel.setAttribute('aria-busy','true');status(`Finding ${field==='from'?'starting points':'destinations'}…`);
+        const response=await fetch(url,{signal:current.signal});if(!response.ok)throw Error('Search unavailable');
+        results=window.GregleMaps.readResults(await response.json());if(token!==version||active!==field)return;
+        searchCache.set(key,results);while(searchCache.size>20)searchCache.delete(searchCache.keys().next().value);
+      }
+      if(token!==version||active!==field)return;resultsField=field;
+      inputs[field].closest?.('.directions-field')?.after?.($('directions-results'));
       status(results.length ? 'Choose the matching place below.' : 'No matching places. Try a fuller address or nearby town.');
       for (const point of results) {
         const li = document.createElement('li'), button = document.createElement('button'), name = document.createElement('strong'), detail = document.createElement('span');
@@ -185,8 +200,17 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
         button.addEventListener('click', () => { setPoint(field, point); active = field === 'from' ? 'to' : 'from'; inputs[active].focus(); });
       }
     } catch { if (token === version) status('Place search is unavailable. Try again, or select a map pin and choose Start here / Directions here.'); }
-    finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); } }
+    finally { clearTimeout(timer); if (token === version) { controller = null;lookupField=null;panel.removeAttribute('aria-busy'); } }
+  }
+  $('directions-search-form').addEventListener('submit',e=>{e.preventDefault();return searchPlaces();});
+  $('directions-results').addEventListener('keydown',event=>{
+    const buttons=Array.from($('directions-results').querySelectorAll('button')),i=buttons.indexOf(event.target);if(i<0)return;
+    if(event.key==='ArrowDown'){event.preventDefault();buttons[(i+1)%buttons.length].focus();}
+    if(event.key==='ArrowUp'){event.preventDefault();if(i===0)inputs[resultsField||active].focus();else buttons[i-1].focus();}
+    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();const field=resultsField||active;invalidate('Suggestions dismissed. Keep typing to search.');inputs[field].focus();}
   });
+  document.addEventListener?.('visibilitychange',()=>{if(document.hidden&&(suggestionTimer||lookupField)){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();}});
+  window.addEventListener?.('pagehide',()=>{clearTimeout(suggestionTimer);controller?.abort();});
   async function calculateRoute(refresh = false) {
     if (!core.valid(points.from) || !core.valid(points.to)) return;
     if (refresh) { version++; controller?.abort(); }

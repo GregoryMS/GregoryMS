@@ -604,6 +604,16 @@ and [MeMoMaps usage information](https://www.xn--pnvkarte-m4a.de/en). For high-v
 traffic, arrange dedicated hosting with the providers. These map layers display
 OSM route data; they do not add new navigation modes.
 
+Map search and both Directions fields suggest places after three characters
+and a 450 ms pause. Requests remain at least one second apart within each search
+control, reuse small in-memory result caches, and cancel on edits, field changes,
+dismissal or hidden pages. Old responses cannot replace a newer query. IME
+composition waits until text entry completes. Suggestions retain the existing
+map-area preference and worldwide option; automatic suggestions keep the mobile
+keyboard open. Use Down/Up Arrow and Enter to choose a result, or Escape to dismiss.
+Search buttons still support explicit two-character queries. Queries use the
+existing Photon service and are not stored persistently.
+
 **Transit** is also available beside Driving and Walking in Directions. Choose
 both endpoints within BC or the London area, then **Show route** for up to three
 leave-now journeys. Options include local departure/arrival times, transfers,

@@ -97,3 +97,16 @@ test('Transit mode renders journey choices and hands the selected journey to GPS
  assert.equal(h.el('directions-summary').hidden,false);assert.equal(h.el('directions-transit-options').hidden,false);assert.equal(h.el('directions-3d').hidden,true);assert(h.el('directions-steps').children.some(x=>x.textContent.includes('Get off at')));
  await h.el('directions-start').click();assert.equal(started,journeys[0]);assert.equal(h.el('map-directions').hidden,true);
 });
+
+test('typing suggests after a pause, cancels stale lookups and switches fields without choosing the wrong endpoint',async()=>{
+ const h=harness(),timers=new Map();let id=0,now=10000;
+ h.context.setTimeout=(f,delay)=>{const n=++id;timers.set(n,{f,delay});return n;};h.context.clearTimeout=n=>timers.delete(n);h.context.Date={now:()=>now};
+ const run=()=>{const [n,t]=[...timers].find(([,t])=>t.delay<10000);timers.delete(n);return t.f();};
+ await h.el('directions-from-pin').click();h.el('directions-to').value='UV';await h.el('directions-to').fire('input');assert.equal(timers.size,0);
+ h.el('directions-to').value='UVic';await h.el('directions-to').fire('input');h.el('directions-to').value='UVict';await h.el('directions-to').fire('input');assert.equal(timers.size,1);assert.equal([...timers.values()][0].delay,450);
+ const old=run();assert.equal(h.pending.length,1);h.el('directions-to').value='University';await h.el('directions-to').fire('input');assert(h.pending[0].opts.signal.aborted);
+ h.pending[0].resolve({ok:true,json:async()=>({features:[{geometry:{type:'Point',coordinates:[b.lng,b.lat]},properties:{name:'Old result'}}]})});await old;assert.equal(h.el('directions-results').children.length,0);
+ await h.el('directions-from').fire('focus');assert.equal(timers.size,0);await h.el('directions-to').fire('focus');now+=1500;await h.el('directions-to').fire('input');const latest=run();
+ h.pending[1].resolve({ok:true,json:async()=>({features:[{geometry:{type:'Point',coordinates:[b.lng,b.lat]},properties:{name:'University'}}]})});await latest;
+ assert.equal(h.el('directions-results').children.length,1);await h.el('directions-results').children[0].children[0].click();assert.equal(h.el('directions-route').disabled,false);assert.equal(timers.size,0);
+});
