@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-09T02:52:19+00:00",
-  "fetchedAt": "2026-11-09T02:52:26.343732+00:00",
+  "feedUpdatedAt": "2026-11-09T10:56:24+00:00",
+  "fetchedAt": "2026-11-09T10:56:30.558993+00:00",
   "items": [
-    {
-      "title": "Man Utd score twice in stoppage time to share points in eight-goal thriller",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cqj6jldpl2gyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Liverpool dispatch Palace to pile pressure on Sage",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c5djv1mn7gj8o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Struggling Sunderland beat Chelsea to move off bottom of Premier League",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c64g1nj4v4rmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Brighton breeze past 10-man Brentford to move up to second",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cry836l4q56po?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Bournemouth beat Ipswich to extend winning streak",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cmx23rll2w0qo?at_medium=RSS&at_campaign=rss"
-    },
     {
       "title": "Bizarre and thrilling theatre with Carrick's Man Utd future still in limbo",
       "link": "https://www.bbc.co.uk/sport/football/articles/cked3qjw1q4xo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Feyi-Waboso burns bright as England energy endorses Borthwick",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c620r5dp51e0o?at_medium=RSS&at_campaign=rss"
+      "title": "Khawaja 100% accurate on ball-tampering - Warner",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/c5wyry9gmz4ko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "England make massive step up in Australia victory",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cqev33zn20vdo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sports Personality of the Year returns - with five awards decided by public",
+      "link": "https://www.bbc.co.uk/sport/articles/cqj9kd00y0wko?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Norris sparkles in Sao Paulo despite firework mishap",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/c6gr8e822kzqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'Tinkerman' Alonso's Chelsea side still searching for identity",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c5m2ddz437nzo?at_medium=RSS&at_campaign=rss"
+      "title": "Packers & Bengals win in style - NFL week nine",
+      "link": "https://www.bbc.co.uk/sport/american-football/articles/cmdxwxry2pr8o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Are 'outstanding' Brighton now Arsenal's main title challengers?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cjx23rwxdn64o?at_medium=RSS&at_campaign=rss"
+      "title": "Ali weeps as world title dream realised in Texas",
+      "link": "https://www.bbc.co.uk/sport/boxing/articles/cqkglg1y4jwwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Trump says he was 'kidding' about Dana White press secretary offer",
+      "link": "https://www.bbc.co.uk/news/articles/ck0j0j87959eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Dutch match postponed after fans block team bus",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqy0r0lw4l5ro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "USA & Pacific Islands to host 2030 Rugby League World Cup",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/c620r0n4yxw8o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
