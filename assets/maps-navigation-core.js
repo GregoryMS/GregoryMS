@@ -17,7 +17,7 @@
     const google = new URL('https://www.google.com/maps/dir/');
     for (const [key, value] of Object.entries({ api: '1', origin: coords(from), destination: coords(to), travelmode: mode, dir_action: 'navigate' })) google.searchParams.set(key, value);
     const apple = new URL('https://maps.apple.com/');
-    apple.searchParams.set('saddr', coords(from)); apple.searchParams.set('daddr', coords(to)); apple.searchParams.set('dirflg', mode === 'walking' ? 'w' : 'd');
+    apple.searchParams.set('saddr', coords(from)); apple.searchParams.set('daddr', coords(to)); apple.searchParams.set('dirflg', mode === 'walking' ? 'w' : mode === 'transit' ? 'r' : 'd');
     return { google: google.href, apple: apple.href };
   }
   const distance = meters => meters < 1000 ? `${Math.round(meters / 10) * 10} m` : `${(meters / 1000).toFixed(meters < 10000 ? 1 : 0)} km`;

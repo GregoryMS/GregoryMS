@@ -40,6 +40,7 @@
     fit.addEventListener('click',fitRoute);
     retry.addEventListener('click',()=>{if(selection)show(selection.row,selection.stop,true);});
     document.addEventListener('visibilitychange',()=>{if(document.hidden&&controller){cancel();if(!route){status.textContent='Route loading paused. Retry when ready.';retry.hidden=false;}panel.removeAttribute('aria-busy');}});
+    window.addEventListener('gregle:transit-journey',clear);
     window.addEventListener('pagehide',clear);
     return {show,clear,setEnabled(value){if(enabled===(value===true))return;enabled=value===true;if(enabled)group.addTo(map);else{clear();map.removeLayer(group);}}};
   };

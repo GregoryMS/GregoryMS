@@ -27,6 +27,12 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     else reveal();
   }
   const live = window.GregleLiveNavigation?.({ map, routing, onRoute: renderRoute, onStop: showNavigationResult });
+  const transitCore=window.GregleTransitJourneyCore;
+  const transitVehicles=window.GregleTransitVehicles?.({map,statusElement:$('journey-vehicle-status'),creditElement:$('journey-vehicle-credit')});
+  const transitLive=window.GregleTransitJourneyLive?.({map,onStop:showNavigationResult,onReplan:point=>{open();if(point)setPoint('from',{...point,name:'My location'});calculateRoute();}});
+  let journeyAlignment,journeyAlignmentVersion=0;
+  const journeyRoadCredit='Transit alignment: © <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener">Mapbox</a> © OpenStreetMap';
+  const transitCredit='Transit journeys: <a href="https://transitous.org/" target="_blank" rel="noopener">Transitous</a> · <a href="https://transitous.org/sources/" target="_blank" rel="noopener">sources &amp; licences</a>';
   function syncTraffic() {
     for (const id of ['directions-traffic', 'navigation-traffic']) {
       $(id).setAttribute('aria-checked', String(routing.enabled));
@@ -35,7 +41,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     $('directions-traffic-row').hidden = !currentRoute || mode !== 'driving';
     $('directions-traffic-connect').hidden = !currentRoute || mode !== 'driving' || routing.hasOwnKey;
     $('directions-traffic-connect').textContent = config.serverTomTom ? 'Add your own TomTom key' : 'Connect TomTom';
-    $('directions-estimate-note').textContent = window.GregleMapRouting.note(currentRoute, mode);
+    $('directions-estimate-note').textContent = mode==='transit'?'Times are local to each stop. Live estimates are labelled; other times are scheduled. Keep this page open for GPS stop alerts.':window.GregleMapRouting.note(currentRoute, mode);
   }
   async function refreshTraffic() {
     syncTraffic();
@@ -53,6 +59,10 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   });
   function invalidate(message = 'Choose locations, then show your route.') {
     if (live?.active) live.stop();
+    if(transitLive?.active)transitLive.stop();
+    journeyAlignmentVersion++;journeyAlignment?.abort();journeyAlignment=null;
+    transitVehicles?.clear();map.attributionControl?.removeAttribution(transitCredit);map.attributionControl?.removeAttribution(journeyRoadCredit);
+    if($('directions-transit-options')){$('directions-transit-options').replaceChildren();$('directions-transit-options').hidden=true;}
     currentRoute = null; $('directions-start').disabled = true; $('directions-3d').disabled = true;
     version++; controller?.abort(); controller = null; locating = false;
     $('directions-location').disabled = false;
@@ -95,24 +105,25 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     document.querySelector('.map-stage').classList.remove('directions-open'); toggle.focus();
   }
   toggle.disabled = false;
-  for (const travel of ['driving', 'walking']) $('directions-' + travel).addEventListener('click', () => {
+  for (const travel of ['driving', 'walking', 'transit']) $('directions-' + travel)?.addEventListener('click', () => {
     if (travel === mode) return;
     mode = travel;
-    for (const choice of ['driving', 'walking']) $('directions-' + choice).setAttribute('aria-pressed', String(choice === mode));
+    for (const choice of ['driving', 'walking', 'transit']) $('directions-' + choice)?.setAttribute('aria-pressed', String(choice === mode));
     invalidate(`Choose locations, then show your ${mode} route.`);
   });
   function startNavigation(threeD = false) {
-    if (!currentRoute || !live) return;
+    const engine=mode==='transit'?transitLive:live;
+    if (!currentRoute || !engine) return;
     try {
-      live.start(currentRoute, mode, points.to, {threeD});
-      if (live.active) {
+      if(mode==='transit'){transitVehicles?.clear();transitLive.start(currentRoute);}else live.start(currentRoute, mode, points.to, {threeD});
+      if (engine.active) {
         panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
         document.querySelector('.map-stage').classList.remove('directions-open');
-        $('navigation-stop').focus({ preventScroll: true });
+        $(mode==='transit'?'transit-guidance-next':'navigation-stop').focus({ preventScroll: true });
       }
     } catch {
       const message = 'Navigation could not start. Check location access for this site in your browser settings, then try again.';
-      try { live.stop(message); } catch {}
+      try { engine.stop(message); } catch {}
       showNavigationResult(message);
     }
   }
@@ -183,18 +194,50 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     if (!refresh && Date.now() < nextRoute) { status('Please wait a moment, then show the route again.'); return; }
     nextRoute = Date.now() + 1100;
     const token = version, from = { ...points.from }, to = { ...points.to };
-    controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), 15000);
+    controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), mode==='transit'?25000:15000);
     panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; $('directions-start').disabled = true; $('directions-3d').disabled = true;
     status(mode === 'driving' && routing.enabled && routing.connected ? 'Finding a route with live traffic…' : `Finding a ${mode} route…`);
     try {
-      const route = await routing.request(from, to, mode, { signal: current.signal });
+      const route = mode==='transit'?await transitCore.request(from,to,{signal:current.signal}):await routing.request(from, to, mode, { signal: current.signal });
       if (token !== version) return;
-      renderRoute(route, from, to, !refresh);
-      status(`${mode === 'walking' ? 'Walking' : 'Driving'} route ready. Start navigation for live guidance.`);
+      if(mode==='transit')showJourneys(route,from,to);else renderRoute(route, from, to, !refresh);
+      status(`${mode==='transit'?'Transit journey':mode === 'walking' ? 'Walking route' : 'Driving route'} ready. Start navigation for live guidance.`);
     } catch (error) { if (token === version) status(error.name === 'AbortError' ? 'Routing timed out. Try again, or use your navigation app below.' : error.message || 'Routing is unavailable. Try again.'); }
-    finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; $('directions-start').disabled = !currentRoute || !live; $('directions-3d').disabled = !currentRoute || !live; } }
+    finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; $('directions-start').disabled = !currentRoute || !(mode==='transit'?transitLive:live); $('directions-3d').disabled = !currentRoute || !live; } }
   }
   $('directions-route').addEventListener('click', () => calculateRoute());
+  function showJourneys(journeys,from,to){
+    const options=$('directions-transit-options');options.replaceChildren();options.hidden=false;
+    const heading=document.createElement('p');heading.textContent='Leave now · choose a journey';options.append(heading);
+    journeys.forEach((journey,i)=>{
+      const button=document.createElement('button');button.type='button';button.setAttribute('aria-pressed',String(i===0));
+      const rides=journey.legs.filter(l=>!l.walk).map(l=>l.route).join(' → ');
+      button.textContent=`${transitCore.clock(journey.start,journey.zone)} → ${transitCore.clock(journey.end,journey.zone)} · ${core.duration(journey.duration)} · ${journey.transfers} transfer${journey.transfers===1?'':'s'} · ${rides}`;
+      button.addEventListener('click',()=>{for(const b of options.querySelectorAll('button'))b.setAttribute('aria-pressed',String(b===button));renderJourney(journey,from,to);});options.append(button);
+    });
+    renderJourney(journeys[0],from,to);
+  }
+  function renderJourney(journey,from,to){
+    journeyAlignment?.abort();journeyAlignment=new AbortController();const alignment=journeyAlignment,alignmentVersion=++journeyAlignmentVersion;
+    if(window.dispatchEvent)window.dispatchEvent(new Event('gregle:transit-journey'));
+    map.attributionControl?.removeAttribution(journeyRoadCredit);
+    currentRoute=journey;routeLayers.clearLayers();$('directions-steps').replaceChildren();transitVehicles?.clear();routeCredit(false);map.attributionControl?.removeAttribution(transitCredit);map.attributionControl?.addAttribution(transitCredit);
+    let line;
+    for(const leg of journey.legs){
+      const casing=L.polyline(leg.points,{color:'#fff',weight:10,opacity:.9,interactive:false}).addTo(routeLayers);
+      line=L.polyline(leg.points,{color:leg.walk?'#7637cc':'#b68bea',weight:leg.walk?5:6,opacity:1,dashArray:leg.walk?'3 10':null,interactive:false,smoothFactor:0}).addTo(routeLayers);
+      const trace=line;
+      if(!leg.walk&&window.GregleTransitRoads)window.GregleTransitRoads.match(leg,{signal:alignment.signal}).then(result=>{if(result.roadMatched&&alignmentVersion===journeyAlignmentVersion&&!alignment.signal.aborted&&currentRoute===journey){trace.setLatLngs(result.points);casing.setLatLngs(result.points);map.attributionControl?.addAttribution(journeyRoadCredit);}}).catch(()=>{});
+      if(!leg.walk)for(const p of [leg.from,leg.to]){const dot=L.circleMarker([p.lat,p.lng],{radius:6,color:'#194b96',weight:2,fillColor:'#fff',fillOpacity:1});const label=document.createElement('span');label.textContent=p.name;dot.bindTooltip(label).addTo(routeLayers);}
+      const li=document.createElement('li');li.textContent=transitCore.stepText(leg);$('directions-steps').append(li);
+      for(const alert of leg.alerts){const note=document.createElement('li');note.textContent=alert;note.className='transit-alert';$('directions-steps').append(note);}
+    }
+    const small=window.innerWidth<=700,size=map.getSize(),width=panel.getBoundingClientRect?.().width||380;
+    map.fitBounds(L.latLngBounds(journey.points),{paddingTopLeft:small?[25,25]:[Math.min(width+40,size.x*.48),30],paddingBottomRight:small?[55,Math.min(340,(size.y||700)*.45)]:[80,30],maxZoom:16});
+    $('directions-total').textContent=`${core.duration(journey.duration)} · ${journey.transfers} transfer${journey.transfers===1?'':'s'} · walk ${core.distance(journey.walkDistance)}`;
+    $('directions-summary').hidden=false;$('directions-start').disabled=!transitLive;$('directions-3d').hidden=true;$('directions-steps').closest('details').open=true;
+    const firstRide=journey.legs.find(l=>!l.walk);if(firstRide)transitVehicles?.show({routeId:firstRide.routeId,route:firstRide.route});syncTraffic();
+  }
   function renderRoute(route, from, to, fit = true) {
     if (!fit && live?.active) {
       points.from = { ...from, name: 'My location' }; inputs.from.value = 'My location';

@@ -12,12 +12,12 @@ test('provider routes validate status, geometry and numeric estimates',()=>{
  for(const modify of [d=>d.routes[0].geometry.coordinates[0][0]=181,d=>d.routes[0].duration=-1,d=>d.routes[0].distance='400',d=>d.routes[0].geometry.type='Polygon']){const d=data();modify(d);assert.throws(()=>core.readRoute(d));}
  assert.equal(core.duration(3600),'1 hr');assert.equal(core.duration(3660),'1 hr 1 min');assert.equal(core.distance(4500),'4.5 km');assert.equal(core.instruction({name:'Main St',maneuver:{type:'roundabout',exit:3}}),'Enter the roundabout and take exit 3 onto Main St');
 });
-function harness({connected=false,defaultAvailable=false,liveFactory}={}){
+function harness({connected=false,defaultAvailable=false,liveFactory,transitCore,transitLiveFactory}={}){
  const els=new Map(),children=[],saved=new Map(connected?[['gregle-maps-tomtom-key','test-key-1234567890']]:[]);let selected=a,geoSuccess,service;
  class El{constructor(){this.hidden=false;this.value='';this.children=[];this.events={};this.attrs={};this.classList={add(){},remove(){}};}addEventListener(e,f){(this.events[e]??=[]).push(f);}getAttribute(k){return this.attrs[k];}setAttribute(k,v){this.attrs[k]=v;}removeAttribute(k){delete this.attrs[k];}replaceChildren(...c){this.children=c;}append(...c){this.children.push(...c);}focus(){this.focused=true;}scrollIntoView(){this.revealed=true;}async fire(e){for(const f of this.events[e]||[])await f({preventDefault(){},stopPropagation(){}});}click(){return this.fire('click');}}
  const el=id=>{if(!els.has(id))els.set(id,new El());return els.get(id);};el('map-directions').hidden=true;const pending=[];
- const ctx={window:{GregleLiveNavigation:liveFactory,GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s){geoSuccess=s;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
- vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess};
+ const ctx={window:{GregleTransitJourneyCore:transitCore,GregleTransitJourneyLive:transitLiveFactory,GregleLiveNavigation:liveFactory,GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s){geoSuccess=s;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess,context:ctx};
 }
 async function endpoints(h){await h.el('directions-from-pin').click();h.select(b);await h.el('directions-to-pin').click();}
 test('editing during a route request rejects stale geometry and links',async()=>{
@@ -84,4 +84,16 @@ test('a successful navigation start hides directions only after the session is a
  const h=harness({liveFactory:()=>({get active(){return active;},start(){active=true;}})});
  await endpoints(h);const work=h.el('directions-route').click();h.pending[0].resolve({ok:true,json:async()=>data()});await work;
  await h.el('directions-start').click();assert(active);assert.equal(h.el('map-directions').hidden,true);assert(h.el('navigation-stop').focused);
+});
+
+
+test('Transit mode renders journey choices and hands the selected journey to GPS guidance',async()=>{
+ const journeyCore=require('../assets/maps-transit-journey-core.js'),f=require('./fixtures/transit-journey.json');
+ const journeys=journeyCore.readPlan(f,a,b,Date.parse(f.itineraries[0].startTime)-1000);let active=false,started;
+ const h=harness({transitCore:{...journeyCore,request:async()=>journeys},transitLiveFactory:()=>({start(j){started=j;active=true;},stop(){active=false;},get active(){return active;}})});
+ h.context.L.circleMarker=()=>({bindTooltip(){return this;},addTo(){return this;}});h.context.L.latLngBounds=p=>p;
+ h.el('directions-steps').closest=()=>({open:false});h.el('directions-transit-options').querySelectorAll=()=>h.el('directions-transit-options').children.filter(x=>x.type==='button');
+ await h.el('directions-transit').click();await endpoints(h);await h.el('directions-route').click();
+ assert.equal(h.el('directions-summary').hidden,false);assert.equal(h.el('directions-transit-options').hidden,false);assert.equal(h.el('directions-3d').hidden,true);assert(h.el('directions-steps').children.some(x=>x.textContent.includes('Get off at')));
+ await h.el('directions-start').click();assert.equal(started,journeys[0]);assert.equal(h.el('map-directions').hidden,true);
 });

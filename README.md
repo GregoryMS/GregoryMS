@@ -604,6 +604,38 @@ and [MeMoMaps usage information](https://www.xn--pnvkarte-m4a.de/en). For high-v
 traffic, arrange dedicated hosting with the providers. These map layers display
 OSM route data; they do not add new navigation modes.
 
+**Transit** is also available beside Driving and Walking in Directions. Choose
+both endpoints within BC or the London area, then **Show route** for up to three
+leave-now journeys. Options include local departure/arrival times, transfers,
+walking paths, boarding platforms where supplied, and the actual boarding and
+alighting stops. Live estimates are labelled; other times remain scheduled.
+Walking legs are dotted and transit legs light purple. Bus legs use the same
+road-alignment checks as individual route highlights. Selecting a journey clears
+an older single-route highlight and previews live vehicles on its first ride.
+Google/Apple handoff links request transit rather than driving.
+
+**Start navigation** opens transit guidance with a local GPS watch. Use **I'm at
+the stop**, **I'm on board**, and **I've got off** to confirm journey stages;
+location alone never infers boarding or alighting. Transfers get their own
+walking/boarding steps, and stay-seated continuations say to remain aboard.
+A fresh GPS fix on the ride's route triggers **Get off soon** in its latter half,
+within 700 m of the alighting stop (1,200 m for rail/tram), then **Arriving** near
+the stop. Optional **Voice on** speaks each alert once. Inaccurate (>80 m),
+stale (>20 s), implausibly jumping or off-route fixes suppress alerts; keep the
+page open for timely guidance. GPS may be unavailable underground or while the
+browser is suspended: manual steps remain usable. No stop alert is estimated
+from timetable time alone. **Replan** explicitly requests new journey options
+from a fresh location when available. **Stop** and page exit release the GPS
+watch, vehicle polls and timers.
+
+Planning uses the Transitous versioned plan endpoint, with detailed walking
+transfers. It sends requests only on explicit planning/replanning actions, uses
+25-second cancellation, provider Retry-After backoff and a small minute cache;
+it does not continuously replan from GPS. Device fixes stay local except when
+used as the requested origin for planning. The UI is in
+`assets/maps-transit-journey-core.js` and `assets/maps-transit-journey-live.js`;
+no new keys or server deployment are needed.
+
 Selecting **Transit map** also enables clickable station markers in British
 Columbia and the London area. Rail and ferry stations appear at zoom 13, and bus
 stops at zoom 15. Tap a marker for upcoming departures, route/destination,

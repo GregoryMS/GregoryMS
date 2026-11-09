@@ -508,7 +508,7 @@
 }
 
 /* Live guidance stays outside the details drawer at every viewport width. */
-.directions-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.directions-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px; }
 .map-directions .directions-modes button { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; color: var(--text); background: transparent; }
 .directions-modes svg { width: 24px; height: 24px; flex-shrink: 0; }
 .map-directions .directions-modes button[aria-pressed="true"] { background: var(--map-accent-soft); color: var(--map-accent); border-color: var(--map-accent); }
@@ -528,7 +528,7 @@
 .navigation-controls button:focus-visible, .map-car-layout:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
 .navigation-position { display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; background: #2476e8; color: #fff; box-shadow: 0 0 0 2px #2476e8, 0 2px 6px #0004; font: 24px/1 system-ui, sans-serif; }
 .navigation-position span { display: block; }
-.navigating :is(.map-search, .map-actions, .map-place, .map-directions, .map-layers-panel, .map-fuel-card, .map-drawer, .map-link-copy, #map-feature-details) { display: none !important; }
+.navigating :is(.map-search, .map-actions, .map-place, .map-directions, .map-layers-panel, .map-fuel-card, .map-drawer, .map-link-copy, #map-feature-details, #transit-route-card, .transit-map-hint) { display: none !important; }
 .map-car-layout { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; gap: 10px; min-width: 64px; min-height: 56px; padding: 8px 12px; border: 0; border-radius: 14px; color: var(--text); background: transparent; font: 500 13px/1.3 system-ui, sans-serif; cursor: pointer; touch-action: manipulation; }
 .map-car-label { white-space: nowrap; }
 .map-car-track { position: relative; flex: 0 0 56px; width: 56px; height: 32px; border: 1px solid var(--map-border); border-radius: 999px; background: var(--map-accent-soft); transition: background .18s, border-color .18s; }
@@ -812,3 +812,17 @@
 .navigation-fullscreen :is(.mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right, .leaflet-bottom) {
   bottom: env(safe-area-inset-bottom);
 }
+
+/* Public transport journey choices and on-board guidance. */
+.map-directions .directions-modes button { flex-direction: column; gap: 5px; padding: 9px 4px; }
+#directions-transit-options button { display: block; width: 100%; margin: 6px 0; text-align: left; line-height: 1.5; }
+#directions-transit-options button[aria-pressed="true"] { border-color: var(--map-accent); box-shadow: inset 3px 0 var(--map-accent); }
+#directions-transit-options p, #journey-vehicle-status { font-size: 12px; }
+.transit-guidance { max-height: calc(100% - 32px); overflow-y: auto; }
+.transit-guidance h2 { margin: 8px 0; font-size: 21px; line-height: 1.3; }
+.transit-guidance p { font-size: 13px; line-height: 1.5; }
+#transit-guidance-progress, #transit-guidance-status { color: var(--muted); font-size: 12px; }
+.transit-get-off-alert { background: var(--map-accent-soft); color: var(--map-accent); border-left: 4px solid var(--map-accent); padding: 12px; font-weight: 600; }
+.transit-guidance-next { width: 100%; min-height: 48px; margin: 10px 0; border: 0; border-radius: 12px; padding: 12px; background: #7637cc; color: #fff; font: 600 16px/1.3 system-ui,sans-serif; cursor: pointer; }
+.transit-guidance .navigation-controls { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.transit-guidance .navigation-controls button { min-width: 0; }

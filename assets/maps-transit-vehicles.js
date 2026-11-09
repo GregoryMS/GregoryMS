@@ -1,7 +1,7 @@
 (() => {
   'use strict';
-  window.GregleTransitVehicles=({map})=>{
-    const core=window.GregleTransitCore,group=L.layerGroup(),markers=new Map(),status=document.getElementById('transit-vehicle-status'),credit=document.getElementById('transit-vehicle-credit');
+  window.GregleTransitVehicles=({map,statusElement,creditElement})=>{
+    const core=window.GregleTransitCore,group=L.layerGroup(),markers=new Map(),status=statusElement||document.getElementById('transit-vehicle-status'),credit=creditElement||document.getElementById('transit-vehicle-credit');
     let selected,controller,pollTimer,ageTimer,version=0,snapshot,offset=0,retryAt=0,failed=false;
     const make=(tag,text)=>{const node=document.createElement(tag);node.textContent=text;return node;};
     function pause(){version++;controller?.abort();controller=null;clearTimeout(pollTimer);clearTimeout(ageTimer);group.clearLayers();markers.clear();map.removeLayer(group);}
