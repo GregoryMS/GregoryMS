@@ -20,6 +20,9 @@
 #transit-route-detail { color: var(--muted); font-size: 11px; }
 .transit-vehicle-marker > span { display: flex; align-items: center; justify-content: center; gap: 3px; min-width: 40px; height: 32px; padding: 0 4px; box-sizing: border-box; border: 2px solid white; border-radius: 10px; background: #a83e00; color: white; box-shadow: 0 2px 7px #0006; font-size: 13px; }
 .transit-vehicle-marker b { font-size: 11px; }
+.transit-vehicle-heading { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.transit-vehicle-heading::before, .transit-vehicle-heading::after { content: ''; position: absolute; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 13px solid white; left: -8px; top: -34px; filter: drop-shadow(0 1px 2px #0008); }
+.transit-vehicle-heading::after { border-left-width: 5px; border-right-width: 5px; border-bottom: 9px solid #a83e00; left: -5px; top: -31px; filter: none; }
 #transit-vehicle-status { font-size: 12px; }
 .transit-vehicle-credit { display: block; margin-top: 6px; font-size: 10px; }
 .transit-vehicle-credit[hidden] { display: none; }

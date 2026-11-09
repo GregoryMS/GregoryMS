@@ -12,14 +12,19 @@
       const now=Date.now()+offset,vehicles=snapshot.vehicles.filter(v=>v.observed>=now-snapshot.maxAgeSeconds*1000&&v.observed<=now+30000);
       const current=new Set(vehicles.map(v=>v.id));for(const [id,marker] of markers)if(!current.has(id)){group.removeLayer(marker);markers.delete(id);}
       for(const vehicle of vehicles){
+        const bearing=vehicle.bearing,heading=bearing===null?null:['north','northeast','east','southeast','south','southwest','west','northwest'][Math.round(bearing/45)%8];
+        const direction=heading?`Heading ${heading} (${Math.round(bearing)%360}°), as reported with this GPS fix.`:'Direction of travel is not reported for this bus.';
         const iconBody=make('span','🚌');iconBody.setAttribute('aria-hidden','true');
         const label=make('b',selected.route);const iconNode=document.createElement('span');iconNode.append(iconBody,label);
+        if(heading){const arrow=document.createElement('i');arrow.className='transit-vehicle-heading';arrow.style.transform=`rotate(${bearing}deg)`;arrow.setAttribute('aria-hidden','true');iconNode.append(arrow);}
+        iconNode.setAttribute('role','img');iconNode.setAttribute('aria-label',`Route ${selected.route} · ${direction}`);
         const icon=L.divIcon({className:'transit-vehicle-marker',html:iconNode,iconSize:[44,36],iconAnchor:[22,18]});
         const age=Math.max(0,Math.round((now-vehicle.observed)/1000)),name=`Route ${selected.route} · Bus ${vehicle.label}`;
-        const popup=document.createElement('section');popup.append(make('strong',name),make('p',`GPS position reported ${age} seconds ago. ${snapshot.source}.`),make('p','Buses are shown in both directions. The blue line follows your selected departure.'));
-        const tooltip=make('span',`${name} · ${age}s ago`),previous=markers.get(vehicle.id);
-        if(previous)previous.setLatLng([vehicle.lat,vehicle.lng]).setPopupContent(popup).setTooltipContent(tooltip);
+        const popup=document.createElement('section');popup.append(make('strong',name),make('p',direction),make('p',`GPS position reported ${age} seconds ago. ${snapshot.source}.`),make('p','Buses are shown in both directions. The blue line follows your selected departure.'));
+        const tooltip=make('span',`${name} · ${heading?'heading '+heading:'direction unavailable'} · ${age}s ago`),previous=markers.get(vehicle.id);
+        if(previous){previous.setLatLng([vehicle.lat,vehicle.lng]).setPopupContent(popup).setTooltipContent(tooltip);if(previous.transitBearing!==bearing)previous.setIcon(icon);}
         else markers.set(vehicle.id,L.marker([vehicle.lat,vehicle.lng],{icon,title:name,alt:name,keyboard:true,riseOnHover:true,zIndexOffset:800,bubblingMouseEvents:false}).bindPopup(popup,{maxWidth:260}).bindTooltip(tooltip,{direction:'top'}).addTo(group));
+        markers.get(vehicle.id).transitBearing=bearing;
       }
       if(failed)report(vehicles.length?`${vehicles.length} bus${vehicles.length===1?'':'es'} · live updates delayed. Old GPS positions disappear automatically.`:'Live bus positions temporarily unavailable. Retrying automatically.');
       else if(vehicles.length){const age=Math.max(0,Math.round((now-Math.max(...vehicles.map(v=>v.observed)))/1000));report(`${vehicles.length} live bus${vehicles.length===1?'':'es'} · both directions · latest GPS ${age}s ago`);}

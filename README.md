@@ -633,7 +633,10 @@ eight-trip, five-minute in-memory cache. Leaving Transit map clears the route.
 Selected BC Transit and TransLink routes also show orange **live bus** markers.
 The highlighted blue path is the selected departure's direction/variant; bus
 positions cover both directions of the exact operator route ID, not other cities
-with the same bus number. Tap a bus for its ID and GPS report age. Markers update
+with the same bus number. A pointer around each bus marker shows its reported
+GPS bearing while the route number stays upright. Tap or hover for the compass
+direction; missing headings have no arrow and are explicitly labelled unavailable.
+Tap a bus for its ID and GPS report age. Markers update
 in place, so an open bus popup survives a refresh. The route card shows the
 latest GPS age and provider attribution. No positions are inferred from arrival
 predictions, and no marker movement is invented between GPS reports.
