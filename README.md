@@ -629,13 +629,47 @@ geometry shows a retry message rather than an invented straight-line route.
 The trip endpoint is requested only on route selection. It uses the same
 timeouts, cancellation and provider backoff as departure boards, with an
 eight-trip, five-minute in-memory cache. Leaving Transit map clears the route.
-There are no new keys or background requests.
+
+Selected BC Transit and TransLink routes also show orange **live bus** markers.
+The highlighted blue path is the selected departure's direction/variant; bus
+positions cover both directions of the exact operator route ID, not other cities
+with the same bus number. Tap a bus for its ID and GPS report age. Markers update
+in place, so an open bus popup survives a refresh. The route card shows the
+latest GPS age and provider attribution. No positions are inferred from arrival
+predictions, and no marker movement is invented between GPS reports.
+
+`workers/transit/` provides the bounded GTFS-RT vehicle relay. Its explicit
+Transitous-source-to-BC-Transit-operator mapping covers the BC Transit feeds
+available in the timetable service, including Victoria. TransLink uses its V3
+position endpoint with `TRANSLINK_API_KEY` stored only as a Worker secret. The
+browser receives neither the key nor the upstream URL. Preserve that secret
+when redeploying. The Worker runs at
+`https://gregle-transit.square-rain-5ded.workers.dev/vehicles?route=<routeId>`
+and permits only the Gregle map origins, a single route parameter, and allowlisted
+provider feeds. It returns only matching routes with valid BC coordinates.
+
+One SQLite-backed `TransitFeed` Durable Object per provider/operator shares
+the current snapshot and serializes concurrent refreshes globally. BC Transit
+refreshes at most once per 30 seconds; TransLink at most once per 120 seconds
+(at most 720 position requests/day while continuously active). Refresh
+reservations and provider backoff survive eviction/redeployment. The browser
+polls every 30 seconds only while a route is selected and the tab is visible;
+switching routes, clearing, leaving Transit map, or hiding the tab aborts
+requests and removes markers. Hidden tabs resume from the original GPS age.
+BC Transit positions expire after 120 seconds and TransLink after 300 seconds,
+including during outages. Missing GPS timestamps never inherit the feed time.
+Unsupported feeds show an availability message and do not poll. London
+departures and route highlights continue without requesting this vehicle relay.
+
+Deploy `workers/transit/wrangler.jsonc` with its SQLite migration and
+`TRANSIT_FEEDS` binding; set `TRANSLINK_API_KEY` using Cloudflare's secret
+management. Keep credential values out of configuration, source, and logs.
 
 The browser uses the versioned [Transitous MOTIS API](https://transitous.org/api/),
 which includes TransLink, BC Transit and London feeds. This personal,
 noncommercial, publicly open-source site meets its light-use policy. Requests
 retain the site Referer and visible [operator/source licence attribution](https://transitous.org/sources/).
-No new key, Worker, subscription or background data import is required. Coverage
+Departure boards and route geometry require no key or background data import. Coverage
 depends on the available feeds; absent departures are never estimated from
 service frequency. BC stops are restricted to `ca-bc-` feeds and BC bounds;
 London stops to British feeds within the London-area bounds. Both regions keep

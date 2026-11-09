@@ -18,6 +18,11 @@
 .transit-route-card { position: absolute; z-index: 470; left: 20px; bottom: 110px; width: 330px; max-width: calc(100% - 100px); padding: 18px 20px; border-radius: 20px; font-size: 13px; }
 .transit-route-card p { margin: 8px 0 0; line-height: 1.5; overflow-wrap: anywhere; }
 #transit-route-detail { color: var(--muted); font-size: 11px; }
+.transit-vehicle-marker > span { display: flex; align-items: center; justify-content: center; gap: 3px; min-width: 40px; height: 32px; padding: 0 4px; box-sizing: border-box; border: 2px solid white; border-radius: 10px; background: #a83e00; color: white; box-shadow: 0 2px 7px #0006; font-size: 13px; }
+.transit-vehicle-marker b { font-size: 11px; }
+#transit-vehicle-status { font-size: 12px; }
+.transit-vehicle-credit { display: block; margin-top: 6px; font-size: 10px; }
+.transit-vehicle-credit[hidden] { display: none; }
 .transit-route-active .leaflet-tile-pane { filter: grayscale(.85); opacity: .55; }
 .dark-mode .transit-route-active .leaflet-tile-pane { opacity: .4; }
 .map-stage:has(#transit-route-card:not([hidden])) .transit-map-hint { display: none; }

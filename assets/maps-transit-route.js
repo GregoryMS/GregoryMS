@@ -1,11 +1,11 @@
 (() => {
   'use strict';
   window.GregleTransitRoute=({map,requestJSON,canRequest})=>{
-    const core=window.GregleTransitCore,group=L.layerGroup(),cache=new Map();
+    const core=window.GregleTransitCore,group=L.layerGroup(),cache=new Map(),vehicles=window.GregleTransitVehicles?.({map});
     const panel=document.getElementById('transit-route-card'),title=document.getElementById('transit-route-title'),status=document.getElementById('transit-route-status'),detail=document.getElementById('transit-route-detail'),fit=document.getElementById('transit-route-fit'),retry=document.getElementById('transit-route-retry'),close=document.getElementById('transit-route-clear'),container=map.getContainer();
     let enabled=false,controller,version=0,route,selection,lastRequest=0;
     function cancel(){version++;controller?.abort();controller=null;}
-    function clear(){cancel();group.clearLayers();route=null;selection=null;panel.hidden=true;container.classList.remove('transit-route-active');}
+    function clear(){cancel();vehicles?.clear();group.clearLayers();route=null;selection=null;panel.hidden=true;container.classList.remove('transit-route-active');}
     function fitRoute(){if(!route)return;const size=map.getSize();map.fitBounds(L.latLngBounds(route.points),{paddingTopLeft:[20,95],paddingBottomRight:[70,Math.min(210,size.y*.3)],maxZoom:16});}
     function draw(data){
       route=data;group.clearLayers();
@@ -15,11 +15,11 @@
         L.circleMarker([stop.lat,stop.lng],{radius:stop.selected?8:4,color:'#005fcc',weight:stop.selected?3:2,fillColor:stop.selected?'#005fcc':'#fff',fillOpacity:1}).bindTooltip(label,{direction:'top'}).addTo(group);
       }
       container.classList.add('transit-route-active');title.textContent=`Route ${data.route}`;status.textContent=data.headsign;detail.textContent=`${data.from} → ${data.to} · ${data.stops.length} stops. Selected departure’s direction and route variant.`;
-      fit.hidden=false;retry.hidden=true;panel.removeAttribute('aria-busy');fitRoute();
+      fit.hidden=false;retry.hidden=true;panel.removeAttribute('aria-busy');fitRoute();vehicles?.show(data);
     }
     async function show(row,stop,force=false){
       if(!enabled||document.hidden)return;
-      cancel();selection={row,stop};const token=version,key=core.tripURL(row),saved=cache.get(key);
+      cancel();vehicles?.clear();selection={row,stop};const token=version,key=core.tripURL(row),saved=cache.get(key);
       group.clearLayers();route=null;container.classList.remove('transit-route-active');panel.hidden=false;title.textContent=`Route ${row.route}`;status.textContent='Loading route…';detail.textContent=row.headsign;fit.hidden=true;retry.hidden=true;panel.setAttribute('aria-busy','true');map.closePopup();
       if(!force&&saved&&Date.now()-saved.time<300000){try{draw(core.readTrip(saved.data,row,stop));return;}catch{cache.delete(key);}}
       if(!canRequest()||Date.now()-lastRequest<1500){status.textContent='Please wait briefly, then retry the route.';panel.removeAttribute('aria-busy');retry.hidden=false;return;}

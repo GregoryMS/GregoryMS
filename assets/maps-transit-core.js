@@ -126,11 +126,23 @@
     if(!places.some(place=>matchesStop(place,stop)))throw Error('Selected stop missing from trip');
     const seen=new Set(),stops=places.filter(place=>place&&valid(place.lat,place.lon)&&clean(place.name)&&!seen.has(place.stopId)&&seen.add(place.stopId)).map(place=>({id:clean(place.stopId),name:clean(place.name),lat:place.lat,lng:place.lon,selected:matchesStop(place,stop)}));
     const points=decodeGeometry(leg.legGeometry);
-    return {points,stops,route:clean(leg.displayName||leg.routeShortName)||row.route,headsign:clean(leg.headsign)||row.headsign,from:clean(leg.from?.name),to:clean(leg.to?.name)};
+    return {points,stops,routeId:clean(leg.routeId||row.routeId),route:clean(leg.displayName||leg.routeShortName)||row.route,headsign:clean(leg.headsign)||row.headsign,from:clean(leg.from?.name),to:clean(leg.to?.name)};
+  }
+  function vehiclesURL(routeId) {
+    if(typeof routeId!=='string'||!/^ca-bc-[A-Za-z-]+_[A-Za-z0-9:.-]{1,100}$/.test(routeId)||routeId.length>250)return null;
+    const url=new URL('https://gregle-transit.square-rain-5ded.workers.dev/vehicles');url.search=new URLSearchParams({route:routeId});return url.href;
+  }
+  function readVehiclePositions(data,routeId) {
+    if(data?.routeId!==routeId||typeof data.supported!=='boolean')throw Error('Invalid bus positions');
+    if(!data.supported)return {supported:false,vehicles:[]};
+    if(!['BC Transit','TransLink'].includes(data.source)||![120,300].includes(data.maxAgeSeconds)||!Number.isFinite(data.now)||!Number.isFinite(data.timestamp)||!Array.isArray(data.vehicles)||data.vehicles.length>10000)throw Error('Invalid bus positions');
+    const rawRoute=routeId.slice(routeId.indexOf('_')+1),seen=new Set();
+    const vehicles=data.vehicles.filter(v=>v&&clean(v.id)&&!seen.has(v.id)&&v.routeId===rawRoute&&valid(v.lat,v.lng)&&v.lat>=48.25&&v.lat<=60&&v.lng>=-139.1&&v.lng<=-114&&Number.isFinite(v.observed)&&v.observed>=data.now-data.maxAgeSeconds*1000&&v.observed<=data.now+30000&&seen.add(v.id)).map(v=>({id:clean(v.id),label:clean(v.label)||clean(v.id),lat:v.lat,lng:v.lng,observed:v.observed,bearing:typeof v.bearing==='number'&&v.bearing>=0&&v.bearing<=360?v.bearing:null}));
+    return {supported:true,source:data.source,maxAgeSeconds:data.maxAgeSeconds,now:data.now,timestamp:data.timestamp,vehicles};
   }
   function clock(value, zone) {
     try { return new Date(value).toLocaleString(undefined,{timeZone:zone,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZoneName:'short'}); }
     catch { return new Date(value).toLocaleString(undefined,{timeZone:'UTC',hourCycle:'h23'}) + ' UTC'; }
   }
-  return {region, area, stopsURL, readStops, departuresURL, readDepartures, safeURL, major, clock, tripURL, readTrip, decodeGeometry};
+  return {region, area, stopsURL, readStops, departuresURL, readDepartures, safeURL, major, clock, tripURL, readTrip, decodeGeometry, vehiclesURL, readVehiclePositions};
 });
