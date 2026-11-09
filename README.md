@@ -610,6 +610,12 @@ stops at zoom 15. Tap a marker for upcoming departures, route/destination,
 platform where supplied, cancellations and service notices. **Later departures**
 and **Previous** page through the published schedule; **Departures now** refreshes
 the board. Operator schedule links provide full timetables and service details.
+Individual bus boarding stops are requested instead of provider name groups,
+so opposite-direction stops and terminal bays keep their own markers and codes.
+Only duplicate feed records for the same nearby boarding code are combined.
+Rail and ferry platforms share their parent station's board. Base-map labels
+come from OpenStreetMap and can include stops absent from the timetable feeds;
+those labels do not by themselves establish current scheduled service.
 
 The browser uses the versioned [Transitous MOTIS API](https://transitous.org/api/),
 which includes TransLink, BC Transit and London feeds. This personal,

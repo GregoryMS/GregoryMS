@@ -25,12 +25,13 @@
       // Reuse the current marker while its board is open; rebuilding it would
       // close the popup during Leaflet's automatic pan to keep it on screen.
       for(const marker of group.getLayers())if(marker.transitStop.id!==openId)group.removeLayer(marker);
-      const retained=group.getLayers()[0];
-      if(retained&&!show.some(stop=>stop.id===openId)){map.closePopup();group.removeLayer(retained);}
+      // A viewport refresh may choose another feed's equivalent marker. Keep
+      // the selected boarding point open while it remains physically in view.
+      // load() closes it when the user pans away.
       for(const stop of show){
         if(group.getLayers().some(marker=>marker.transitStop.id===stop.id))continue;
         const rail=core.major(stop),icon=L.divIcon({className:`transit-stop-marker${rail?' transit-station-marker':''}`,html:rail?'<span aria-hidden="true">▣</span>':'<span aria-hidden="true">●</span>',iconSize:[rail?30:24,rail?30:24],iconAnchor:[rail?15:12,rail?15:12]});
-        const marker=L.marker([stop.lat,stop.lng],{icon,title:`${stop.name}${stop.code?' · '+stop.code:''} · departures`,alt:`Departures at ${stop.name}`,keyboard:true,riseOnHover:true,bubblingMouseEvents:false});
+        const marker=L.marker([stop.lat,stop.lng],{icon,title:`${stop.name}${stop.platform?' · '+stop.platform:''}${stop.code?' · '+stop.code:''} · departures`,alt:`Departures at ${stop.name}`,keyboard:true,riseOnHover:true,bubblingMouseEvents:false});
         marker.transitStop=stop;
         let popupContent;
         marker.bindPopup(()=>popupContent||(popupContent=popup(stop,marker)),{minWidth:220,maxWidth:350,maxHeight:Math.max(140,map.getSize().y-170),autoPanPaddingTopLeft:[12,85],autoPanPaddingBottomRight:[60,35]});
@@ -60,7 +61,7 @@
       const box=make('section',null,'transit-popup');box.setAttribute('aria-label',`${stop.name} departures`);
       box.style.width=`${Math.max(210,Math.min(330,map.getSize().x-100))}px`;
       Object.assign(marker.getPopup().options,{maxHeight:Math.max(140,map.getSize().y-170)});
-      box.append(make('h3',stop.name),make('p',`${stop.code?'Stop '+stop.code+' · ':''}${stop.scope==='london'?'London':'British Columbia'}`,'transit-meta'));
+      box.append(make('h3',stop.name),make('p',`${stop.code?'Stop '+stop.code+' · ':''}${stop.platform?'Bay / platform '+stop.platform+' · ':''}${stop.scope==='london'?'London':'British Columbia'}`,'transit-meta'));
       const heading=make('h4','Upcoming departures'),note=make('p','Loading departures…','transit-meta');note.setAttribute('role','status');
       const content=make('div'),actions=make('div',null,'transit-actions');
       const refresh=make('button','Departures now'),later=make('button','Later departures'),back=make('button','Previous');

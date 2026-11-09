@@ -19,7 +19,7 @@ test('transit scope rejects other regions, oversized views and low zooms, includ
  assert.equal(core.area([-.14,51.49,-.11,51.51],16).scope,'london');
  const parsed=core.readStops([rawStop,rawStop,{...rawStop,stopId:'us-wa_1'},{...rawStop,stopId:'ca-bc_2',lat:null},{...rawStop,stopId:'ca-bc_3',lon:0}],area);
  assert.equal(parsed.length,1);assert.equal(parsed[0].zone,'America/Vancouver');
- assert.equal(new URL(core.stopsURL(area)).searchParams.get('grouped'),'true');
+ assert.equal(new URL(core.stopsURL(area)).searchParams.get('grouped'),'false');
  assert.equal(core.major(parsed[0]),false);assert.equal(core.major({modes:['SUBWAY']}),true);
 });
 
@@ -32,6 +32,15 @@ test('departure board distinguishes real-time, scheduled, cancelled and unsafe d
  assert.equal(url.searchParams.has('radius'),false,'station parents must include their platforms');
  assert.notEqual(core.clock(NOW,'America/Vancouver'),core.clock(NOW,'Europe/London'));assert.match(core.clock(NOW,'Europe/London'),/18:00/);
  assert.throws(()=>core.readDepartures({},stop));assert.equal(core.safeURL('https://user:password@example.com/'),null);
+});
+
+test('individual boarding stops preserve opposite directions and terminal bays while coalescing duplicate feeds',()=>{
+ const data=require('./fixtures/transit-boarding-stops.json'),area={scope:'bc',box:[-123.368,48.418,-123.36,48.425]};
+ const stops=core.readStops(data,area);
+ for(const code of ['100019','100010','104111','100025','100024','100035','100039'])assert.equal(stops.filter(stop=>stop.code===code).length,1,'boarding stop '+code);
+ assert(stops.some(stop=>/Bay A/.test(stop.name)));assert(stops.some(stop=>/Bay B/.test(stop.name)));
+ const london=core.readStops([{stopId:'gb-platform-1',parentId:'gb-station',name:'Station',lat:51.5,lon:-.12,modes:['SUBWAY']},{stopId:'gb-platform-2',parentId:'gb-station',name:'Station',lat:51.5001,lon:-.12,modes:['SUBWAY']},{stopId:'gb-bus-a',parentId:'gb-bus-group',name:'Station Bus',stopCode:'1',track:'A',lat:51.5,lon:-.12,modes:['BUS']},{stopId:'gb-bus-b',parentId:'gb-bus-group',name:'Station Bus',stopCode:'2',track:'B',lat:51.5,lon:-.1201,modes:['BUS']}],{scope:'london',box:[-.13,51.49,-.11,51.51]});
+ assert.equal(london.filter(stop=>stop.id==='gb-station').length,1);assert.equal(london.length,3);assert.deepEqual(london.filter(stop=>stop.modes.includes('BUS')).map(stop=>stop.platform),['A','B']);
 });
 
 const flush=async()=>{for(let i=0;i<25;i++)await Promise.resolve();};
@@ -95,4 +104,10 @@ test('clicking the Douglas & Pandora commuter marker renders regular local depar
  const text=el=>(el.textContent||'')+' '+el.children.map(text).join(' ');
  assert.match(text(popup),/Douglas & Pandora \(Victoria City Hall\)/);assert.match(text(popup),/BCTransit/);assert.match(text(popup),/Hillside Ctr via Strawberry Vale/);assert.doesNotMatch(text(popup),/No departures returned/);
  assert.equal(new URL(h.calls[1].url).searchParams.get('radius'),'35');
+});
+
+test('a viewport refresh choosing an equivalent feed marker keeps the open departure board',async()=>{
+ const h=setup();h.api.setEnabled(true);await flush();const marker=h.markers()[0];marker.popup();marker.events.popupopen();
+ h.setFetch(async url=>({ok:true,json:async()=>url.includes('/stoptimes?')?{stopTimes:[departure()]}:[{...rawStop,stopId:'ca-bc-alternate_100032'}]}));
+ await h.move([-123.39,48.42,-123.34,48.44]);assert(h.markers().includes(marker),'open marker must survive provider grouping changes');
 });

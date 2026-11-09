@@ -1,0 +1,207 @@
+[
+  {
+    "name": "Burdett Ave at Douglas St",
+    "stopId": "ca-bc-Victoria-Transit_100017",
+    "importance": 1.731702832330484e-05,
+    "lat": 48.422050000000006,
+    "lon": -123.36546,
+    "stopCode": "100017",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas & Courtney",
+    "stopId": "ca-bc-Cowichan-Valley-Transit_100019",
+    "importance": 5.1956885727122426e-05,
+    "lat": 48.422720000000005,
+    "lon": -123.36592,
+    "stopCode": "100019",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas St at Courtney St",
+    "stopId": "ca-bc-Victoria-Transit_100019",
+    "importance": 5.1956885727122426e-05,
+    "lat": 48.42273000000001,
+    "lon": -123.36596999999999,
+    "stopCode": "100019",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas St at Courtney St",
+    "stopId": "ca-bc-Victoria-Transit_100010",
+    "importance": 5.1956885727122426e-05,
+    "lat": 48.422740000000005,
+    "lon": -123.36574999999999,
+    "stopCode": "100010",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Fairfield Rd at Blanshard St",
+    "stopId": "ca-bc-Victoria-Transit_104111",
+    "importance": 2.5410005036974326e-05,
+    "lat": 48.42175,
+    "lon": -123.36414,
+    "stopCode": "104111",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Fairfield Rd at Blanshard St Bay A",
+    "stopId": "ca-bc-Victoria-Transit_100025",
+    "importance": 2.5410005036974326e-05,
+    "lat": 48.42189,
+    "lon": -123.36409,
+    "stopCode": "100025",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Fairfield Rd at Blanshard St Bay B",
+    "stopId": "ca-bc-Victoria-Transit_100024",
+    "importance": 2.5410005036974326e-05,
+    "lat": 48.42124,
+    "lon": -123.36353,
+    "stopCode": "100024",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Fairfield Rd at Quadra St",
+    "stopId": "ca-bc-Victoria-Transit_100035",
+    "importance": 7.894313966971822e-06,
+    "lat": 48.420210000000004,
+    "lon": -123.36075,
+    "stopCode": "100035",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Fairfield Rd at Quadra St",
+    "stopId": "ca-bc-Victoria-Transit_100039",
+    "importance": 7.894313966971822e-06,
+    "lat": 48.420190000000005,
+    "lon": -123.36101000000001,
+    "stopCode": "100039",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas & Fort",
+    "stopId": "ca-bc-Cowichan-Valley-Transit_100032",
+    "importance": 8.265538440355158e-07,
+    "lat": 48.42437,
+    "lon": -123.36529999999999,
+    "stopCode": "100032",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas St at Fort St",
+    "stopId": "ca-bc-Victoria-Transit_100034",
+    "importance": 9.248557762475684e-05,
+    "lat": 48.42496,
+    "lon": -123.36534999999999,
+    "stopCode": "100034",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas St at Fort St",
+    "stopId": "ca-bc-Victoria-Transit_100032",
+    "importance": 9.248557762475684e-05,
+    "lat": 48.42437,
+    "lon": -123.36532,
+    "stopCode": "100032",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas & Fort",
+    "stopId": "ca-bc-Cowichan-Valley-Transit_100034",
+    "importance": 8.265538440355158e-07,
+    "lat": 48.42496,
+    "lon": -123.36533999999999,
+    "stopCode": "100034",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Fort St at Douglas St",
+    "stopId": "ca-bc-Victoria-Transit_100033",
+    "importance": 9.248557762475684e-05,
+    "lat": 48.4245,
+    "lon": -123.36458,
+    "level": 0.0,
+    "stopCode": "100033",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Fort St at Blanshard St",
+    "stopId": "ca-bc-Victoria-Transit_100045",
+    "importance": 1.8684468159335665e-05,
+    "lat": 48.424170000000004,
+    "lon": -123.36183,
+    "stopCode": "100045",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas St at Courtney St",
+    "stopId": "ca-bc-Cowichan-Valley-Transit_100010",
+    "importance": 5.1956885727122426e-05,
+    "lat": 48.422720000000005,
+    "lon": -123.36582999999999,
+    "stopCode": "100010",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  },
+  {
+    "name": "Douglas St at Blanshard St",
+    "stopId": "ca-bc-Victoria-Transit_100012",
+    "importance": 1.4161622857500333e-05,
+    "lat": 48.41923,
+    "lon": -123.36589,
+    "stopCode": "100012",
+    "vertexType": "TRANSIT",
+    "modes": [
+      "BUS"
+    ]
+  }
+]

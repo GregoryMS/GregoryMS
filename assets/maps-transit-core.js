@@ -24,17 +24,27 @@
   }
   function stopsURL(area) {
     const [w,s,e,n] = area.box, url = new URL('v6/map/stops', endpoint);
-    url.search = new URLSearchParams({min: `${s},${w}`, max: `${n},${e}`, grouped: 'true'});
+    url.search = new URLSearchParams({min: `${s},${w}`, max: `${n},${e}`, grouped: 'false'});
     return url.href;
   }
   function readStops(data, area) {
     if (!Array.isArray(data) || data.length > 10000) throw Error('Invalid transit stops');
     const seen = new Set(), [w,s,e,n] = area.box;
-    return data.filter(item => {
+    const stops = data.filter(item => {
       const id = clean(item?.stopId), allowed = area.scope === 'bc' ? id.startsWith('ca-bc-') : id.startsWith('gb-');
       if (!allowed || !clean(item?.name) || !valid(item.lat,item.lon) || item.lat < s || item.lat > n || item.lon < w || item.lon > e || seen.has(id)) return false;
       seen.add(id); return true;
-    }).map(item => ({id:clean(item.stopId), name:clean(item.name), lat:item.lat, lng:item.lon, code:clean(item.stopCode), modes:Array.isArray(item.modes) ? item.modes.filter(mode => typeof mode === 'string').slice(0,12) : [], scope:area.scope, zone:clean(item.tz) || (area.scope === 'london' ? 'Europe/London' : 'America/Vancouver')}));
+    }).map(item => ({id:clean(item.stopId), parent:clean(item.parentId), name:clean(item.name), lat:item.lat, lng:item.lon, code:clean(item.stopCode), platform:clean(item.track || item.scheduledTrack), modes:Array.isArray(item.modes) ? item.modes.filter(mode => typeof mode === 'string').slice(0,12) : [], scope:area.scope, zone:clean(item.tz) || (area.scope === 'london' ? 'Europe/London' : 'America/Vancouver'), importance:Number.isFinite(item.importance)?item.importance:0}));
+    const result = [];
+    for (const stop of stops) {
+      // Keep distinct bus boarding codes/bays even when the provider groups
+      // them by name. Rail/ferry platforms still share a parent-station board.
+      if (major(stop) && stop.parent) { stop.id=stop.parent; stop.code=''; stop.platform=''; }
+      const previous=result.findIndex(other=>other.id===stop.id || codedBus(stop)&&codedBus(other)&&other.code===stop.code&&matchesStop({stopId:stop.id,stopCode:stop.code,lat:stop.lat,lon:stop.lng},other));
+      if (previous<0) result.push(stop);
+      else if (stop.importance>result[previous].importance) result[previous]=stop;
+    }
+    return result;
   }
   function departuresURL(stop, time, cursor = '') {
     const url = new URL('v6/stoptimes',endpoint);
