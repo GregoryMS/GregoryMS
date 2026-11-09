@@ -36,9 +36,6 @@
   const updateURL = () => {
     const current = view();
     try { history.replaceState(null, '', core.makeHash(current, selected, layerControl?.getState())); } catch {}
-    $('osm-link').href = core.osmURL(current, selected);
-    const bounds = map.getBounds();
-    $('plugshare-link').href = core.plugshareURL(current, [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
   };
   const hideSearch = () => { searchContent.hidden = true; };
   const cancelSearch = () => {

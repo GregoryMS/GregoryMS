@@ -65,16 +65,14 @@
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261105-base-button" defer></script>
   <script src="assets/maps-context-menu.js?v=20261108-share-location" defer></script>
-  <script src="assets/maps.js?v=20261109-search-suggestions" defer></script>
+  <script src="assets/maps.js?v=20261109-menu-links" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
 </head>
 <body class="maps-page">
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><h1 class="breadcrumb">Maps</h1></div>
-    <div class="top-actions"><a class="map-source osm-source" id="osm-link" href="https://www.openstreetmap.org/#map=13/48.42840/-123.36560" target="_blank" rel="noopener" aria-label="Open this area on OpenStreetMap" title="Open this area on OpenStreetMap"><svg class="osm-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-4 2-6-2v16l6 2 6-2 6 2v-8M9 5v16m6-8v6"/><circle cx="17" cy="6" r="4"/><path d="m20 9 2 2"/></svg><span class="osm-label">OpenStreetMap</span><span class="osm-arrow" aria-hidden="true">↗</span></a>
-<a class="map-source plugshare-source" id="plugshare-link" href="https://www.plugshare.com/?latitude=48.428400&amp;longitude=-123.365600&amp;spanLat=0.1&amp;spanLng=0.1" target="_blank" rel="noopener" aria-label="Open this area on PlugShare" title="Open this area on PlugShare"><svg class="plugshare-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v5m8-5v5M6 8h12v3a6 6 0 0 1-6 6v4M9 12h6"/></svg><span class="plugshare-label">PlugShare</span><span class="plugshare-arrow" aria-hidden="true">↗</span></a>
-      <!-- Gregle app menu -->
+    <div class="top-actions"><!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
 <summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
 <nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>
@@ -96,7 +94,7 @@
 <a class="gregle-app" href="https://cloud.gregle.uk/apps/files/files" data-gregle-app-id="docs"><img src="/assets/docs-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Docs</span></a>
 <a class="gregle-app" href="https://cloud.gregle.uk/apps/calendar/" data-gregle-app-id="calendar"><img src="/assets/calendar-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Calendar</span></a></div>
 <div class="gregle-menu-sr-only" role="status" aria-live="polite" data-gregle-app-status></div>
-<section class="gregle-menu-more" aria-label="More links"><h3>More links</h3><div><a href="https://www.openstreetmap.org/" rel="noreferrer">OpenStreetMap</a><a href="https://www.google.com/maps" rel="noreferrer">Google Maps</a><a href="https://maps.apple.com" rel="noreferrer">Apple Maps</a><a href="https://plan.tomtom.com/en/" rel="noreferrer">TomTom Planner</a><a href="https://www.marinetraffic.com/" rel="noreferrer">MarineTraffic</a><a href="https://globe.adsbexchange.com/" rel="noreferrer">ADS-B Exchange</a><a href="https://zoom.earth/" rel="noreferrer">Zoom Earth</a><a href="https://earth.google.com/web/" rel="noreferrer">Google Earth Web</a></div></section></nav></details>
+<section class="gregle-menu-more" aria-label="More links"><h3>More links</h3><div><a href="https://www.openstreetmap.org/" rel="noreferrer">OpenStreetMap</a><a href="https://www.google.com/maps" rel="noreferrer">Google Maps</a><a href="https://maps.apple.com" rel="noreferrer">Apple Maps</a><a href="https://plan.tomtom.com/en/" rel="noreferrer">TomTom Planner</a><a href="https://www.marinetraffic.com/" rel="noreferrer">MarineTraffic</a><a href="https://globe.adsbexchange.com/" rel="noreferrer">ADS-B Exchange</a><a href="https://www.plugshare.com/" rel="noreferrer">PlugShare</a><a href="https://earth.google.com/web/" rel="noreferrer">Google Earth Web</a></div></section></nav></details>
 <!-- /Gregle app menu -->
     </div>
   </header>
