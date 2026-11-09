@@ -5,6 +5,8 @@
   const defaults = {
     tileURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', searchURL: 'https://photon.komoot.io/api/',
     satelliteURL: 'https://gregle-esri.square-rain-5ded.workers.dev/tiles/{z}/{x}/{y}.jpg',
+    cycleURL: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
+    transitURL: 'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     topographicURL: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png', maritimeURL: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
     aviationURL: 'https://gregle-aviation.square-rain-5ded.workers.dev/tiles/{z}/{x}/{y}.png',
     speedSignsURL: 'https://vsls.drivebc.ca/heartbeat/geojson', messageSignsURL: 'https://gregle-drivebc.square-rain-5ded.workers.dev/messages', ferriesURL: '/data/drivebc-ferries.json',
@@ -160,7 +162,7 @@
   const serverTomTom = location.hostname === 'maps.gregle.uk' ? fetch('/api/maps/tomtom-config', {credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(3000)})
     .then(async response => response.ok && (await response.json()).enabled === true).catch(() => false) : Promise.resolve(false);
   try {
-    const response = await fetch('assets/maps-config.json?v=20261109-esri', { signal: AbortSignal.timeout(3000) });
+    const response = await fetch('assets/maps-config.json?v=20261109-cycle-transit', { signal: AbortSignal.timeout(3000) });
     if (response.ok) {
       const supplied = await response.json();
       if (['openchargemap', 'overpass'].includes(supplied.evProvider)) config.evProvider = supplied.evProvider;

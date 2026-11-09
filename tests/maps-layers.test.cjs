@@ -150,3 +150,26 @@ test('Retina satellite tiles use higher source detail, cap at 23, and fall back 
   h.api.setState({base:'street'});
   assert.deepEqual(h.calls.at(-2),['maxZoom',19]);
 });
+
+test('cycle and transit bases use attributed tiles and preserve choices, overlays and theme changes',()=>{
+  const config={cycleURL:'https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',transitURL:'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png'};
+  for(const [base,label,credit,nativeZoom] of [['cycle','CyclOSM','CyclOSM',19],['transit','ÖPNVKarte','MeMoMaps',18]]){
+    const h=setup({config,initial:{base,aircraft:true,maritime:true},dark:true});
+    assert.equal(h.api.getState().base,base); const tile=h.tiles[0];
+    assert.equal(tile.url,config[base+'URL']);assert.equal(tile.options.maxNativeZoom,nativeZoom);
+    assert.match(tile.options.attribution,new RegExp(credit));assert.match(tile.options.attribution,/OpenStreetMap/);
+    tile.events.loading();tile.events.tileload();tile.events.load();assert(h.get('base-layer-status').textContent.startsWith(label));
+    assert(h.calls.some(c=>c[0]==='aircraft'&&c[1]===true));
+    h.theme(false);h.theme(true);assert.equal(h.api.getState().base,base);
+    assert.equal(core.readLayers(core.makeHash(core.defaultView,null,h.api.getState())).base,base);
+    h.change('map-maritime',false);assert.equal(setup({config,storage:h.storage,dark:true}).api.getState().base,base);
+  }
+});
+
+test('unavailable cycle and transit tiles recover to the street map with a notice',()=>{
+  for(const base of ['cycle','transit']){
+    const h=setup({initial:{base},config:{tileURL:'street',[base+'URL']:base}});
+    const tile=h.tiles[0];tile.events.loading();tile.events.tileerror({});tile.events.load();h.flush();
+    assert.equal(h.api.getState().base,'street');assert.equal(h.tiles.at(-1).url,'street');assert.match(h.notices.at(-1)[0],/unavailable/);
+  }
+});
