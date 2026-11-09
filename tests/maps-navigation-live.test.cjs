@@ -108,6 +108,7 @@ test('live traffic refreshes only with fresh visible GPS; stopping cancels a pen
   h.fix(origin); h.tick(); assert.equal(h.pending.length, 1); assert(h.pending[0].url.includes('tomtom'));
   h.pending[0].resolve({ok: true, status: 200, json: async () => trafficResponse()}); await new Promise(resolve => setImmediate(resolve));
   assert.equal(h.routeUpdates(), 1); assert.match(h.el('navigation-traffic-note').textContent, /Live traffic included/);
+  assert.equal(h.el('navigation-traffic-row').hidden, true);
   h.context.document.hidden = true; h.advance(121000); h.fix(origin); h.tick(); assert.equal(h.pending.length, 1);
   h.context.document.hidden = false; h.tick(); assert.equal(h.pending.length, 2);
   h.live.stop(); assert.equal(h.pending[1].options.signal.aborted, true);
@@ -125,8 +126,9 @@ test('changing traffic mid-navigation aborts the old request and applies only th
   h.live.stop();
 });
 
-test('traffic is disabled without a key and hidden for walking or after arrival', () => {
+test('traffic controls stay hidden during driving, walking and arrival', () => {
   const h = harness(); h.live.start(core.readRoute(response()), 'driving', destination);
+  assert.equal(h.el('navigation-traffic-row').hidden, true);
   assert.equal(h.el('navigation-traffic').disabled, true); assert.equal(h.el('navigation-traffic').attributes['aria-checked'], 'false');
   h.fix(origin); h.fix(destination); assert.equal(h.el('navigation-traffic-row').hidden, true); h.live.stop();
   h.live.start(core.readRoute(response()), 'walking', destination); assert.equal(h.el('navigation-traffic-row').hidden, true); h.live.stop();

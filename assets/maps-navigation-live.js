@@ -49,7 +49,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   }
   $('navigation-3d')?.addEventListener('click', toggle3D);
   function trafficUI() {
-    $('navigation-traffic-row').hidden = mode !== 'driving' || ended;
+    $('navigation-traffic-row').hidden = true;
     $('navigation-traffic').setAttribute('aria-checked', String(routing.enabled));
     $('navigation-traffic').disabled = !routing.connected;
     $('navigation-traffic-note').textContent = updatingTraffic ? 'Updating your route…' : trafficChangePending ? 'Waiting for GPS to update your route.' :
