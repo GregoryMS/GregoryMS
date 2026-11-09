@@ -618,20 +618,30 @@ come from OpenStreetMap and can include stops absent from the timetable feeds;
 those labels do not by themselves establish current scheduled service.
 
 Tap a route number in a departure board to highlight that departure's full path,
-direction and stops. The base map is subdued and the selected line uses a blue
-stroke with a white outline. The route card names the direction and endpoints;
+direction and stops. The base map is subdued and the selected line uses a light purple
+stroke with a white outline; stop dots remain dark blue. The route card names the direction and endpoints;
 **Fit route** restores its extent and **×** clears the highlight. Stop dots show
 names on hover, with the original boarding stop emphasised. This uses the
 selected trip's geometry, not every branch or both directions with that number.
 Interlined onward services with other numbers are excluded. An unavailable
 geometry shows a retry message rather than an invented straight-line route.
 
+Bus traces are aligned to roads using Mapbox Map Matching through the existing
+map relay. The published trace supplies up to 100 bend-preserving anchors;
+matching permits bus-only access and turns rather than planning a car route.
+Only a single high-confidence match covering at least 95% of the anchors is
+accepted, and its path must stay within 80 m of the published corridor in both
+directions with comparable length. Stops keep their original boarding positions.
+If alignment is unavailable or fails these checks, retain the operator shape.
+Rail/ferry paths are unchanged. Alignment is opt-in with route selection,
+cancellable, no-store, and uses the existing Mapbox key/rate limiter.
+
 The trip endpoint is requested only on route selection. It uses the same
 timeouts, cancellation and provider backoff as departure boards, with an
 eight-trip, five-minute in-memory cache. Leaving Transit map clears the route.
 
 Selected BC Transit and TransLink routes also show orange **live bus** markers.
-The highlighted blue path is the selected departure's direction/variant; bus
+The highlighted purple path is the selected departure's direction/variant; bus
 positions cover both directions of the exact operator route ID, not other cities
 with the same bus number. A pointer around each bus marker shows its reported
 GPS bearing while the route number stays upright. Tap or hover for the compass

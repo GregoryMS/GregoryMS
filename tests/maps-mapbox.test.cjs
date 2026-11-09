@@ -74,3 +74,13 @@ test('upstream errors and exceptions cannot leak tokens or redirects',async()=>{
     await fixture(async h=>{const r=await h.request();assert.equal(r.status,502);assert(!(await r.text()).includes(h.env.MAPBOX_PUBLIC_TOKEN));assert.equal(r.headers.get('Location'),null);},upstream);
   }
 });
+
+test('bus road matching accepts only bounded regional traces and keeps credentials upstream',async()=>{
+  const points=[a,b],matched={code:'Ok',matchings:[{confidence:.99,geometry:{type:'LineString',coordinates:points.map(p=>[p.lng,p.lat])}}],tracepoints:points.map(()=>({matchings_index:0}))};
+  await fixture(async h=>{
+    const response=await h.request('/match',{body:JSON.stringify({points})});assert.equal(response.status,200);const result=await response.json();assert.equal(result.matchings.length,1);assert(!JSON.stringify(result).includes(h.env.MAPBOX_PUBLIC_TOKEN));
+    const url=new URL(h.calls[0][0]);assert(url.pathname.includes('/matching/v5/mapbox/driving/'));assert.equal(url.searchParams.get('ignore'),'access,oneways,restrictions');assert.equal(url.searchParams.get('overview'),'full');
+    for(const invalid of [null,{points:Array(101).fill(a)},{points:[a,{lat:0,lng:0}]}])assert.equal((await h.request('/match',{body:JSON.stringify(invalid)})).status,400);
+    const roads=require('../assets/maps-transit-roads.js');assert.deepEqual(roads.readMatch(result,points.map(p=>[p.lat,p.lng]),points),points.map(p=>[p.lat,p.lng]));assert.throws(()=>roads.readMatch({...result,matchings:[{...result.matchings[0],confidence:.1}]},[[a.lat,a.lng],[b.lat,b.lng]],points));
+  },()=>Response.json(matched));
+});

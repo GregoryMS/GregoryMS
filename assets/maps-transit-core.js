@@ -126,7 +126,7 @@
     if(!places.some(place=>matchesStop(place,stop)))throw Error('Selected stop missing from trip');
     const seen=new Set(),stops=places.filter(place=>place&&valid(place.lat,place.lon)&&clean(place.name)&&!seen.has(place.stopId)&&seen.add(place.stopId)).map(place=>({id:clean(place.stopId),name:clean(place.name),lat:place.lat,lng:place.lon,selected:matchesStop(place,stop)}));
     const points=decodeGeometry(leg.legGeometry);
-    return {points,stops,routeId:clean(leg.routeId||row.routeId),route:clean(leg.displayName||leg.routeShortName)||row.route,headsign:clean(leg.headsign)||row.headsign,from:clean(leg.from?.name),to:clean(leg.to?.name)};
+    return {points,stops,mode:clean(leg.mode),routeId:clean(leg.routeId||row.routeId),route:clean(leg.displayName||leg.routeShortName)||row.route,headsign:clean(leg.headsign)||row.headsign,from:clean(leg.from?.name),to:clean(leg.to?.name)};
   }
   function vehiclesURL(routeId) {
     if(typeof routeId!=='string'||!/^ca-bc-[A-Za-z-]+_[A-Za-z0-9:.-]{1,100}$/.test(routeId)||routeId.length>250)return null;

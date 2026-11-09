@@ -20,7 +20,7 @@
         iconNode.setAttribute('role','img');iconNode.setAttribute('aria-label',`Route ${selected.route} · ${direction}`);
         const icon=L.divIcon({className:'transit-vehicle-marker',html:iconNode,iconSize:[44,36],iconAnchor:[22,18]});
         const age=Math.max(0,Math.round((now-vehicle.observed)/1000)),name=`Route ${selected.route} · Bus ${vehicle.label}`;
-        const popup=document.createElement('section');popup.append(make('strong',name),make('p',direction),make('p',`GPS position reported ${age} seconds ago. ${snapshot.source}.`),make('p','Buses are shown in both directions. The blue line follows your selected departure.'));
+        const popup=document.createElement('section');popup.append(make('strong',name),make('p',direction),make('p',`GPS position reported ${age} seconds ago. ${snapshot.source}.`),make('p','Buses are shown in both directions. The purple line follows your selected departure.'));
         const tooltip=make('span',`${name} · ${heading?'heading '+heading:'direction unavailable'} · ${age}s ago`),previous=markers.get(vehicle.id);
         if(previous){previous.setLatLng([vehicle.lat,vehicle.lng]).setPopupContent(popup).setTooltipContent(tooltip);if(previous.transitBearing!==bearing)previous.setIcon(icon);}
         else markers.set(vehicle.id,L.marker([vehicle.lat,vehicle.lng],{icon,title:name,alt:name,keyboard:true,riseOnHover:true,zIndexOffset:800,bubblingMouseEvents:false}).bindPopup(popup,{maxWidth:260}).bindTooltip(tooltip,{direction:'top'}).addTo(group));
