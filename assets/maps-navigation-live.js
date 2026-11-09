@@ -6,6 +6,35 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   let previous = null, marker, halo, follow = true, voice = false, spoken = '', controller, lastReroute = 0, offSince = 0, firstFix = true, ended = false;
   let trafficChangePending = false, lastTrafficAttempt = 0, updatingTraffic = false;
   const liveStatus = text => { $('navigation-status').textContent = text; };
+  let wants3D = false, switchVersion = 0, lastCoords = null;
+  const threeD = window.GregleNavigation3D?.({onBrowse: () => setFollow(false), onError: () => {
+    disable3D(); liveStatus('3D map unavailable. Continuing navigation in 2D.');
+  }});
+  function disable3D() {
+    switchVersion++; wants3D = false; threeD?.exit(); routing.setMapbox?.(false);
+    $('navigation-3d').textContent = '3D mode'; $('navigation-3d').setAttribute('aria-pressed', 'false');
+    if (route) trafficUI();
+  }
+  async function toggle3D() {
+    if (!running || mode !== 'driving' || !threeD) return;
+    if (wants3D) { disable3D(); return; }
+    wants3D = true; const token = ++switchVersion, currentSession = session;
+    $('navigation-3d').textContent = 'Cancel 3D'; liveStatus('Loading 3D navigation…');
+    try {
+      if (!await threeD.enter(route) || token !== switchVersion || currentSession !== session || !running) return;
+      routing.setMapbox(true); $('navigation-3d').textContent = '2D mode'; $('navigation-3d').setAttribute('aria-pressed', 'true');
+      trafficUI();
+      setFollow(true);
+      if (marker && lastCoords && Date.now() - lastFix < 15000) threeD.update(marker.getLatLng(), lastCoords);
+      controller?.abort(); controller = null;
+      const point = marker?.getLatLng() || {lat: route.points[0][0], lng: route.points[0][1]};
+      await reroute(point, true);
+    } catch {
+      if (token !== switchVersion || currentSession !== session) return;
+      disable3D(); liveStatus('3D could not load. Continuing navigation in 2D; try 3D mode again.');
+    }
+  }
+  $('navigation-3d')?.addEventListener('click', toggle3D);
   function trafficUI() {
     $('navigation-traffic-row').hidden = mode !== 'driving' || ended;
     $('navigation-traffic').setAttribute('aria-checked', String(routing.enabled));
@@ -20,6 +49,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     window.speechSynthesis.speak(utterance);
   }
   function cleanup() {
+    disable3D(); lastCoords = null;
     session++; running = false; ended = false; trafficChangePending = false; updatingTraffic = false;
     if (watch !== null) navigator.geolocation.clearWatch(watch);
     watch = null; clearInterval(timer); controller?.abort(); controller = null;
@@ -33,6 +63,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   function setFollow(value) {
     follow = value; $('navigation-follow').setAttribute('aria-pressed', String(value));
     $('navigation-follow').textContent = value ? 'Following' : 'Recenter';
+    threeD?.setFollow(value);
   }
   map.on('dragstart', () => { if (running) setFollow(false); });
   $('navigation-follow').addEventListener('click', () => { setFollow(true); if (marker) map.panTo(marker.getLatLng(), { animate: false }); });
@@ -48,6 +79,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     if (!result) return;
     const threshold = mode === 'walking' ? 40 : 65;
     if (result.away > threshold) {
+      threeD?.clearGuidance();
       if (!offSince) offSince = Date.now();
       $('navigation-instruction').textContent = 'Checking your route…'; $('navigation-distance').textContent = 'Off route';
       liveStatus('Waiting for a consistent location before rerouting.');
@@ -55,6 +87,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
       return;
     }
     offSince = 0; previous = result;
+    if (threeD?.active) threeD.guidance(result);
     $('navigation-distance').textContent = result.arrived ? 'Arrived' : `In ${core.distance(result.turnDistance)}`;
     $('navigation-instruction').textContent = result.arrived ? 'You have arrived' : result.next?.text || 'Continue to your destination';
     $('navigation-remaining').textContent = `${core.distance(result.remaining)} · ${core.duration(result.seconds)} left`;
@@ -83,6 +116,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
       const updated = await routing.request(point, destination, mode, { signal: current.signal });
       if (!running || token !== session || controller !== current) return;
       route = updated; previous = null; offSince = 0; spoken = ''; trafficChangePending = false; updatingTraffic = false;
+      if (threeD?.active) threeD.setRoute(route);
       onRoute(route, point, destination, false);
       trafficUI();
       // A newer GPS fix may have arrived during the request.
@@ -107,10 +141,13 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     if (!core.valid(point) || (position.timestamp && Date.now() - position.timestamp > 15000)) return;
     const accuracy = position.coords.accuracy;
     if (!Number.isFinite(accuracy) || accuracy < 0 || accuracy > (mode === 'walking' ? 60 : 100)) {
+      threeD?.clearGuidance();
       liveStatus('GPS accuracy is low. Waiting for a clearer location.');
       $('navigation-distance').textContent = 'Weak GPS'; $('navigation-instruction').textContent = 'Waiting for an accurate location'; return;
     }
     lastFix = Date.now();
+    lastCoords = position.coords;
+    if (threeD?.active) threeD.update(point, position.coords);
     if (!marker) {
       const icon = L.divIcon({ className: 'navigation-position', html: '<span aria-hidden="true">▲</span>', iconSize: [36, 36], iconAnchor: [18, 18] });
       marker = L.marker([point.lat, point.lng], { icon, title: 'Your live location', alt: 'Your live location', zIndexOffset: 1000 }).addTo(map);
@@ -119,7 +156,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     const heading = position.coords.heading;
     const arrow = marker.getElement?.()?.firstElementChild;
     if (arrow) arrow.style.transform = `rotate(${Number.isFinite(heading) ? heading : 0}deg)`;
-    if (follow) {
+    if (follow && !threeD?.active) {
       // Padding keeps the location out from underneath the guidance card, including half-screen views.
       const height = card.getBoundingClientRect().height, size = map.getSize();
       const location = map.project([point.lat, point.lng], mode === 'walking' ? 17 : 16);
@@ -135,7 +172,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     }
     if (!controller || updatingTraffic) guidance(point);
   }
-  function start(nextRoute, nextMode, to) {
+  function start(nextRoute, nextMode, to, {threeD: start3D = false} = {}) {
     if (!navigator.geolocation?.watchPosition) { onStop('Live location is unavailable in this browser. You can still use the route steps.'); return; }
     cleanup(); route = nextRoute; mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; spoken = ''; lastTrafficAttempt = Date.now();
     running = true; const token = session; setFollow(true); card.hidden = false;
@@ -144,10 +181,13 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     $('navigation-remaining').textContent = `${core.distance(route.distance)} · ${core.duration(route.duration)}`;
     $('navigation-eta').textContent = ''; $('navigation-arrow').textContent = '↑'; liveStatus('Allow location access to start live guidance.');
     trafficUI();
+    $('navigation-3d').hidden = mode !== 'driving' || !threeD;
+    if (start3D) toggle3D();
     timer = setInterval(() => {
       if (running && mode === 'driving' && routing.enabled && routing.connected && !document.hidden && lastFix && Date.now() - lastFix < 15000 && !controller && Date.now() - lastTrafficAttempt >= 120000) reroute(marker.getLatLng(), true, true);
       if (running && route?.traffic && Date.now() - route.fetchedAt > 180000) trafficUI();
       if (running && (!lastFix || Date.now() - lastFix > 15000)) {
+        threeD?.clearGuidance();
         liveStatus(document.hidden ? 'Location may pause while the browser is in the background.' : 'GPS signal lost. Guidance resumes with a fresh location.');
         $('navigation-distance').textContent = 'Waiting for GPS'; $('navigation-instruction').textContent = 'Waiting for your location';
         $('navigation-eta').textContent = ''; window.speechSynthesis?.cancel();
@@ -157,7 +197,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
       watch = navigator.geolocation.watchPosition(p => position(p, token), error => {
         if (token !== session || !running) return;
         if (error.code === 1) stop('Location access was denied. Allow location for this site in your browser settings, then start navigation again.');
-        else { liveStatus('Location is unavailable. Waiting for GPS to recover.'); $('navigation-distance').textContent = 'Waiting for GPS'; $('navigation-instruction').textContent = 'Waiting for your location'; }
+        else { threeD?.clearGuidance(); liveStatus('Location is unavailable. Waiting for GPS to recover.'); $('navigation-distance').textContent = 'Waiting for GPS'; $('navigation-instruction').textContent = 'Waiting for your location'; }
       }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
     } catch { stop('Live location could not start. Check this site’s location permission.'); }
   }

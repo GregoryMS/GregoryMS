@@ -30,7 +30,7 @@ test('progress follows geometry, advances turns, detects deviation and arrival',
   assert.equal(core.progress(route, { lat: 48.43, lng: -123.352 }, before).arrived, false);
   assert.equal(core.progress(route, { lat: NaN, lng: 0 }), null);
 });
-function harness({connected = false} = {}) {
+function harness({connected = false, threeDFactory} = {}) {
   const elements = new Map(), events = {}, cleared = [], pending = [], markers = [], spoken = [], removed = [];
   let now = 1800000000000, success, failure, tick, stopMessage, routeUpdates = 0;
   class El {
@@ -41,7 +41,7 @@ function harness({connected = false} = {}) {
   const el = id => { if (!elements.has(id)) elements.set(id, new El()); return elements.get(id); };
   const item = p => ({ point: { lat: p[0], lng: p[1] }, addTo() { markers.push(this); return this; }, getLatLng() { return this.point; }, setLatLng(p) { this.point = { lat: p[0], lng: p[1] }; }, setRadius() {}, getElement() { return null; } });
   class FakeDate extends Date { constructor(...args) { super(...(args.length ? args : [now])); } static now() { return now; } }
-  const context = { window: { GregleNavigation: core, GregleMapRouting: traffic, addEventListener: (e, f) => { events[e] = f; }, speechSynthesis: { cancel() {}, speak(u) { spoken.push(u.text); } }, SpeechSynthesisUtterance: class { constructor(text) { this.text = text; } } },
+  const context = { window: { GregleNavigation3D: threeDFactory, GregleNavigation: core, GregleMapRouting: traffic, addEventListener: (e, f) => { events[e] = f; }, speechSynthesis: { cancel() {}, speak(u) { spoken.push(u.text); } }, SpeechSynthesisUtterance: class { constructor(text) { this.text = text; } } },
     document: { getElementById: el, querySelector: () => el('stage'), hidden: false }, navigator: { geolocation: { watchPosition(s, f, options) { success = s; failure = f; assert.equal(options.maximumAge, 0); return 0; }, clearWatch(id) { cleared.push(id); } } },
     L: { marker: item, circle: item, divIcon: p => p }, Date: FakeDate, AbortController,
     setInterval: f => { tick = f; return 1; }, clearInterval() {}, setTimeout: () => 1, clearTimeout() {},
@@ -130,4 +130,37 @@ test('traffic is disabled without a key and hidden for walking or after arrival'
   assert.equal(h.el('navigation-traffic').disabled, true); assert.equal(h.el('navigation-traffic').attributes['aria-checked'], 'false');
   h.fix(origin); h.fix(destination); assert.equal(h.el('navigation-traffic-row').hidden, true); h.live.stop();
   h.live.start(core.readRoute(response()), 'walking', destination); assert.equal(h.el('navigation-traffic-row').hidden, true); h.live.stop();
+});
+
+
+test('3D shares GPS and reroutes, and poor or stale GPS clears lane guidance', async () => {
+  const calls = [], view = {active:true, enter:async()=>true, exit:()=>calls.push('exit'), setFollow(){}, update:()=>calls.push('position'), setRoute:()=>calls.push('route'), guidance:()=>calls.push('guidance'), clearGuidance:()=>calls.push('clear')};
+  const h=harness({threeDFactory:()=>view});
+  h.live.start(core.readRoute(response()),'driving',destination); h.fix(origin);
+  const work=h.el('navigation-3d').click(); await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(h.pending.length,1); assert(h.pending[0].url.includes('gregle-mapbox'));
+  h.pending[0].resolve({ok:true,json:async()=>response()}); await work;
+  assert.equal(h.el('navigation-3d').textContent,'2D mode'); assert(calls.includes('route')); assert(calls.includes('guidance'));
+  h.fix(origin,150); assert.equal(calls.at(-1),'clear');
+  h.fix(origin); h.advance(16000); h.tick(); assert.equal(calls.at(-1),'clear');
+  await h.el('navigation-3d').click(); assert.equal(h.el('navigation-3d').textContent,'3D mode');
+  h.live.stop(); assert.deepEqual(h.cleared,[0]); assert(calls.filter(x=>x==='exit').length>=2);
+});
+
+test('stopping or cancelling while 3D loads cannot start a late route request', async () => {
+  let finish, exits=0;
+  const h=harness({threeDFactory:()=>({active:false, enter:()=>new Promise(resolve=>finish=resolve),exit(){exits++;},setFollow(){},clearGuidance(){}})});
+  h.live.start(core.readRoute(response()),'driving',destination);
+  const first=h.el('navigation-3d').click(); assert.equal(h.el('navigation-3d').textContent,'Cancel 3D');
+  await h.el('navigation-3d').click(); finish(false); await first; assert.equal(h.pending.length,0);
+  const second=h.el('navigation-3d').click(); h.live.stop(); finish(true); await second;
+  assert.equal(h.pending.length,0); assert.equal(h.live.active,false); assert(exits>=3);
+});
+
+test('a failed 3D map load returns to 2D without ending GPS navigation', async () => {
+  let exited=false;
+  const h=harness({threeDFactory:()=>({active:false, enter:async()=>{throw Error('WebGL unavailable');},exit(){exited=true;},setFollow(){},clearGuidance(){}})});
+  h.live.start(core.readRoute(response()),'driving',destination); await h.el('navigation-3d').click();
+  assert(h.live.active); assert(exited); assert.match(h.el('navigation-status').textContent,/Continuing navigation in 2D/);
+  assert.equal(h.el('navigation-3d').attributes['aria-pressed'],'false'); h.live.stop();
 });

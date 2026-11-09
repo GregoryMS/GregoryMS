@@ -1,0 +1,9 @@
+{
+  "name": "gregle-mapbox",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-09",
+  "workers_dev": true,
+  "secrets": {"required": ["MAPBOX_PUBLIC_TOKEN"]},
+  "ratelimits": [{"name": "ROUTE_LIMITER", "namespace_id": "10074", "simple": {"limit": 30, "period": 60}}],
+  "observability": {"enabled": true, "head_sampling_rate": 0.1, "redact_query_string": true, "traces": {"enabled": true, "head_sampling_rate": 0.1}}
+}

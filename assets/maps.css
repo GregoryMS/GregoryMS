@@ -649,6 +649,69 @@
 #directions-traffic-connect { margin-bottom: 12px; }
 .navigation-live { max-height: calc(100% - 32px); overflow-y: auto; overscroll-behavior: contain; }
 
+/* A separate WebGL surface keeps the existing Leaflet map and layers intact. */
+#navigation-map-3d { position: absolute; inset: 0; z-index: 440; background: #e7e9ee; }
+#navigation-map-3d[hidden], #navigation-lanes[hidden], #navigation-speed[hidden], #navigation-speed-limit[hidden] { display: none; }
+.navigation-3d #gregle-map { visibility: hidden; }
+.navigation-3d .navigation-live { width: 390px; background: var(--map-surface); }
+.navigation-3d .navigation-controls { position: sticky; bottom: 0; background: var(--map-surface); padding-top: 4px; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.navigation-3d .navigation-controls::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 24px; background: var(--map-surface); }
+.navigation-3d-position { width: 34px; height: 34px; box-sizing: border-box; }
+#navigation-map-3d .mapboxgl-ctrl-bottom-left { max-width: calc(100% - 90px); }
+#navigation-map-3d .mapboxgl-ctrl-bottom-right { max-width: calc(100% - 100px); }
+#navigation-map-3d .mapboxgl-ctrl-group button { width: 48px; height: 48px; }
+#navigation-map-3d .mapboxgl-ctrl-attrib { font-size: 10px; }
+#directions-3d { min-height: 48px; margin: 8px 0 0; border: 1px solid var(--map-accent); border-radius: 12px; padding: 12px 18px; color: var(--map-accent); background: var(--map-accent-soft); font: 600 16px/1.3 system-ui, sans-serif; cursor: pointer; }
+#directions-3d:disabled { opacity: .5; cursor: default; }
+#navigation-lanes { margin-top: 14px; padding: 12px 0 0; border-top: 1px solid var(--map-border); }
+.navigation-lane-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; color: var(--muted); font: 500 11px/1.4 system-ui, sans-serif; }
+#navigation-lane-arrows { display: flex; justify-content: center; gap: 5px; margin-top: 8px; }
+.navigation-lane { position: relative; flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 2px 4px; border: 1px solid var(--map-border); border-radius: 9px; color: var(--muted); font: 600 clamp(20px, 4vw, 32px)/1 system-ui, sans-serif; }
+.navigation-lane.recommended { background: var(--map-accent-soft); border-color: var(--map-accent); }
+.navigation-lane.recommended::after { content: ''; position: absolute; bottom: 3px; left: calc(50% - 3px); width: 6px; height: 3px; border-radius: 2px; background: var(--map-accent); }
+.lane-chosen { color: var(--map-accent); }
+.navigation-road-speed { display: flex; align-items: center; gap: 18px; margin-top: 8px; }
+.navigation-road-speed > div { display: flex; align-items: baseline; gap: 5px; font: 500 12px/1.3 system-ui, sans-serif; color: var(--muted); }
+.navigation-road-speed strong { color: var(--text); font-size: 24px; font-variant-numeric: tabular-nums; }
+#navigation-speed-limit { padding: 4px 8px; border: 2px solid var(--map-border); border-radius: 8px; }
+@media (min-width: 1101px) {
+  .navigation-3d .navigation-live { top: 24px; left: 24px; width: 390px; padding: 22px; }
+  .navigation-3d #navigation-instruction { font-size: 27px; }
+  .navigation-3d #navigation-distance { font-size: 28px; }
+  .navigation-3d .navigation-controls { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .navigation-3d .navigation-controls button { min-width: 0; min-height: 56px; font-size: 14px; padding: 8px 3px; }
+}
+@media (max-width: 700px) {
+  .navigation-3d .navigation-live { top: 8px; left: 8px; width: calc(100% - 16px); max-height: 54%; padding: 12px; border-radius: 16px; }
+  .navigation-3d .navigation-controls { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+  .navigation-3d .navigation-controls button { min-width: 0; min-height: 46px; padding: 8px 3px; font-size: 13px; }
+  .navigation-3d .navigation-trip { margin-top: 8px; padding-top: 8px; font-size: 13px; }
+  .navigation-3d #navigation-status { margin: 4px 0 8px; font-size: 11px; }
+  .navigation-3d .navigation-traffic-row { margin-bottom: 6px; }
+  .navigation-3d #navigation-traffic-note { display: none; }
+  .navigation-3d .route-traffic-row { margin: 2px 0; min-height: 32px; font-size: 12px; }
+  .navigation-3d #navigation-instruction { font-size: 19px; }
+  .navigation-3d #navigation-distance { font-size: 21px; }
+  .navigation-3d #navigation-lanes { margin-top: 8px; padding-top: 8px; }
+}
+@media (max-height: 500px) and (min-width: 701px) {
+  .navigation-3d .navigation-live { width: 310px; top: 8px; left: 8px; padding: 12px; max-height: calc(100% - 16px); }
+  .navigation-3d #navigation-instruction { font-size: 19px; }
+  .navigation-3d .navigation-controls { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+  .navigation-3d .navigation-controls button { min-width: 0; min-height: 46px; font-size: 12px; padding: 8px 3px; }
+  .navigation-3d .navigation-trip { margin-top: 6px; padding-top: 6px; font-size: 12px; }
+  .navigation-3d #navigation-status, .navigation-3d #navigation-traffic-note { display: none; }
+  .navigation-3d #navigation-arrow { flex-basis: 32px; font-size: 32px; }
+  .navigation-3d #navigation-distance { font-size: 18px; }
+  .navigation-3d #navigation-instruction { font-size: 16px; margin-top: 2px; }
+  .navigation-3d #navigation-lanes { margin-top: 6px; padding-top: 6px; }
+  .navigation-3d .navigation-lane { min-height: 36px; }
+  .navigation-3d .navigation-road-speed { margin-top: 6px; }
+  .navigation-3d .navigation-road-speed strong { font-size: 18px; }
+  .navigation-3d .route-traffic-row { min-height: 28px; margin: 0; font-size: 12px; }
+  .navigation-3d .navigation-traffic-row { margin-bottom: 4px; }
+}
+
 /* A phone turned sideways needs the full panel height, rather than a short strip. */
 @media (min-width: 701px) and (max-width: 1100px) and (max-height: 560px) and (pointer: coarse) {
   .maps-page .topbar { padding: max(4px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 4px max(16px, env(safe-area-inset-left)); }

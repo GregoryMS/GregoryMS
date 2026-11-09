@@ -42,7 +42,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   });
   function invalidate(message = 'Choose locations, then show your route.') {
     if (live?.active) live.stop();
-    currentRoute = null; $('directions-start').disabled = true;
+    currentRoute = null; $('directions-start').disabled = true; $('directions-3d').disabled = true;
     version++; controller?.abort(); controller = null; locating = false;
     $('directions-location').disabled = false;
     panel.removeAttribute('aria-busy');
@@ -90,13 +90,15 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     for (const choice of ['driving', 'walking']) $('directions-' + choice).setAttribute('aria-pressed', String(choice === mode));
     invalidate(`Choose locations, then show your ${mode} route.`);
   });
-  $('directions-start').addEventListener('click', () => {
+  function startNavigation(threeD = false) {
     if (!currentRoute || !live) return;
     panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
     document.querySelector('.map-stage').classList.remove('directions-open');
-    live.start(currentRoute, mode, points.to);
+    live.start(currentRoute, mode, points.to, {threeD});
     if (live.active) $('navigation-stop').focus({ preventScroll: true });
-  });
+  }
+  $('directions-start').addEventListener('click', () => startNavigation());
+  $('directions-3d')?.addEventListener('click', () => startNavigation(true));
   toggle.addEventListener('click', () => {
     if (panel.hidden || panel.inert || panel.closest?.('.map-drawer.is-compact')) {
       open();
@@ -163,7 +165,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     nextRoute = Date.now() + 1100;
     const token = version, from = { ...points.from }, to = { ...points.to };
     controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), 15000);
-    panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; $('directions-start').disabled = true;
+    panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; $('directions-start').disabled = true; $('directions-3d').disabled = true;
     status(mode === 'driving' && routing.enabled && routing.connected ? 'Finding a route with live traffic…' : `Finding a ${mode} route…`);
     try {
       const route = await routing.request(from, to, mode, { signal: current.signal });
@@ -171,7 +173,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       renderRoute(route, from, to, !refresh);
       status(`${mode === 'walking' ? 'Walking' : 'Driving'} route ready. Start navigation for live guidance.`);
     } catch (error) { if (token === version) status(error.name === 'AbortError' ? 'Routing timed out. Try again, or use your navigation app below.' : error.message || 'Routing is unavailable. Try again.'); }
-    finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; $('directions-start').disabled = !currentRoute || !live; } }
+    finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; $('directions-start').disabled = !currentRoute || !live; $('directions-3d').disabled = !currentRoute || !live; } }
   }
   $('directions-route').addEventListener('click', () => calculateRoute());
   function renderRoute(route, from, to, fit = true) {
@@ -181,7 +183,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       if (urls) { $('directions-google').href = urls.google; $('directions-apple').href = urls.apple; }
     }
     currentRoute = route; routeLayers.clearLayers(); $('directions-steps').replaceChildren();
-    routeCredit(!!route.traffic);
+    routeCredit(!!route.traffic && route.provider === 'tomtom');
     L.polyline(route.points, { color: '#fff', weight: 10, opacity: .9, interactive: false }).addTo(routeLayers);
     const line = L.polyline(route.points, { color: '#7637cc', weight: 6, opacity: .95, interactive: false, dashArray: mode === 'walking' ? '3 10' : null }).addTo(routeLayers);
     for (const [label, p] of [['A', from], ['B', to]]) {
@@ -196,6 +198,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     $('directions-total').textContent = `${core.duration(route.duration)} · ${core.distance(route.distance)}`;
     for (const step of route.steps) { const li = document.createElement('li'); li.textContent = `${step.text} · ${core.distance(step.distance)}`; $('directions-steps').append(li); }
     $('directions-summary').hidden = false; $('directions-start').disabled = !live;
+    $('directions-3d').hidden = mode !== 'driving'; $('directions-3d').disabled = !live;
     syncTraffic();
   }
   syncTraffic();
