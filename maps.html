@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261109-dark-tile-background">
+  <link rel="stylesheet" href="assets/maps.css?v=20261109-transit-schedules">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -48,7 +48,9 @@
   <script src="assets/maps-vessels.js?v=20261021-mobile-drawer" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
-  <script src="assets/maps-layers.js?v=20261109-cycle-transit" defer></script>
+  <script src="assets/maps-transit-core.js?v=20261109-transit-schedules" defer></script>
+  <script src="assets/maps-transit.js?v=20261109-transit-schedules" defer></script>
+  <script src="assets/maps-layers.js?v=20261109-transit-schedules" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261109-navigation-3d" defer></script>
   <script src="assets/maps-routing.js?v=20261109-navigation-3d" defer></script>
@@ -184,12 +186,13 @@
         <label><input type="radio" name="map-base" value="satellite"><span><strong>Satellite</strong><small>Esri World Imagery</small></span></label>
         <label><input type="radio" name="map-base" value="topographic"><span><strong>Topographic</strong><small>Contours &amp; terrain</small></span></label>
         <label><input type="radio" name="map-base" value="cycle"><span><strong>Cycle map</strong><small>CyclOSM · cycleways &amp; routes</small></span></label>
-        <label><input type="radio" name="map-base" value="transit"><span><strong>Transit map</strong><small>ÖPNVKarte · buses &amp; rail</small></span></label>
+        <label><input type="radio" name="map-base" value="transit"><span><strong>Transit map</strong><small>Buses &amp; rail · BC &amp; London schedules</small></span></label>
         <label><input type="radio" name="map-base" value="plugshare"><span><strong>PlugShare</strong><small>EV charging map</small></span></label>
         <label><input type="radio" name="map-base" value="shademap"><span><strong>ShadeMap</strong><small>Sunlight &amp; shadows</small></span></label>
         <label><input type="radio" name="map-base" value="adsbexchange"><span><strong>ADS-B Exchange</strong><small>Live aircraft map</small></span></label>
       </fieldset>
       <p class="layer-status" id="base-layer-status" role="status"></p>
+      <div id="transit-options" hidden><p class="layer-status">Tap a stop or station for departures. Bus stops appear at zoom 15; rail and ferry stations at zoom 13. Times are local to the stop; scheduled times and live estimates are labelled separately.</p><p class="layer-status"><a href="https://transitous.org/sources/" target="_blank" rel="noopener">Transitous · operator data &amp; licences ↗</a></p></div>
     </section>
     <section class="map-layers-panel map-glass" id="map-layers-panel" aria-labelledby="map-layers-heading" hidden>
       <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><div id="car-layers-zoom" class="car-layers-zoom" role="group" aria-label="Map zoom" hidden></div><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
@@ -321,6 +324,7 @@
       <div class="map-drawer-body" id="map-drawer-body"></div>
     </section>
     <section id="map-feature-details" aria-label="Selected map feature" hidden></section>
+    <aside id="transit-map-hint" class="transit-map-hint map-glass" aria-label="Transit schedules" hidden><span id="transit-map-status" role="status">Tap a stop for departures.</span><button id="transit-zoom" type="button" hidden>Zoom to stops</button><button id="transit-retry" type="button" hidden>Retry stops</button></aside>
     <div class="map-notice map-glass" id="map-notice" role="status" hidden></div>
     <div class="map-link-copy map-glass" id="map-link-copy" hidden><label for="map-link-input">Copy this map link</label><div><input id="map-link-input" type="url" readonly><button class="map-dismiss" id="close-map-link" type="button" aria-label="Close map link">×</button></div></div>
     <a class="map-report" href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue ↗</a>

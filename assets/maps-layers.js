@@ -24,6 +24,7 @@
     const aircraft = window.GregleAircraft({ map, notify });
     const vessels = window.GregleVessels({ map, notify });
     const embed = window.GregleMapEmbed({ map });
+    const transit = window.GregleTransit?.({ map });
     const streetView = window.GregleStreetView({ map, getSelected, onOpen: onStreetViewOpen, onSelect: onStreetViewSelect, onClose: () => setState({ ...state, streetview: false }, true) });
     let applied;
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
@@ -303,6 +304,7 @@
         if (active.traffic) loadTraffic(); else { removeTraffic(); trafficPaused = false; scheduleTraffic(); }
       }
       if (first || previous.streetview !== active.streetview) streetView.setEnabled(active.streetview);
+      transit?.setEnabled(active.base === 'transit' && !active.streetview);
       render();
       if (changed) { persist(); onChange(); }
     }

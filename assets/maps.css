@@ -1,5 +1,28 @@
 :root { --map-accent: #7637cc; --map-accent-soft: #eee5fa; --map-surface: #faf9f6; --map-border: #e6e2eb; --map-control-surface: rgba(250, 249, 246, .88); --map-control-accent-soft: rgba(238, 229, 250, .88); }
 :root.dark-mode { --map-accent: #c698ff; --map-accent-soft: #49345f; --map-surface: #29272e; --map-border: #45404d; --map-control-surface: rgba(41, 39, 46, .88); --map-control-accent-soft: rgba(73, 52, 95, .88); }
+.transit-stop-marker { display: grid; place-items: center; color: #fff; background: #7637cc; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 1px 5px #0006; font: 700 12px/1 system-ui, sans-serif; }
+.transit-station-marker { background: #194b96; border-radius: 9px; font-size: 20px; }
+.transit-stop-marker:focus-visible { outline: 3px solid #ffca28; outline-offset: 3px; }
+.transit-map-hint { position: absolute; z-index: 450; bottom: 48px; left: 14px; max-width: min(360px,calc(100% - 85px)); padding: 9px 12px; border-radius: 12px; font-size: 12px; line-height: 1.5; }
+.transit-map-hint button, .transit-actions button { min-height: 40px; margin: 6px 4px 0 0; padding: 6px 10px; background: var(--map-accent-soft); color: var(--map-accent); border: 1px solid var(--map-border); border-radius: 9px; font: inherit; cursor: pointer; }
+.transit-popup { color: var(--text); font: 13px/1.5 Inter,system-ui,sans-serif; overflow-wrap: anywhere; }
+.transit-popup h3 { margin: 0 0 3px; font-size: 17px; line-height: 1.3; }
+.transit-popup h4 { margin: 14px 0 5px; font-size: 14px; }
+.transit-popup p.transit-meta { margin: 5px 0 9px; color: var(--muted); font-size: 11px; }
+.transit-popup a { color: var(--map-accent); }
+.transit-departures { list-style: none; margin: 0; padding: 0; }
+.transit-departures li { display: grid; grid-template-columns: auto 1fr; gap: 2px 9px; padding: 10px 0; border-bottom: 1px solid var(--map-border); }
+.transit-route { grid-row: span 2; align-self: start; padding: 3px 7px; border-radius: 6px; color: var(--map-accent); background: var(--map-accent-soft); max-width: 100px; }
+.transit-destination { font-weight: 500; }
+.transit-departures time { font-variant-numeric: tabular-nums; }
+.transit-departures small { grid-column: 2; color: var(--muted); }
+.transit-cancelled time { text-decoration: line-through; }
+.transit-popup p.transit-alert { margin: 9px 0; padding: 9px; border-left: 3px solid var(--map-accent); background: var(--map-accent-soft); }
+.transit-actions { display: flex; flex-wrap: wrap; margin: 4px 0 12px; }
+.transit-actions button:disabled { opacity: .55; cursor: wait; }
+.transit-route-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0; }
+.transit-popup summary { cursor: pointer; margin-top: 10px; }
+.transit-popup button:focus-visible, .transit-popup a:focus-visible, .transit-map-hint button:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
 .map-busyness { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--map-border); min-width: 0; }
 .map-busyness h3 { margin: 0 0 8px; font-size: 14px; font-weight: 500; color: var(--text); }
 .map-place .map-busyness p { margin: 0 0 10px; max-height: none; overflow: visible; font-size: 12px; line-height: 1.6; }

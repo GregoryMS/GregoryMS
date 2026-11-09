@@ -23,6 +23,7 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
     setBase(value){calls.push(['embed',value]);}
   });
   const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener(){}};
+  window.GregleTransit=provider('transit');
   for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed'}))window[name]=provider(key);
   const document={documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
   const L={TileLayer:{extend:()=>function(){}},tileLayer:(url,options)=>{const tile={url,options,events:{},on(name,fn){this.events[name]=fn;return this;},setZIndex(){return this;},addTo(){return this;}};tiles.push(tile);return tile;}};
@@ -36,6 +37,12 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
   const change=(id,value)=>{get(id).checked=value;get(id).events.change();};
   return {api,get,calls,storage,change,tiles,notices,flush:()=>{while(timers.length)timers.shift()();},theme:value=>{dark=value;themeObserver();}};
 }
+
+test('transit station schedules follow the base map and pause for Street View and embeds',()=>{
+ const h=setup({initial:{base:'transit'}});assert(h.calls.some(c=>c[0]==='transit'&&c[1]===true));
+ for(const next of [{base:'transit',streetview:true},{base:'street'},{base:'plugshare'}]){h.calls.length=0;h.api.setState(next);assert(h.calls.some(c=>c[0]==='transit'&&c[1]===false));}
+ h.calls.length=0;h.api.setState({base:'transit'});assert(h.calls.some(c=>c[0]==='transit'&&c[1]===true));
+});
 
 test('the DriveBC switch starts every non-webcam provider and turns the group off together',()=>{
   const h=setup();
@@ -148,7 +155,7 @@ test('Retina satellite tiles use higher source detail, cap at 23, and fall back 
   tile.events.loading();tile.events.tileload();tile.events.load();
   assert.match(h.get('base-layer-status').textContent,/using available detail/);
   h.api.setState({base:'street'});
-  assert.deepEqual(h.calls.at(-2),['maxZoom',19]);
+  assert.deepEqual(h.calls.filter(call=>call[0]==='maxZoom').at(-1),['maxZoom',19]);
 });
 
 test('cycle and transit bases use attributed tiles and preserve choices, overlays and theme changes',()=>{

@@ -602,7 +602,37 @@ only for the selected map; normal browser caching and provider attribution are
 retained. See [CyclOSM tile usage](https://github.com/cyclosm/cyclosm-cartocss-style)
 and [MeMoMaps usage information](https://www.xn--pnvkarte-m4a.de/en). For high-volume
 traffic, arrange dedicated hosting with the providers. These map layers display
-OSM route data; they do not add transit timetables or new navigation modes.
+OSM route data; they do not add new navigation modes.
+
+Selecting **Transit map** also enables clickable station markers in British
+Columbia and the London area. Rail and ferry stations appear at zoom 13, and bus
+stops at zoom 15. Tap a marker for upcoming departures, route/destination,
+platform where supplied, cancellations and service notices. **Later departures**
+and **Previous** page through the published schedule; **Departures now** refreshes
+the board. Operator schedule links provide full timetables and service details.
+
+The browser uses the versioned [Transitous MOTIS API](https://transitous.org/api/),
+which includes TransLink, BC Transit and London feeds. This personal,
+noncommercial, publicly open-source site meets its light-use policy. Requests
+retain the site Referer and visible [operator/source licence attribution](https://transitous.org/sources/).
+No new key, Worker, subscription or background data import is required. Coverage
+depends on the available feeds; absent departures are never estimated from
+service frequency. BC stops are restricted to `ca-bc-` feeds and BC bounds;
+London stops to British feeds within the London-area bounds. Both regions keep
+the existing ÖPNVKarte base tiles.
+
+Only the selected map loads stops. Visible-area queries are bounded, debounced,
+at least three seconds apart and cached in memory for five minutes (eight areas).
+At most 500 visible markers are drawn, prioritising rail/ferry stations. Departure
+requests happen only when opening or navigating a station board, have 15-second
+timeouts and retain at most twenty results for thirty seconds. Station/platform
+IDs filter out neighbouring stations included in upstream interchange groups.
+Requests are cancelled when superseded, hidden, closed or disabled. HTTP errors
+back off for at least thirty seconds and honour Retry-After up to one hour.
+There is no periodic provider polling. Times use each stop's supplied timezone,
+with Vancouver/London fallbacks. Predictions are labelled **Live estimate** only
+when explicitly marked real-time; after one minute the board labels them as an
+earlier snapshot and offers refresh. Scheduled times remain labelled **Scheduled**.
 
 ## Maps directions and live navigation
 
