@@ -12,11 +12,11 @@ test('provider routes validate status, geometry and numeric estimates',()=>{
  for(const modify of [d=>d.routes[0].geometry.coordinates[0][0]=181,d=>d.routes[0].duration=-1,d=>d.routes[0].distance='400',d=>d.routes[0].geometry.type='Polygon']){const d=data();modify(d);assert.throws(()=>core.readRoute(d));}
  assert.equal(core.duration(3600),'1 hr');assert.equal(core.duration(3660),'1 hr 1 min');assert.equal(core.distance(4500),'4.5 km');assert.equal(core.instruction({name:'Main St',maneuver:{type:'roundabout',exit:3}}),'Enter the roundabout and take exit 3 onto Main St');
 });
-function harness({connected=false,defaultAvailable=false}={}){
+function harness({connected=false,defaultAvailable=false,liveFactory}={}){
  const els=new Map(),children=[],saved=new Map(connected?[['gregle-maps-tomtom-key','test-key-1234567890']]:[]);let selected=a,geoSuccess,service;
- class El{constructor(){this.hidden=false;this.value='';this.children=[];this.events={};this.attrs={};this.classList={add(){},remove(){}};}addEventListener(e,f){(this.events[e]??=[]).push(f);}getAttribute(k){return this.attrs[k];}setAttribute(k,v){this.attrs[k]=v;}removeAttribute(k){delete this.attrs[k];}replaceChildren(...c){this.children=c;}append(...c){this.children.push(...c);}focus(){}async fire(e){for(const f of this.events[e]||[])await f({preventDefault(){},stopPropagation(){}});}click(){return this.fire('click');}}
+ class El{constructor(){this.hidden=false;this.value='';this.children=[];this.events={};this.attrs={};this.classList={add(){},remove(){}};}addEventListener(e,f){(this.events[e]??=[]).push(f);}getAttribute(k){return this.attrs[k];}setAttribute(k,v){this.attrs[k]=v;}removeAttribute(k){delete this.attrs[k];}replaceChildren(...c){this.children=c;}append(...c){this.children.push(...c);}focus(){this.focused=true;}scrollIntoView(){this.revealed=true;}async fire(e){for(const f of this.events[e]||[])await f({preventDefault(){},stopPropagation(){}});}click(){return this.fire('click');}}
  const el=id=>{if(!els.has(id))els.set(id,new El());return els.get(id);};el('map-directions').hidden=true;const pending=[];
- const ctx={window:{GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s){geoSuccess=s;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
+ const ctx={window:{GregleLiveNavigation:liveFactory,GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s){geoSuccess=s;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
  vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess};
 }
 async function endpoints(h){await h.el('directions-from-pin').click();h.select(b);await h.el('directions-to-pin').click();}
@@ -58,4 +58,30 @@ test('navigate here uses location when needed and closing cancels a late result'
  assert.equal(h.el('directions-to').value,'Destination'); assert.equal(h.pending.length,0);
  h.api.close(); h.geo()({coords:{latitude:a.lat,longitude:a.lng}});
  assert.equal(h.pending.length,0); assert.equal(h.el('directions-from').value,'');
+});
+
+
+test('startup permission failures reveal the notice instead of returning to an offscreen error',async()=>{
+ const message='Location access was denied. Allow location in Safari website settings.';
+ const h=harness({liveFactory:({onStop})=>({active:false,start(){onStop(message);}})});
+ await endpoints(h);const work=h.el('directions-route').click();h.pending[0].resolve({ok:true,json:async()=>data()});await work;
+ await h.el('directions-start').click();
+ assert.equal(h.el('map-directions').hidden,false);assert.equal(h.el('directions-status').textContent,message);
+ assert(h.el('directions-status').focused);assert(h.el('directions-status').revealed);
+ assert.equal(h.el('directions-summary').hidden,false);assert.equal(h.el('directions-start').disabled,false);
+});
+
+test('unexpected startup exceptions show a recoverable error while preserving the route',async()=>{
+ const h=harness({liveFactory:()=>({active:false,start(){throw Error('Browser startup failure');},stop(){}})});
+ await endpoints(h);const work=h.el('directions-route').click();h.pending[0].resolve({ok:true,json:async()=>data()});await work;
+ await h.el('directions-3d').click();
+ assert.equal(h.el('map-directions').hidden,false);assert.match(h.el('directions-status').textContent,/Navigation could not start/);
+ assert(h.el('directions-status').revealed);assert.equal(h.el('directions-summary').hidden,false);
+});
+
+test('a successful navigation start hides directions only after the session is active',async()=>{
+ let active=false;
+ const h=harness({liveFactory:()=>({get active(){return active;},start(){active=true;}})});
+ await endpoints(h);const work=h.el('directions-route').click();h.pending[0].resolve({ok:true,json:async()=>data()});await work;
+ await h.el('directions-start').click();assert(active);assert.equal(h.el('map-directions').hidden,true);assert(h.el('navigation-stop').focused);
 });

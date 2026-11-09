@@ -196,7 +196,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     try {
       watch = navigator.geolocation.watchPosition(p => position(p, token), error => {
         if (token !== session || !running) return;
-        if (error.code === 1) stop('Location access was denied. Allow location for this site in your browser settings, then start navigation again.');
+        if (error.code === 1) stop('Location access was denied. Allow location for maps.gregle.uk in your browser’s website settings, then tap Start navigation again. On iPhone, also check that Location Services is enabled for Safari Websites.');
         else { threeD?.clearGuidance(); liveStatus('Location is unavailable. Waiting for GPS to recover.'); $('navigation-distance').textContent = 'Waiting for GPS'; $('navigation-instruction').textContent = 'Waiting for your location'; }
       }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
     } catch { stop('Live location could not start. Check this site’s location permission.'); }

@@ -15,7 +15,18 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   }
   let active = 'from', version = 0, controller, locating = false, nextSearch = 0, nextRoute = 0, mode = 'driving', currentRoute = null;
   const status = text => { $('directions-status').textContent = text; };
-  const live = window.GregleLiveNavigation?.({ map, routing, onRoute: renderRoute, onStop: message => { open(); status(message); $('directions-start').focus({ preventScroll: true }); } });
+  function showNavigationResult(message) {
+    open(); status(message);
+    const notice = $('directions-status');
+    notice.setAttribute('tabindex', '-1');
+    notice.focus({ preventScroll: true });
+    // The phone drawer restores its scroll position in a mutation observer.
+    // Reveal the notice after that restoration, rather than focusing Start below it.
+    const reveal = () => { if (!panel.hidden) notice.scrollIntoView?.({ block: 'center', inline: 'nearest' }); };
+    if (window.requestAnimationFrame) window.requestAnimationFrame(reveal);
+    else reveal();
+  }
+  const live = window.GregleLiveNavigation?.({ map, routing, onRoute: renderRoute, onStop: showNavigationResult });
   function syncTraffic() {
     for (const id of ['directions-traffic', 'navigation-traffic']) {
       $(id).setAttribute('aria-checked', String(routing.enabled));
@@ -92,10 +103,18 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   });
   function startNavigation(threeD = false) {
     if (!currentRoute || !live) return;
-    panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
-    document.querySelector('.map-stage').classList.remove('directions-open');
-    live.start(currentRoute, mode, points.to, {threeD});
-    if (live.active) $('navigation-stop').focus({ preventScroll: true });
+    try {
+      live.start(currentRoute, mode, points.to, {threeD});
+      if (live.active) {
+        panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
+        document.querySelector('.map-stage').classList.remove('directions-open');
+        $('navigation-stop').focus({ preventScroll: true });
+      }
+    } catch {
+      const message = 'Navigation could not start. Check location access for this site in your browser settings, then try again.';
+      try { live.stop(message); } catch {}
+      showNavigationResult(message);
+    }
   }
   $('directions-start').addEventListener('click', () => startNavigation());
   $('directions-3d')?.addEventListener('click', () => startNavigation(true));
