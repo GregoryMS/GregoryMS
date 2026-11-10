@@ -156,7 +156,10 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   function position(position, token) {
     if (!running || token !== session) return;
     const point = { lat: position.coords.latitude, lng: position.coords.longitude };
-    if (!core.valid(point) || (position.timestamp && Date.now() - position.timestamp > 15000)) return;
+    if (!core.valid(point)) return;
+    // Tesla may return a zero/non-epoch timestamp. Only reject genuinely stale epoch-based fixes.
+    const stamp = Number(position.timestamp);
+    if (Number.isFinite(stamp) && stamp > 946684800000 && stamp <= Date.now() + 60000 && Date.now() - stamp > 15000) return;
     const accuracy = position.coords.accuracy;
     if (!Number.isFinite(accuracy) || accuracy < 0 || accuracy > (mode === 'walking' ? 60 : 100)) {
       threeD?.clearGuidance();
