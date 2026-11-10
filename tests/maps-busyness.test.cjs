@@ -101,7 +101,7 @@ test('selecting OSM places is free of Google requests until explicitly opened; t
   const details = h.widget(); assert.equal(details.tagName, 'gmp-place-details');
   assert.equal(details.children[0].place, 'google-business');
   const popular = details.children.find(e => e.tagName === 'gmp-place-popular-times'); popular.rendered = true; details.emit('gmp-load');
-  assert.equal(h.get('busyness-status').hidden, true);
+  assert.match(h.get('busyness-status').textContent, /ratings, customer reviews/);
   h.api.select({...shop, tags: {...shop.tags, phone: 'new'}}); assert.equal(h.widget(), details);
   assert.equal(h.calls.length, 1);
   assert(!h.created.some(e => /advanced|gmp-map|autocomplete/.test(e.tagName)));
@@ -161,4 +161,34 @@ test('the lazy loader uses the runtime key once, and a missing component fails w
   h.window.google = h.google; h.window[url.searchParams.get('callback')](); await flush(); assert.equal(h.widget().tagName, 'gmp-place-search');
   const missing = setup({available: false}); missing.api.select(shop); missing.get('busyness-show').click(); await flush();
   assert.match(missing.get('busyness-status').textContent, /not available here yet/); assert.equal(missing.widget(), undefined);
+});
+
+
+test('restaurants and cafes load native ratings and reviews in the same on-demand details widget', async () => {
+  for (const amenity of ['restaurant', 'cafe']) {
+    const h = setup();
+    const place = {...shop, tags: {...shop.tags, amenity}};
+    h.api.select(place);
+    assert.equal(h.calls.length, 0);
+    assert.equal(h.get('busyness-show').textContent, 'Show reviews & popular times');
+    h.get('busyness-show').click(); await flush();
+    const search = h.widget();
+    search.emit('gmp-select', {place: {id: amenity}});
+    const details = h.widget();
+    assert.equal(details.children[0].place, amenity);
+    for (const tag of ['gmp-place-rating', 'gmp-place-reviews', 'gmp-place-popular-times']) {
+      assert(details.children.some(child => child.tagName === tag));
+    }
+    details.children.find(child => child.tagName === 'gmp-place-popular-times').rendered = false;
+    details.emit('gmp-load');
+    assert.equal(h.widget(), details);
+    assert.match(h.get('busyness-status').textContent, /customer reviews/);
+    h.api.select({...place, tags: {...place.tags, phone: 'updated'}});
+    assert.equal(h.widget(), details);
+    assert.equal(h.created.filter(el => el.tagName === 'gmp-place-details').length, 1);
+    assert.equal(h.calls.length, 1);
+    h.api.select({...place, osm: 'node/another'});
+    details.emit('gmp-load');
+    assert.equal(h.widget(), undefined);
+  }
 });

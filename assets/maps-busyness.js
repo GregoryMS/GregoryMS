@@ -44,7 +44,7 @@
         ]);
       } finally { clearTimeout(timeout); }
       // Fail visibly if Google hasn't made this component available to the account/channel.
-      if (!window.customElements.get('gmp-place-popular-times')) throw Error('unsupported');
+      if (!['gmp-place-details', 'gmp-place-rating', 'gmp-place-reviews', 'gmp-place-popular-times'].every(tag => window.customElements.get(tag))) throw Error('unsupported');
       return places;
     })();
     try { return await library; }
@@ -69,7 +69,7 @@
     }
     function message(text) { status.textContent = text; status.hidden = !text; }
     function pauseMessage() {
-      message('Google could not load popular times. Its daily allowance may have been reached. Try again after midnight Pacific time, or open Google Maps.');
+      message('Google could not load reviews or popular times. Its daily allowance may have been reached. Try again after midnight Pacific time, or open Google Maps.');
       button.hidden = true; back.hidden = true;
     }
     function denied(token) {
@@ -87,7 +87,7 @@
       timer = setTimeout(() => {
         if (!isCurrent(token)) return;
         stopPending(); content.replaceChildren(); back.hidden = true;
-        button.hidden = false; button.disabled = false; button.textContent = 'Try popular times again';
+        button.hidden = false; button.disabled = false; button.textContent = 'Try reviews & popular times again';
         message('Google is taking too long to respond. Try again, or open Google Maps.');
         version++;
       }, 18000);
@@ -105,15 +105,15 @@
       const request = document.createElement('gmp-place-details-place-request');
       request.place = place.id;
       const popular = document.createElement('gmp-place-popular-times');
-      widget.append(request, document.createElement('gmp-place-name'), document.createElement('gmp-place-address'), popular);
+      widget.append(request, document.createElement('gmp-place-name'), document.createElement('gmp-place-address'),
+        document.createElement('gmp-place-rating'), popular, document.createElement('gmp-place-reviews'));
       watch(widget, token, () => {
-        if (popular.rendered === true) message('');
-        else if (popular.rendered === false) message('Google has no popular-times data for this business.');
-        // Some weekly SDK releases render the graph without exposing this flag.
-        // An absent property cannot establish that the business has no data.
-        else message('Google shows popular times here when data is available.');
+        // A missing graph does not mean the business has no reviews. Keep the
+        // native Google rating/reviews and their author attribution visible.
+        const note = popular.rendered === false ? 'Google has no popular-times data for this business. ' : '';
+        message(note + 'Google shows ratings, customer reviews and popular times here when data is available.');
       });
-      message('Loading popular times…');
+      message('Loading reviews and popular times…');
       button.hidden = true; back.hidden = false;
       content.replaceChildren(widget);
     }
@@ -142,20 +142,20 @@
         watch(widget, token, () => {
           if (!widget.places?.length) {
             message('No matching business was found on Google Maps.');
-            button.hidden = false; button.disabled = false; button.textContent = 'Try popular times again';
+            button.hidden = false; button.disabled = false; button.textContent = 'Try reviews & popular times again';
             return;
           }
           const match = !choose && core.singleMatch(current, widget.places);
           if (match) { details(match); return; }
-          message('Choose the matching business to see its popular times.');
+          message('Choose the matching business to see its reviews and popular times.');
         });
         widget.addEventListener('gmp-select', event => { if (isCurrent(token)) details(event.place); });
         button.hidden = true;
         content.replaceChildren(widget);
       } catch (error) {
         if (!isCurrent(token)) return;
-        stopPending(); button.disabled = false; button.textContent = 'Try popular times again';
-        message(error.message === 'unsupported' ? 'Google’s popular-times graph is not available here yet. You can check it on Google Maps.' : 'Popular times is unavailable right now. Try again, or open Google Maps.');
+        stopPending(); button.disabled = false; button.textContent = 'Try reviews & popular times again';
+        message(error.message === 'unsupported' ? 'Google’s reviews and popular-times panel is not available here yet. You can check it on Google Maps.' : 'Reviews and popular times are unavailable right now. Try again, or open Google Maps.');
       }
     }
     button.addEventListener('click', () => { void search(); });
@@ -166,19 +166,19 @@
       if (nextKey && nextKey === key) {
         current = place; fallback.href = core.googleURL(place);
         if (paused && paused <= Date.now()) {
-          paused = 0; button.hidden = false; button.disabled = false; button.textContent = 'Show popular times';
-          message('See when this business is usually busiest.');
+          paused = 0; button.hidden = false; button.disabled = false; button.textContent = 'Show reviews & popular times';
+          message('Read customer reviews and see when this business is usually busiest.');
         }
         return;
       }
       version++; stopPending(); content.replaceChildren();
       current = nextKey ? place : null; key = nextKey;
       section.hidden = !current;
-      button.disabled = false; button.hidden = false; button.textContent = 'Show popular times'; back.hidden = true;
+      button.disabled = false; button.hidden = false; button.textContent = 'Show reviews & popular times'; back.hidden = true;
       if (!current) return;
       fallback.href = core.googleURL(place);
       if (paused > Date.now()) pauseMessage();
-      else message('See when this business is usually busiest.');
+      else message('Read customer reviews and see when this business is usually busiest.');
     }};
   };
 })();

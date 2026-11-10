@@ -1,16 +1,22 @@
-# Google Popular Times in Gregle Maps
+# Google Reviews and Popular Times in Gregle Maps
 
 Gregle keeps its existing OpenStreetMap/Leaflet map, Photon search, routing and
-layers. A separate **Popular times** section uses the standard Google Places UI
-Kit only after the visitor clicks **Show popular times** on an OSM place. A single
-Google result within 150 metres of the pin opens the graph automatically. When
+layers. A **Reviews & popular times** section uses the standard Google Places UI
+Kit only after the visitor clicks **Show reviews & popular times** on an OSM
+place, including restaurants and cafes. A single Google result within 150 metres of the pin opens the graph automatically. When
 there are multiple results, missing coordinates or a more distant result, the
 visitor confirms the business. **Choose another match** always opens the picker,
 including after an automatic match. Google does not have data for every place.
 
-The component uses `gmp-place-search` and full `gmp-place-details` with only name,
-address and `gmp-place-popular-times`. It does not create a Google map, use the
-Advanced widgets, or call Places API (New). Each initial search and selected
+The component uses `gmp-place-search` and full `gmp-place-details` with name,
+address, `gmp-place-rating`, `gmp-place-reviews` and `gmp-place-popular-times`.
+Ratings and customer reviews use Google's native display, including author
+attribution and links; no review content is copied into Gregle storage. Reviews
+and popular times share one selected details widget rather than separate lookups.
+Google may omit ratings, reviews or the graph when that data is unavailable.
+A missing graph does not hide the available reviews.
+
+The component does not create a Google map, use the Advanced widgets, or call Places API (New). Each initial search and selected
 details request uses quota, so 300 requests is fewer than 300 complete views.
 Google's attribution stays visible. No Google place data is scraped or cached.
 
@@ -94,7 +100,8 @@ real graph. Test no-data and exhausted/denied states without intentionally
 consuming the daily allowance. Local DOM tests simulate these states; they do
 not verify a live key or Google's billing configuration.
 
-References: [Google Popular Times component](https://developers.google.com/maps/documentation/javascript/places-ui-kit/place-details#popular_times),
+References: [Google place details and reviews](https://developers.google.com/maps/documentation/javascript/places-ui-kit/place-details),
+[Google Popular Times component](https://developers.google.com/maps/documentation/javascript/places-ui-kit/place-details#popular_times),
 [Places UI Kit setup](https://developers.google.com/maps/documentation/javascript/places-ui-kit/get-started),
 [Google API security](https://developers.google.com/maps/api-security-best-practices),
 [Google pricing](https://developers.google.com/maps/billing-and-pricing/pricing),
