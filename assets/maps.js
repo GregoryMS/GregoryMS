@@ -133,7 +133,7 @@
     } catch {
       $('map-link-copy').hidden = false;
       $('map-link-input').value = url.href;
-      $('map-link-input').focus(); $('map-link-input').select();
+      if (!document.body.classList.contains('vehicle-layout')) { $('map-link-input').focus(); $('map-link-input').select(); }
     }
   }
   async function shareLocation(point) {
@@ -148,7 +148,7 @@
       $('map-link-copy').hidden = false;
       $('map-link-input').value = url.href;
       drawer?.show('map-link-copy', true);
-      $('map-link-input').focus(); $('map-link-input').select();
+      if (!document.body.classList.contains('vehicle-layout')) { $('map-link-input').focus(); $('map-link-input').select(); }
     }
   }
   const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-base-toggle'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
@@ -169,6 +169,7 @@
     }
   } catch {}
   config.serverTomTom = await serverTomTom;
+  const explicitInitialLocation = new URLSearchParams(location.hash.slice(1)).has('map') || new URLSearchParams(location.hash.slice(1)).has('pin');
   const initial = core.readHash(location.hash);
   map = L.map('gregle-map', { zoomControl: false, doubleClickZoom: false, tapHold: false, minZoom: 2, maxZoom: 23, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   drawer = window.GregleMapDrawer?.({ map });
@@ -184,6 +185,15 @@
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
+  // Shared map views keep their position; ordinary visits start near the device.
+  if (!explicitInitialLocation && !usingEmbed && navigator.geolocation) {
+    const initialIntent = intent;
+    navigator.geolocation.getCurrentPosition(position => {
+      if (intent !== initialIntent || document.querySelector('.map-stage').classList.contains('navigating')) return;
+      const {latitude: lat, longitude: lng} = position.coords;
+      if (core.validPoint(lat, lng)) map.setView([Math.max(-85.051129, Math.min(85.051129, lat)), lng], 15, {animate: false});
+    }, () => {}, {enableHighAccuracy: false, timeout: 12000, maximumAge: 30000});
+  }
   const dropPin = event => {
     if (contextTools?.measuring || usingEmbed || layerControl.getState().streetview || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
@@ -267,15 +277,15 @@
     const buttons = Array.from(resultsList.querySelectorAll('button')), index = buttons.indexOf(event.target);
     if (index < 0) return;
     if (event.key === 'ArrowDown') { event.preventDefault(); buttons[(index + 1) % buttons.length].focus(); }
-    if (event.key === 'ArrowUp') { event.preventDefault(); if (index === 0) query.focus(); else buttons[index - 1].focus(); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); if (index === 0) { if (!document.body.classList.contains('vehicle-layout')) query.focus(); } else buttons[index - 1].focus(); }
   });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
-      if (!searchContent.hidden||suggestionTimer) { event.preventDefault();cancelSearch(); hideSearch(); query.focus(); }
+      if (!searchContent.hidden||suggestionTimer) { event.preventDefault();cancelSearch(); hideSearch(); if (!document.body.classList.contains('vehicle-layout')) query.focus(); }
       else if (selected) clearPin();
     }
     if (event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.target.closest('input, textarea, [contenteditable="true"]')) {
-      event.preventDefault(); query.focus();
+      event.preventDefault(); if (!document.body.classList.contains('vehicle-layout')) query.focus();
     }
   });
   document.addEventListener('click', event => { if (!event.target.closest('.map-search, #map-search-content, #map-drawer')) {cancelSearch();hideSearch();} });

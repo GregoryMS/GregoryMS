@@ -25,7 +25,9 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     disable3D(); liveStatus('3D map unavailable. Continuing navigation in 2D.');
   }});
   function disable3D() {
+    const was3D = threeD?.active;
     switchVersion++; wants3D = false; threeD?.exit(); routing.setMapbox?.(false);
+    if (was3D && marker && follow) map.panTo(marker.getLatLng(), {animate: false});
     $('navigation-3d').textContent = '3D mode'; $('navigation-3d').setAttribute('aria-pressed', 'false');
     if (route) trafficUI();
   }

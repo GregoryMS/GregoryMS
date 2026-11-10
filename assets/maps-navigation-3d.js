@@ -4,7 +4,9 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
   const $ = id => document.getElementById(id), stage = document.querySelector('.map-stage');
   const container = $('navigation-map-3d'), core = window.GregleNavigation;
   let view = null, arrow = null, target = null, route = null, latest = null, heading = 0, generation = 0, follow = true;
-  let loader;
+  let loader, cancelLoad;
+  const lightweight = /Tesla/i.test(navigator.userAgent);
+  const pitch = lightweight ? 45 : 58;
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function loadLibrary() {
     if (window.mapboxgl) return Promise.resolve();
@@ -25,9 +27,11 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
       {top: Math.min(card.height + 30, bounds.height * .54), bottom: 65, left: 20, right: 20};
   }
   function camera(animate = true) {
-    if (!view || !latest || !follow) return;
-    view.easeTo({center: [latest.lng, latest.lat], bearing: heading, pitch: 58, zoom: latest.speed > 22 ? 16 : 17,
-      padding: padding(), duration: animate && !reduced() ? 850 : 0, essential: false});
+    if (!view || !latest || !follow || document.hidden) return;
+    const options = {center: [latest.lng, latest.lat], bearing: heading, pitch, zoom: latest.speed > 22 ? 16 : 17, padding: padding()};
+    // Avoid continuous render loops on the in-car GPU; GPS still updates the camera.
+    if (lightweight || !animate || reduced()) view.jumpTo(options);
+    else view.easeTo({...options, duration: 850, essential: false});
   }
   function lineData() {
     return {type: 'Feature', properties: {}, geometry: {type: 'LineString', coordinates: route.points.map(p => [p[1], p[0]])}};
@@ -39,8 +43,8 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
     if (source) source.setData(lineData());
     else {
       view.addSource('navigation-route', {type: 'geojson', data: lineData()});
-      view.addLayer({id: 'navigation-route-casing', type: 'line', source: 'navigation-route', slot: 'middle', layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': '#fff', 'line-width': 12, 'line-opacity': .9}});
-      view.addLayer({id: 'navigation-route-line', type: 'line', source: 'navigation-route', slot: 'middle', layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': '#7637cc', 'line-width': 7}});
+      view.addLayer({id: 'navigation-route-casing', type: 'line', source: 'navigation-route', ...(lightweight ? {} : {slot: 'middle'}), layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': '#fff', 'line-width': 12, 'line-opacity': .9}});
+      view.addLayer({id: 'navigation-route-line', type: 'line', source: 'navigation-route', ...(lightweight ? {} : {slot: 'middle'}), layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': '#7637cc', 'line-width': 7}});
     }
     target?.remove();
     target = new window.mapboxgl.Marker({color: '#7637cc'}).setLngLat(route.points.at(-1).slice().reverse()).addTo(view);
@@ -107,27 +111,33 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
       const rad = Math.PI / 180, delta = (next[1] - first[1]) * rad;
       heading = (Math.atan2(Math.sin(delta) * Math.cos(next[0] * rad), Math.cos(first[0] * rad) * Math.sin(next[0] * rad) - Math.sin(first[0] * rad) * Math.cos(next[0] * rad) * Math.cos(delta)) / rad + 360) % 360;
     }
+    if (lightweight) { window.mapboxgl.workerCount = 1; window.mapboxgl.maxParallelImageRequests = 4; }
     container.hidden = false;
-    view = new window.mapboxgl.Map({container, accessToken: config.publicToken, style: 'mapbox://styles/mapbox/standard',
-      config: {basemap: {lightPreset: document.documentElement.classList.contains('dark-mode') ? 'night' : 'day', show3dObjects: true}},
-      center: [first[1], first[0]], zoom: 16.5, pitch: 58, bearing: heading, attributionControl: true, logoPosition: 'bottom-left',
-      cooperativeGestures: false, antialias: false, fadeDuration: reduced() ? 0 : 150});
+    view = new window.mapboxgl.Map({container, accessToken: config.publicToken, style: lightweight ? (document.documentElement.classList.contains('dark-mode') ? 'mapbox://styles/mapbox/navigation-night-v1' : 'mapbox://styles/mapbox/navigation-day-v1') : 'mapbox://styles/mapbox/standard',
+      ...(lightweight ? {maxTileCacheSize: 32, maxPitch: 50, maxZoom: 18, renderWorldCopies: false, projection: 'mercator', failIfMajorPerformanceCaveat: true} : {config: {basemap: {lightPreset: document.documentElement.classList.contains('dark-mode') ? 'night' : 'day', show3dObjects: true}}}),
+      center: [first[1], first[0]], zoom: 16.5, pitch, bearing: heading, attributionControl: true, logoPosition: 'bottom-left',
+      cooperativeGestures: false, antialias: false, fadeDuration: lightweight || reduced() ? 0 : 150});
     stage.classList.add('navigation-3d'); $('gregle-map').inert = true;
     const currentView = view; let ready = false;
     await new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(Error('3D map timed out')), 20000);
-      currentView.once('load', () => { ready = true; clearTimeout(timeout); resolve(); });
+      const timeout = setTimeout(() => { cancelLoad = null; reject(Error('3D map timed out')); }, 20000);
+      cancelLoad = () => { clearTimeout(timeout); cancelLoad = null; resolve(); };
+      currentView.once('load', () => { ready = true; clearTimeout(timeout); cancelLoad = null; resolve(); });
       currentView.on('error', () => {
         if (token !== generation) return;
-        clearTimeout(timeout); reject(Error('3D map could not load'));
+        clearTimeout(timeout); cancelLoad = null; reject(Error('3D map could not load'));
         if (ready) onError();
       });
-      currentView.on('webglcontextlost', () => { if (token === generation) onError(); });
+      currentView.on('webglcontextlost', () => {
+        if (token !== generation) return;
+        clearTimeout(timeout); cancelLoad = null;
+        if (ready) onError(); else reject(Error('3D graphics context lost'));
+      });
     });
     if (token !== generation) return false;
     setRoute(route);
     view.addControl(new window.mapboxgl.NavigationControl({showCompass: true, visualizePitch: true}), 'bottom-right');
-    const element = document.createElement('div'); element.className = 'navigation-position navigation-3d-position'; element.textContent = '▲';
+    const element = document.createElement('div'); element.className = 'navigation-position navigation-3d-position'; element.innerHTML = '<span aria-hidden="true">▲</span>';
     arrow = new window.mapboxgl.Marker({element, rotationAlignment: 'map', pitchAlignment: 'map'}).setLngLat([first[1], first[0]]).addTo(view);
     view.on('dragstart', () => { follow = false; onBrowse(); });
     view.on('zoomstart', event => { if (event.originalEvent) { follow = false; onBrowse(); } });
@@ -135,11 +145,18 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
     return true;
   }
   function exit() {
-    generation++; view?.remove(); view = arrow = target = null; latest = null;
+    generation++; cancelLoad?.(); view?.remove(); view = arrow = target = null; latest = null;
     container.hidden = true; stage.classList.remove('navigation-3d'); $('gregle-map').inert = false;
     clearGuidance();
   }
-  const resize = () => { view?.resize(); camera(false); };
+  let lastWidth = 0, lastHeight = 0;
+  const resize = () => {
+    if (!view) return;
+    const {width, height} = stage.getBoundingClientRect();
+    if (width === lastWidth && height === lastHeight) return;
+    lastWidth = width; lastHeight = height; view.resize(); camera(false);
+  };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) camera(false); });
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(stage);
   else window.addEventListener('resize', resize);
   return {enter, exit, setRoute, update, guidance, clearGuidance, setFollow(value) { follow = value; camera(false); }, get active() { return !!view; }};

@@ -110,3 +110,19 @@ test('typing suggests after a pause, cancels stale lookups and switches fields w
  h.pending[1].resolve({ok:true,json:async()=>({features:[{geometry:{type:'Point',coordinates:[b.lng,b.lat]},properties:{name:'University'}}]})});await latest;
  assert.equal(h.el('directions-results').children.length,1);await h.el('directions-results').children[0].children[0].click();assert.equal(h.el('directions-route').disabled,false);assert.equal(timers.size,0);
 });
+
+
+test('car directions defaults to GPS without focusing either text field', async()=>{
+ const h=harness();h.context.document.body={classList:{contains:name=>name==='vehicle-layout'}};
+ await h.el('map-directions-toggle').click();assert.equal(typeof h.geo(),'function');
+ assert(!h.el('directions-from').focused);assert(!h.el('directions-to').focused);
+ h.geo()({coords:{latitude:a.lat,longitude:a.lng}});
+ assert.equal(h.el('directions-from').value,'My location');assert(!h.el('directions-to').focused);
+ h.api.choosePoint('to',b);assert.equal(h.el('directions-route').disabled,false);
+ assert(!h.el('directions-from').focused);assert(!h.el('directions-to').focused);
+});
+test('a manually selected starting point survives opening car directions', async()=>{
+ const h=harness();h.context.document.body={classList:{contains:()=>true}};
+ h.api.choosePoint('from',a);h.api.close();await h.el('map-directions-toggle').click();
+ assert.equal(h.el('directions-from').value,'Victoria');assert.equal(h.geo(),undefined);
+});

@@ -196,7 +196,7 @@ window.GregleMapDrawer = ({ map }) => {
     for (const [popup, autoPan] of popupOptions) popup.options.autoPan = media.matches ? false : autoPan;
     if (!media.matches) { drawer.hidden = true; stage.style.removeProperty('--map-drawer-height'); }
     else { refresh(); if (currentPopup && !popupState) showPopup(currentPopup); }
-    if (focus && focus !== document.body && focus.isConnected && !focus.closest('[inert]')) focus.focus({ preventScroll: true });
+    if (focus && focus !== document.body && focus.isConnected && !focus.closest('[inert]') && !(document.body.classList.contains('vehicle-layout') && focus.matches('input, textarea'))) focus.focus({ preventScroll: true });
   }
   media.addEventListener('change', layout);
   new ResizeObserver(() => { if (media.matches) resize(height); }).observe(stage);

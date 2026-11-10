@@ -63,7 +63,7 @@
       if (keyForm) {
         connectForRouting = routingOnly;
         tomtomMenu.setOpen(true, true);
-        $('traffic-api-key').focus();
+        if (!document.body.classList.contains('vehicle-layout')) $('traffic-api-key').focus();
       } else panel.querySelector('.map-overlay-options input:not([disabled]), .map-overlay-options button')?.focus({ preventScroll: true });
     };
     const closePanel = (restoreFocus = false) => {

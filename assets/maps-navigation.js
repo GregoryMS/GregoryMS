@@ -84,20 +84,24 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     inputs[field].value = [point.name, point.detail].filter(Boolean).join(' · ');
     invalidate(points.from && points.to ? `Ready to find a ${mode} route.` : 'Choose the other end of your journey.');
   }
+  // Car mode opens the keyboard only after a field itself is tapped.
+  const focusField = field => { if (!document.body?.classList.contains('vehicle-layout')) inputs[field].focus(); };
+  const defaultStart = () => { if (!points.from && !inputs.from.value && !locating) useLocation(); };
   function open() {
     panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
     document.querySelector('.map-stage').classList.add('directions-open');
     if ($('map-layers-toggle').getAttribute('aria-expanded') === 'true') $('close-map-layers').click();
     onOpen();
   }
-  function choosePoint(field, point) {
+  function choosePoint(field, point, locate = true) {
     if (!['from', 'to'].includes(field) || !core.valid(point)) return;
     open(); setPoint(field, point);
-    active = field === 'from' ? 'to' : 'from'; inputs[active].focus();
+    active = field === 'from' ? 'to' : 'from'; focusField(active);
+    if (locate && field === 'to') defaultStart();
   }
   function navigateTo(point) {
     if (!core.valid(point)) return;
-    choosePoint('to', point);
+    choosePoint('to', point, false);
     if (points.from) return calculateRoute();
     else useLocation(true);
   }
@@ -134,7 +138,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   toggle.addEventListener('click', () => {
     if (panel.hidden || panel.inert || panel.closest?.('.map-drawer.is-compact')) {
       open();
-      if (!panel.closest?.('.map-drawer')) inputs[active].focus();
+      defaultStart();
+      if (!panel.closest?.('.map-drawer')) focusField(active);
     } else close();
   });
   $('close-directions').addEventListener('click', close);
@@ -158,7 +163,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     [inputs.from.value, inputs.to.value] = [inputs.to.value, inputs.from.value]; invalidate();
   });
   $('directions-clear').addEventListener('click', () => {
-    points.from = points.to = null; inputs.from.value = inputs.to.value = ''; invalidate(); active = 'from'; inputs.from.focus();
+    points.from = points.to = null; inputs.from.value = inputs.to.value = ''; invalidate(); active = 'from'; focusField('from');
   });
   function useLocation(routeAfter = false) {
     invalidate();
@@ -168,7 +173,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       if (token !== version || !locating) return;
       const p = { lat: position.coords.latitude, lng: position.coords.longitude, name: 'My location' };
       if (!core.valid(p)) { invalidate('Your location was invalid. Search for a starting point.'); return; }
-      setPoint('from', p); active = 'to'; inputs.to.focus();
+      setPoint('from', p); active = 'to'; focusField('to');
       if (routeAfter && points.to) calculateRoute();
     }, () => { if (token === version) invalidate('Location could not be shared. Allow location access or search for a starting point.'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
   }
@@ -177,7 +182,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     if(automatic&&(document.hidden||panel.hidden||composing.has(field)||active!==field))return;
     const term = inputs[field].value.trim();
     invalidate();
-    if (term.length < (automatic?3:2)) { if(!automatic){status('Enter at least two characters to search.');inputs[field].focus();}return; }
+    if (term.length < (automatic?3:2)) { if(!automatic){status('Enter at least two characters to search.');focusField(field);}return; }
     const token = version;let timer,current;
     try {
       const url = new URL(window.GregleMaps.searchURL(config.searchURL, term));
@@ -197,7 +202,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       for (const point of results) {
         const li = document.createElement('li'), button = document.createElement('button'), name = document.createElement('strong'), detail = document.createElement('span');
         button.type = 'button'; name.textContent = point.name; detail.textContent = point.detail; button.append(name, detail); li.append(button); $('directions-results').append(li);
-        button.addEventListener('click', () => { setPoint(field, point); active = field === 'from' ? 'to' : 'from'; inputs[active].focus(); });
+        button.addEventListener('click', () => { setPoint(field, point); active = field === 'from' ? 'to' : 'from'; focusField(active); if (field === 'to') defaultStart(); });
       }
     } catch { if (token === version) status('Place search is unavailable. Try again, or select a map pin and choose Start here / Directions here.'); }
     finally { clearTimeout(timer); if (token === version) { controller = null;lookupField=null;panel.removeAttribute('aria-busy'); } }
@@ -206,8 +211,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   $('directions-results').addEventListener('keydown',event=>{
     const buttons=Array.from($('directions-results').querySelectorAll('button')),i=buttons.indexOf(event.target);if(i<0)return;
     if(event.key==='ArrowDown'){event.preventDefault();buttons[(i+1)%buttons.length].focus();}
-    if(event.key==='ArrowUp'){event.preventDefault();if(i===0)inputs[resultsField||active].focus();else buttons[i-1].focus();}
-    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();const field=resultsField||active;invalidate('Suggestions dismissed. Keep typing to search.');inputs[field].focus();}
+    if(event.key==='ArrowUp'){event.preventDefault();if(i===0)focusField(resultsField||active);else buttons[i-1].focus();}
+    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();const field=resultsField||active;invalidate('Suggestions dismissed. Keep typing to search.');focusField(field);}
   });
   document.addEventListener?.('visibilitychange',()=>{if(document.hidden&&(suggestionTimer||lookupField)){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();}});
   window.addEventListener?.('pagehide',()=>{clearTimeout(suggestionTimer);controller?.abort();});
