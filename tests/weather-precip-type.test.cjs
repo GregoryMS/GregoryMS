@@ -23,6 +23,7 @@ async function setup(){
     L:{tileLayer,circleMarker:()=>({addTo(){return this;},setLatLng(){}}),map(){const map={events:{},on(k,f){this.events[k]=f;},setView(){},invalidateSize(){},removeLayer(l){l.removed=true;},remove(){this.removed=true;}};maps.push(map);return map;}}
   };
   const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
+  win.GregleWeatherBasemap=require('../assets/weather-basemap.js').create(win);
   const api=core.createController(win);events.DOMContentLoaded();api.setLocation({latitude:48.43,longitude:-123.36,timezone:'America/Vancouver'});
   const latest=()=>layers.filter(l=>l.options.layers).at(-1);
   async function load(){latest().events.load?.();await flush();}

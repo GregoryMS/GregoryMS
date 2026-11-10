@@ -25,6 +25,7 @@ function harness() {
   const win={Date:Clock,AbortController,document:{getElementById:node,addEventListener(t,f){events[t]=f;}},addEventListener(t,f){events[t]=f;},
     setTimeout(fn,ms){timers.set(++timerId,{fn,ms});return timerId;},clearTimeout(id){timers.delete(id);},setInterval(){},
     fetch(...args){return fetchImpl(...args);},L:{map(){const m={setView(){},invalidateSize(){},removeLayer(l){l.removed=true;},remove(){this.removed=true;}};maps.push(m);return m;},tileLayer:layer,circleMarker:layer,rectangle:layer,imageOverlay(){const l=layer();layers.push(l);return l;}}};
+  win.GregleWeatherBasemap=require('../assets/weather-basemap.js').create(win);
   const api=createController(win);events.DOMContentLoaded();api.setLocation({name:'Victoria',latitude:48.42,longitude:-123.39,timezone:'America/Vancouver'});
   return {api,node,layers,maps,timers,setFetch:fn=>fetchImpl=fn};
 }

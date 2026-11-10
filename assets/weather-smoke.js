@@ -45,7 +45,7 @@
       if(map)return;
       if(!win.L)throw Error('Map unavailable');
       map=win.L.map('smokeMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
-      win.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Data: <a href="https://firesmoke.ca/">BlueSky Canada / FireSmoke.ca</a>'}).addTo(map);
+      win.GregleWeatherBasemap.addTo(map,{credit:'Data: <a href="https://firesmoke.ca/">BlueSky Canada / FireSmoke.ca</a>'});
       marker=win.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
       recenter();
     }
