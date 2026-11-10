@@ -80,7 +80,7 @@ test('sharing links pin the supplied point and support native, clipboard and man
   let shared,copied,shown; const els=new Map();
   const el=id=>{if(!els.has(id))els.set(id,{focus(){},select(){}});return els.get(id);};
   const navigator={share:async data=>{shared=data;},clipboard:{writeText:async url=>{copied=url;}}};
-  const share=vm.runInNewContext(shareSource+';shareLocation',{URL,navigator,location:{origin:'https://maps.gregle.uk',pathname:'/'},core,$:el,notify(){},drawer:{show:id=>{shown=id;}}});
+  const share=vm.runInNewContext(shareSource+';shareLocation',{URL,navigator,document:{body:{classList:{contains:()=>false}}},location:{origin:'https://maps.gregle.uk',pathname:'/'},core,$:el,notify(){},drawer:{show:id=>{shown=id;}}});
   const point={lat:48.5,lng:-123.4,name:'Dropped pin'};
   await share(point); const decoded=core.readHash(new URL(shared.url).hash);
   assert.equal(decoded.pin.lat,point.lat); assert.equal(decoded.pin.lng,point.lng); assert.equal(decoded.view.lat,point.lat);

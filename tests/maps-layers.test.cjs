@@ -25,7 +25,7 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
   const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener(){}};
   window.GregleTransit=provider('transit');
   for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed'}))window[name]=provider(key);
-  const document={documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
+  const document={body:{classList:{contains:()=>false}},documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
   const L={TileLayer:{extend:()=>function(){}},tileLayer:(url,options)=>{const tile={url,options,events:{},on(name,fn){this.events[name]=fn;return this;},setZIndex(){return this;},addTo(){return this;}};tiles.push(tile);return tile;}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/../assets/maps-layers.js','utf8'),{
     window,document,L,URL,AbortController,
