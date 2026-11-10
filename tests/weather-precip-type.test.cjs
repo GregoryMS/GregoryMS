@@ -16,7 +16,7 @@ async function setup(){
   const element=id=>{if(!elements.has(id))elements.set(id,{value:'0',textContent:'',events:{},attributes:{},addEventListener(k,f){this.events[k]=f;},setAttribute(k,v){this.attributes[k]=v;}});return elements.get(id);};
   function layer(options){const l={options,events:{},opacity:0,removed:false,on(k,f){this.events[k]=f;return this;},off(){this.events={};},addTo(){return this;},setOpacity(v){this.opacity=v;},redraw(){}};layers.push(l);return l;}
   const tileLayer=()=>layer({});tileLayer.wms=(url,options)=>layer(options);
-  const win={Date:{now:()=>end+60000},AbortController,document:{hidden:false,getElementById:element,addEventListener(k,f){events[k]=f;}},
+  const win={GregleWeatherMap:{basemap(){return tileLayer();},tiles(win,url,options){return tileLayer.wms(url,options);}},Date:{now:()=>end+60000},AbortController,document:{hidden:false,getElementById:element,addEventListener(k,f){events[k]=f;}},
     setTimeout(f){timers.set(++nextTimer,f);return nextTimer;},clearTimeout(id){timers.delete(id);},setInterval(){},addEventListener(k,f){events[k]=f;},
     fetch:async()=>{if(held)await held;if(fail)throw Error('offline');return {ok:true,text:async()=>dimension};},
     DOMParser:class{parseFromString(text){return {getElementsByTagName:()=>[{getAttribute:()=> 'time',textContent:text}]};}},
