@@ -31,7 +31,7 @@ async function setup(){
 }
 test('map loads only when selected and changes the timestamp only after tiles complete',async()=>{
   const h=await setup();assert.equal(h.maps.length,0);h.api.setActive(true);await h.flush();
-  assert.equal(h.latest().opacity,0);await h.load();assert.equal(h.latest().opacity,.8);
+  assert.equal(h.latest().opacity,0);await h.load();assert.equal(h.latest().opacity,.6);
   assert.match(h.element('ptypeTimestamp').textContent,/18:00/);
   h.element('ptypeTime').value='0';h.element('ptypeTime').events.input();await h.flush();
   assert.equal(h.element('ptypeTime').value,'30');await h.load();assert.equal(h.element('ptypeTime').value,'0');
@@ -54,6 +54,6 @@ test('play/pause, map movement, and failed refresh leave explicit consistent sta
   const h=await setup();h.api.setActive(true);await h.flush();await h.load();
   h.element('ptypePlay').events.click();const late=h.latest().events.load;h.element('ptypePlay').events.click();late();await h.flush();
   assert.equal(h.element('ptypePlay').attributes['aria-pressed'],'false');
-  h.maps[0].events.movestart();h.maps[0].events.moveend();await h.flush();await h.load();assert.equal(h.latest().opacity,.8);
+  h.maps[0].events.movestart();h.maps[0].events.moveend();await h.flush();await h.load();assert.equal(h.latest().opacity,.6);
   h.fail();h.api.refresh();await h.flush();assert.equal(h.element('ptypeTime').disabled,true);assert(h.latest().removed);assert.match(h.element('ptypeStatus').textContent,/unavailable or delayed/);
 });

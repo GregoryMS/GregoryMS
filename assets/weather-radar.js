@@ -66,7 +66,8 @@
     if(token!==request)return false;
     buffering=false;
     if(!ready) { imageFailed=true;stop();status();return false; }
-    layer.setOpacity(0.7);
+    // Keep roads and place names visible through heavy precipitation.
+    layer.setOpacity(0.6);
     for(const other of layers.values())if(other!==layer)other.setOpacity(0);
     current=selected;
     $('radarTime').value=String(current);

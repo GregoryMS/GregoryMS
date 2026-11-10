@@ -57,7 +57,7 @@
       if(token!==renderVersion || !active)return false;
       pending=null;
       if(!loaded){map.removeLayer(next);stop();status('Precipitation-type image could not load. '+(layer?'Showing the previous image. ':'')+'Try Refresh.');return false;}
-      removeLayer();layer=next;layer.setOpacity(.8);current=selected;
+      removeLayer();layer=next;layer.setOpacity(.6);current=selected;
       $('ptypeTime').value=String(current);$('ptypeTime').setAttribute('aria-valuetext',format(time));$('ptypeTimestamp').textContent=format(time);
       status(baseFailed?'The background map could not fully load. Try Refresh.':'Environment Canada · Updated every 6 minutes · Coverage varies across North America.');return true;
     }
