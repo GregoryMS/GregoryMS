@@ -19,9 +19,9 @@
     if (!enabled) { stop(); panel.hidden = true; }
   }
   new MutationObserver(syncCarMode).observe(document.body, {attributes:true,attributeFilter:['class']});
-  syncCarMode();
   const state=panel.querySelector('#gregle-gps-state'), data=panel.querySelector('#gregle-gps-data');
   let watch=null, count=0, last=0;
+  syncCarMode();
   function stop(){ if(watch!==null){navigator.geolocation?.clearWatch(watch);watch=null;} state.textContent='Stopped'; }
   button.addEventListener('click',()=>{panel.hidden=!panel.hidden;});
   panel.querySelector('#gregle-gps-close').addEventListener('click',()=>{stop();panel.hidden=true;});
