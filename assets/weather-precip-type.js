@@ -34,6 +34,7 @@
       if(map)return;
       if(!win.L)throw Error('Map unavailable');
       map=win.L.map('ptypeMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
+      win.GregleWeatherTransparency?.attach(map,opacity=>{if(layer)layer.setOpacity(opacity);});
       base=win.GregleWeatherBasemap.addTo(map);
       base.on('tileerror',()=>{baseFailed=true;status('The background map could not fully load. Try Refresh.');});
       marker=win.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
@@ -57,7 +58,7 @@
       if(token!==renderVersion || !active)return false;
       pending=null;
       if(!loaded){map.removeLayer(next);stop();status('Precipitation-type image could not load. '+(layer?'Showing the previous image. ':'')+'Try Refresh.');return false;}
-      removeLayer();layer=next;layer.setOpacity(.6);current=selected;
+      removeLayer();layer=next;layer.setOpacity(win.GregleWeatherTransparency?.opacity() ?? .6);current=selected;
       $('ptypeTime').value=String(current);$('ptypeTime').setAttribute('aria-valuetext',format(time));$('ptypeTimestamp').textContent=format(time);
       status(baseFailed?'The background map could not fully load. Try Refresh.':'Environment Canada · Updated every 6 minutes · Coverage varies across North America.');return true;
     }

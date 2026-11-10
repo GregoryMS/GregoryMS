@@ -29,6 +29,8 @@ async function setup() {
       created.push(layer);return layer;
     }}
   };
+  let opacity=.6,changeOpacity;
+  context.GregleWeatherTransparency={opacity:()=>opacity,attach(map,fn){changeOpacity=fn;}};
   context.GregleWeatherBasemap=require('../assets/weather-basemap.js').create(context);
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/weather-radar.js'),'utf8'),context);
   context.GregleRadar.setLocation({latitude:49.24,longitude:-123.12,name:'Vancouver',timezone:'America/Vancouver'});
@@ -48,7 +50,7 @@ async function setup() {
     now=end;await flush();
   }
   const visible=()=>layers().filter(l=>l.opacity>0).map(l=>Number(l.url.match(/radar\/(\d+)/)[1]));
-  return {element,context,events,mapEvents,layers,layer,load,click,scrub,advance,visible,flush,failFetch:()=>{failFetch=true;}};
+  return {element,context,events,mapEvents,layers,layer,load,click,scrub,advance,visible,flush,setOpacity(value){opacity=value;changeOpacity(value);},failFetch:()=>{failFetch=true;}};
 }
 
 test('play retains the complete current image and timestamp until the next load finishes',async()=>{
@@ -130,4 +132,17 @@ test('failed refresh preserves usable images and restores the controls',async()=
   const h=await setup();await h.load(1800);h.failFetch();await h.click('radarRefresh');
   assert.deepEqual(h.visible(),[1800]);assert.equal(h.element('radarPlay').disabled,false);
   assert.equal(h.element('radarTime').disabled,false);assert.match(h.element('radarStatus').textContent,/refresh failed/);
+});
+
+test('transparency applies immediately, survives frame changes, and keeps prefetch invisible',async()=>{
+  const h=await setup();await h.load(1800);
+  h.setOpacity(.25);assert.equal(h.layer(1800).opacity,.25);
+  await h.click('radarPlay');await h.load(600);
+  assert.equal(h.layer(600).opacity,.25);
+  assert.equal(h.layer(1200).opacity,0);
+  h.setOpacity(0);await h.load(1200);await h.advance(600);
+  assert.equal(h.layer(1200).opacity,0);
+  assert.equal(h.element('radarTime').value,'1','fully transparent playback still advances');
+  h.setOpacity(1);assert.equal(h.layer(1200).opacity,1);
+  assert.equal(h.layer(600).opacity,0,'previous frame stays hidden');
 });

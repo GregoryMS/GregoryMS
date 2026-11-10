@@ -67,7 +67,7 @@
     buffering=false;
     if(!ready) { imageFailed=true;stop();status();return false; }
     // Keep roads and place names visible through heavy precipitation.
-    layer.setOpacity(0.6);
+    layer.setOpacity(root.GregleWeatherTransparency?.opacity() ?? 0.6);
     for(const other of layers.values())if(other!==layer)other.setOpacity(0);
     current=selected;
     $('radarTime').value=String(current);
@@ -119,6 +119,10 @@
     if(!root.L) { $('radarStatus').textContent='The radar map could not load. Refresh this page to retry, or open RainViewer below.';return; }
     map=root.L.map('radarMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
     root.GregleLightning?.attach(map);
+    root.GregleWeatherTransparency?.attach(map,opacity=>{
+      const visible=layers.get(frames[current]?.path);
+      if(visible)visible.setOpacity(opacity);
+    });
     const base=root.GregleWeatherBasemap.addTo(map);
     base.on('tileerror',()=>{baseFailed=true;status();});
     marker=root.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);

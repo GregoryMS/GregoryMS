@@ -448,7 +448,10 @@ and `assets/tides-app/SOURCES.md`.
 ### Weather radar
 
 `weather.html` includes a location-aware Leaflet radar map below the forecast, with
-play/pause, a keyboard-accessible history slider, refresh and recenter. RainViewer
+play/pause, a keyboard-accessible history slider, refresh and recenter. A transparency
+button beneath the zoom controls reveals a slider to its right on hover or click.
+The 0–100% transparency setting is saved in this browser and shared with the
+precipitation-type map; keyboard focus opens the control and Escape closes it. RainViewer
 supplies up to two hours of observed precipitation frames in ten-minute steps;
 there is no future radar forecast. Composite generation times use the selected
 location’s timezone. A clear map does not confirm dry weather: coverage varies.

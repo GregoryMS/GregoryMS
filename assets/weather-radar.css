@@ -156,3 +156,44 @@
   .ptype-legend,.smoke-legend { font-size:13px; }
   .lightning-legend figcaption span,.lightning-legend-ticks { font-size:12px; }
 }
+
+/* Expand beside the zoom stack, keeping the map visible until needed. */
+.radar-map .weather-transparency {
+  --transparency-accent:#7c3aed;
+  --transparency-soft:#7c3aed14;
+  display:flex;
+  align-items:center;
+  margin-top:8px;
+  padding:4px;
+  border:1px solid #7c3aed26;
+  border-radius:15px;
+  background:var(--panel);
+  color:var(--text);
+  box-shadow:0 3px 14px #1f123323;
+}
+.dark-mode .weather-transparency { --transparency-accent:#b49aff; --transparency-soft:#b49aff20; border-color:#b49aff40; }
+.weather-transparency-button {
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:11px;
+  background:var(--transparency-soft);
+  color:var(--transparency-accent);
+  cursor:pointer;
+  transition:background .18s,box-shadow .18s;
+}
+.weather-transparency-button:hover,.weather-transparency-button[aria-expanded="true"] { background:color-mix(in srgb,var(--transparency-accent) 18%,transparent); }
+.weather-transparency-button:focus-visible { outline:2px solid var(--transparency-accent); outline-offset:2px; }
+.weather-transparency-panel { width:0; overflow:hidden; opacity:0; visibility:hidden; transition:width .22s ease,opacity .18s ease,visibility .22s; }
+.weather-transparency.is-open .weather-transparency-panel { width:204px; opacity:1; visibility:visible; }
+.weather-transparency-inner { box-sizing:border-box; width:204px; padding:5px 10px 3px 12px; }
+.weather-transparency-label { display:flex; align-items:center; justify-content:space-between; gap:10px; font-family:inherit; font-weight:600; font-size:12px; line-height:1.5; }
+.weather-transparency-label output { min-width:36px; padding:1px 5px; border-radius:999px; background:var(--transparency-soft); color:var(--transparency-accent); font-size:11px; font-variant-numeric:tabular-nums; text-align:center; }
+.weather-transparency-inner input { display:block; box-sizing:border-box; width:100%; height:26px; margin:2px 0 0; accent-color:var(--transparency-accent); cursor:pointer; }
+.weather-transparency-inner input:focus-visible { outline:2px solid var(--transparency-accent); outline-offset:1px; border-radius:8px; }
+@media(pointer:coarse) { .weather-transparency-button { width:38px; height:38px; } .weather-transparency-inner input { height:36px; } }
+@media(prefers-reduced-motion:reduce) { .weather-transparency-panel,.weather-transparency-button { transition:none; } }
