@@ -34,7 +34,7 @@
       if(map)return;
       if(!win.L)throw Error('Map unavailable');
       map=win.L.map('ptypeMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
-      base=win.GregleWeatherMap.basemap(win.L).addTo(map);
+      base=win.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
       base.on('tileerror',()=>{baseFailed=true;status('The background map could not fully load. Try Refresh.');});
       marker=win.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
       recenter();
@@ -46,7 +46,7 @@
       if(win.Date.now()-frames.at(-1)>30*60000){stop();removeLayer();controls(false);status('Precipitation-type data is delayed. Try Refresh or open Environment Canada.');return false;}
       cancelPending();const token=renderVersion,selected=Math.max(0,Math.min(frames.length-1,index)),time=frames[selected];
       $('ptypeTime').value=String(current);status('Loading precipitation types…');
-      const next=win.GregleWeatherMap.tiles(win,ENDPOINT,layerOptions(time),'precip');
+      const next=win.L.tileLayer.wms(ENDPOINT,layerOptions(time));
       const loaded=await new Promise(resolve=>{
         let settled=false;
         const finish=ok=>{if(settled)return;settled=true;win.clearTimeout(timeout);next.off();resolve(ok);};

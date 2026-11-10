@@ -22,7 +22,7 @@ function harness() {
   const node=id=>{if(!nodes.has(id))nodes.set(id,{events:{},textContent:'',value:0,addEventListener(t,f){this.events[t]=f;},setAttribute(k,v){this[k]=v;}});return nodes.get(id);};
   const layer=()=>{const l={events:{},on(t,f){this.events[t]=f;return this;},off(){this.events={};},addTo(){return this;},setOpacity(value){this.opacity=value;},setLatLng(){}};return l;};
   class Clock extends Date {static now(){return NOW;}}
-  const win={GregleWeatherMap:{basemap(){return layer();}},Date:Clock,AbortController,document:{getElementById:node,addEventListener(t,f){events[t]=f;}},addEventListener(t,f){events[t]=f;},
+  const win={Date:Clock,AbortController,document:{getElementById:node,addEventListener(t,f){events[t]=f;}},addEventListener(t,f){events[t]=f;},
     setTimeout(fn,ms){timers.set(++timerId,{fn,ms});return timerId;},clearTimeout(id){timers.delete(id);},setInterval(){},
     fetch(...args){return fetchImpl(...args);},L:{map(){const m={setView(){},invalidateSize(){},removeLayer(l){l.removed=true;},remove(){this.removed=true;}};maps.push(m);return m;},tileLayer:layer,circleMarker:layer,rectangle:layer,imageOverlay(){const l=layer();layers.push(l);return l;}}};
   const api=createController(win);events.DOMContentLoaded();api.setLocation({name:'Victoria',latitude:48.42,longitude:-123.39,timezone:'America/Vancouver'});

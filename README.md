@@ -459,20 +459,12 @@ and tile host, and reports failed tiles, refresh failures and delayed imagery.
 It keeps the current image and timestamp visible until the next frame is fully
 loaded, preloads one frame ahead during playback, and pauses briefly at the latest
 observation before looping. Viewed layers are cached and dropped on map movement
-to avoid fetching hidden layers for new areas. The 512px source tiles use the supported
-Universal Blue palette with snow enabled and smoothing disabled (`0_1` tile options),
-and at most provider zoom 7 (closer views overzoom). `assets/weather-map-style.js`
-recolours source rain pixels by the published reflectivity table to a traditional
-green/yellow/orange/red scale, preserving the provider’s snow blues, transparency,
-coverage and timestamps. Canvas tile failures follow the existing error path.
-The same module supplies a CARTO Positron basemap for radar, precipitation types
-and smoke; only basemap tiles are greyscaled, leaving weather and lightning in colour.
-ECCC mixed rain/snow uses light-to-dark pinks; freezing rain uses a separate pink/red
-scale. Its rain, snow and hail classes are unchanged. Legends match the displayed
-palettes. Neither source identifies ice pellets (sleet) separately; the map notes
-explain this rather than inventing a sleet classification.
-Map-area requests go directly to RainViewer, CARTO and (for precipitation types)
-Environment Canada. No key or backend is required. Provider references: [API](https://www.rainviewer.com/api/weather-maps-api.html),
+to avoid fetching hidden layers for new areas. The 512px tiles use the supported
+Universal Blue palette with separate snow colours (`1_1` tile options), and at most
+provider zoom 7 (closer views overzoom). Separate rain and snow legends use the
+provider’s colour table; precipitation type follows RainViewer’s classification.
+Map-area tile requests go directly to RainViewer and OpenStreetMap. No key or
+backend is required. Provider references: [API](https://www.rainviewer.com/api/weather-maps-api.html),
 [2026 limits](https://www.rainviewer.com/api/transition-faq.html).
 
 ### Astronomical events calendar

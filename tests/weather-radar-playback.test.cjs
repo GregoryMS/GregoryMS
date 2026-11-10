@@ -18,7 +18,6 @@ async function setup() {
   const document={hidden:false,getElementById:element,addEventListener(k,fn){events[k]=fn;}};
   let failFetch=false;
   const context={document,URL,Intl,Date,AbortController,console,
-    GregleWeatherMap:{basemap(L){return L.tileLayer('basemap',{});},tiles(win,url,options){return win.L.tileLayer(url,options);}},
     setTimeout(fn,delay){const id=++nextTimer;timers.set(id,{fn,at:now+delay});return id;},
     clearTimeout(id){timers.delete(id);},setInterval(){},addEventListener(k,fn){events[k]=fn;},
     fetch:async()=>{if(failFetch)throw Error('offline');return {ok:true,json:async()=>({host:'https://tilecache.rainviewer.com',radar:{past:[600,1200,1800].map(time=>({time,path:`/v2/radar/${time}`}))}})};},

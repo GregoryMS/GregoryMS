@@ -4,8 +4,7 @@
 .radar-meta { font-size:12px; color:var(--muted); line-height:1.7; margin:10px 0 0; }
 .radar-heading .radar-meta { margin:5px 0 0; }
 .radar-panel { border:1px solid var(--line); border-radius:22px; overflow:hidden; background:var(--panel); box-shadow:var(--shadow); }
-.radar-map { height:460px; background:#dedede; isolation:isolate; }
-.radar-map .weather-basemap { filter:grayscale(1); }
+.radar-map { height:460px; background:var(--soft); isolation:isolate; }
 .radar-map .leaflet-control-attribution { font-size:10px; }
 .radar-map .leaflet-control-zoom a { color:var(--text); background:var(--panel); }
 .radar-controls { padding:18px 22px; display:flex; align-items:center; gap:22px; }
@@ -20,7 +19,7 @@
 
 .radar-legends { display:flex; flex-wrap:wrap; gap:10px 28px; margin-top:14px; }
 .radar-legend { display:flex; align-items:center; gap:9px; font-size:11px; color:var(--muted); }
-.radar-legend i { width:110px; height:8px; border-radius:10px; background:linear-gradient(90deg,#66dc66,#22b14c,#00782d,#ffeb00,#ff9900,#f53020,#a50019); }
+.radar-legend i { width:110px; height:8px; border-radius:10px; background:linear-gradient(90deg,#88ddee,#00a3e0,#005588,#ffee00,#ffaa00,#ff4400); }
 
 .radar-legend strong { min-width:34px; font-weight:600; color:var(--text); }
 .radar-legend-snow i { background:linear-gradient(90deg,#bfffff,#9fdfff,#7fbfff,#5f9fff,#3f7fff,#1f5fff,#003fff); }
@@ -121,10 +120,10 @@
 .ptype-legend > span { display:flex; align-items:center; gap:7px; }
 .ptype-legend i { display:block; width:48px; height:10px; border-radius:5px; box-shadow:inset 0 0 0 1px #00000015; }
 .ptype-snow { background:linear-gradient(90deg,#7fdfeb,#47a4f0,#0000e0); }
-.ptype-mixed { background:linear-gradient(90deg,#f7b6da,#ec6aac,#be267d); }
+.ptype-mixed { background:linear-gradient(90deg,#e0bde6,#c36dd2,#9b27af); }
 .ptype-rain { background:linear-gradient(90deg,#9afd9a,#00cb00,#008000); }
 .ptype-hail { background:#fec007; }
-.ptype-freezing { background:linear-gradient(90deg,#ffb5c4,#ed174c); }
+.ptype-freezing { background:linear-gradient(90deg,#fecbc8,#fe1e0d); }
 
 @media(prefers-reduced-motion:reduce) { .radar-layer-switches span { transition:none; } }
 

@@ -10,7 +10,7 @@
     if(!frames.length) throw Error('No radar frames');
     return {host:host.origin,frames};
   }
-  function tileURL(host,frame) { return `${host}${frame.path}/512/{z}/{x}/{y}/2/0_1.png`; }
+  function tileURL(host,frame) { return `${host}${frame.path}/512/{z}/{x}/{y}/2/1_1.png`; }
   function stale(frame,now=Date.now()) { return !frame || now-frame.time*1000>30*60000; }
   const core={framesFrom,tileURL,stale};
   if(typeof module!=='undefined' && module.exports) { module.exports=core; return; }
@@ -38,7 +38,7 @@
   function layerFor(frame) {
     let layer=layers.get(frame.path);
     if(layer)return layer;
-    layer=root.GregleWeatherMap.tiles(root,tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,zIndex:300,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'},'radar');
+    layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,zIndex:300,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
     // Load invisibly, then swap complete images in one turn. Prefetch only one
     // frame ahead during playback; cache viewed frames until the map moves.
     layer.radarReady=new Promise(resolve=>{
@@ -118,7 +118,7 @@
     if(!root.L) { $('radarStatus').textContent='The radar map could not load. Refresh this page to retry, or open RainViewer below.';return; }
     map=root.L.map('radarMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
     root.GregleLightning?.attach(map);
-    const base=root.GregleWeatherMap.basemap(root.L).addTo(map);
+    const base=root.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
     base.on('tileerror',()=>{baseFailed=true;status();});
     marker=root.L.circleMarker([location.latitude,location.longitude],{radius:6,color:'#fff',weight:2,fillColor:'#233e58',fillOpacity:1}).addTo(map);
     recenter();
