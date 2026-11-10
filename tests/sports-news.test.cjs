@@ -25,8 +25,11 @@ test('RSS extraction validates dates and BBC article links through the same snap
 });
 
 test('sport headlines reject stale, future, malformed and unsafe data and deduplicate URLs', () => {
-  for (const data of [null, {}, {...fresh(), items:{}}, {...fresh(),feedUpdatedAt:new Date(NOW-7*3600000).toISOString()}, {...fresh(),feedUpdatedAt:new Date(NOW+3600000).toISOString()}, {...fresh(),items:[{title:'Unsafe',link:'https://bbc.com.evil.test/sport'}]}, {...fresh(),items:[{title:'Unsafe',link:'https://user@bbc.com/sport'}]}]) assert.equal(usable(data,NOW).length,0);
+  for (const data of [null, {}, {...fresh(), items:{}}, {...fresh(),feedUpdatedAt:new Date(NOW-49*3600000).toISOString()}, {...fresh(),feedUpdatedAt:new Date(NOW+3600000).toISOString()}, {...fresh(),items:[{title:'Unsafe',link:'https://bbc.com.evil.test/sport'}]}, {...fresh(),items:[{title:'Unsafe',link:'https://user@bbc.com/sport'}]}]) assert.equal(usable(data,NOW).length,0);
   const data = fresh(); data.items.push(data.items[0]); assert.equal(usable(data,NOW).length,1);
+  const retained = {...fresh(),feedUpdatedAt:new Date(NOW-48*3600000).toISOString()};
+  assert.equal(usable(retained,NOW).length,1);
+  assert.equal(usable(retained,NOW+1).length,0);
 });
 function harness(options = {}) {
   const timers = new Map(), intervals = [], classes = new Set();
@@ -61,11 +64,11 @@ test('ticker retains fresh headlines through an outage, expires them, and recove
   const h=harness(); await h.settle(); const before=h.nodes['sport-news-track'].innerHTML;
   h.setFail(true); h.intervals[0](); await h.settle(); assert.equal(h.nodes['sport-news-track'].innerHTML,before);
   const expired=fresh('Old'); h.setFail(false); h.setPayload(expired); h.intervals[0](); await h.settle();
-  h.setNow(NOW+7*3600000); h.setFail(true); h.intervals[0](); await h.settle(); assert.match(h.nodes['sport-news-track'].innerHTML,/Headlines unavailable/);
-  h.setFail(false); h.setPayload({...fresh('Recovered'),feedUpdatedAt:new Date(NOW+7*3600000).toISOString()}); h.intervals[0](); await h.settle(); assert.match(h.nodes['sport-news-track'].innerHTML,/Recovered/);
+  h.setNow(NOW+49*3600000); h.setFail(true); h.intervals[0](); await h.settle(); assert.match(h.nodes['sport-news-track'].innerHTML,/Headlines unavailable/);
+  h.setFail(false); h.setPayload({...fresh('Recovered'),feedUpdatedAt:new Date(NOW+49*3600000).toISOString()}); h.intervals[0](); await h.settle(); assert.match(h.nodes['sport-news-track'].innerHTML,/Recovered/);
 });
 test('live feed works even when the scheduled snapshot has expired', async () => {
-  const h=harness(); h.setSnapshot({...fresh('Old snapshot'),feedUpdatedAt:new Date(NOW-7*3600000).toISOString()});
+  const h=harness(); h.setSnapshot({...fresh('Old snapshot'),feedUpdatedAt:new Date(NOW-49*3600000).toISOString()});
   await h.settle(); assert.match(h.nodes['sport-news-track'].innerHTML,/Sport headline/);
   assert.deepEqual(h.urls,['/api/sports/headlines']);
 });

@@ -11,7 +11,7 @@ const fresh = (title = 'BBC headline') => ({
 const response = data => ({ ok: true, json: async () => data });
 
 function environment(fetch, parsedItems = []) {
-  const track = { innerHTML: '', style: {} };
+  const track = { innerHTML: '', style: {}, parentElement: { clientWidth: 800 } };
   const group = { scrollWidth: 1500, nextElementSibling: { style: {} } };
   const timers = new Map();
   let timer = 0, frame;
@@ -19,6 +19,7 @@ function environment(fetch, parsedItems = []) {
   const options = ['bbc', 'nrk', 'svt', 'radio-canada'].map(id => ({ dataset: { newsSource: id }, setAttribute() {} }));
   const context = vm.createContext({
     URL, AbortController, console, fetch, tickerTrack: track,
+    matchMedia: () => ({ matches: false }),
     document: {
       getElementById(id) {
         if (id === 'tickerGroup') return group;
@@ -41,6 +42,8 @@ function environment(fetch, parsedItems = []) {
     requestAnimationFrame(fn) { frame = fn; return 1; }, cancelAnimationFrame() {},
     escapeHtml: value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]))
   });
+  // Browser globals refer to the same window in the real page.
+  context.window = context;
   vm.runInContext(source, context);
   return { context, track, timers, elements, run: () => context.loadNews(), select: id => context.selectNewsSource(id), step: time => frame(time) };
 }
@@ -63,7 +66,7 @@ test('loads same-site headlines and escapes titles', async () => {
 
 test('rejects stale, future, malformed and non-BBC data', async () => {
   for (const data of [null, {}, { ...fresh(), items: {} },
-    { ...fresh(), feedUpdatedAt: new Date(Date.now() - 7 * 3600000).toISOString() },
+    { ...fresh(), feedUpdatedAt: new Date(Date.now() - 49 * 3600000).toISOString() },
     { ...fresh(), feedUpdatedAt: new Date(Date.now() + 3600000).toISOString() },
     { ...fresh(), items: [{ title: 'Unsafe', link: 'https://bbc.com.evil.test/' }] },
     { ...fresh(), items: [{ title: 'Unsafe', link: 'javascript:alert(1)' }] }]) {
@@ -90,7 +93,7 @@ test('expired retained headlines fall back to the BBC link', async () => {
   let fail = false;
   const env = environment(async () => { if (fail) throw new Error('Offline'); return response(fresh()); });
   await env.run();
-  vm.runInContext("lastNews.get('bbc').feedUpdatedAt = new Date(Date.now() - 7 * 3600000).toISOString()", env.context);
+  vm.runInContext("lastNews.get('bbc').feedUpdatedAt = new Date(Date.now() - 49 * 3600000).toISOString()", env.context);
   fail = true;
   await env.run();
   assert.match(env.track.innerHTML, /Live headlines unavailable/);
@@ -140,7 +143,7 @@ test('NRK uses the existing same-origin feed and its logo links directly to NRK 
 });
 
 test('NRK rejects expired snapshots, foreign links and unsafe XML', async () => {
-  for (const data of [null, { feeds: [] }, nrkFeed(new Date(Date.now() - 7 * 3600000).toISOString()),
+  for (const data of [null, { feeds: [] }, nrkFeed(new Date(Date.now() - 49 * 3600000).toISOString()),
     nrkFeed(new Date().toISOString(), '<!DOCTYPE rss><rss/>'),
     nrkFeed(new Date().toISOString(), 'x'.repeat(500001))]) {
     const env = environment(async () => response(data), [nrkItem]);
@@ -229,7 +232,7 @@ test('SVT uses its existing same-origin snapshot, Swedish headlines and linked o
 });
 
 test('SVT rejects stale snapshots and foreign or credentialed links with its own fallback', async () => {
-  const stale = environment(async () => response(svtFeed(new Date(Date.now() - 7 * 3600000).toISOString())), [svtItem]);
+  const stale = environment(async () => response(svtFeed(new Date(Date.now() - 49 * 3600000).toISOString())), [svtItem]);
   await stale.select('svt');
   assert.match(stale.track.innerHTML, /Open SVT Nyheter/);
   assert.match(stale.track.innerHTML, /Live headlines unavailable/);
@@ -248,13 +251,13 @@ test('all RSS ticker providers tolerate delayed refreshes but reject expired sna
     ['radio-canada', 'https://ici.radio-canada.ca/info/rss/info/en-continu',
       { title: 'Actualité en français', link: 'https://ici.radio-canada.ca/nouvelle/1234567/actualite' }]
   ]) {
-    for (const hours of [3, 5, 7]) {
+    for (const hours of [7, 47, 49]) {
       const feed = { feeds: [{ url, fetchedAt: new Date(Date.now() - hours * 3600000).toISOString(),
         xml: '<rss><channel/></rss>' }] };
       const env = environment(async () => response(feed), [item]);
       await env.select(id);
-      assert.equal(env.track.innerHTML.includes('Live headlines unavailable'), hours > 6, `${id}: ${hours} hours`);
-      if (hours < 6) assert(env.track.innerHTML.includes(item.title.replace('&', '&amp;')));
+      assert.equal(env.track.innerHTML.includes('Live headlines unavailable'), hours > 48, `${id}: ${hours} hours`);
+      if (hours < 48) assert(env.track.innerHTML.includes(item.title.replace('&', '&amp;')));
     }
   }
 });
