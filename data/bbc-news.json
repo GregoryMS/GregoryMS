@@ -1,14 +1,10 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-09T21:27:28+00:00",
-  "fetchedAt": "2026-11-09T21:27:32.793305+00:00",
+  "feedUpdatedAt": "2026-11-10T03:44:32+00:00",
+  "fetchedAt": "2026-11-10T03:44:42.660948+00:00",
   "items": [
     {
-      "title": "Russell Brand sentenced to 10-and-a-half years in prison for rape and sexual assault",
-      "link": "https://www.bbc.co.uk/news/articles/ckzd6dl18dmyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Brand's ex Jemima Goldsmith accuses him of violence and abuse against her",
+      "title": "Russell Brand's ex Jemima Goldsmith accuses him of violence and abuse against her",
       "link": "https://www.bbc.co.uk/news/articles/c95ynylr8j6xo?at_medium=RSS&at_campaign=rss"
     },
     {
@@ -16,32 +12,36 @@
       "link": "https://www.bbc.co.uk/news/videos/cq99z9mrv35lo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "France accuses Iran of supermarket fridge hacking",
-      "link": "https://www.bbc.co.uk/news/articles/cmg474vk6dyqo?at_medium=RSS&at_campaign=rss"
+      "title": "Hundreds more offenders to leave jail on Tuesday",
+      "link": "https://www.bbc.co.uk/news/articles/c51kdk8z7ym3o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Nvidia shares tumble over investigation into Huang's affair with alleged Chinese spy",
-      "link": "https://www.bbc.co.uk/news/articles/c6zxjx01vyleo?at_medium=RSS&at_campaign=rss"
+      "title": "Phones to be banned from pupils' bags or pockets under stricter rules for schools in England",
+      "link": "https://www.bbc.co.uk/news/articles/c51kdk422w8jo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Trump says Iran war is 'effectively over' militarily with further strikes unlikely",
+      "link": "https://www.bbc.co.uk/news/articles/cq5yny4nl2d3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "The superpower battle over energy – and what it means for your bills",
+      "link": "https://www.bbc.co.uk/news/articles/cw62y2z53pg1o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Baffling but brilliant' post-apocalyptic novel The End of Everything wins Booker Prize",
+      "link": "https://www.bbc.co.uk/news/articles/cw0737kv52lko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Epstein associate who still runs model agency 'put me in danger' says abuse survivor",
+      "link": "https://www.bbc.co.uk/news/articles/cm86z6w59gggo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "FBI investigating Nvidia boss's affair with alleged Chinese spy, Trump says",
+      "link": "https://www.bbc.co.uk/news/articles/cqg7x7dpvym8o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How a civil servant got away with juggling five jobs for so long",
       "link": "https://www.bbc.co.uk/news/articles/cw1m4d8vjvppo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Ground Force and Homes Under the Hammer star Tommy Walsh dies aged 69",
-      "link": "https://www.bbc.co.uk/news/articles/ck0e0elq4ndpo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Republican congressman to force impeachment vote on Defence Secretary Hegseth",
-      "link": "https://www.bbc.co.uk/news/articles/cwr5y58jjp8ro?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Judge denies motion to dismiss Lindsay Clancy's murder case - media reports",
-      "link": "https://www.bbc.co.uk/news/articles/ck1l3le7q29vo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Russia's leading independent newspaper closes after eviction",
-      "link": "https://www.bbc.co.uk/news/videos/cvrlylj9r11go?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
