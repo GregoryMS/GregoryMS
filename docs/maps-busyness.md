@@ -99,16 +99,3 @@ References: [Google Popular Times component](https://developers.google.com/maps/
 [Google API security](https://developers.google.com/maps/api-security-best-practices),
 [Google pricing](https://developers.google.com/maps/billing-and-pricing/pricing),
 [Cloudflare secrets](https://developers.cloudflare.com/workers/configuration/secrets/).
-
-## Restaurant and cafe reviews
-
-OSM places tagged `amenity=restaurant` or `amenity=cafe` show a separate
-**Find reviews on Yelp** link. It opens a Yelp search using the selected name and
-mapped address (or coordinates when no address is recorded). Visitors confirm
-the matching business on Yelp; Gregle does not claim an exact Yelp match.
-No Yelp or Google review API is called and no ratings or review text are embedded.
-The link is available independently of the Google popular-times panel and its
-quota. Google remains popular-times-only.
-
-Embedding Yelp review excerpts would require separate Yelp Places API access and
-a suitable plan: https://docs.developer.yelp.com/docs/places-intro.

@@ -142,20 +142,6 @@
         const missing = [!place.tags.phone && !place.tags['contact:phone'] ? 'phone number' : '', !place.tags.opening_hours ? 'opening hours' : ''].filter(Boolean);
         box.append(make('p', `No ${missing.join(' or ')} recorded in OpenStreetMap.`, 'place-tags-status'));
       }
-      if (['restaurant', 'cafe'].includes(place.tags.amenity)) {
-        const reviews = make('section', null, 'place-data-source');
-        reviews.append(make('h3', 'Reviews'));
-        const url = new URL('https://www.yelp.com/search');
-        url.searchParams.set('find_desc', place.name);
-        const address = [
-          [place.tags['addr:housenumber'], place.tags['addr:street']].filter(Boolean).join(' '),
-          place.tags['addr:city'], place.tags['addr:postcode']
-        ].filter(Boolean).join(', ');
-        url.searchParams.set('find_loc', address || `${place.lat},${place.lng}`);
-        reviews.append(link('Find reviews on Yelp ↗', url.href));
-        reviews.append(make('p', 'Opens Yelp in a new tab. Choose the matching business to read its customer reviews.', 'place-tags-status'));
-        box.append(reviews);
-      }
       const tags = make('details', null, 'place-all-tags');
       tags.open = !!tagsOpen;
       const entries = Object.entries(place.tags).sort(([a], [b]) => a.localeCompare(b));
