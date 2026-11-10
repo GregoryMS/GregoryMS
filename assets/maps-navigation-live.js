@@ -5,6 +5,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   let running = false, session = 0, watch = null, timer, route, mode, destination, lastFix = 0;
   let previous = null, marker, halo, follow = true, voice = false, spoken = '', controller, lastReroute = 0, offSince = 0, firstFix = true, ended = false;
   let trafficChangePending = false, lastTrafficAttempt = 0, updatingTraffic = false;
+  let lastStationary = false;
   let ownsFullscreen = false;
   function enterFullscreen() {
     document.body?.classList.add('navigation-fullscreen');
@@ -67,7 +68,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
       try { Promise.resolve(document.exitFullscreen()).catch(() => {}); } catch {}
     }
     ownsFullscreen = false;
-    disable3D(); lastCoords = null;
+    disable3D(); lastCoords = null; lastStationary = false;
     session++; running = false; ended = false; trafficChangePending = false; updatingTraffic = false;
     if (watch !== null) navigator.geolocation.clearWatch(watch);
     watch = null; clearInterval(timer); controller?.abort(); controller = null;
@@ -167,6 +168,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
       $('navigation-distance').textContent = 'Weak GPS'; $('navigation-instruction').textContent = 'Waiting for an accurate location'; return;
     }
     lastFix = Date.now();
+    lastStationary = Number.isFinite(position.coords.speed) && position.coords.speed <= 0.5;
     lastCoords = position.coords;
     if (threeD?.active) threeD.update(point, position.coords);
     if (!marker) {
@@ -195,7 +197,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   }
   function start(nextRoute, nextMode, to, {threeD: start3D = false} = {}) {
     if (!navigator.geolocation?.watchPosition) { onStop('Live location is unavailable in this browser. You can still use the route steps.'); return; }
-    cleanup(); route = nextRoute; mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; spoken = ''; lastTrafficAttempt = Date.now();
+    cleanup(); route = nextRoute; mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; lastStationary = false; spoken = ''; lastTrafficAttempt = Date.now();
     running = true; const token = session; setFollow(true); card.hidden = false;
     stage.classList.add('navigating'); $('navigation-stop').textContent = 'Stop';
     enterFullscreen();
@@ -208,7 +210,11 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     timer = setInterval(() => {
       if (running && mode === 'driving' && routing.enabled && routing.connected && !document.hidden && lastFix && Date.now() - lastFix < 15000 && !controller && Date.now() - lastTrafficAttempt >= 120000) reroute(marker.getLatLng(), true, true);
       if (running && route?.traffic && Date.now() - route.fetchedAt > 180000) trafficUI();
-      if (running && (!lastFix || Date.now() - lastFix > 15000)) {
+      if (running && lastFix && Date.now() - lastFix > 15000 && lastStationary && !document.hidden) {
+        // Stationary browsers may emit only one fix. Retain the marker and route,
+        // but never pretend that the old position is a fresh live GPS update.
+        liveStatus('Last GPS position retained · stationary (waiting for movement).');
+      } else if (running && (!lastFix || Date.now() - lastFix > 15000)) {
         threeD?.clearGuidance();
         liveStatus(document.hidden ? 'Location may pause while the browser is in the background.' : 'GPS signal lost. Guidance resumes with a fresh location.');
         $('navigation-distance').textContent = 'Waiting for GPS'; $('navigation-instruction').textContent = 'Waiting for your location';
