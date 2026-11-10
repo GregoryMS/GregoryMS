@@ -1,8 +1,28 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-10T11:59:11+00:00",
-  "fetchedAt": "2026-11-10T11:59:18.188950+00:00",
+  "feedUpdatedAt": "2026-11-10T19:41:06+00:00",
+  "fetchedAt": "2026-11-10T19:41:15.332641+00:00",
   "items": [
+    {
+      "title": "The Monaco summit that will decide the future of Carrick and Man Utd",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c8wy9yzyzxnko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Pochettino, Howe, Emery... or Carrick? Man Utd's managerial options",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c5rmymrvm004o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "McTominay reveals heart treatment at World Cup",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cw5ynynx204zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Australia doomed to live with stench of sandpapergate",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/c6x2v277z89eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Formula 1 to finish season in Middle East",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c53989e97lxwo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Cast your vote for BBC Women's Footballer of the Year 2026",
       "link": "https://www.bbc.co.uk/sport/football/articles/cj20velkgnypo?at_medium=RSS&at_campaign=rss"
@@ -12,36 +32,16 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/ckjrwrggjlryo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Australia fans 'can't trust what's real' - Clarke wants ball-tampering investigation reopened",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/cjzxlxrp3335o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Wenger considers standing against Infantino",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cwj343pep7zdo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "How good is Hamilton and how long can he stay in F1? - Q&A",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmp3g005zyxko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Vote for your greatest all-British boxing fight",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/cq5yn477mn51o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Jockey Neale, 22, dies after fall during race",
       "link": "https://www.bbc.co.uk/sport/horse-racing/articles/c933x3yjk530o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Dortmund fans' group criticises Nmecha celebration",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm3696yy9z64o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "DeChambeau running out of options - McIlroy",
       "link": "https://www.bbc.co.uk/sport/golf/articles/cwz0v0jmxpl0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "How Germany's greatest goalscorer is guiding the next generation",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmq8nnddpllqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Meet Stephanie Case - the first woman to run 100 miles in Antarctica",
-      "link": "https://www.bbc.co.uk/sport/articles/cm98z8w9kx02o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
