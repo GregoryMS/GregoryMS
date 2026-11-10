@@ -1,9 +1,9 @@
 (function (root) {
   'use strict';
-  const MAX_AGE = 6 * 60 * 60 * 1000;
+  const MAX_AGE = 48 * 60 * 60 * 1000;
   function usable(data, now = Date.now()) {
     if (!data || !Array.isArray(data.items)) return [];
-    const age = now - Date.parse(data.feedUpdatedAt);
+    const age = now - Date.parse(data.fetchedAt || data.feedUpdatedAt);
     if (!Number.isFinite(age) || age < -300000 || age > MAX_AGE) return [];
     const seen = new Set();
     return data.items.filter(item => {
@@ -78,7 +78,7 @@
       try { data = await read('/api/sports/headlines', true); }
       catch (_) { data = await read('data/bbc-sport.json'); }
       // A delayed static build must not replace newer headlines already loaded.
-      if (usable(saved).length && Date.parse(saved.feedUpdatedAt) > Date.parse(data.feedUpdatedAt)) data = saved;
+      if (usable(saved).length && Date.parse(saved.fetchedAt || saved.feedUpdatedAt) > Date.parse(data.fetchedAt || data.feedUpdatedAt)) data = saved;
       const items = usable(data);
       saved = data; render(items);
       $('sport-news-status').textContent = 'BBC Sport headlines updated.';
