@@ -415,6 +415,8 @@
 .embedded-active .map-directions { display: none; }
 .map-directions label { display: block; margin: 12px 0 6px; color: var(--muted); }
 .directions-field { display: flex; gap: 6px; }
+.map-directions .directions-field > button { display: grid; place-items: center; box-sizing: border-box; flex: 0 0 48px; width: 48px; padding: 10px; }
+.directions-field > button svg { width: 22px; height: 22px; }
 .directions-field input { width: 100%; min-width: 0; padding: 11px 10px; border: 1px solid var(--map-border); border-radius: 10px; color: var(--text); background: var(--bg); font: inherit; font-size: 14px; }
 .map-directions button:not(.map-dismiss), .route-pin-actions button { padding: 10px 12px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--map-accent-soft); color: var(--map-accent); font: inherit; cursor: pointer; }
 .map-directions button:disabled { opacity: .5; cursor: default; }
@@ -900,5 +902,4 @@
 .map-directions button.directions-add-stop { display: flex; align-items: center; gap: 5px; width: max-content; min-height: 32px; margin: 4px 0 -4px; padding: 3px 5px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 12px; }
 .map-directions button.directions-add-stop:hover, .map-directions button.directions-add-stop:focus-visible { color: var(--map-accent); background: var(--map-accent-soft); }
 .directions-add-stop span { font-size: 16px; line-height: 1; }
-#directions-remove-stop { font-size: 22px; }
 .vehicle-layout .map-directions button.directions-add-stop { min-height: 40px; font-size: 13px; }
