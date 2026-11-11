@@ -93,7 +93,7 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
     $('saved-place-remove').textContent = `Remove ${kind}`; $('saved-place-remove').disabled = !saved[kind];
     $('saved-place-pin').disabled = !clean(getSelected());
     status('Search for a place, use a selected map pin, or use your current location.');
-    if (!dialog.open) { dialog.showModal(); $('saved-place-close').focus({ preventScroll: true }); }
+    if (!dialog.open) { dialog.showModal(); $('saved-place-heading').focus({ preventScroll: true }); }
   }
   function choose(point) {
     cancel(); candidate = clean(point); $('saved-place-save').disabled = !candidate;

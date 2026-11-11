@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261111-stop-field-match">
+  <link rel="stylesheet" href="assets/maps.css?v=20261111-saved-close-fix">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -65,7 +65,7 @@
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261110-car-navigation" defer></script>
   <script src="assets/maps-context-menu.js?v=20261108-share-location" defer></script>
-  <script src="assets/maps-saved-places.js?v=20261111-shortcut-release" defer></script>
+  <script src="assets/maps-saved-places.js?v=20261111-saved-close-fix" defer></script>
   <script src="assets/maps.js?v=20261111-search-shortcuts" defer></script>
   <script src="assets/maps-gps-test.js?v=20261110-car-mode" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
@@ -352,7 +352,7 @@
     <div class="map-link-copy map-glass" id="map-link-copy" hidden><label for="map-link-input">Copy this map link</label><div><input id="map-link-input" type="url" readonly><button class="map-dismiss" id="close-map-link" type="button" aria-label="Close map link">×</button></div></div>
     <a class="map-report" href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue ↗</a>
     <dialog id="saved-place-dialog" class="saved-place-dialog" aria-labelledby="saved-place-heading" aria-describedby="saved-place-help">
-      <div class="layers-heading"><h2 id="saved-place-heading">Home &amp; Work</h2><button id="saved-place-close" class="map-dismiss" type="button" aria-label="Close saved locations" autofocus>×</button></div>
+      <div class="layers-heading"><h2 id="saved-place-heading" tabindex="-1">Home &amp; Work</h2><button id="saved-place-close" class="map-dismiss" type="button" aria-label="Close saved locations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
       <p id="saved-place-help">Saved only in this browser. Select the empty map search field, then tap Home or Work to navigate from your current location. Use the pencil to edit these locations.</p>
       <div class="saved-place-tabs" role="group" aria-label="Location to edit"><button id="saved-place-home" type="button" aria-pressed="true">Home</button><button id="saved-place-work" type="button" aria-pressed="false">Work</button></div>
       <p id="saved-place-current"></p>
