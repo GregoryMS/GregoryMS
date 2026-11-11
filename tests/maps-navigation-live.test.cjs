@@ -191,3 +191,17 @@ test('a pending fullscreen request cannot leave the stopped page in fullscreen',
   h.live.start(core.readRoute(response()),'driving',destination);h.live.stop();finish();
   await new Promise(resolve=>setImmediate(resolve));assert.equal(exited,1);
 });
+
+test('live rerouting retains an unvisited stop and drops it only after reaching it', async () => {
+  const h = harness(), route = core.readRoute(response()), requests = [];
+  route.stops = [{...corner, name: 'Coffee', at: route.cumulative[1]}];
+  h.routing.request = async (...args) => {requests.push(args); return route;};
+  h.live.start(route, 'driving', destination);
+  h.fix({lat: 48.421, lng: origin.lng});
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(requests[0][3].via[0].name, 'Coffee');
+  h.fix(corner); h.fix({lat: corner.lat, lng: -123.357});
+  h.routing.setEnabled(true); await h.live.refreshTraffic();
+  assert.equal(requests.at(-1)[3].via.length, 0);
+  h.live.stop();
+});

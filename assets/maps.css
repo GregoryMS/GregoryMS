@@ -895,3 +895,10 @@
 .vehicle-layout .map-saved-shortcut { min-height: 48px; }
 .vehicle-layout .map-saved-label strong { font-size: 14px; }
 .vehicle-layout .map-saved-label small { font-size: 11px; }
+
+/* Optional stop stays a quiet inline action between the route endpoints. */
+.map-directions button.directions-add-stop { display: flex; align-items: center; gap: 5px; width: max-content; min-height: 32px; margin: 4px 0 -4px; padding: 3px 5px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 12px; }
+.map-directions button.directions-add-stop:hover, .map-directions button.directions-add-stop:focus-visible { color: var(--map-accent); background: var(--map-accent-soft); }
+.directions-add-stop span { font-size: 16px; line-height: 1; }
+#directions-remove-stop { font-size: 22px; }
+.vehicle-layout .map-directions button.directions-add-stop { min-height: 40px; font-size: 13px; }

@@ -86,6 +86,33 @@
     }
     return { ...route, traffic: true, provider: 'tomtom', trafficDelay: number(summary.trafficDelayDurationInSeconds) ? summary.trafficDelayDurationInSeconds : 0, fetchedAt: Date.now() };
   }
+  // Compose ordinary provider legs so stops work with OSRM, TomTom and 3D Mapbox.
+  function combineRoutes(legs, stops) {
+    const points = [], cumulative = [], timings = [], steps = [], laneGuidance = [], speedLimits = [], markers = [];
+    let length = 0, elapsed = 0;
+    legs.forEach((leg, legIndex) => {
+      const previous = points.at(-1), first = leg.points[0];
+      const gap = previous ? core.meters({lat: previous[0], lng: previous[1]}, {lat: first[0], lng: first[1]}) : 0;
+      const offset = length + gap;
+      leg.points.forEach((point, index) => {
+        if (points.length && index === 0 && !gap) return;
+        if (points.length) speedLimits.push(index ? leg.speedLimits?.[index - 1] || null : null);
+        points.push(point); cumulative.push(offset + leg.cumulative[index]);
+        timings.push(elapsed + (leg.timings?.[index] ?? (leg.length ? leg.duration * leg.cumulative[index] / leg.length : 0)));
+      });
+      for (const step of leg.steps) steps.push({...step, start: offset + step.start,
+        ...(legIndex < legs.length - 1 && step.type === 'arrive' ? {type: 'stop', text: `Arrive at stop: ${stops[legIndex].name || 'Stop'}`} : {})});
+      for (const lane of leg.laneGuidance || []) laneGuidance.push({...lane, at: offset + lane.at});
+      length = offset + leg.length; elapsed += leg.duration;
+      if (legIndex < stops.length) markers.push({...stops[legIndex], at: length});
+    });
+    const providers = [...new Set(legs.map(leg => leg.provider))], traffic = legs.every(leg => leg.traffic);
+    return {points, cumulative, timings, steps, laneGuidance, speedLimits, length, duration: elapsed,
+      distance: legs.reduce((sum, leg) => sum + leg.distance, 0), stops: markers, providers,
+      provider: providers.length === 1 ? providers[0] : 'mixed', traffic,
+      trafficPartial: !traffic && legs.some(leg => leg.traffic), trafficReason: legs.find(leg => !leg.traffic)?.trafficReason,
+      trafficDelay: legs.reduce((sum, leg) => sum + (leg.trafficDelay || 0), 0), fetchedAt: Math.min(...legs.map(leg => leg.fetchedAt))};
+  }
   function create({ fetch: send = globalThis.fetch, storage, defaultAvailable = false } = {}) {
     try { storage ??= globalThis.localStorage; } catch {}
     let enabled = false, blockedKey = '', mapbox = false;
@@ -93,7 +120,17 @@
     function key() {
       try { const value = storage?.getItem('gregle-maps-tomtom-key'); return typeof value === 'string' ? value.trim() : ''; } catch { return ''; }
     }
-    async function request(from, to, mode = 'driving', { signal } = {}) {
+    async function request(from, to, mode = 'driving', { signal, via = [] } = {}) {
+      if (!Array.isArray(via) || via.length > 1 || !via.every(core.valid)) throw new Error('Choose a valid stop.');
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+      if (via.length) {
+        const places = [from, ...via, to], legs = [];
+        for (let index = 1; index < places.length; index++) {
+          legs.push(await request(places[index - 1], places[index], mode, {signal}));
+          if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+        }
+        return combineRoutes(legs, via);
+      }
       const standardURL = core.routeURL(from, to, mode), apiKey = key();
       if (mapbox && mode === 'driving') {
         const response = await send(mapboxEndpoint + '/route', {method: 'POST', credentials: 'omit', cache: 'no-store', signal,
@@ -139,11 +176,12 @@
   }
   function note(route, mode = 'driving') {
     if (mode === 'walking') return 'Estimated walking time. Routes follow mapped pedestrian access.';
+    if (route?.trafficPartial) return 'Live traffic is unavailable for part of this route. Ferry waits may vary.';
     if (route?.provider === 'mapbox') return route.traffic ? 'Mapbox traffic included where available. Ferry waits may vary.' : 'Mapbox route · Live traffic off. Ferry waits may vary.';
     if (route?.traffic) return `Live traffic included${route.trafficDelay >= 60 ? ` · ${core.duration(route.trafficDelay)} traffic delay` : ''}. Ferry waits may vary.`;
     if (route?.trafficReason === 'missing-key') return 'Live traffic off. Connect TomTom to enable it. This estimate excludes live traffic and ferry waits.';
     if (route?.trafficReason === 'unavailable') return 'Live traffic unavailable. This route excludes live traffic and ferry waits.';
     return 'Live traffic off. Estimated driving time excludes live traffic and ferry waits.';
   }
-  return { create, trafficRequest, readTrafficRoute, readMapboxRoute, mapboxEndpoint, note };
+  return { create, combineRoutes, trafficRequest, readTrafficRoute, readMapboxRoute, mapboxEndpoint, note };
 });

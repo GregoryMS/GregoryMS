@@ -138,3 +138,30 @@ test('a malformed personal override cannot silently spend the shared default all
   assert.equal(service.hasOwnKey, true); assert.equal(calls.length, 2);
   assert(!calls.includes('/api/maps/tomtom/route'));
 });
+
+test('a stop routes each leg in order and preserves guidance and travel time', async () => {
+  const stop = {lat: 48.425, lng: -123.355, name: 'Coffee'}, calls = [];
+  const service = routing.create({fetch: async url => {
+    calls.push(url);
+    const ends = new URL(url).pathname.split('/').at(-1).split(';').map(pair => pair.split(',').map(Number));
+    return ok({code: 'Ok', routes: [{geometry: {type: 'LineString', coordinates: ends}, distance: 1000, duration: 120,
+      legs: [{steps: [{distance: 1000, maneuver: {type: 'depart', location: ends[0]}}, {distance: 0, maneuver: {type: 'arrive', location: ends[1]}}]}]}]});
+  }, storage: storage(false)});
+  const route = await service.request(from, to, 'walking', {via: [stop]});
+  assert.equal(calls.length, 2);
+  assert(calls[0].includes('-123.360000,48.420000;-123.355000,48.425000'));
+  assert(calls[1].includes('-123.355000,48.425000;-123.350000,48.430000'));
+  assert.equal(route.points.length, 3); assert.equal(route.duration, 240); assert.equal(route.distance, 2000);
+  assert.equal(route.stops[0].at, route.cumulative[1]);
+  assert.equal(route.timings.at(-1), 240); assert.equal(route.steps[1].type, 'stop');
+  assert.match(route.steps[1].text, /Coffee/); assert.equal(route.steps.at(-1).type, 'arrive');
+  assert.equal(core.progress(route, stop).arrived, false); assert.equal(core.progress(route, to).arrived, true);
+  assert.equal(new URL(core.links(from, to, 'walking', [stop]).google).searchParams.get('waypoints'), '48.425000,-123.355000');
+});
+
+test('removing a stop aborts the remaining legs without publishing a partial route', async () => {
+  const abort = new AbortController(), stop = {lat: 48.425, lng: -123.355}; let calls = 0;
+  const service = routing.create({storage: storage(false), fetch: async () => {calls++; abort.abort(); return ok(osrm());}});
+  await assert.rejects(service.request(from, to, 'driving', {via: [stop], signal: abort.signal}), {name: 'AbortError'});
+  assert.equal(calls, 1);
+});

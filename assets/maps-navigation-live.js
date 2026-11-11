@@ -5,7 +5,11 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   let running = false, session = 0, watch = null, timer, route, mode, destination, lastFix = 0;
   let previous = null, marker, halo, follow = true, voice = false, spoken = '', controller, lastReroute = 0, offSince = 0, firstFix = true, ended = false;
   let trafficChangePending = false, lastTrafficAttempt = 0, updatingTraffic = false;
-  let lastStationary = false;
+  let lastStationary = false, pendingStops = [];
+  function updateStops(point, progress) {
+    pendingStops = pendingStops.filter(stop => !(progress.along >= stop.at - 20 &&
+      (core.meters(point, stop) <= (mode === 'walking' ? 25 : 40) || progress.along > stop.at + 50)));
+  }
   let ownsFullscreen = false;
   function enterFullscreen() {
     document.body?.classList.add('navigation-fullscreen');
@@ -107,7 +111,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
       if (Date.now() - offSince >= 3000 && !controller) reroute(point);
       return;
     }
-    offSince = 0; previous = result;
+    offSince = 0; previous = result; updateStops(point, result);
     if (threeD?.active) threeD.guidance(result);
     $('navigation-distance').textContent = result.arrived ? 'Arrived' : `In ${core.distance(result.turnDistance)}`;
     $('navigation-instruction').textContent = result.arrived ? 'You have arrived' : result.next?.text || 'Continue to your destination';
@@ -131,12 +135,12 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     const current = new AbortController(); controller = current;
     updatingTraffic = trafficRefresh;
     if (trafficRefresh) trafficUI();
-    const timeout = setTimeout(() => current.abort(), 15000);
+    const timeout = setTimeout(() => current.abort(), pendingStops.length ? 30000 : 15000);
     liveStatus(trafficRefresh ? 'Updating your route for traffic…' : 'Recalculating from your location…');
     try {
-      const updated = await routing.request(point, destination, mode, { signal: current.signal });
+      const updated = await routing.request(point, destination, mode, { signal: current.signal, via: pendingStops.map(stop => ({lat: stop.lat, lng: stop.lng, name: stop.name, detail: stop.detail})) });
       if (!running || token !== session || controller !== current) return;
-      route = updated; previous = null; offSince = 0; spoken = ''; trafficChangePending = false; updatingTraffic = false;
+      route = updated; pendingStops = (route.stops || []).map(stop => ({...stop})); previous = null; offSince = 0; spoken = ''; trafficChangePending = false; updatingTraffic = false;
       if (threeD?.active) threeD.setRoute(route);
       onRoute(route, point, destination, false);
       trafficUI();
@@ -188,6 +192,8 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
       location.y -= Math.min(height / 2, size.y / 4);
       map.setView(map.unproject(location, mode === 'walking' ? 17 : 16), mode === 'walking' ? 17 : 16, { animate: false });
     }
+    const stopProgress = core.progress(route, point, previous, mode);
+    if (stopProgress && stopProgress.away <= (mode === 'walking' ? 40 : 65)) updateStops(point, stopProgress);
     if (trafficChangePending && !controller) { firstFix = false; reroute(point, true, true); return; }
     if (firstFix) {
       firstFix = false;
@@ -199,7 +205,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   }
   function start(nextRoute, nextMode, to, {threeD: start3D = false} = {}) {
     if (!navigator.geolocation?.watchPosition) { onStop('Live location is unavailable in this browser. You can still use the route steps.'); return; }
-    cleanup(); route = nextRoute; mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; lastStationary = false; spoken = ''; lastTrafficAttempt = Date.now();
+    cleanup(); route = nextRoute; pendingStops = (route.stops || []).map(stop => ({...stop})); mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; lastStationary = false; spoken = ''; lastTrafficAttempt = Date.now();
     running = true; const token = session; setFollow(true); card.hidden = false;
     stage.classList.add('navigating'); $('navigation-stop').textContent = 'Stop';
     enterFullscreen();

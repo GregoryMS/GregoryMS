@@ -146,3 +146,19 @@ test('saved shortcut GPS denial offers recovery without routing from an old star
  assert.equal(h.pending.length,0);assert.equal(h.el('directions-route').disabled,true);
  assert.match(h.el('directions-status').textContent,/Allow location access/);
 });
+
+test('add and remove stop controls require a selected stop and preserve route endpoints', async () => {
+  const h = harness(); await endpoints(h);
+  assert.equal(h.el('directions-stop-row').hidden, true);
+  await h.el('directions-add-stop').click();
+  assert.equal(h.el('directions-stop-row').hidden, false); assert.equal(h.el('directions-route').disabled, true);
+  h.api.choosePoint('stop', {...a, lat: 48.44, name: 'Coffee'});
+  assert.equal(h.el('directions-route').disabled, false);
+  assert.match(new URL(h.el('directions-google').href).searchParams.get('waypoints'), /48.440000/);
+  assert.equal(h.el('directions-apple').hidden, true);
+  await h.el('directions-remove-stop').click();
+  assert.equal(h.el('directions-stop-row').hidden, true); assert.equal(h.el('directions-stop').value, '');
+  assert.equal(h.el('directions-route').disabled, false); assert.equal(h.el('directions-apple').hidden, false);
+  assert.equal(new URL(h.el('directions-google').href).searchParams.has('waypoints'), false);
+  assert.equal(h.el('directions-to').value, b.name);
+});

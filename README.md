@@ -797,6 +797,17 @@ and [guidance](https://docs.tomtom.com/routing-api/documentation/tomtom-orbis-ma
 
 Run `node --test tests/maps-navigation*.test.cjs tests/maps-routing.test.cjs tests/maps-tomtom-worker.test.cjs` for routing providers, credential defaults, quota fallback, traffic timing, mode-specific routing, progress and arrival, handoff URLs, request cancellation, GPS lifecycle, weak and stale fixes, rerouting and cleanup checks.
 
+### Optional navigation stop
+
+In Directions, **＋ Add stop** sits between Starting point and Destination.
+It expands one searchable stop with a small remove icon. Driving and walking
+routes visit the stop before the destination; the map marks it as 1 and totals
+include both legs. Live rerouting, traffic refresh and 3D keep unvisited stops
+and drop reached stops. Google Maps handoff includes the stop; Apple handoff is
+hidden for these routes. Transit uses the two endpoints and keeps the optional
+stop for switching back to driving or walking. Saved Home/Work shortcuts start
+a fresh direct route. Stops are not persisted.
+
 ## Calculator
 
 `calc.html` is served at `https://calc.gregle.uk/` and appears in the shared app launcher and Tools & Links. It uses a bounded expression parser (no evaluated JavaScript), standard operator precedence, brackets, relative addition/subtraction percentages, scientific functions and degree/radian angle modes. History keeps the last 50 calculations in `gregle-calc-history` in this browser; storage restrictions do not prevent calculations. Ans restores the last saved answer when available and is then updated by each successful calculation. Display values use 14 significant digits.

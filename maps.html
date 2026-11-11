@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261111-search-shortcuts">
+  <link rel="stylesheet" href="assets/maps.css?v=20261111-navigation-stop">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -55,13 +55,13 @@
   <script src="assets/maps-transit.js?v=20261109-transit-route" defer></script>
   <script src="assets/maps-layers.js?v=20261110-car-navigation" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
-  <script src="assets/maps-navigation-core.js?v=20261109-transit-guidance" defer></script>
-  <script src="assets/maps-routing.js?v=20261109-navigation-3d" defer></script>
+  <script src="assets/maps-navigation-core.js?v=20261111-navigation-stop" defer></script>
+  <script src="assets/maps-routing.js?v=20261111-navigation-stop" defer></script>
   <script src="assets/maps-navigation-3d.js?v=20261110-car-navigation" defer></script>
-  <script src="assets/maps-navigation-live.js?v=20261110-car-navigation" defer></script>
+  <script src="assets/maps-navigation-live.js?v=20261111-navigation-stop" defer></script>
   <script src="assets/maps-transit-journey-core.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
-  <script src="assets/maps-navigation.js?v=20261110-saved-places" defer></script>
+  <script src="assets/maps-navigation.js?v=20261111-navigation-stop" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261110-car-navigation" defer></script>
   <script src="assets/maps-context-menu.js?v=20261108-share-location" defer></script>
@@ -153,6 +153,11 @@
       <form id="directions-search-form">
         <label for="directions-from">Starting point</label>
         <div class="directions-field"><input id="directions-from" type="search" autocomplete="off" maxlength="180" placeholder="My location" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button type="button" id="directions-location" title="Use my location" aria-label="Use my location"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false" style="vertical-align:middle"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button></div>
+        <button class="directions-add-stop" id="directions-add-stop" type="button" aria-expanded="false" aria-controls="directions-stop-row"><span aria-hidden="true">＋</span> Add stop</button>
+        <div id="directions-stop-row" hidden>
+          <label for="directions-stop">Stop</label>
+          <div class="directions-field"><input id="directions-stop" type="search" autocomplete="off" maxlength="180" placeholder="Search a stop" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button id="directions-remove-stop" type="button" aria-label="Remove stop" title="Remove stop">×</button></div>
+        </div>
         <label for="directions-to">Destination</label>
         <div class="directions-field"><input id="directions-to" type="search" autocomplete="off" maxlength="180" placeholder="Search a destination" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button type="button" id="directions-swap" aria-label="Swap start and destination">⇅</button></div>
         <button type="submit" id="directions-search">Find places</button>
