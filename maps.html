@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261110-saved-places">
+  <link rel="stylesheet" href="assets/maps.css?v=20261110-shortcuts-menu">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -65,7 +65,7 @@
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261110-car-navigation" defer></script>
   <script src="assets/maps-context-menu.js?v=20261108-share-location" defer></script>
-  <script src="assets/maps-saved-places.js?v=20261110-saved-places" defer></script>
+  <script src="assets/maps-saved-places.js?v=20261110-shortcuts-menu" defer></script>
   <script src="assets/maps.js?v=20261110-saved-places" defer></script>
   <script src="assets/maps-gps-test.js?v=20261110-car-mode" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
@@ -178,16 +178,19 @@
       <div class="navigation-controls"><button id="navigation-3d" type="button" aria-pressed="false">3D mode</button><button id="navigation-follow" type="button" aria-pressed="true">Following</button><button id="navigation-voice" type="button" aria-pressed="false">Voice off</button><button id="navigation-stop" type="button">Stop</button></div>
     </section>
     <div class="map-actions" role="group" aria-label="Map tools">
-      <button class="map-icon-button" id="map-home" type="button" aria-label="Set home location" title="Set home location" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8"/></svg></button>
-      <button class="map-icon-button" id="map-work" type="button" aria-label="Set work location" title="Set work location" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12l9 3 9-3M12 12v5"/></svg></button>
-      <button class="map-icon-button" id="map-saved-edit" type="button" aria-label="Edit home and work locations" title="Edit home and work locations" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14v6Z"/></svg></button>
+      <button class="map-icon-button" id="map-shortcuts-toggle" type="button" aria-label="Saved places and sharing" title="Saved places and sharing" aria-expanded="false" aria-controls="map-shortcuts-menu" disabled><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
       <button class="map-icon-button" id="map-directions-toggle" type="button" aria-label="Directions" aria-expanded="false" aria-controls="map-directions" title="Directions" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/></svg></button>
       <button class="map-icon-button" id="map-base-toggle" type="button" aria-label="Base map" aria-expanded="false" aria-controls="map-base-panel" title="Base map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/></svg></button>
       <button class="map-icon-button" id="map-layers-toggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="map-layers-panel" title="Map layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
       <button class="map-icon-button" id="map-locate" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button>
-      <button class="map-icon-button" id="map-share" type="button" aria-label="Copy map link" title="Copy map link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 1)"/></svg></button>
       <button class="map-icon-button" id="map-fullscreen" type="button" aria-label="Enter full screen" title="Full screen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/></svg></button>
       <button class="map-icon-button" id="vessels-legend-toggle" type="button" aria-label="Vessel type key" aria-expanded="false" aria-controls="vessels-legend" title="Vessel type key" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="5" height="4" rx="1" fill="#27934b" stroke="none"/><rect x="3" y="10" width="5" height="4" rx="1" fill="#d94141" stroke="none"/><rect x="3" y="16" width="5" height="4" rx="1" fill="#2d6cdf" stroke="none"/><path d="M12 6h9M12 12h9M12 18h9"/></svg></button>
+    </div>
+    <div id="map-shortcuts-menu" class="map-shortcuts-menu map-glass" role="group" aria-label="Saved places and sharing" hidden>
+      <button class="map-shortcut-item" id="map-home" type="button" aria-label="Set home location" title="Set home location" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8"/></svg><span>Home</span></button>
+      <button class="map-shortcut-item" id="map-work" type="button" aria-label="Set work location" title="Set work location" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12l9 3 9-3M12 12v5"/></svg><span>Work</span></button>
+      <button class="map-shortcut-item" id="map-saved-edit" type="button" aria-label="Edit home and work locations" title="Edit home and work locations" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14v6Z"/></svg><span>Edit locations</span></button>
+      <button class="map-shortcut-item" id="map-share" type="button" aria-label="Copy map link" title="Copy map link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 1)"/></svg><span>Copy map link</span></button>
     </div>
     <section class="vessels-legend map-glass" id="vessels-legend" aria-labelledby="vessels-legend-heading" hidden>
       <div class="layers-heading"><h2 id="vessels-legend-heading">Vessel types</h2><button class="map-dismiss" id="close-vessels-legend" type="button" aria-label="Close vessel type key">×</button></div>
@@ -347,7 +350,7 @@
     <a class="map-report" href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue ↗</a>
     <dialog id="saved-place-dialog" class="saved-place-dialog" aria-labelledby="saved-place-heading" aria-describedby="saved-place-help">
       <div class="layers-heading"><h2 id="saved-place-heading">Home &amp; Work</h2><button id="saved-place-close" class="map-dismiss" type="button" aria-label="Close saved locations" autofocus>×</button></div>
-      <p id="saved-place-help">Saved only in this browser. Tap the house or briefcase on the map to navigate from your current location.</p>
+      <p id="saved-place-help">Saved only in this browser. Open the map’s three-dot menu and tap the house or briefcase to navigate from your current location.</p>
       <div class="saved-place-tabs" role="group" aria-label="Location to edit"><button id="saved-place-home" type="button" aria-pressed="true">Home</button><button id="saved-place-work" type="button" aria-pressed="false">Work</button></div>
       <p id="saved-place-current"></p>
       <form id="saved-place-search-form" role="search"><label for="saved-place-query">Find an address or place</label><div class="saved-place-search"><input id="saved-place-query" type="search" autocomplete="off" minlength="2" maxlength="180" required><button type="submit">Search</button></div></form>

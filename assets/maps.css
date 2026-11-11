@@ -858,7 +858,7 @@
 }
 
 /* Home and Work keep accessible names while toolbar buttons stay icon-only. */
-.map-icon-button[data-saved="true"] { color: var(--map-accent); }
+:is(.map-icon-button, .map-shortcut-item)[data-saved="true"] { color: var(--map-accent); }
 .saved-place-dialog { box-sizing: border-box; width: min(480px, calc(100% - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; padding: 20px; border: 1px solid var(--map-border); border-radius: 20px; background: var(--map-surface); color: var(--text); box-shadow: 0 16px 64px #0004; font-size: 14px; }
 .saved-place-dialog::backdrop { background: #0007; }
 .saved-place-dialog h2 { margin: 0; font-size: 20px; }
@@ -877,3 +877,22 @@
 #saved-place-status { min-height: 24px; color: var(--map-accent); }
 .saved-place-credit, #saved-place-help { color: var(--muted); font-size: 12px; }
 .vehicle-layout .saved-place-dialog :is(button, input) { min-height: 48px; font-size: 16px; }
+
+/* Saved places and sharing share one toolbar control. */
+.map-shortcuts-menu { position: absolute; z-index: 750; box-sizing: border-box; width: 230px; max-width: calc(100% - 16px); max-height: calc(100% - 16px); overflow-y: auto; padding: 6px; border-radius: 16px; background: var(--map-surface); box-shadow: 0 8px 28px #0003; }
+.map-shortcuts-menu[hidden] { display: none !important; }
+.map-shortcut-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 46px; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; touch-action: manipulation; }
+.map-shortcut-item svg { flex: 0 0 22px; width: 22px; height: 22px; }
+.map-shortcut-item:hover, .map-shortcut-item:focus-visible { background: var(--map-accent-soft); color: var(--map-accent); }
+.map-shortcut-item:focus-visible { outline: 2px solid var(--map-accent); outline-offset: -2px; }
+.map-shortcut-item:disabled { opacity: .5; cursor: default; }
+:is(.navigating, .embedded-active) .map-shortcuts-menu { display: none !important; }
+.vehicle-layout .map-shortcuts-menu { display: grid; grid-template-columns: repeat(2, 56px); gap: 6px; width: max-content; padding: 8px; }
+.vehicle-layout .map-shortcut-item { justify-content: center; width: 56px; height: 56px; padding: 14px; }
+.vehicle-layout .map-shortcut-item svg { flex-basis: 26px; width: 26px; height: 26px; }
+.vehicle-layout .map-shortcut-item span { display: none; }
+@media (max-width: 700px) {
+  .map-shortcuts-menu { display: grid; grid-template-columns: repeat(2, 48px); gap: 6px; width: max-content; padding: 8px; }
+  .map-shortcut-item { justify-content: center; width: 48px; height: 48px; padding: 12px; }
+  .map-shortcut-item span { display: none; }
+}

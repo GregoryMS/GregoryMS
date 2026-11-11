@@ -7,16 +7,18 @@ const home = {lat:48.42,lng:-123.36,name:'Home address',detail:'Victoria'};
 const work = {lat:48.45,lng:-123.38,name:'Work address',detail:'Victoria'};
 function harness(storage = new Map(), blocked = false) {
   class Element {
-    constructor() { this.events={};this.attrs={};this.dataset={};this.children=[];this.value='';this.open=false; }
+    constructor() { this.events={};this.attrs={};this.dataset={};this.children=[];this.value='';this.open=false;this.style={};this.parentElement={addEventListener(){},getBoundingClientRect:()=>({left:0,top:0,width:800,height:600})}; }
     addEventListener(name, fn) { (this.events[name] ??= []).push(fn); }
     setAttribute(k,v) { this.attrs[k]=v; } removeAttribute(k) { delete this.attrs[k]; }
     replaceChildren(...children) { this.children=children; } append(...children) { this.children.push(...children); }
+    getBoundingClientRect() { return {left:10,top:10,bottom:56}; }
     focus() {} showModal() { this.open=true; } close() { this.open=false;this.click('close'); }
     click(name='click') { for (const fn of this.events[name] || []) fn({preventDefault(){}}); }
   }
   const els=new Map(), el=id=>{ if(!els.has(id))els.set(id,new Element());return els.get(id); };
+  el('map-shortcuts-menu').hidden=true;
   const routes=[], notices=[];
-  const context={window:{GregleMaps:core,addEventListener(){}}, document:{getElementById:el,createElement:()=>new Element()},
+  const context={window:{GregleMaps:core,addEventListener(){}}, document:{getElementById:el,createElement:()=>new Element(),addEventListener(){}},
     localStorage:{getItem:k=>storage.get(k)||null,setItem(k,v){if(blocked)throw Error('Storage blocked');storage.set(k,v);}},
     navigator:{},AbortController,URL,setTimeout,clearTimeout,Date};
   vm.runInNewContext(source,context);
@@ -26,7 +28,8 @@ function harness(storage = new Map(), blocked = false) {
 test('saved locations load after reopening and pin edits preserve the other shortcut',()=>{
   const storage=new Map([[key,JSON.stringify({home})]]), h=harness(storage);
   assert.match(h.el('map-home').attrs['aria-label'],/Navigate to Home/);
-  h.el('map-home').click();assert.equal(h.routes[0].lat,home.lat);
+  h.el('map-shortcuts-toggle').click();assert.equal(h.el('map-shortcuts-menu').hidden,false);
+  h.el('map-home').click();assert.equal(h.routes[0].lat,home.lat);assert.equal(h.el('map-shortcuts-menu').hidden,true);
   h.el('map-work').click();assert(h.el('saved-place-dialog').open);
   h.el('saved-place-pin').click();h.el('saved-place-save').click();
   assert.deepEqual(JSON.parse(storage.get(key)),{home,work});
