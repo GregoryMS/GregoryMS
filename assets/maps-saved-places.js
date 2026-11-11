@@ -5,17 +5,44 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
   const dialog = $('saved-place-dialog'), query = $('saved-place-query');
   const search = document.querySelector('.map-search'), mapQuery = $('map-query');
   const shortcuts = $('map-saved-places');
-  // iOS can blur the search with relatedTarget=null before a shortcut's click.
-  // Keep focus through the press so the row stays present until activation.
+  const shortcutActions = new Map();
+  let shortcutPress = null, suppressPointerClickUntil = 0;
+  const shortcutButton = event => event.target?.closest?.('.map-saved-shortcut');
   shortcuts.addEventListener('pointerdown', event => {
-    if (event.button === 0) event.preventDefault();
+    const button = shortcutButton(event);
+    if (event.button !== 0 || !button || button.disabled) return;
+    shortcutPress = {button, id: event.pointerId, x: event.clientX, y: event.clientY};
+    // Keep the row alive when Safari blurs the input without a related target.
+    event.preventDefault();
+    button.setPointerCapture?.(event.pointerId);
+  });
+  shortcuts.addEventListener('pointerup', event => {
+    const press = shortcutPress;
+    if (!press || press.id !== event.pointerId) return;
+    shortcutPress = null;
+    const bounds = press.button.getBoundingClientRect();
+    const inside = event.clientX >= bounds.left && event.clientX <= bounds.right && event.clientY >= bounds.top && event.clientY <= bounds.bottom;
+    const tapped = Math.hypot(event.clientX - press.x, event.clientY - press.y) <= 12;
+    if (!inside || !tapped) { syncShortcuts(); return; }
+    event.preventDefault();
+    // Activate while the button is still present, before any delayed native click.
+    suppressPointerClickUntil = Date.now() + 800;
+    shortcutActions.get(press.button)?.();
+  });
+  shortcuts.addEventListener('pointercancel', () => { shortcutPress = null; syncShortcuts(); });
+  shortcuts.addEventListener('click', event => {
+    const button = shortcutButton(event);
+    if (!button || button.disabled) return;
+    if (event.detail > 0 && Date.now() < suppressPointerClickUntil) { event.preventDefault(); return; }
+    // Keyboard and assistive-technology activation use click without a pointer.
+    shortcutActions.get(button)?.();
   });
   function syncShortcuts() {
     shortcuts.hidden = mapQuery.value.length > 0 || !search.contains(document.activeElement);
   }
   search.addEventListener('focusin', syncShortcuts);
   search.addEventListener('focusout', event => {
-    if (!search.contains(event.relatedTarget)) shortcuts.hidden = true;
+    if (!shortcutPress && !search.contains(event.relatedTarget)) shortcuts.hidden = true;
   });
   mapQuery.addEventListener('input', syncShortcuts);
   mapQuery.addEventListener('click', syncShortcuts);
@@ -23,7 +50,7 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
     if (event.key === 'Escape') shortcuts.hidden = true;
   });
   document.addEventListener('pointerdown', event => {
-    if (!search.contains(event.target)) shortcuts.hidden = true;
+    if (!search.contains(event.target)) { shortcutPress = null; shortcuts.hidden = true; }
   });
 
   let saved, kind = 'home', candidate = null, generation = 0, controller, nextSearch = 0;
@@ -82,7 +109,7 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
     notify(point ? `${title(kind)} saved in this browser.` : `${title(kind)} removed from this browser.`);
   }
   for (const name of kinds) {
-    $('map-' + name).addEventListener('click', () => {
+    shortcutActions.set($('map-' + name), () => {
       saved = read(); sync();
       shortcuts.hidden = true;
       if (!saved[name] || !navigation?.navigateSaved) return edit(name);
@@ -90,7 +117,7 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
     });
     $('saved-place-' + name).addEventListener('click', () => edit(name));
   }
-  $('map-saved-edit').addEventListener('click', () => { saved = read(); edit('home'); });
+  shortcutActions.set($('map-saved-edit'), () => { saved = read(); shortcuts.hidden = true; edit('home'); });
   $('saved-place-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', cancel);
   dialog.addEventListener('cancel', cancel);

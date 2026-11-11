@@ -11,11 +11,15 @@ function harness(storage = new Map(), blocked = false, navigationAvailable = tru
     addEventListener(name, fn) { (this.events[name] ??= []).push(fn); }
     setAttribute(k,v) { this.attrs[k]=v; } removeAttribute(k) { delete this.attrs[k]; }
     replaceChildren(...children) { this.children=children; } append(...children) { this.children.push(...children); }
-    getBoundingClientRect() { return {left:10,top:10,bottom:56}; }
+    getBoundingClientRect() { return {left:10,right:150,top:10,bottom:56}; }
+    contains(node) { return node === this || this.children.some(child => child.contains(node)); }
+    closest() { return ['map-home','map-work','map-saved-edit'].includes(this.id) ? this : null; }
     focus() {} showModal() { this.open=true; } close() { this.open=false;this.click('close'); }
-    click(name='click', event={}) { for (const fn of this.events[name] || []) fn({preventDefault(){},...event}); }
+    click(name='click', event={}) { const e={target:this,button:0,pointerId:1,clientX:20,clientY:20,detail:0,preventDefault(){},...event}; for (const fn of this.events[name] || []) fn(e); if(this.parentElement instanceof Element)this.parentElement.click(name,e); }
   }
-  const els=new Map(), el=id=>{ if(!els.has(id))els.set(id,new Element());return els.get(id); };
+  const els=new Map(), el=id=>{ if(!els.has(id)){const node=new Element();node.id=id;els.set(id,node);}return els.get(id); };
+  for(const id of ['map-query','map-saved-places']){el('search').append(el(id));el(id).parentElement=el('search');}
+  for(const id of ['map-home','map-work','map-saved-edit']){el('map-saved-places').append(el(id));el(id).parentElement=el('map-saved-places');}
   el('map-saved-places').hidden=true;
   const routes=[], notices=[];
   const context={window:{GregleMaps:core,addEventListener(){}}, document:{getElementById:el,querySelector:()=>el('search'),createElement:()=>new Element(),addEventListener(){}},
@@ -46,10 +50,11 @@ test('invalid stored coordinates and unavailable browser storage do not claim su
 test('mobile shortcut presses keep the search focused until their click activates',()=>{
   const h=harness(); let prevented=false;
   h.el('map-saved-places').hidden=false;
-  h.el('map-saved-places').click('pointerdown',{button:0,preventDefault(){prevented=true;}});
+  h.el('map-work').click('pointerdown',{preventDefault(){prevented=true;}});
+  h.el('search').click('focusout',{relatedTarget:null});
   assert.equal(prevented,true);
   assert.equal(h.el('map-saved-places').hidden,false);
-  h.el('map-work').click();
+  h.el('map-work').click('pointerup');
   assert.equal(h.el('map-saved-places').hidden,true);
   assert.equal(h.el('saved-place-dialog').open,true);
   assert.equal(h.el('saved-place-work').attrs['aria-pressed'],'true');
@@ -66,4 +71,15 @@ test('unset Home and Work each open their own editor even if navigation is unava
     assert.equal(h.el('saved-place-current').textContent,kind==='home'?'Home is not set.':'Work is not set.');
     h.el('saved-place-close').click();
   }
+});
+
+test('a pointer tap navigates once and keyboard activation still works',()=>{
+  const h=harness(new Map([[key,JSON.stringify({home})]]));
+  h.el('map-home').click('pointerdown');h.el('map-home').click('pointerup');
+  h.el('map-home').click('click',{detail:1});
+  assert.equal(h.routes.length,1);
+  h.el('map-home').click('click',{detail:0});
+  assert.equal(h.routes.length,2);
+  h.el('map-work').click('pointerdown');h.el('map-work').click('pointercancel');
+  assert.equal(h.el('saved-place-dialog').open,false);
 });
