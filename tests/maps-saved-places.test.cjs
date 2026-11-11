@@ -16,9 +16,9 @@ function harness(storage = new Map(), blocked = false) {
     click(name='click') { for (const fn of this.events[name] || []) fn({preventDefault(){}}); }
   }
   const els=new Map(), el=id=>{ if(!els.has(id))els.set(id,new Element());return els.get(id); };
-  el('map-shortcuts-menu').hidden=true;
+  el('map-saved-places').hidden=true;
   const routes=[], notices=[];
-  const context={window:{GregleMaps:core,addEventListener(){}}, document:{getElementById:el,createElement:()=>new Element(),addEventListener(){}},
+  const context={window:{GregleMaps:core,addEventListener(){}}, document:{getElementById:el,querySelector:()=>el('search'),createElement:()=>new Element(),addEventListener(){}},
     localStorage:{getItem:k=>storage.get(k)||null,setItem(k,v){if(blocked)throw Error('Storage blocked');storage.set(k,v);}},
     navigator:{},AbortController,URL,setTimeout,clearTimeout,Date};
   vm.runInNewContext(source,context);
@@ -28,8 +28,7 @@ function harness(storage = new Map(), blocked = false) {
 test('saved locations load after reopening and pin edits preserve the other shortcut',()=>{
   const storage=new Map([[key,JSON.stringify({home})]]), h=harness(storage);
   assert.match(h.el('map-home').attrs['aria-label'],/Navigate to Home/);
-  h.el('map-shortcuts-toggle').click();assert.equal(h.el('map-shortcuts-menu').hidden,false);
-  h.el('map-home').click();assert.equal(h.routes[0].lat,home.lat);assert.equal(h.el('map-shortcuts-menu').hidden,true);
+  h.el('map-home').click();assert.equal(h.routes[0].lat,home.lat);
   h.el('map-work').click();assert(h.el('saved-place-dialog').open);
   h.el('saved-place-pin').click();h.el('saved-place-save').click();
   assert.deepEqual(JSON.parse(storage.get(key)),{home,work});

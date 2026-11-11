@@ -3,48 +3,23 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
   const $ = id => document.getElementById(id), core = window.GregleMaps;
   const key = 'gregle-maps-saved-places-v1', kinds = ['home', 'work'];
   const dialog = $('saved-place-dialog'), query = $('saved-place-query');
-  const menu = $('map-shortcuts-menu'), menuToggle = $('map-shortcuts-toggle');
-  const menuItems = ['map-home', 'map-work', 'map-saved-edit', 'map-share'].map($);
-  function closeMenu(restoreFocus = false) {
-    if (menu.hidden) return;
-    menu.hidden = true; menuToggle.setAttribute('aria-expanded', 'false');
-    if (restoreFocus) menuToggle.focus({ preventScroll: true });
+  const search = document.querySelector('.map-search'), mapQuery = $('map-query');
+  const shortcuts = $('map-saved-places');
+  function syncShortcuts() {
+    shortcuts.hidden = mapQuery.value.length > 0 || !search.contains(document.activeElement);
   }
-  menuToggle.disabled = false;
-  menuToggle.addEventListener('click', () => {
-    if (!menu.hidden) return closeMenu();
-    menu.hidden = false; menuToggle.setAttribute('aria-expanded', 'true');
-    // Keep the popup outside the scrolling toolbar and within the map viewport.
-    const stage = menu.parentElement.getBoundingClientRect(), anchor = menuToggle.getBoundingClientRect();
-    const width = menu.offsetWidth, height = menu.offsetHeight;
-    const left = Math.max(8, Math.min(anchor.left - stage.left, stage.width - width - 8));
-    const below = anchor.bottom - stage.top + 8;
-    const top = below + height <= stage.height - 8 ? below : Math.max(8, anchor.top - stage.top - height - 8);
-    menu.style.left = left + 'px'; menu.style.top = top + 'px';
-    menuItems[0].focus({ preventScroll: true });
+  search.addEventListener('focusin', syncShortcuts);
+  search.addEventListener('focusout', event => {
+    if (!search.contains(event.relatedTarget)) shortcuts.hidden = true;
   });
-  for (const item of menuItems) item.addEventListener('click', () => closeMenu());
-  document.addEventListener('click', event => {
-    if (!menu.contains(event.target) && !menuToggle.contains(event.target)) closeMenu();
+  mapQuery.addEventListener('input', syncShortcuts);
+  mapQuery.addEventListener('click', syncShortcuts);
+  mapQuery.addEventListener('keydown', event => {
+    if (event.key === 'Escape') shortcuts.hidden = true;
   });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !menu.hidden) { event.preventDefault(); closeMenu(true); }
+  document.addEventListener('pointerdown', event => {
+    if (!search.contains(event.target)) shortcuts.hidden = true;
   });
-  menu.addEventListener('keydown', event => {
-    const index = menuItems.indexOf(document.activeElement);
-    let next;
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') next = (index + 1) % menuItems.length;
-    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') next = (index + menuItems.length - 1) % menuItems.length;
-    if (event.key === 'Home') next = 0;
-    if (event.key === 'End') next = menuItems.length - 1;
-    if (next !== undefined) { event.preventDefault(); menuItems[next].focus(); }
-  });
-  document.addEventListener('focusin', event => {
-    if (!menu.hidden && !menu.contains(event.target) && !menuToggle.contains(event.target)) closeMenu();
-  });
-  window.addEventListener('resize', () => closeMenu());
-  menuToggle.parentElement.addEventListener('scroll', () => closeMenu());
-  map.on?.('movestart', () => closeMenu());
 
   let saved, kind = 'home', candidate = null, generation = 0, controller, nextSearch = 0;
   const title = value => value === 'home' ? 'Home' : 'Work';
@@ -73,6 +48,7 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
       const label = point ? `Navigate to ${title(name)}: ${describe(point)}` : `Set ${name} location`;
       button.setAttribute('aria-label', label); button.title = label;
       button.dataset.saved = String(!!point); button.disabled = !navigation;
+      $('map-' + name + '-address').textContent = point ? describe(point) : 'Set location';
     }
     $('map-saved-edit').disabled = false;
   }

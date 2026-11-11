@@ -151,7 +151,7 @@
       if (!document.body.classList.contains('vehicle-layout')) { $('map-link-input').focus(); $('map-link-input').select(); }
     }
   }
-  const controls = [$('map-locate'), $('map-share'), $('map-query'), $('map-base-toggle'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
+  const controls = [$('map-locate'), $('map-query'), $('map-base-toggle'), $('map-layers-toggle'), document.querySelector('.map-search-submit')];
   controls.forEach(control => { control.disabled = true; });
   if (!window.L || !core || !window.GregleFuel || !window.GregleFuelCore || !window.GregleMapLayers || !window.GregleMapEmbed || !window.GregleAircraft || !window.GregleAircraftCore || !window.GregleVessels || !window.GregleVesselsCore || !window.GregleDriveBC || !window.GregleDriveBCCameras || !window.GregleCamerasCore || !window.GregleDriveBCSigns || !window.GregleSignsCore || !window.GregleDriveBCFerries || !window.GregleFerriesCore || !window.GregleEVCore || !window.GregleEVCharging || !window.GregleStreetView || !window.GregleGoogleTraffic || !window.GregleAviation || !window.GreglePlaceData || !window.GregleMapPlaces || !window.GregleMapPinGestures) {
     notify('The map could not load. Use the OpenStreetMap link above to keep exploring.', 'map', true);
@@ -312,8 +312,8 @@
       notify(error.code === 1 ? 'Location access was declined. Search for a place instead.' : 'Your location could not be found. Try again or search for a place.');
     }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 });
   });
-  $('map-share').addEventListener('click', share); $('share-pin').addEventListener('click', share);
-  $('close-map-link').addEventListener('click', () => { $('map-link-copy').hidden = true; $('map-share').focus(); });
+  $('share-pin').addEventListener('click', share);
+  $('close-map-link').addEventListener('click', () => { $('map-link-copy').hidden = true; $('map-query').focus(); });
   const stage = document.querySelector('.map-stage'), fullscreen = $('map-fullscreen');
   if (document.fullscreenEnabled && stage.requestFullscreen) {
     fullscreen.hidden = false;
