@@ -181,6 +181,7 @@
   syncMapMode(false);
   renderPin(initial.pin); syncStreetView(); updateURL();
   navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected, onOpen: () => drawer?.show('map-directions', true), onConnectTraffic: () => layerControl.connectTraffic() });
+  window.GregleSavedPlaces?.({ map, config, navigation, getSelected: () => selected, notify });
   controls.forEach(control => { control.disabled = false; });
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });

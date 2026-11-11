@@ -105,6 +105,13 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     if (points.from) return calculateRoute();
     else useLocation(true);
   }
+  function navigateSaved(point) {
+    if (!core.valid(point)) return;
+    open(); setPoint('to', point);
+    // Saved shortcuts always start at the device, even after a manually planned route.
+    points.from = null; inputs.from.value = '';
+    useLocation(true, true);
+  }
   function close() {
     invalidate('Directions paused. Show route to calculate again.');
     panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
@@ -165,7 +172,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   $('directions-clear').addEventListener('click', () => {
     points.from = points.to = null; inputs.from.value = inputs.to.value = ''; invalidate(); active = 'from'; focusField('from');
   });
-  function useLocation(routeAfter = false) {
+  function useLocation(routeAfter = false, startAfter = false) {
     invalidate();
     if (!navigator.geolocation) { status('Location is unavailable. Search for a starting point instead.'); return; }
     const token = version; locating = true; $('directions-location').disabled = true; status('Finding your starting location…');
@@ -173,9 +180,9 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       if (token !== version || !locating) return;
       const p = { lat: position.coords.latitude, lng: position.coords.longitude, name: 'My location' };
       if (!core.valid(p)) { invalidate('Your location was invalid. Search for a starting point.'); return; }
-      setPoint('from', p); active = 'to'; focusField('to');
-      if (routeAfter && points.to) calculateRoute();
-    }, () => { if (token === version) invalidate('Location could not be shared. Allow location access or search for a starting point.'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
+      setPoint('from', p); active = 'to'; if (!startAfter) focusField('to');
+      if (routeAfter && points.to) calculateRoute(false, startAfter);
+    }, () => { if (token === version) invalidate('Location could not be shared. Allow location access or search for a starting point.'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: startAfter ? 0 : 30000 });
   }
   $('directions-location').addEventListener('click', () => useLocation());
   async function searchPlaces(field=active,automatic=false) {
@@ -216,7 +223,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   });
   document.addEventListener?.('visibilitychange',()=>{if(document.hidden&&(suggestionTimer||lookupField)){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();}});
   window.addEventListener?.('pagehide',()=>{clearTimeout(suggestionTimer);controller?.abort();});
-  async function calculateRoute(refresh = false) {
+  async function calculateRoute(refresh = false, startAfter = false) {
     if (!core.valid(points.from) || !core.valid(points.to)) return;
     if (refresh) { version++; controller?.abort(); }
     else invalidate();
@@ -231,6 +238,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       if (token !== version) return;
       if(mode==='transit')showJourneys(route,from,to);else renderRoute(route, from, to, !refresh);
       status(`${mode==='transit'?'Transit journey':mode === 'walking' ? 'Walking route' : 'Driving route'} ready. Start navigation for live guidance.`);
+      if (startAfter) startNavigation();
     } catch (error) { if (token === version) status(error.name === 'AbortError' ? 'Routing timed out. Try again, or use your navigation app below.' : error.message || 'Routing is unavailable. Try again.'); }
     finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !points.from || !points.to; $('directions-start').disabled = !currentRoute || !(mode==='transit'?transitLive:live); $('directions-3d').disabled = !currentRoute || !live; } }
   }
@@ -293,5 +301,5 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     syncTraffic();
   }
   syncTraffic();
-  return { close, refreshTraffic, choosePoint, navigateTo };
+  return { close, refreshTraffic, choosePoint, navigateTo, navigateSaved };
 };

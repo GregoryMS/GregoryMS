@@ -13,11 +13,11 @@ test('provider routes validate status, geometry and numeric estimates',()=>{
  assert.equal(core.duration(3600),'1 hr');assert.equal(core.duration(3660),'1 hr 1 min');assert.equal(core.distance(4500),'4.5 km');assert.equal(core.instruction({name:'Main St',maneuver:{type:'roundabout',exit:3}}),'Enter the roundabout and take exit 3 onto Main St');
 });
 function harness({connected=false,defaultAvailable=false,liveFactory,transitCore,transitLiveFactory}={}){
- const els=new Map(),children=[],saved=new Map(connected?[['gregle-maps-tomtom-key','test-key-1234567890']]:[]);let selected=a,geoSuccess,service;
+ const els=new Map(),children=[],saved=new Map(connected?[['gregle-maps-tomtom-key','test-key-1234567890']]:[]);let selected=a,geoSuccess,geoFailure,geoOptions,service;
  class El{constructor(){this.hidden=false;this.value='';this.children=[];this.events={};this.attrs={};this.classList={add(){},remove(){}};}addEventListener(e,f){(this.events[e]??=[]).push(f);}getAttribute(k){return this.attrs[k];}setAttribute(k,v){this.attrs[k]=v;}removeAttribute(k){delete this.attrs[k];}replaceChildren(...c){this.children=c;}append(...c){this.children.push(...c);}focus(){this.focused=true;}scrollIntoView(){this.revealed=true;}async fire(e){for(const f of this.events[e]||[])await f({preventDefault(){},stopPropagation(){}});}click(){return this.fire('click');}}
  const el=id=>{if(!els.has(id))els.set(id,new El());return els.get(id);};el('map-directions').hidden=true;const pending=[];
- const ctx={window:{GregleTransitJourneyCore:transitCore,GregleTransitJourneyLive:transitLiveFactory,GregleLiveNavigation:liveFactory,GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s){geoSuccess=s;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
- vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess,context:ctx};
+ const ctx={window:{GregleTransitJourneyCore:transitCore,GregleTransitJourneyLive:transitLiveFactory,GregleLiveNavigation:liveFactory,GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s,f,o){geoSuccess=s;geoFailure=f;geoOptions=o;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess,geoFailure:()=>geoFailure,geoOptions:()=>geoOptions,context:ctx};
 }
 async function endpoints(h){await h.el('directions-from-pin').click();h.select(b);await h.el('directions-to-pin').click();}
 test('editing during a route request rejects stale geometry and links',async()=>{
@@ -125,4 +125,24 @@ test('a manually selected starting point survives opening car directions', async
  const h=harness();h.context.document.body={classList:{contains:()=>true}};
  h.api.choosePoint('from',a);h.api.close();await h.el('map-directions-toggle').click();
  assert.equal(h.el('directions-from').value,'Victoria');assert.equal(h.geo(),undefined);
+});
+
+// Saved shortcuts must never reuse a manually chosen origin or open the keyboard.
+test('saved shortcut replaces a manual start with fresh GPS and starts live guidance',async()=>{
+ let active=false, destination;
+ const h=harness({liveFactory:()=>({get active(){return active;},start(route,mode,to){active=true;destination=to;}})});
+ await endpoints(h);
+ h.el('directions-from').focused=false;h.el('directions-to').focused=false;
+ h.api.navigateSaved(b);assert.equal(h.pending.length,0);assert.equal(h.el('directions-from').value,'');assert.equal(h.geoOptions().maximumAge,0);
+ const current={lat:48.43,lng:-123.36};
+ h.geo()({coords:{latitude:current.lat,longitude:current.lng}});
+ assert.equal(h.pending.length,1);assert(h.pending[0].url.includes('-123.360000,48.430000'));
+ assert(!h.el('directions-from').focused);assert(!h.el('directions-to').focused);
+ h.pending[0].resolve({ok:true,json:async()=>data()});await new Promise(resolve=>setImmediate(resolve));
+ assert(active);assert.equal(destination.lat,b.lat);assert.equal(h.el('map-directions').hidden,true);
+});
+test('saved shortcut GPS denial offers recovery without routing from an old start',async()=>{
+ const h=harness();await endpoints(h);h.api.navigateSaved(b);h.geoFailure()({code:1});
+ assert.equal(h.pending.length,0);assert.equal(h.el('directions-route').disabled,true);
+ assert.match(h.el('directions-status').textContent,/Allow location access/);
 });
