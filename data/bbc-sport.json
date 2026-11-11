@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-10T19:41:06+00:00",
-  "fetchedAt": "2026-11-10T19:41:15.332641+00:00",
+  "feedUpdatedAt": "2026-11-11T00:21:48+00:00",
+  "fetchedAt": "2026-11-11T00:21:52.866028+00:00",
   "items": [
     {
       "title": "The Monaco summit that will decide the future of Carrick and Man Utd",
@@ -12,36 +12,36 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c5rmymrvm004o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Brilliant Noskova dismantles Gauff to reach WTA Finals last four",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/cvglwllpxddro?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "McTominay reveals heart treatment at World Cup",
       "link": "https://www.bbc.co.uk/sport/football/articles/cw5ynynx204zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Injured Feyi-Waboso is our Robinson - Sinfield",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cq9vw88v8p80o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Australia doomed to live with stench of sandpapergate",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/c6x2v277z89eo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "DeChambeau running out of options - McIlroy",
+      "link": "https://www.bbc.co.uk/sport/golf/articles/cwz0v0jmxpl0o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Formula 1 to finish season in Middle East",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/c53989e97lxwo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Arsenal eye Real's Endrick - Wednesday's gossip",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cq8jzjz9x23jo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Cast your vote for BBC Women's Footballer of the Year 2026",
       "link": "https://www.bbc.co.uk/sport/football/articles/cj20velkgnypo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Hill gets first England call-up as Konsa cover",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ckjrwrggjlryo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Jockey Neale, 22, dies after fall during race",
-      "link": "https://www.bbc.co.uk/sport/horse-racing/articles/c933x3yjk530o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Dortmund fans' group criticises Nmecha celebration",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm3696yy9z64o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "DeChambeau running out of options - McIlroy",
-      "link": "https://www.bbc.co.uk/sport/golf/articles/cwz0v0jmxpl0o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
