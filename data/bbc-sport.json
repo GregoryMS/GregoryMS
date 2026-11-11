@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-11T00:21:48+00:00",
-  "fetchedAt": "2026-11-11T00:21:52.866028+00:00",
+  "feedUpdatedAt": "2026-11-11T06:54:44+00:00",
+  "fetchedAt": "2026-11-11T06:54:51.019298+00:00",
   "items": [
     {
       "title": "The Monaco summit that will decide the future of Carrick and Man Utd",
@@ -12,12 +12,20 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c5rmymrvm004o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Does Pickford finally face serious competition for his England place?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/crvg9y27n45wo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Brilliant Noskova dismantles Gauff to reach WTA Finals last four",
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cvglwllpxddro?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "McTominay reveals heart treatment at World Cup",
       "link": "https://www.bbc.co.uk/sport/football/articles/cw5ynynx204zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Who am I? Plus today's other quizzes",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmy4x9en5k3lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Injured Feyi-Waboso is our Robinson - Sinfield",
@@ -28,16 +36,8 @@
       "link": "https://www.bbc.co.uk/sport/cricket/articles/c6x2v277z89eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "DeChambeau running out of options - McIlroy",
-      "link": "https://www.bbc.co.uk/sport/golf/articles/cwz0v0jmxpl0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Formula 1 to finish season in Middle East",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/c53989e97lxwo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Arsenal eye Real's Endrick - Wednesday's gossip",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cq8jzjz9x23jo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Cast your vote for BBC Women's Footballer of the Year 2026",
