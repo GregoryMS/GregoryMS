@@ -110,6 +110,10 @@
     }).sort((a, b) => colours[b.colour] - colours[a.colour] || b.issued - a.issued);
   }
 
+  function displayTitle(title) {
+    return title.replace(/^orange\b/i, word => word === word.toUpperCase() ? 'AMBER' : word === word.toLowerCase() ? 'amber' : 'Amber');
+  }
+
   function createController(win) {
     const doc = win.document, section = doc.getElementById('weatherAlerts');
     const list = doc.getElementById('weatherAlertList'), note = doc.getElementById('weatherAlertStatus');
@@ -129,7 +133,7 @@
     function canadianDetails(alert, dates, link) {
       const details = doc.createElement('details'), summary = doc.createElement('summary');
       const content = doc.createElement('p'), key = alert.url + '|' + alert.issued;
-      details.className = 'weather-alert-details'; summary.textContent = alert.title;
+      details.className = 'weather-alert-details'; summary.textContent = displayTitle(alert.title);
       content.textContent = 'Open to load the full Environment Canada bulletin.';
       details.append(summary, dates, content, link);
       let loading = false, loaded = false;
@@ -174,7 +178,7 @@
           details = canadianDetails(alert, dates, link);
         } else {
           details = doc.createElement('details'); details.className = 'weather-alert-details';
-          const summary = doc.createElement('summary'); summary.textContent = alert.title;
+          const summary = doc.createElement('summary'); summary.textContent = displayTitle(alert.title);
           details.append(summary, dates);
           for (const [label, text] of alert.details || []) {
             const heading = doc.createElement('h4'), content = doc.createElement('p');

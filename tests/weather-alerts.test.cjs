@@ -81,6 +81,17 @@ test('cards use text safely, link to official details, and clear after cancellat
   h.setFetch(async()=>response(feed([alert()]))); await h.controller.refresh();
   assert.equal(h.node('weatherAlerts').hidden,false); assert.equal(h.node('weatherAlertStatus').hidden,true);
 });
+test('orange warning headings display as amber while provider severity and text stay intact',async()=>{
+  for(const [title,expected] of [['ORANGE WARNING - WIND','AMBER WARNING - WIND'],['Orange warning - Wind','Amber warning - Wind'],['orange advisory - fog','amber advisory - fog']]) {
+    const h=harness(), data=feed([alert({description:{en:title}})]);
+    h.setFetch(async()=>response(data));await h.controller.setLocation(victoria);
+    const card=h.node('weatherAlertList').children[0];
+    assert.equal(card.children[0].children[0].textContent,expected);
+    assert.equal(card.className,'weather-alert weather-alert--orange');
+    assert.equal(activeAlerts(data,NOW)[0].title,title);
+    assert.equal(activeAlerts(data,NOW)[0].colour,'orange');
+  }
+});
 test('periodic checks discover new alerts without reloading the forecast',async()=>{
   const h=harness(); await h.controller.setLocation(victoria);
   assert.equal(h.node('weatherAlerts').hidden,true);
