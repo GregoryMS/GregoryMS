@@ -5,6 +5,11 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
   const dialog = $('saved-place-dialog'), query = $('saved-place-query');
   const search = document.querySelector('.map-search'), mapQuery = $('map-query');
   const shortcuts = $('map-saved-places');
+  // iOS can blur the search with relatedTarget=null before a shortcut's click.
+  // Keep focus through the press so the row stays present until activation.
+  shortcuts.addEventListener('pointerdown', event => {
+    if (event.button === 0) event.preventDefault();
+  });
   function syncShortcuts() {
     shortcuts.hidden = mapQuery.value.length > 0 || !search.contains(document.activeElement);
   }
@@ -47,7 +52,7 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
       const button = $('map-' + name), point = saved[name];
       const label = point ? `Navigate to ${title(name)}: ${describe(point)}` : `Set ${name} location`;
       button.setAttribute('aria-label', label); button.title = label;
-      button.dataset.saved = String(!!point); button.disabled = !navigation;
+      button.dataset.saved = String(!!point); button.disabled = false;
       $('map-' + name + '-address').textContent = point ? describe(point) : 'Set location';
     }
     $('map-saved-edit').disabled = false;
@@ -79,7 +84,8 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
   for (const name of kinds) {
     $('map-' + name).addEventListener('click', () => {
       saved = read(); sync();
-      if (!saved[name]) return edit(name);
+      shortcuts.hidden = true;
+      if (!saved[name] || !navigation?.navigateSaved) return edit(name);
       navigation.navigateSaved({ ...saved[name], name: title(name) });
     });
     $('saved-place-' + name).addEventListener('click', () => edit(name));

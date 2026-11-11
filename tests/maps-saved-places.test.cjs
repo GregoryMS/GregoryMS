@@ -5,7 +5,7 @@ const source = fs.readFileSync(require.resolve('../assets/maps-saved-places.js')
 const key = 'gregle-maps-saved-places-v1';
 const home = {lat:48.42,lng:-123.36,name:'Home address',detail:'Victoria'};
 const work = {lat:48.45,lng:-123.38,name:'Work address',detail:'Victoria'};
-function harness(storage = new Map(), blocked = false) {
+function harness(storage = new Map(), blocked = false, navigationAvailable = true) {
   class Element {
     constructor() { this.events={};this.attrs={};this.dataset={};this.children=[];this.value='';this.open=false;this.style={};this.parentElement={addEventListener(){},getBoundingClientRect:()=>({left:0,top:0,width:800,height:600})}; }
     addEventListener(name, fn) { (this.events[name] ??= []).push(fn); }
@@ -13,7 +13,7 @@ function harness(storage = new Map(), blocked = false) {
     replaceChildren(...children) { this.children=children; } append(...children) { this.children.push(...children); }
     getBoundingClientRect() { return {left:10,top:10,bottom:56}; }
     focus() {} showModal() { this.open=true; } close() { this.open=false;this.click('close'); }
-    click(name='click') { for (const fn of this.events[name] || []) fn({preventDefault(){}}); }
+    click(name='click', event={}) { for (const fn of this.events[name] || []) fn({preventDefault(){},...event}); }
   }
   const els=new Map(), el=id=>{ if(!els.has(id))els.set(id,new Element());return els.get(id); };
   el('map-saved-places').hidden=true;
@@ -22,7 +22,7 @@ function harness(storage = new Map(), blocked = false) {
     localStorage:{getItem:k=>storage.get(k)||null,setItem(k,v){if(blocked)throw Error('Storage blocked');storage.set(k,v);}},
     navigator:{},AbortController,URL,setTimeout,clearTimeout,Date};
   vm.runInNewContext(source,context);
-  context.window.GregleSavedPlaces({map:{},config:{},navigation:{navigateSaved:p=>routes.push(p)},getSelected:()=>work,notify:message=>notices.push(message)});
+  context.window.GregleSavedPlaces({map:{},config:{},navigation:navigationAvailable?{navigateSaved:p=>routes.push(p)}:null,getSelected:()=>work,notify:message=>notices.push(message)});
   return {el,routes,notices,storage};
 }
 test('saved locations load after reopening and pin edits preserve the other shortcut',()=>{
@@ -41,4 +41,29 @@ test('invalid stored coordinates and unavailable browser storage do not claim su
   h.el('map-home').click();assert.equal(h.routes.length,0);assert(h.el('saved-place-dialog').open);
   h.el('saved-place-pin').click();h.el('saved-place-save').click();
   assert.match(h.el('saved-place-status').textContent,/could not save/);assert(h.el('saved-place-dialog').open);assert.equal(h.notices.length,0);
+});
+
+test('mobile shortcut presses keep the search focused until their click activates',()=>{
+  const h=harness(); let prevented=false;
+  h.el('map-saved-places').hidden=false;
+  h.el('map-saved-places').click('pointerdown',{button:0,preventDefault(){prevented=true;}});
+  assert.equal(prevented,true);
+  assert.equal(h.el('map-saved-places').hidden,false);
+  h.el('map-work').click();
+  assert.equal(h.el('map-saved-places').hidden,true);
+  assert.equal(h.el('saved-place-dialog').open,true);
+  assert.equal(h.el('saved-place-work').attrs['aria-pressed'],'true');
+  assert.equal(h.routes.length,0);
+});
+
+test('unset Home and Work each open their own editor even if navigation is unavailable',()=>{
+  const h=harness(new Map(),false,false);
+  for(const kind of ['home','work']){
+    assert.equal(h.el('map-'+kind).disabled,false);
+    h.el('map-'+kind).click();
+    assert.equal(h.el('saved-place-dialog').open,true);
+    assert.equal(h.el('saved-place-'+kind).attrs['aria-pressed'],'true');
+    assert.equal(h.el('saved-place-current').textContent,kind==='home'?'Home is not set.':'Work is not set.');
+    h.el('saved-place-close').click();
+  }
 });
