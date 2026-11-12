@@ -73,6 +73,12 @@
 #map-query { min-width: 0; width: 100%; border: 0; padding: 8px 0; outline: none; background: transparent; color: var(--text); font-size: 14px; }
 #map-query::placeholder { color: var(--muted); opacity: 1; }
 .map-search:focus-within { border-color: var(--map-accent); }
+/* Quiet inline clear action: visible only while the search contains text. */
+.map-search-clear { display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 32px; padding: 5px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); opacity: .55; cursor: pointer; }
+.map-search-clear[hidden] { display: none; }
+.map-search-clear svg { width: 15px; height: 15px; }
+.map-search-clear:hover, .map-search-clear:focus-visible { opacity: .9; background: var(--map-control-accent-soft); }
+#map-query::-webkit-search-cancel-button { display: none; }
 .map-search-submit { display: grid; place-items: center; flex: 0 0 42px; height: 42px; padding: 10px; background: var(--map-control-accent-soft); color: var(--map-accent); border: 0; border-radius: 13px; }
 .map-search-submit svg, .map-icon-button svg { width: 22px; height: 22px; }
 .map-search-content { border-top: 1px solid var(--map-border); max-height: min(440px, calc(100dvh - 240px)); overflow-y: auto; overscroll-behavior: contain; }
