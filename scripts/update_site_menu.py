@@ -35,10 +35,10 @@ APPS = [
     ('Calendar', 'https://cloud.gregle.uk/apps/calendar/', 'assets/calendar-app/icon.svg'),
 ]
 EXTRAS = [
-    ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://42.gsuth.uk'),
+    ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://web.bear.app'),
     ('Apple Maps', 'https://maps.apple.com'), ('Dictionary', '/dictionary.html'),
     ('Music', 'https://music.apple.com'),
-    ('Radio', 'https://gregle.uk/radio.html'), ('SpaceWeather', 'https://spaceweather.com'),
+    ('Web', 'https://42.gsuth.uk'), ('SpaceWeather', 'https://spaceweather.com'),
     ('Hacker News', 'https://news.ycombinator.com'), ('xkcd', 'https://xkcd.com'),
     ('Contact', 'https://gsuth.uk'),
 ]
