@@ -264,8 +264,19 @@
   }
   $('map-search-form').addEventListener('submit', event => { event.preventDefault(); search(); });
   $('map-search-scope').addEventListener('click', () => search($('map-search-scope').dataset.worldwide === 'true'));
-  function suggest(){intent++;cancelSearch();hideSearch();if(!composing&&query.value.trim().length>=3)suggestionTimer=setTimeout(()=>search(false,true),450);}
-  query.addEventListener('input', event => {if(!event.isComposing)suggest();else{intent++;cancelSearch();hideSearch();}});
+  const clearSearchButton = $('map-search-clear');
+  const syncClearSearch = () => { clearSearchButton.hidden = query.value.length === 0; };
+  clearSearchButton.addEventListener('click', () => {
+    query.value = '';
+    intent++;
+    cancelSearch();
+    hideSearch();
+    syncClearSearch();
+    query.focus({ preventScroll: true });
+  });
+  syncClearSearch();
+  function suggest(){syncClearSearch();intent++;cancelSearch();hideSearch();if(!composing&&query.value.trim().length>=3)suggestionTimer=setTimeout(()=>search(false,true),450);}
+  query.addEventListener('input', event => {syncClearSearch();if(!event.isComposing)suggest();else{intent++;cancelSearch();hideSearch();}});
   query.addEventListener('compositionstart',()=>{composing=true;cancelSearch();hideSearch();});
   query.addEventListener('compositionend',()=>{composing=false;suggest();});
   query.addEventListener('keydown', event => {
