@@ -58,7 +58,9 @@
     }
     function icon(vessel) {
       const type = core.vesselStyle(vessel.type);
-      return L.divIcon({ className: `vessels-marker${vessel.heading === null ? ' vessels-no-heading' : ''}`, iconSize: [26, 32], iconAnchor: [13, 16], html: `<svg viewBox="0 0 26 32" style="--vessel-color:${type.color};transform:rotate(${vessel.heading ?? 0}deg)" aria-hidden="true">${vessel.heading === null ? '<circle cx="13" cy="16" r="7"/>' : '<path d="M13 2 22 15v14H4V15Z"/><path d="M13 11v12" class="vessels-deck"/>'}</svg>` });
+      // Match the popup's one-decimal speed: a displayed 0.0 kn uses the anchored circle.
+      const circle = vessel.heading === null || (vessel.speed !== null && vessel.speed.toFixed(1) === '0.0');
+      return L.divIcon({ className: `vessels-marker${circle ? ' vessels-no-heading' : ''}`, iconSize: [26, 32], iconAnchor: [13, 16], html: `<svg viewBox="0 0 26 32" style="--vessel-color:${type.color};transform:rotate(${vessel.heading ?? 0}deg)" aria-hidden="true">${circle ? '<circle cx="13" cy="16" r="7"/>' : '<path d="M13 2 22 15v14H4V15Z"/><path d="M13 11v12" class="vessels-deck"/>'}</svg>` });
     }
     function clear() { group.clearLayers(); displayed.clear(); }
     function mergeReports(previous, incoming, area) {
