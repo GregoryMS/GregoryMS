@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-12T09:38:41+00:00",
-  "fetchedAt": "2026-11-12T09:38:44.271702+00:00",
+  "feedUpdatedAt": "2026-11-12T17:45:09+00:00",
+  "fetchedAt": "2026-11-12T17:45:17.444299+00:00",
   "items": [
     {
-      "title": "Some under-25s should get fewer benefits, Milburn review to say",
-      "link": "https://www.bbc.co.uk/news/articles/cwn70l1628l0o?at_medium=RSS&at_campaign=rss"
+      "title": "The rise and fall of Jensen Huang - how the tech superstar became mired in scandal",
+      "link": "https://www.bbc.co.uk/news/articles/cmze750zg0jeo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'No light, no water, no heat': Ukrainians struggle with blackouts as Russia hits power grid",
-      "link": "https://www.bbc.co.uk/news/articles/cr1ewpd95d21o?at_medium=RSS&at_campaign=rss"
+      "title": "Faisal Islam: Why the UK economy is surprisingly resilient",
+      "link": "https://www.bbc.co.uk/news/articles/cj62p32k90wyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Some childhood offenders may no longer have to reveal convictions to employers",
+      "link": "https://www.bbc.co.uk/news/articles/c6wy0e44pjgdo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Ukraine says military Starlink disrupted again as US envoys meet Putin in Moscow",
+      "link": "https://www.bbc.co.uk/news/articles/cwrkgmymk55zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'We've got to run': Inside ruined Ukraine power plant under constant drone threat",
+      "link": "https://www.bbc.co.uk/news/videos/cm93rp3gxn6qo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Washington DC shooting leaves one dead and four injured as suspect dies after standoff",
+      "link": "https://www.bbc.co.uk/news/articles/crgqx2qqnwpjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Two men found guilty of spying for Iran over plan to target UK-based journalists",
+      "link": "https://www.bbc.co.uk/news/articles/ck9q8g8209l2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Teenage girl admits murder in row over boy",
+      "link": "https://www.bbc.co.uk/news/articles/c6x28e243gg9o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Israeli strike on Gaza hospital kills six Palestinians, health ministry says",
       "link": "https://www.bbc.co.uk/news/articles/ckzd9p7e4eqeo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Hegseth and advisers reprimanded by guard at Tomb of the Unknown Soldier",
-      "link": "https://www.bbc.co.uk/news/videos/ck5y132yq1ymo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Are max strength cold and flu pills worth the money?",
-      "link": "https://www.bbc.co.uk/news/articles/cjkgep4rgngro?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Democrat Scott Colom seals historic win in Mississippi Senate race",
-      "link": "https://www.bbc.co.uk/news/articles/cw7vppyr80eeo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Media industry could be forced to improve safeguards after Walliams allegations",
-      "link": "https://www.bbc.co.uk/news/articles/cm3egj20v5x4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Survivor pulled from rubble of deadly building collapse in New York",
-      "link": "https://www.bbc.co.uk/news/videos/c60rkwjj7x7go?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Cold health alerts begin as surge of Arctic air sees temperatures plummet",
-      "link": "https://www.bbc.co.uk/weather/articles/cmy49yd4z0jko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'You're triggering me': How to understand your therapy-speak teen",
-      "link": "https://www.bbc.co.uk/news/articles/c962y743y458o?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: 'Life-changing moment' boy turns on Tourette syndrome device to help stop tics",
+      "link": "https://www.bbc.co.uk/news/videos/c94gnv5e31gno?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
