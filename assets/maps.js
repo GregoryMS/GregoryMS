@@ -61,7 +61,7 @@
         if (generation !== locationGeneration) return;
         clearLocation();
         if (error.code === 1) { locationEnabled = false; stopLocation(); }
-      }, { enableHighAccuracy: false, timeout: 20000, maximumAge: 30000 });
+      }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
     } catch { stopLocation(); }
   }
   function acceptLocation(position) {
@@ -243,7 +243,7 @@
       if (intent !== initialIntent || document.querySelector('.map-stage').classList.contains('navigating')) return;
       const {latitude: lat, longitude: lng} = position.coords;
       if (core.validPoint(lat, lng)) map.setView([Math.max(-85.051129, Math.min(85.051129, lat)), lng], 15, {animate: false});
-    }, () => {}, {enableHighAccuracy: false, timeout: 12000, maximumAge: 30000});
+    }, () => {}, {enableHighAccuracy: true, timeout: 12000, maximumAge: 0});
   }
   // A shared view stays put, while an already allowed device location can still be shown.
   navigator.permissions?.query({ name: 'geolocation' }).then(permission => {
@@ -393,7 +393,7 @@
       button.disabled = false; button.removeAttribute('aria-busy');
       if (token !== intent) return;
       notify(error.code === 1 ? 'Location access was declined. Search for a place instead.' : 'Your location could not be found. Try again or search for a place.');
-    }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 });
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
   });
   $('share-pin').addEventListener('click', share);
   $('close-map-link').addEventListener('click', () => { $('map-link-copy').hidden = true; $('map-query').focus(); });
