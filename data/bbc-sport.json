@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-12T10:31:45+00:00",
-  "fetchedAt": "2026-11-12T10:31:56.673389+00:00",
+  "feedUpdatedAt": "2026-11-12T18:35:49+00:00",
+  "fetchedAt": "2026-11-12T18:35:53.000884+00:00",
   "items": [
+    {
+      "title": "How Pochettino came on Man Utd's radar - and what Carrick was told when",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqdr1jlr1707o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Palace sack Sage after 16 games with Frank in advanced talks",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cv5y18lkk87do?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "The chaos that took Carrick from two-year deal to sacked within 15 games",
       "link": "https://www.bbc.co.uk/sport/football/articles/cm0rl4kwn8vqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "England legend Anderson, 44, joins Surrey",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c6879g5z0v0wo?at_medium=RSS&at_campaign=rss"
+      "title": "McIlroy makes strong start in bid to equal Montgomerie's record",
+      "link": "https://www.bbc.co.uk/sport/golf/articles/cwlymny900ezo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Robertson set to make history but his hero Dalglish will always be King",
+      "title": "Owono undecided over future following De Miguel death",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ckedq01zve04o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Pollock starts alongside Ojomoh and Joseph in bold England side",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cqkg727741xvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Robertson set to make history, but hero Dalglish will always be King",
       "link": "https://www.bbc.co.uk/sport/football/articles/cxe89dq16dp2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Nurmagomedov slaps Dvalishvili to spark hotel brawl",
-      "link": "https://www.bbc.co.uk/sport/mixed-martial-arts/articles/cq0l38rw2w7ro?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Marsh dodges Khawaja claims as Cummins vows to 'respond properly'",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c623jlxgn9rno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Andreeva wins 11 games in a row to thrash Sabalenka at WTA Finals",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/cq1md03gz0zvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "England's Blues brothers - how the Bellinghams helped save Birmingham",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm1j3j20r2rzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Wales' Basham starts against All Blacks as Wainwright ruled out",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmvg2dwpyx70o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "'Thursday is a deserved occasion to celebrate' - how Kane's fairytale came true",
       "link": "https://www.bbc.co.uk/sport/football/articles/c60qkdj4lp34o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "How 'Barca way' continues despite big-name exits",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c5vg23nmgp2yo?at_medium=RSS&at_campaign=rss"
+      "title": "England legend Anderson, 44, joins Surrey",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/c6879g5z0v0wo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Ten years and three kids later... Oliva back for Olympic bid",
+      "link": "https://www.bbc.co.uk/sport/cycling/articles/cm2kljnzjyzlo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
