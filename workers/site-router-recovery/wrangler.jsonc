@@ -6,6 +6,7 @@
   "workers_dev": true,
   "routes": [{"pattern": "*.gregle.uk/*", "zone_name": "gregle.uk"}],
   "ratelimits": [
+    {"name": "MAPS_SEARCH_LIMIT", "namespace_id": "2026111201", "simple": {"limit": 60, "period": 60}},
     {"name": "TOMTOM_ROUTE_LIMIT", "namespace_id": "2026110201", "simple": {"limit": 30, "period": 60}},
     {"name": "TOMTOM_TILE_LIMIT", "namespace_id": "2026110202", "simple": {"limit": 600, "period": 60}}
   ],

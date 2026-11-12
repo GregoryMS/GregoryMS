@@ -1,5 +1,6 @@
 import pages from '../../assets/site-routes.json' with {type: 'json'};
 import {mapsGoogleConfig} from './maps-config.mjs';
+import {mapsSearch} from './maps-search.mjs';
 import {mapsTomTom} from './maps-tomtom.mjs';
 import {sportsHeadlines} from './sports-headlines.mjs';
 
@@ -17,6 +18,7 @@ function redirect(host, search) {
 export default {
   async fetch(request, env = {}) {
     const url = new URL(request.url);
+    if (url.protocol === 'https:' && url.hostname === 'maps.gregle.uk' && url.pathname === '/api/maps/search') return mapsSearch(request, env);
     if (url.protocol === 'https:' && url.hostname === 'sports.gregle.uk' && url.pathname === '/api/sports/headlines') return sportsHeadlines(request);
     if (url.protocol === 'https:' && url.hostname === 'maps.gregle.uk' && (url.pathname === '/api/maps/tomtom-config' || url.pathname.startsWith('/api/maps/tomtom/'))) return mapsTomTom(request, env);
     if (url.protocol === 'https:' && url.hostname === 'maps.gregle.uk' && url.pathname === '/api/maps/google-config') return mapsGoogleConfig(request, env);

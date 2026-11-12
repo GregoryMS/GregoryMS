@@ -1,6 +1,6 @@
 {
   "tileURL": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  "searchURL": "https://photon.komoot.io/api/",
+  "searchURL": "https://maps.gregle.uk/api/maps/search",
   "satelliteURL": "https://gregle-esri.square-rain-5ded.workers.dev/tiles/{z}/{x}/{y}.jpg",
   "cycleURL": "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
   "transitURL": "https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png",
