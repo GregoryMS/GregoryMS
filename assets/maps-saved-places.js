@@ -83,6 +83,12 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
       $('map-' + name + '-address').textContent = point ? describe(point) : 'Set location';
     }
     $('map-saved-edit').disabled = false;
+    const carHome = $('map-car-home');
+    if (carHome) {
+      const carLabel = saved.home ? 'Navigate home in 3D' : 'Set home location';
+      carHome.setAttribute('aria-label', carLabel); carHome.title = carLabel;
+      carHome.dataset.saved = String(!!saved.home); carHome.disabled = false;
+    }
   }
   function edit(name) {
     cancel(); kind = name; candidate = null; query.value = '';
@@ -118,6 +124,11 @@ window.GregleSavedPlaces = ({ map, config, navigation, getSelected, notify }) =>
     $('saved-place-' + name).addEventListener('click', () => edit(name));
   }
   shortcutActions.set($('map-saved-edit'), () => { saved = read(); shortcuts.hidden = true; edit('home'); });
+  $('map-car-home')?.addEventListener('click', () => {
+    saved = read(); sync(); shortcuts.hidden = true;
+    if (!saved.home || !navigation?.navigateSaved) return edit('home');
+    navigation.navigateSaved({ ...saved.home, name: 'Home' }, {threeD: true});
+  });
   $('saved-place-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', cancel);
   dialog.addEventListener('cancel', cancel);

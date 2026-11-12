@@ -150,8 +150,8 @@ test('a manually selected starting point survives opening car directions', async
 
 // Saved shortcuts must never reuse a manually chosen origin or open the keyboard.
 test('saved shortcut replaces a manual start with fresh GPS and starts live guidance',async()=>{
- let active=false, destination;
- const h=harness({liveFactory:()=>({get active(){return active;},start(route,mode,to){active=true;destination=to;}})});
+ let active=false, destination, options;
+ const h=harness({liveFactory:()=>({get active(){return active;},start(route,mode,to,settings){active=true;destination=to;options=settings;}})});
  await endpoints(h);
  h.el('directions-from').focused=false;h.el('directions-to').focused=false;
  h.api.navigateSaved(b);assert.equal(h.pending.length,0);assert.equal(h.el('directions-from').value,'');assert.equal(h.geoOptions().maximumAge,0);
@@ -160,7 +160,24 @@ test('saved shortcut replaces a manual start with fresh GPS and starts live guid
  assert.equal(h.pending.length,1);assert(h.pending[0].url.includes('-123.360000,48.430000'));
  assert(!h.el('directions-from').focused);assert(!h.el('directions-to').focused);
  h.pending[0].resolve({ok:true,json:async()=>data()});await new Promise(resolve=>setImmediate(resolve));
- assert(active);assert.equal(destination.lat,b.lat);assert.equal(h.el('map-directions').hidden,true);
+ assert(active);assert.equal(destination.lat,b.lat);assert.equal(options.threeD,false);assert.equal(h.el('map-directions').hidden,true);
+});
+
+test('car Home starts a direct 3D driving route from fresh GPS after another travel mode',async()=>{
+ let active=false,started;
+ const h=harness({liveFactory:()=>({get active(){return active;},start(route,mode,to,options){active=true;started={route,mode,to,options};}})});
+ await endpoints(h);h.api.choosePoint('stop',{...a,lat:48.44,name:'Old stop'});
+ await h.el('directions-walking').click();
+ h.api.navigateSaved({...b,name:'Home'},{threeD:true});
+ assert.equal(h.el('directions-driving').attrs['aria-pressed'],'true');
+ assert.equal(h.el('directions-walking').attrs['aria-pressed'],'false');
+ assert.equal(h.el('directions-stop-row').hidden,true);
+ assert.equal(h.geoOptions().maximumAge,0);assert.equal(h.pending.length,0);
+ const current={lat:48.43,lng:-123.36};h.geo()({coords:{latitude:current.lat,longitude:current.lng}});
+ assert.equal(h.pending.length,1);assert(h.pending[0].url.includes('driving'));assert(h.pending[0].url.includes('-123.360000,48.430000'));
+ h.pending[0].resolve({ok:true,json:async()=>data()});await new Promise(resolve=>setImmediate(resolve));
+ assert(active);assert.equal(started.mode,'driving');assert.equal(started.to.name,'Home');assert.equal(started.options.threeD,true);
+ assert.equal(h.el('map-directions').hidden,true);
 });
 test('saved shortcut GPS denial offers recovery without routing from an old start',async()=>{
  const h=harness();await endpoints(h);h.api.navigateSaved(b);h.geoFailure()({code:1});

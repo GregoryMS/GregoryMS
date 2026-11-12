@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261112-keyboard-drawer">
+  <link rel="stylesheet" href="assets/maps.css?v=20261112-car-home">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -61,11 +61,11 @@
   <script src="assets/maps-navigation-live.js?v=20261111-navigation-stop" defer></script>
   <script src="assets/maps-transit-journey-core.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
-  <script src="assets/maps-navigation.js?v=20261112-suggestions-visible" defer></script>
+  <script src="assets/maps-navigation.js?v=20261112-car-home" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261112-keyboard-drawer" defer></script>
   <script src="assets/maps-context-menu.js?v=20261108-share-location" defer></script>
-  <script src="assets/maps-saved-places.js?v=20261111-saved-close-fix" defer></script>
+  <script src="assets/maps-saved-places.js?v=20261112-car-home" defer></script>
   <script src="assets/maps.js?v=20261112-suggestions-visible" defer></script>
   <script src="assets/maps-gps-test.js?v=20261110-car-mode" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
@@ -189,6 +189,7 @@
       <div class="navigation-controls"><button id="navigation-3d" type="button" aria-pressed="false">3D mode</button><button id="navigation-follow" type="button" aria-pressed="true">Following</button><button id="navigation-voice" type="button" aria-pressed="false">Voice off</button><button id="navigation-stop" type="button">Stop</button></div>
     </section>
     <div class="map-actions" role="group" aria-label="Map tools">
+      <button class="map-icon-button" id="map-car-home" type="button" aria-label="Navigate home in 3D" title="Navigate home in 3D" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8"/></svg></button>
       <button class="map-icon-button" id="map-directions-toggle" type="button" aria-label="Directions" aria-expanded="false" aria-controls="map-directions" title="Directions" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/></svg></button>
       <button class="map-icon-button" id="map-base-toggle" type="button" aria-label="Base map" aria-expanded="false" aria-controls="map-base-panel" title="Base map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/></svg></button>
       <button class="map-icon-button" id="map-layers-toggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="map-layers-panel" title="Map layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>

@@ -21,13 +21,13 @@ function harness(storage = new Map(), blocked = false, navigationAvailable = tru
   for(const id of ['map-query','map-saved-places']){el('search').append(el(id));el(id).parentElement=el('search');}
   for(const id of ['map-home','map-work','map-saved-edit']){el('map-saved-places').append(el(id));el(id).parentElement=el('map-saved-places');}
   el('map-saved-places').hidden=true;
-  const routes=[], notices=[];
+  const routes=[], routeOptions=[], notices=[];
   const context={window:{GregleMaps:core,addEventListener(){}}, document:{getElementById:el,querySelector:()=>el('search'),createElement:()=>new Element(),addEventListener(){}},
     localStorage:{getItem:k=>storage.get(k)||null,setItem(k,v){if(blocked)throw Error('Storage blocked');storage.set(k,v);}},
     navigator:{},AbortController,URL,setTimeout,clearTimeout,Date};
   vm.runInNewContext(source,context);
-  context.window.GregleSavedPlaces({map:{},config:{},navigation:navigationAvailable?{navigateSaved:p=>routes.push(p)}:null,getSelected:()=>work,notify:message=>notices.push(message)});
-  return {el,routes,notices,storage};
+  context.window.GregleSavedPlaces({map:{},config:{},navigation:navigationAvailable?{navigateSaved:(p,options)=>{routes.push(p);routeOptions.push(options);}}:null,getSelected:()=>work,notify:message=>notices.push(message)});
+  return {el,routes,routeOptions,notices,storage};
 }
 test('saved locations load after reopening and pin edits preserve the other shortcut',()=>{
   const storage=new Map([[key,JSON.stringify({home})]]), h=harness(storage);
@@ -82,4 +82,24 @@ test('a pointer tap navigates once and keyboard activation still works',()=>{
   assert.equal(h.routes.length,2);
   h.el('map-work').click('pointerdown');h.el('map-work').click('pointercancel');
   assert.equal(h.el('saved-place-dialog').open,false);
+});
+
+test('car Home requests 3D navigation while the search Home keeps its existing behavior',()=>{
+  const storage=new Map([[key,JSON.stringify({home,work})]]),h=harness(storage);
+  assert.equal(h.el('map-car-home').disabled,false);
+  assert.equal(h.el('map-car-home').attrs['aria-label'],'Navigate home in 3D');
+  h.el('map-car-home').click();
+  assert.equal(h.routes[0].name,'Home');assert.equal(h.routes[0].lat,home.lat);
+  assert.equal(h.routeOptions[0].threeD,true);
+  h.el('map-home').click();assert.equal(h.routeOptions[1],undefined);
+  storage.set(key,JSON.stringify({home:work}));h.el('map-car-home').click();
+  assert.equal(h.routes[2].lat,work.lat,'the toolbar uses the latest saved Home');
+});
+
+test('car Home opens Home setup when no destination is saved',()=>{
+  const h=harness();
+  h.el('map-car-home').click();
+  assert.equal(h.routes.length,0);assert(h.el('saved-place-dialog').open);
+  assert.equal(h.el('saved-place-home').attrs['aria-pressed'],'true');
+  assert.equal(h.el('map-car-home').attrs['aria-label'],'Set home location');
 });

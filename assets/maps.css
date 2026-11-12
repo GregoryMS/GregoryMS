@@ -552,6 +552,8 @@
 .vehicle-layout .topbar { padding: 10px 20px; }
 .vehicle-layout .map-stage { --map-tools-top: 100px; margin: 0 10px 10px; border-radius: 18px; }
 .vehicle-layout .map-icon-button { width: 56px; height: 56px; padding: 14px; }
+#map-car-home { display: none; }
+.vehicle-layout #map-car-home { display: flex; }
 .vehicle-layout .map-icon-button svg { width: 26px; height: 26px; }
 .vehicle-layout .map-actions { top: var(--map-tools-top); left: 20px; right: auto; display: flex; flex-wrap: wrap; width: max-content; max-width: calc(100% - 40px); justify-content: flex-start; gap: 8px; }
 .vehicle-layout .map-stage .leaflet-top.leaflet-right { top: calc(var(--map-tools-top) + var(--map-tools-height, 56px) + 12px); left: 20px; right: auto; bottom: auto; }

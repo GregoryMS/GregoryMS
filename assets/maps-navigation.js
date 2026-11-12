@@ -138,13 +138,17 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     if (points.from) return calculateRoute();
     else useLocation(true);
   }
-  function navigateSaved(point) {
+  function navigateSaved(point, {threeD = false} = {}) {
     if (!core.valid(point)) return;
+    if (threeD) {
+      mode = 'driving';
+      for (const travel of ['driving', 'walking', 'transit']) $('directions-' + travel)?.setAttribute('aria-pressed', String(travel === mode));
+    }
     stopEnabled = false; points.stop = null; inputs.stop.value = ''; syncStop();
     open(); setPoint('to', point);
     // Saved shortcuts always start at the device, even after a manually planned route.
     points.from = null; inputs.from.value = '';
-    useLocation(true, true);
+    useLocation(true, true, threeD);
   }
   function close() {
     clearJourney();
@@ -219,7 +223,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     stopEnabled = false; points.from = points.stop = points.to = null; inputs.from.value = inputs.stop.value = inputs.to.value = '';
     $('directions-stop-row').after?.($('directions-results')); syncStop(); invalidate(); active = 'from'; focusField('from');
   });
-  function useLocation(routeAfter = false, startAfter = false) {
+  function useLocation(routeAfter = false, startAfter = false, threeD = false) {
     invalidate();
     if (!navigator.geolocation) { status('Location is unavailable. Search for a starting point instead.'); return; }
     const token = version; locating = true; $('directions-location').disabled = true; status('Finding your starting location…');
@@ -228,7 +232,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       const p = { lat: position.coords.latitude, lng: position.coords.longitude, name: 'My location' };
       if (!core.valid(p)) { invalidate('Your location was invalid. Search for a starting point.'); return; }
       setPoint('from', p); active = 'to'; if (!startAfter) focusField('to');
-      if (routeAfter && points.to) calculateRoute(false, startAfter);
+      if (routeAfter && points.to) calculateRoute(false, startAfter, threeD);
     }, () => { if (token === version) invalidate('Location could not be shared. Allow location access or search for a starting point.'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: startAfter ? 0 : 30000 });
   }
   $('directions-location').addEventListener('click', () => useLocation());
@@ -271,7 +275,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   });
   document.addEventListener?.('visibilitychange',()=>{if(document.hidden&&(suggestionTimer||lookupField)){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();}});
   window.addEventListener?.('pagehide',()=>{clearTimeout(suggestionTimer);controller?.abort();});
-  async function calculateRoute(refresh = false, startAfter = false) {
+  async function calculateRoute(refresh = false, startAfter = false, threeD = false) {
     if (!canRoute()) { status(hasStop() ? 'Choose a starting point, stop and destination.' : 'Choose a starting point and destination.'); return; }
     if (refresh) { version++; controller?.abort(); }
     else invalidate();
@@ -286,7 +290,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       if (token !== version) return;
       if(mode==='transit')showJourneys(route,from,to);else renderRoute(route, from, to, !refresh);
       status(`${mode==='transit'?'Transit journey':mode === 'walking' ? 'Walking route' : 'Driving route'} ready. Start navigation for live guidance.`);
-      if (startAfter) startNavigation();
+      if (startAfter) startNavigation(threeD);
     } catch (error) { if (token === version) status(error.name === 'AbortError' ? 'Routing timed out. Try again, or use your navigation app below.' : error.message || 'Routing is unavailable. Try again.'); }
     finally { clearTimeout(timer); if (token === version) { controller = null; panel.removeAttribute('aria-busy'); $('directions-route').disabled = !canRoute(); $('directions-start').disabled = !currentRoute || !(mode==='transit'?transitLive:live); $('directions-3d').disabled = !currentRoute || !live; } }
   }

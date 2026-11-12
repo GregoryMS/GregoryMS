@@ -810,7 +810,7 @@ include both legs. Live rerouting, traffic refresh and 3D keep unvisited stops
 and drop reached stops. Google Maps handoff includes the stop; Apple handoff is
 hidden for these routes. Transit uses the two endpoints and keeps the optional
 stop for switching back to driving or walking. Saved Home/Work shortcuts start
-a fresh direct route. Stops are not persisted.
+a fresh direct route. Car mode also adds a Home button to the map tools. It uses the saved Home destination, requests a fresh GPS starting point, selects driving and starts 3D navigation automatically. If Home is unset it opens the Home editor. The search-bar Home shortcut retains its existing behavior. Stops are not persisted.
 
 ## Calculator
 
