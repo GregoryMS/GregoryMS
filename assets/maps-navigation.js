@@ -92,8 +92,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     document.querySelector('.map-stage').classList.remove('directions-open');
     onConnectTraffic();
   });
-  function invalidate(message = 'Choose locations, then show your route.') {
-    clearTimeout(suggestionTimer);suggestionTimer=null;lookupField=null;resultsField=null;
+  function invalidate(message = 'Choose locations, then show your route.', keepResults = false) {
+    clearTimeout(suggestionTimer);suggestionTimer=null;lookupField=null;if(!keepResults)resultsField=null;
     if (live?.active) live.stop();
     if(transitLive?.active)transitLive.stop();
     journeyAlignmentVersion++;journeyAlignment?.abort();journeyAlignment=null;
@@ -106,7 +106,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     routeLayers.clearLayers(); $('directions-summary').hidden = true;
     routeCredit(false);
     syncTraffic();
-    $('directions-steps').replaceChildren(); $('directions-results').replaceChildren();
+    $('directions-steps').replaceChildren(); if(!keepResults)$('directions-results').replaceChildren();
     $('directions-route').disabled = !canRoute();
     syncHandoff();
     status(message);
@@ -190,9 +190,9 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   panel.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } });
   for (const field of ['from', 'stop', 'to']) {
     inputs[field].addEventListener('focus', () => {if(active!==field){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();else if(resultsField!==field){$('directions-results').replaceChildren();resultsField=null;}} active = field; $('directions-search').textContent = `Find ${field === 'from' ? 'starting point' : field === 'stop' ? 'stop' : 'destination'}`; });
-    const suggest=()=>{active=field;points[field]=null;invalidate('Search and choose a matching place.');if(!composing.has(field)&&inputs[field].value.trim().length>=3)suggestionTimer=setTimeout(()=>searchPlaces(field,true),450);};
-    inputs[field].addEventListener('input',event=>{if(!event.isComposing)suggest();else{points[field]=null;invalidate();}});
-    inputs[field].addEventListener('compositionstart',()=>{composing.add(field);points[field]=null;invalidate();});
+    const suggest=(schedule=true)=>{active=field;points[field]=null;const eligible=inputs[field].value.trim().length>=3;invalidate(eligible?'Updating suggestions…':'Search and choose a matching place.',eligible&&resultsField===field);if(schedule&&!composing.has(field)&&eligible)suggestionTimer=setTimeout(()=>searchPlaces(field,true),450);};
+    inputs[field].addEventListener('input',event=>suggest(!event.isComposing));
+    inputs[field].addEventListener('compositionstart',()=>{composing.add(field);suggest(false);});
     inputs[field].addEventListener('compositionend',()=>{composing.delete(field);suggest();});
     inputs[field].addEventListener('keydown',event=>{
       if(event.key==='ArrowDown'&&resultsField===field){const first=$('directions-results').querySelector('button');if(first){event.preventDefault();first.focus();}}
@@ -235,7 +235,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   async function searchPlaces(field=active,automatic=false) {
     if(automatic&&(document.hidden||panel.hidden||composing.has(field)||active!==field))return;
     const term = inputs[field].value.trim();
-    invalidate();
+    invalidate(undefined, automatic && resultsField === field);
     if (term.length < (automatic?3:2)) { if(!automatic){status('Enter at least two characters to search.');focusField(field);}return; }
     const token = version;let timer,current;
     try {
@@ -252,6 +252,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       }
       if(token!==version||active!==field)return;resultsField=field;
       inputs[field].closest?.('.directions-field')?.after?.($('directions-results'));
+      $('directions-results').replaceChildren();
       status(results.length ? 'Choose the matching place below.' : 'No matching places. Try a fuller address or nearby town.');
       for (const point of results) {
         const li = document.createElement('li'), button = document.createElement('button'), name = document.createElement('strong'), detail = document.createElement('span');

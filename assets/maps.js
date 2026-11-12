@@ -38,12 +38,12 @@
     try { history.replaceState(null, '', core.makeHash(current, selected, layerControl?.getState())); } catch {}
   };
   const hideSearch = () => { searchContent.hidden = true; };
-  const cancelSearch = () => {
+  const cancelSearch = (keepResults = false) => {
     clearTimeout(suggestionTimer);suggestionTimer=null;
     searchVersion++;
     searchController?.abort();
     searchController = null;
-    resultsList.replaceChildren();
+    if (keepResults !== true) resultsList.replaceChildren();
     $('map-search-form').removeAttribute('aria-busy');
   };
   function renderPin(point, lookup = true, nearby = false) {
@@ -224,7 +224,7 @@
   async function search(worldwide = false, automatic = false) {
     const term = query.value.trim();
     if (term.length < (automatic?3:2)||automatic&&(composing||document.hidden||usingEmbed)) return;
-    intent++; cancelSearch();
+    intent++; cancelSearch(automatic);
     const version = searchVersion;
     const fallback = new URL(core.osmURL(view())); fallback.pathname = '/search'; fallback.searchParams.set('query', term);
     $('osm-search').href = fallback.href; $('osm-search').hidden = true;
@@ -275,9 +275,20 @@
     query.focus({ preventScroll: true });
   });
   syncClearSearch();
-  function suggest(){syncClearSearch();intent++;cancelSearch();hideSearch();if(!composing&&query.value.trim().length>=3)suggestionTimer=setTimeout(()=>search(false,true),450);}
-  query.addEventListener('input', event => {syncClearSearch();if(!event.isComposing)suggest();else{intent++;cancelSearch();hideSearch();}});
-  query.addEventListener('compositionstart',()=>{composing=true;cancelSearch();hideSearch();});
+  function suggest(schedule = true) {
+    syncClearSearch(); intent++;
+    const eligible = query.value.trim().length >= 3;
+    cancelSearch(eligible);
+    if (!eligible) { hideSearch(); return; }
+    if (!searchContent.hidden) {
+      $('map-search-status').textContent = 'Updating suggestions…';
+      $('map-search-scope').hidden = true;
+      $('osm-search').hidden = true;
+    }
+    if (schedule && !composing) suggestionTimer = setTimeout(() => search(false, true), 450);
+  }
+  query.addEventListener('input', event => suggest(!event.isComposing));
+  query.addEventListener('compositionstart',()=>{composing=true;suggest(false);});
   query.addEventListener('compositionend',()=>{composing=false;suggest();});
   query.addEventListener('keydown', event => {
     if (event.key === 'ArrowDown' && !searchContent.hidden) {

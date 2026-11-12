@@ -112,6 +112,27 @@ test('typing suggests after a pause, cancels stale lookups and switches fields w
 });
 
 
+test('suggestions remain visible during edits and requests, replace together, and clear for another field', async()=>{
+ const h=harness(),timers=new Map();let id=0,now=10000;
+ h.context.setTimeout=(f,delay)=>{const n=++id;timers.set(n,{f,delay});return n;};h.context.clearTimeout=n=>timers.delete(n);h.context.Date={now:()=>now};
+ const run=()=>{const [n,t]=[...timers].find(([,t])=>t.delay<10000);timers.delete(n);return t.f();};
+ const answer=name=>({ok:true,json:async()=>({features:[{geometry:{type:'Point',coordinates:[b.lng,b.lat]},properties:{name}}]})});
+ await h.el('directions-from-pin').click();h.el('directions-to').value='Stan';await h.el('directions-to').fire('input');
+ const first=run();h.pending[0].resolve(answer('Stanley Park'));await first;
+ const original=h.el('directions-results').children[0];
+ now+=1500;h.el('directions-to').value='Stanley';await h.el('directions-to').fire('input');
+ assert.equal(h.el('directions-results').children[0],original);
+ const second=run();assert.equal(h.el('directions-results').children[0],original);
+ h.el('directions-to').value='Stanley Park';await h.el('directions-to').fire('input');assert(h.pending[1].opts.signal.aborted);
+ h.pending[1].resolve(answer('Superseded result'));await second;assert.equal(h.el('directions-results').children[0],original);
+ now+=1500;const third=run();h.pending[2].resolve(answer('Stanley Park entrance'));await third;
+ assert.equal(h.el('directions-results').children.length,1);assert.notEqual(h.el('directions-results').children[0],original);
+ assert.equal(h.el('directions-results').children[0].children[0].children[0].textContent,'Stanley Park entrance');
+ h.el('directions-to').value='St';await h.el('directions-to').fire('input');assert.equal(h.el('directions-results').children.length,0);
+ h.el('directions-to').value='Stanley Park';await h.el('directions-to').fire('input');await run();assert.equal(h.el('directions-results').children.length,1);
+ await h.el('directions-from').fire('focus');assert.equal(h.el('directions-results').children.length,0);assert.equal(timers.size,0);
+});
+
 test('car directions defaults to GPS without focusing either text field', async()=>{
  const h=harness();h.context.document.body={classList:{contains:name=>name==='vehicle-layout'}};
  await h.el('map-directions-toggle').click();assert.equal(typeof h.geo(),'function');

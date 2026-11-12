@@ -611,7 +611,11 @@ Map search and both Directions fields suggest places after three characters
 and a 450 ms pause. Requests remain at least one second apart within each search
 control, reuse small in-memory result caches, and cancel on edits, field changes,
 dismissal or hidden pages. Old responses cannot replace a newer query. IME
-composition waits until text entry completes. Suggestions retain the existing
+composition waits until text entry completes. Existing suggestions stay visible
+while typing continues and while the next lookup runs, then the new results
+replace them together. Clearing or shortening the query below three characters,
+dismissing suggestions or switching Directions fields clears the list.
+Suggestions retain the existing
 map-area preference and worldwide option; automatic suggestions keep the mobile
 keyboard open. Use Down/Up Arrow and Enter to choose a result, or Escape to dismiss.
 Search buttons still support explicit two-character queries. Queries use the
