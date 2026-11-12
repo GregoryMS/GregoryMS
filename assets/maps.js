@@ -19,7 +19,56 @@
     placesURL: 'https://overpass.private.coffee/api/interpreter', placeLookupURL: 'https://nominatim.openstreetmap.org/'
   };
   const searchContent = $('map-search-content'), resultsList = $('map-results'), query = $('map-query');
-  let map, drawer, layerControl, placeDetails, busyness, navigation, contextTools, marker, accuracy, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
+  let map, drawer, layerControl, placeDetails, busyness, navigation, contextTools, marker, selected = null, searchController, searchVersion = 0, intent = 0, nextSearch = 0, noticeTimer, usingEmbed = false, usingStreetView = false;
+  // Device position is independent of the selected/search pin and never enters shared links.
+  let locationDot, locationHalo, locationWatch = null, locationGeneration = 0, locationExpiry, locationEnabled = false;
+  function clearLocation() {
+    clearTimeout(locationExpiry);
+    if (locationDot) map.removeLayer(locationDot);
+    if (locationHalo) map.removeLayer(locationHalo);
+    locationDot = locationHalo = null;
+  }
+  function showLocation(position) {
+    if (document.hidden || usingEmbed) return;
+    const { latitude: lat, longitude: lng, accuracy: radius } = position.coords;
+    if (!core.validPoint(lat, lng)) return;
+    const age = Date.now() - Number(position.timestamp);
+    if (Number.isFinite(age) && age > 60000) return;
+    const point = [lat, lng];
+    if (!locationDot) locationDot = L.circleMarker(point, { radius: 7, color: '#fff', weight: 3, fillColor: '#2476e8', fillOpacity: 1, bubblingMouseEvents: false }).bindTooltip('Your current location').addTo(map);
+    else locationDot.setLatLng(point);
+    if (Number.isFinite(radius) && radius > 0) {
+      if (!locationHalo) locationHalo = L.circle(point, { radius, color: '#2476e8', fillOpacity: .1, weight: 1, interactive: false }).addTo(map);
+      else { locationHalo.setLatLng(point); locationHalo.setRadius(radius); }
+    } else if (locationHalo) { map.removeLayer(locationHalo); locationHalo = null; }
+    locationDot.bringToFront();
+    clearTimeout(locationExpiry);
+    locationExpiry = setTimeout(clearLocation, Math.max(1, 60000 - Math.max(0, age || 0)));
+  }
+  function stopLocation() {
+    locationGeneration++;
+    if (locationWatch !== null) navigator.geolocation?.clearWatch(locationWatch);
+    locationWatch = null;
+    clearLocation();
+  }
+  function startLocation() {
+    if (!locationEnabled || locationWatch !== null || document.hidden || usingEmbed || !navigator.geolocation?.watchPosition) return;
+    const generation = ++locationGeneration;
+    try {
+      locationWatch = navigator.geolocation.watchPosition(position => {
+        if (generation === locationGeneration) showLocation(position);
+      }, error => {
+        if (generation !== locationGeneration) return;
+        clearLocation();
+        if (error.code === 1) { locationEnabled = false; stopLocation(); }
+      }, { enableHighAccuracy: false, timeout: 20000, maximumAge: 30000 });
+    } catch { stopLocation(); }
+  }
+  function acceptLocation(position) {
+    locationEnabled = true;
+    showLocation(position);
+    startLocation();
+  }
   const cache = new Map();
   let suggestionTimer,composing=false;
   const notify = (message, kind = 'action', persistent = false) => {
@@ -52,7 +101,6 @@
     busyness?.select(point);
     if ($('route-pin-actions')) $('route-pin-actions').hidden = !point;
     if (marker) { map.removeLayer(marker); marker = null; }
-    if (accuracy) { map.removeLayer(accuracy); accuracy = null; }
     $('clear-pin').hidden = !point;
     $('map-place').hidden = !point;
     $('place-bottom').hidden = !point;
@@ -90,6 +138,7 @@
     const embedded = core.isEmbeddedBase(layerControl.getState().base);
     if (embedded === usingEmbed) return;
     usingEmbed = embedded; intent++; cancelSearch(); hideSearch();
+    if (embedded) stopLocation(); else startLocation();
     if (embedded) {
       contextTools?.clear();
       navigation?.close();
@@ -190,11 +239,20 @@
   if (!explicitInitialLocation && !usingEmbed && navigator.geolocation) {
     const initialIntent = intent;
     navigator.geolocation.getCurrentPosition(position => {
+      acceptLocation(position);
       if (intent !== initialIntent || document.querySelector('.map-stage').classList.contains('navigating')) return;
       const {latitude: lat, longitude: lng} = position.coords;
       if (core.validPoint(lat, lng)) map.setView([Math.max(-85.051129, Math.min(85.051129, lat)), lng], 15, {animate: false});
     }, () => {}, {enableHighAccuracy: false, timeout: 12000, maximumAge: 30000});
   }
+  // A shared view stays put, while an already allowed device location can still be shown.
+  navigator.permissions?.query({ name: 'geolocation' }).then(permission => {
+    if (permission.state === 'granted') { locationEnabled = true; startLocation(); }
+    permission.addEventListener('change', () => {
+      locationEnabled = permission.state === 'granted';
+      if (locationEnabled) startLocation(); else stopLocation();
+    });
+  }).catch(() => {});
   const dropPin = event => {
     if (contextTools?.measuring || usingEmbed || layerControl.getState().streetview || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
@@ -312,8 +370,9 @@
     }
   });
   document.addEventListener('click', event => { if (!event.target.closest('.map-search, #map-search-content, #map-drawer')) {cancelSearch();hideSearch();} });
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelSearch();hideSearch();}});
-  window.addEventListener('pagehide',cancelSearch);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelSearch();hideSearch();stopLocation();}else startLocation();});
+  window.addEventListener('pagehide',()=>{cancelSearch();stopLocation();});
+  window.addEventListener('pageshow',startLocation);
   $('place-streetview').addEventListener('click', () => { if (selected) layerControl.openStreetView(selected); });
   $('clear-pin').addEventListener('click', clearPin);
   $('map-locate').addEventListener('click', () => {
@@ -322,11 +381,13 @@
     button.disabled = true; button.setAttribute('aria-busy', 'true'); notify('Finding your location…');
     navigator.geolocation.getCurrentPosition(position => {
       button.disabled = false; button.removeAttribute('aria-busy');
+      acceptLocation(position);
       if (token !== intent) return;
       const point = { lat: position.coords.latitude, lng: position.coords.longitude, name: 'My location', detail: 'Your approximate position, as reported by your device.' };
       if (!core.validPoint(point.lat, point.lng)) { notify('Your device did not return a usable location. Try searching instead.'); return; }
-      selectPoint(point, 15);
-      if (Number.isFinite(position.coords.accuracy) && position.coords.accuracy > 0) accuracy = L.circle([point.lat, point.lng], { radius: Math.min(position.coords.accuracy, 50000), color: '#7637cc', fillOpacity: .08, weight: 1, interactive: false }).addTo(map);
+      cancelSearch(); hideSearch();
+      map.setView([Math.max(-85.051129, Math.min(85.051129, point.lat)), point.lng], 15);
+      $('gregle-map').focus({ preventScroll: true });
       notify('Showing your approximate location.');
     }, error => {
       button.disabled = false; button.removeAttribute('aria-busy');
