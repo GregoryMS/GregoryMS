@@ -43,7 +43,25 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     if (window.requestAnimationFrame) window.requestAnimationFrame(reveal);
     else reveal();
   }
-  const live = window.GregleLiveNavigation?.({ map, routing, onRoute: renderRoute, onStop: showNavigationResult });
+  // Persist the route before Tesla replaces the browser with its reversing camera.
+  const resumeKey = 'gregle.maps.activeNavigation.v1';
+  let unloading = false, restoring = false;
+  const saveJourney = (threeD = false) => {
+    try {
+      if (mode === 'transit' || !currentRoute || !canRoute()) return;
+      localStorage.setItem(resumeKey, JSON.stringify({
+        savedAt: Date.now(), mode, threeD, stopEnabled,
+        from: points.from, stop: points.stop, to: points.to
+      }));
+    } catch {}
+  };
+  const clearJourney = () => { try { localStorage.removeItem(resumeKey); } catch {} };
+  window.addEventListener('pagehide', () => { unloading = true; });
+  const navigationStopped = message => {
+    if (!unloading && !restoring) clearJourney();
+    showNavigationResult(message);
+  };
+  const live = window.GregleLiveNavigation?.({ map, routing, onRoute: renderRoute, onStop: navigationStopped });
   const transitCore=window.GregleTransitJourneyCore;
   const transitVehicles=window.GregleTransitVehicles?.({map,statusElement:$('journey-vehicle-status'),creditElement:$('journey-vehicle-credit')});
   const transitLive=window.GregleTransitJourneyLive?.({map,onStop:showNavigationResult,onReplan:point=>{open();if(point)setPoint('from',{...point,name:'My location'});calculateRoute();}});
@@ -129,6 +147,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     useLocation(true, true);
   }
   function close() {
+    clearJourney();
     invalidate('Directions paused. Show route to calculate again.');
     panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
     document.querySelector('.map-stage').classList.remove('directions-open'); toggle.focus();
@@ -147,6 +166,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     try {
       if(mode==='transit'){transitVehicles?.clear();transitLive.start(currentRoute);}else live.start(currentRoute, mode, points.to, {threeD});
       if (engine.active) {
+        if (mode !== 'transit') saveJourney(threeD);
         panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
         document.querySelector('.map-stage').classList.remove('directions-open');
         $(mode==='transit'?'transit-guidance-next':'navigation-stop').focus({ preventScroll: true });
@@ -195,6 +215,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     [inputs.from.value, inputs.to.value] = [inputs.to.value, inputs.from.value]; invalidate();
   });
   $('directions-clear').addEventListener('click', () => {
+    clearJourney();
     stopEnabled = false; points.from = points.stop = points.to = null; inputs.from.value = inputs.stop.value = inputs.to.value = '';
     $('directions-stop-row').after?.($('directions-results')); syncStop(); invalidate(); active = 'from'; focusField('from');
   });
@@ -327,5 +348,37 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     syncTraffic();
   }
   syncStop(); syncTraffic();
+  // A fresh browser session can reconstruct the route from its endpoints.
+  // Re-request routing rather than storing stale geometry, traffic or GPS fixes.
+  try {
+    const saved = JSON.parse(localStorage.getItem(resumeKey) || 'null');
+    if (saved && Date.now() - saved.savedAt > 0 && Date.now() - saved.savedAt < 12 * 60 * 60 * 1000 &&
+        ['driving', 'walking'].includes(saved.mode) && core.valid(saved.from) && core.valid(saved.to) &&
+        (!saved.stopEnabled || core.valid(saved.stop))) {
+      restoring = true;
+      mode = saved.mode;
+      for (const choice of ['driving', 'walking', 'transit'])
+        $('directions-' + choice)?.setAttribute('aria-pressed', String(choice === mode));
+      stopEnabled = !!saved.stopEnabled;
+      syncStop();
+      for (const field of ['from', 'stop', 'to']) {
+        const point = saved[field];
+        points[field] = point && core.valid(point) ? point : null;
+        inputs[field].value = points[field] ? [point.name, point.detail].filter(Boolean).join(' · ') : '';
+      }
+      open();
+      status('Restoring your previous navigation route…');
+      // Delay until the map and controls have completed initialisation.
+      setTimeout(async () => {
+        try { await calculateRoute(false, false); }
+        finally {
+          restoring = false;
+          if (currentRoute) {
+            status('Previous route restored. Tap Start navigation to resume live GPS guidance.');
+          } else status('Could not restore the previous route. Tap Show route to retry.');
+        }
+      }, 400);
+    } else if (saved) clearJourney();
+  } catch { clearJourney(); }
   return { close, refreshTraffic, choosePoint, navigateTo, navigateSaved };
 };
