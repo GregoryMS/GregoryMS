@@ -56,7 +56,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     } catch {}
   };
   const clearJourney = () => { try { localStorage.removeItem(resumeKey); } catch {} };
-  window.addEventListener('pagehide', () => { unloading = true; });
+  window.addEventListener?.('pagehide', () => { unloading = true; });
   const navigationStopped = message => {
     if (!unloading && !restoring) clearJourney();
     showNavigationResult(message);
