@@ -77,10 +77,29 @@ test('the drawer stays above an on-screen keyboard and clamps to the remaining h
   viewport.height=520;events.resize();
   assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'366');
   assert.equal(h.get('map-drawer').style['--map-drawer-lift'],'310px');
+  assert.equal(h.get('map-drawer').style.height,'676px','the sheet background continues below the visible content behind floating browser controls');
+  assert.equal(parseInt(h.get('map-drawer').style.height)-310,366,'the visible content keeps its keyboard-safe height');
   assert.equal(h.stage.style['--map-drawer-height'],'676px','credits clear both the drawer and keyboard');
   viewport.height=844;events.resize();
   assert.equal(h.get('map-drawer').style['--map-drawer-lift'],'0px');
+  assert.equal(h.get('map-drawer').style.height,'366px','the extra background disappears when the keyboard closes');
   assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'366','keyboard dismissal must not unexpectedly expand the panel');
+});
+
+test('keyboard scrolling and compact mode keep the sheet continuous without moving content under the keyboard',()=>{
+  const events={},viewport={height:520,offsetTop:40,addEventListener:(name,fn)=>events[name]=fn};
+  const h=setup(viewport);h.open('map-search-content');h.fire('keydown',{key:'End'});
+  const drawer=h.get('map-drawer');
+  const contentBottom=()=>830-parseInt(drawer.style['--map-drawer-lift']);
+  assert.equal(contentBottom(),viewport.height+viewport.offsetTop);
+  assert.equal(drawer.style.height,'676px');
+  viewport.offsetTop=65;events.scroll();
+  assert.equal(contentBottom(),585);
+  assert.equal(drawer.style.height,'651px');
+  h.fire('keydown',{key:'Home'});
+  assert.equal(drawer.style.height,'309px');
+  assert.equal(h.get('map-drawer-resize').attrs['aria-valuenow'],'64');
+  assert(h.get('map-drawer-body').inert);
 });
 
 test('switching panels preserves each panel scroll position',()=>{

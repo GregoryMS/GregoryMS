@@ -458,7 +458,7 @@
 /* Mobile panels share a freely resizable drawer. The map remains interactive above it. */
 .map-drawer { display: none; }
 @media(max-width:700px) {
-  .has-mobile-drawer .map-drawer { position: absolute; display: flex; flex-direction: column; z-index: 580; bottom: var(--map-drawer-lift, 0px); left: 0; right: 0; min-height: 64px; max-height: calc(100% - 100px); border-radius: 22px 22px 0 0; overflow: hidden; background: var(--map-control-surface); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 -4px 22px #0002; box-sizing: border-box; }
+  .has-mobile-drawer .map-drawer { position: absolute; display: flex; flex-direction: column; z-index: 580; bottom: 0; left: 0; right: 0; min-height: 64px; max-height: 100%; padding-bottom: var(--map-drawer-lift, 0px); border-radius: 22px 22px 0 0; overflow: hidden; background: var(--map-control-surface); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 -4px 22px #0002; box-sizing: border-box; }
   .map-drawer-bar { display: flex; flex: 0 0 64px; align-items: center; padding: 0 8px 0 16px; gap: 2px; }
   .map-drawer-resize { position: relative; display: flex; flex: 1; min-width: 0; height: 64px; flex-direction: column; justify-content: center; padding-top: 9px; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; }
   .map-drawer-grip { position: absolute; width: 38px; height: 4px; top: 8px; left: calc(50% - 19px); border-radius: 4px; background: var(--map-border); }

@@ -33,7 +33,9 @@ window.GregleMapDrawer = ({ map }) => {
   function resize(value) {
     const { min, max, lift } = bounds();
     height = Math.round(Math.max(min, Math.min(max, value)));
-    drawer.style.height = `${height}px`;
+    // Keep content above the visual viewport's bottom, but continue the sheet
+    // behind floating browser/input bars so the map cannot show through a gap.
+    drawer.style.height = `${height + lift}px`;
     const compact = height < 112;
     drawer.classList.toggle('is-compact', compact);
     body.inert = compact;
