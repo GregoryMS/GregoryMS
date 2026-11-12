@@ -145,7 +145,7 @@
         <ol id="map-results" aria-label="Search results"></ol>
         <button class="map-search-scope" id="map-search-scope" type="button" hidden>Search worldwide</button>
         <a class="map-search-fallback" id="osm-search" href="https://www.openstreetmap.org/" target="_blank" rel="noopener" hidden>Search on OpenStreetMap ↗</a>
-        <div class="map-search-credit">Place search: <a href="https://www.tomtom.com/" target="_blank" rel="noopener">© TomTom</a> / <a href="https://github.com/komoot/photon" target="_blank" rel="noopener">Photon</a></div>
+        <div class="map-search-credit">Place search: <a href="https://overpass.ch/geocoding" target="_blank" rel="noopener">overpass.ch</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></div>
       </div>
     </section>
     <section class="map-directions map-glass" id="map-directions" aria-labelledby="directions-heading" hidden>
@@ -168,7 +168,7 @@
       <div class="directions-actions"><button type="button" id="directions-route" disabled>Show route</button><button type="button" id="directions-clear">Clear route</button></div>
       <div id="directions-handoff" hidden><a id="directions-google" target="_blank" rel="noopener">Navigate in Google Maps ↗</a><a id="directions-apple" target="_blank" rel="noopener">Navigate in Apple Maps ↗</a></div>
       <div id="directions-transit-options" aria-label="Transit journey options" hidden></div><div id="directions-summary" hidden><strong id="directions-total"></strong><div class="route-traffic-row" id="directions-traffic-row" hidden><span>Use live traffic</span><button class="route-traffic-switch" id="directions-traffic" type="button" role="switch" aria-label="Use live traffic" aria-checked="false" disabled aria-describedby="directions-estimate-note"></button></div><p id="directions-estimate-note">Estimated driving time excludes live traffic and ferry waits.</p><button type="button" id="directions-traffic-connect" hidden>Connect TomTom</button><div class="directions-launch"><button type="button" id="directions-3d" disabled>3D mode</button><button type="button" id="directions-start" disabled>Start navigation</button></div><p id="journey-vehicle-status" role="status" hidden></p><a id="journey-vehicle-credit" class="transit-vehicle-credit" target="_blank" rel="noopener noreferrer" hidden></a><details><summary>Route steps</summary><ol id="directions-steps"></ol></details></div>
-      <p class="directions-credit">Routes: <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox (3D)</a> / <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a> / <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: © TomTom / Photon. Live navigation needs location permission and an internet connection. Route requests share your start and destination with the routing service.</p>
+      <p class="directions-credit">Routes: <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox (3D)</a> / <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a> / <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: overpass.ch / OpenStreetMap. Live navigation needs location permission and an internet connection. Route requests share your start and destination with the routing service.</p>
     </section>
     <section id="transit-navigation" class="navigation-live transit-guidance map-glass" aria-label="Transit journey guidance" hidden>
       <p id="transit-guidance-progress"></p><h2 id="transit-guidance-cue" aria-live="polite"></h2>
@@ -362,7 +362,7 @@
       <div class="saved-place-options"><button id="saved-place-pin" type="button">Use selected map pin</button><button id="saved-place-location" type="button">Use current location</button></div>
       <p id="saved-place-status" role="status"></p>
       <div class="saved-place-options"><button id="saved-place-save" type="button" disabled>Save home</button><button id="saved-place-remove" type="button" disabled>Remove home</button></div>
-      <p class="saved-place-credit">Address search: © TomTom / Photon. Search requests go to the place search service; saved locations stay in this browser until used for a route.</p>
+      <p class="saved-place-credit">Address search: overpass.ch / OpenStreetMap. Search requests go to the place search service; saved locations stay in this browser until used for a route.</p>
     </dialog>
     <noscript><div class="map-noscript map-glass">Enable JavaScript to explore the map here, or <a href="https://www.openstreetmap.org/">open OpenStreetMap</a>.</div></noscript>
   </main>

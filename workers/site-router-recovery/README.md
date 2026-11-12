@@ -35,3 +35,11 @@ HTTP 200 without redirecting to the apex. Google Places loaded in a browser;
 both provider configurations, a TomTom traffic PNG, and a TomTom route returned
 HTTP 200. Run
 `node --test tests/site-router-recovery.test.cjs tests/site-router.test.cjs tests/maps-tomtom-worker.test.cjs`.
+
+Maps place/address search uses overpass.ch through `/api/maps/search`. Configure
+`OVERPASS_GEOCODING_API_KEY` as a Worker secret and preserve it on deployments,
+along with the Google and TomTom secrets. Search sends it only as an `X-API-Key`
+header to `api.overpass.ch`; public configuration and source contain no value.
+Search, Directions suggestions and saved-place address searches never call
+TomTom. Missing search credentials return 503; provider failures return 502/429
+without using navigation quota. Run `node --test tests/maps-search-worker.test.cjs`.
