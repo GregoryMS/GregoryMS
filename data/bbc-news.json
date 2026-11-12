@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-11T20:06:23+00:00",
-  "fetchedAt": "2026-11-11T20:06:28.910225+00:00",
+  "feedUpdatedAt": "2026-11-12T01:52:30+00:00",
+  "fetchedAt": "2026-11-12T01:52:32.546354+00:00",
   "items": [
+    {
+      "title": "Some under-25s should get less benefits, Milburn review to say",
+      "link": "https://www.bbc.co.uk/news/articles/cwn70l1628l0o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Author says there were 'real concerns' about David Walliams within publishing industry",
       "link": "https://www.bbc.co.uk/news/articles/c95y15830k77o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'I felt like I was being manipulated': Woman alleges Walliams groomed her as a teenager",
-      "link": "https://www.bbc.co.uk/news/videos/c8g46y14ye3zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Clashes in Barcelona as thousands join Spain general strike",
+      "title": "Clashes erupt in Barcelona after thousands join Spain general strike",
       "link": "https://www.bbc.co.uk/news/articles/cwvg25nypmrvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Scottish DJ, 32, confirmed as victim of Krakow shooting",
-      "link": "https://www.bbc.co.uk/news/articles/cmx28e95g2rzo?at_medium=RSS&at_campaign=rss"
+      "title": "Hegseth and advisers reprimanded by guard at Tomb of the Unknown Soldier",
+      "link": "https://www.bbc.co.uk/news/videos/ck5y132yq1ymo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trump says 'we won' Iran war during Veterans Day service",
-      "link": "https://www.bbc.co.uk/news/videos/cke89dqmlp2eo?at_medium=RSS&at_campaign=rss"
+      "title": "Are max strength cold and flu pills worth the money?",
+      "link": "https://www.bbc.co.uk/news/articles/cjkgep4rgngro?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Thousands of schools in Italy, Scotland and Northern Ireland hit by threats in suspected bomb hoax",
       "link": "https://www.bbc.co.uk/news/articles/cwz0k79pr8z2o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Scottish DJ, 32, confirmed as victim of Krakow shooting",
+      "link": "https://www.bbc.co.uk/news/articles/cmx28e95g2rzo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Russia-Ukraine talks turn to post-war security but end without breakthrough",
       "link": "https://www.bbc.co.uk/news/articles/ck792we7zrz4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Ex-parliamentary aide acquitted for spying tells BBC he was 'fall guy' but also 'naive'",
-      "link": "https://www.bbc.co.uk/news/videos/cknv4y5j4ge9o?at_medium=RSS&at_campaign=rss"
+      "title": "Poundland set for more time to secure a rescue deal as emergency talks continue",
+      "link": "https://www.bbc.co.uk/news/articles/c3702jjkez4ko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Police helped remove Russell Brand after 'violent incident' at Jemima Goldsmith's home",
-      "link": "https://www.bbc.co.uk/news/articles/cqde1yddwk17o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Three Iran-backed suspects plotted attacks including RAF Fairford incident, US says",
-      "link": "https://www.bbc.co.uk/news/articles/c3rryrryk59zo?at_medium=RSS&at_campaign=rss"
+      "title": "Significant drop in levels of toxic 'forever' chemicals in England's rivers",
+      "link": "https://www.bbc.co.uk/news/articles/cmze75r55g3jo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
