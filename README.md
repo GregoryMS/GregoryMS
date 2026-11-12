@@ -401,7 +401,7 @@ On iPhone, reload the radio page after an update and start a station. iOS choose
 
 ### Gregle Radio Home Screen app
 
-`radio.html` has its own `radio.webmanifest`, a 180px Apple touch icon, and 192px/512px app icons. Its stable installation name is **Gregle Radio**, independent of the playing station title, and its launch URL is `/radio.html`. The icon is an original G/broadcast mark made with the built-in image-generation tool. The two featured broadcaster logos are also included directly in the HTML so they render before JavaScript starts.
+`radio.html` has its own `radio.webmanifest`, a 180px Apple touch icon, and 192px/512px app icons. Its stable installation name is **Gregle Radio**, independent of the playing station title, and its launch URL is `/radio.html`. The icon is a retro portable radio in Gregle’s charcoal, off-white and purple palette. Run `python3 scripts/render_radio_icons.py` to reproduce its PNG app icons and browser favicons from the SVG geometry. The two featured broadcaster logos are also included directly in the HTML so they render before JavaScript starts.
 
 For a new iPhone installation, open the radio page in Safari and use Share → Add to Home Screen. Remove an older radio shortcut and add it again if it retains the old icon. This configures the Home Screen experience, not offline radio playback. Apple documents page-specific icons and app names at https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html.
 

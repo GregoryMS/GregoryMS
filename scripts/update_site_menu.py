@@ -27,7 +27,7 @@ APPS = [
     ('Finance', '/finance.html', 'assets/finance-app/icon-192.png'),
     ('Calculator', '/calc.html', 'assets/calc-app/icon-192.png'),
     ('More', '/links.html', 'assets/tools-app.svg'),
-    ('Radio', '/radio.html', 'assets/radio-app/icon-192.png'),
+    ('Radio', '/radio.html', 'assets/radio-app/icon-192.png?v=20261111-retro-radio'),
     ('Dictionary', '/dictionary.html', 'assets/dictionary-app/icon-192.png'),
     ('Maps', '/maps.html', 'assets/maps-app/icon.svg'),
     ('Cloud', 'https://cloud.gregle.uk', 'assets/cloud-app/icon.svg'),

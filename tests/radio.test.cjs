@@ -216,14 +216,14 @@ test('radio installs with its own name, start page and correctly sized PNG icons
   assert.equal(manifest.name, 'Gregle Radio'); assert.equal(manifest.start_url, '/radio.html');
   assert.equal(manifest.id, '/radio.html'); assert.equal(manifest.display, 'standalone');
   for (const icon of [...manifest.icons, { src: '/assets/radio-app/apple-touch-icon.png', sizes: '180x180' }]) {
-    const png = fs.readFileSync(path.join(root, icon.src));
+    const png = fs.readFileSync(path.join(root, icon.src.split('?')[0]));
     assert.equal(png.subarray(1, 4).toString(), 'PNG');
     assert.equal(png.readUInt32BE(16) + 'x' + png.readUInt32BE(20), icon.sizes);
   }
   const html = fs.readFileSync(path.join(root, 'radio.html'), 'utf8');
   assert.match(html, /name="apple-mobile-web-app-title" content="Gregle Radio"/);
-  assert.match(html, /rel="apple-touch-icon"[^>]+href="\/assets\/radio-app\/apple-touch-icon.png"/);
-  assert.match(html, /rel="manifest" href="\/radio.webmanifest"/);
+  assert.match(html, /rel="apple-touch-icon"[^>]+href="\/assets\/radio-app\/apple-touch-icon.png(?:\?[^"]*)?"/);
+  assert.match(html, /rel="manifest" href="\/radio.webmanifest(?:\?[^"]*)?"/);
 });
 
 test('NRK P3 uses its live HLS manifest in native players', () => {

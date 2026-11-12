@@ -4,10 +4,10 @@
 <g fill="none" stroke="#faf9f6" stroke-linecap="round" stroke-linejoin="round">
 <path d="M133 197 349 115" stroke-width="22"/>
 <rect x="90" y="190" width="332" height="230" rx="42" stroke-width="24"/>
-<path d="M133 243h246" stroke-width="14"/>
+<path d="M133 243h246" stroke="#9850ff" stroke-width="14"/>
 <path d="M139 292h126M139 328h126M139 364h126" stroke-width="15"/>
 <circle cx="343" cy="337" r="47" stroke-width="20"/>
-<path d="m343 337 17-23" stroke-width="12"/>
+<path d="m343 337 17-23" stroke="#9850ff" stroke-width="12"/>
 </g>
 <circle cx="343" cy="267" r="11" fill="#9850ff"/>
 </svg>
