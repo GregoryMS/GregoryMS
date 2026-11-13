@@ -14,8 +14,8 @@ function setup(){
   const get=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};
   const window={GregleMaps:core,addEventListener:(type,fn)=>events[type]=fn};
   const document={getElementById:get,querySelector:()=>get('stage'),createElement:()=>{const frame=new Element();created.push(frame);return frame;}};
-  const map={getCenter:()=>({lat:view.lat,lng:view.lng}),getZoom:()=>view.zoom,getBounds:()=>({getWest:()=>-124,getEast:()=>-123,getNorth:()=>49,getSouth:()=>48}),on:(type,fn)=>mapEvents[type]=fn};
-  vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-embed.js'),'utf8'),{window,document,setTimeout:(fn,ms)=>{timers.set(++next,{fn,ms});return next;},clearTimeout:id=>timers.delete(id)});
+  const map={setView:(point,zoom)=>{view={lat:point[0],lng:point[1],zoom};mapEvents.moveend();},getCenter:()=>({lat:view.lat,lng:view.lng}),getZoom:()=>view.zoom,getBounds:()=>({getWest:()=>-124,getEast:()=>-123,getNorth:()=>49,getSouth:()=>48}),on:(type,fn)=>mapEvents[type]=fn};
+  vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-embed.js'),'utf8'),{window,document,location:{origin:'https://maps.gregle.uk'},setTimeout:(fn,ms)=>{timers.set(++next,{fn,ms});return next;},clearTimeout:id=>timers.delete(id)});
   const api=window.GregleMapEmbed({map});
   return{api,get,events,mapEvents,timers,created,move:nextView=>{if(nextView)view=nextView;mapEvents.moveend();},fireTimers:ms=>{for(const [id,timer] of [...timers])if(timer.ms<=ms){timers.delete(id);timer.fn();}}};
 }
@@ -60,4 +60,13 @@ test('pinch protection applies only to cancellable frame gestures and is removed
   fire({ctrlKey:false});fire({cancelable:false});fire({target:h.get('other')});assert.equal(cancelled,0);
   fire({});assert.equal(cancelled,1);assert(!h.get('embedded-zoom-help').hidden);
   h.api.setBase('street');assert(h.get('embedded-zoom-help').hidden);fire({});assert.equal(cancelled,1);
+});
+
+test('3D base loads Mapbox at the current view, shares camera changes and restores native maps',()=>{
+  const h=setup();h.api.setBase('3d');const frame=h.created[0];frame.contentWindow={};
+  assert.match(frame.src,/^\/assets\/maps-3d.html#map=9\//);assert(frame.allow.includes('geolocation'));
+  assert.equal(core.readLayers(core.makeHash(core.defaultView,null,{base:'3d'})).base,'3d');
+  h.events.message({source:frame.contentWindow,origin:'https://maps.gregle.uk',data:{type:'gregle-3d-view',view:{lat:49,lng:-123,zoom:12}}});
+  assert.equal(h.created.length,1);
+  h.api.setBase('street');assert(h.get('embedded-map').hidden);assert(!h.get('gregle-map').inert);
 });

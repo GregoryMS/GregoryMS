@@ -11,7 +11,7 @@
     let state = core.normalizeLayers(initial || (saved?.ev === true && saved.teslaDefault !== true ? {...saved, tesla: true} : saved));
     let pageDark = document.documentElement.classList.contains('dark-mode');
     let lightBase = state.base === 'dark' ? 'street' : state.base;
-    const keepsOwnStyle = base => ['satellite', 'cycle', 'transit'].includes(base);
+    const keepsOwnStyle = base => ['satellite', 'cycle', 'transit', '3d'].includes(base);
     if (pageDark && !keepsOwnStyle(state.base)) state.base = 'dark';
     const drivebc = window.GregleDriveBC({ map, notify });
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
@@ -87,7 +87,7 @@
     const render = () => {
       const embedded = core.isEmbeddedBase(state.base), overlays = panel.querySelector('.map-overlay-options');
       overlays.hidden = embedded; overlays.disabled = embedded;
-      $('layers-footnote').textContent = embedded ? `Use ${state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
+      $('layers-footnote').textContent = embedded ? `Use ${state.base === '3d' ? 'Mapbox 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
       basePanel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
@@ -134,7 +134,7 @@
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
       map.setMaxZoom(state.base === 'satellite' ? 23 : 19);
       embed.setBase(state.base);
-      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
+      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === '3d' ? 'Mapbox 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
       const satellite = state.base === 'satellite', topographic = state.base === 'topographic', dark = state.base === 'dark';
       const cycle = state.base === 'cycle', transit = state.base === 'transit';
       const name = satellite ? 'Satellite imagery' : topographic ? 'Topographic tiles' : cycle ? 'Cycle map tiles' : transit ? 'Transit map tiles' : 'Street map tiles';

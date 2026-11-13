@@ -5,6 +5,7 @@
     const stage = document.querySelector('.map-stage'), host = $('embedded-frame'), status = $('embedded-status');
     const zoomHelp = $('embedded-zoom-help');
     const providers = {
+      '3d': { name: '3D', title: 'Mapbox 3D map', full: view => '/assets/maps-3d.html' + core.makeHash(view), embed: view => '/assets/maps-3d.html' + core.makeHash(view), allow: 'geolocation; fullscreen' },
       plugshare: { name: 'PlugShare', title: 'PlugShare EV charging stations', full: core.plugshareURL, embed: core.plugshareEmbedURL, allow: 'geolocation; fullscreen' },
       shademap: { name: 'ShadeMap', title: 'ShadeMap sunlight and shadow map', full: core.shadeMapURL, embed: core.shadeMapURL, allow: 'fullscreen' },
       adsbexchange: { name: 'ADS-B Exchange', title: 'ADS-B Exchange live aircraft map', full: core.adsbExchangeURL, embed: core.adsbExchangeEmbedURL, allow: 'fullscreen' }
@@ -57,6 +58,13 @@
       zoomHelp.textContent = `Use two-finger scrolling or the map’s zoom controls to zoom ${providers[base].name}.`;
       load();
     }
+    window.addEventListener('message', event => {
+      if (base !== '3d' || event.source !== frame?.contentWindow || event.origin !== location.origin || event.data?.type !== 'gregle-3d-view') return;
+      const view = event.data.view;
+      if (!core.validPoint(view?.lat, view?.lng) || !Number.isFinite(view?.zoom) || view.zoom < 2 || view.zoom > 19) return;
+      viewKey = core.makeHash(view);
+      map.setView([view.lat, view.lng], view.zoom, {animate:false});
+    });
     map.on('moveend', load);
     window.addEventListener('pagehide', remove);
     window.addEventListener('pageshow', event => { if (event.persisted) load(); });
