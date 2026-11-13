@@ -42,6 +42,13 @@ window.GregleNavigation3D = ({onBrowse, onError, onStatus = () => {}}) => {
   function setRoute(value) {
     route = value;
     if (!view?.isStyleLoaded()) return;
+    if (!route) {
+      target?.remove(); target = null;
+      if (view.getLayer?.('navigation-route-line')) view.removeLayer('navigation-route-line');
+      if (view.getLayer?.('navigation-route-casing')) view.removeLayer('navigation-route-casing');
+      if (view.getSource('navigation-route')) view.removeSource('navigation-route');
+      return;
+    }
     const source = view.getSource('navigation-route');
     if (source) source.setData(lineData());
     else {
@@ -97,7 +104,8 @@ window.GregleNavigation3D = ({onBrowse, onError, onStatus = () => {}}) => {
     $('navigation-lane-distance').textContent = `Lanes in ${core.distance(junction.at - result.along)}`;
     $('navigation-lanes').hidden = false;
   }
-  async function enter(value) {
+  async function enter(value, point) {
+    if (!value && !core.valid(point)) throw Error('A current location is needed for 3D driving');
     const token = ++generation;
     await loadLibrary();
     if (token !== generation) return false;
@@ -109,7 +117,7 @@ window.GregleNavigation3D = ({onBrowse, onError, onStatus = () => {}}) => {
     if (typeof config.publicToken !== 'string' || !config.publicToken.startsWith('pk.')) throw Error('3D map configuration unavailable');
     contextLost = false; losses = 0; lastCamera = 0;
     route = value; latest = null; heading = 0; follow = true;
-    const first = route.points[0], next = route.points.find(p => core.meters({lat: first[0], lng: first[1]}, {lat: p[0], lng: p[1]}) > 10);
+    const first = route ? route.points[0] : [point.lat, point.lng], next = route?.points.find(p => core.meters({lat: first[0], lng: first[1]}, {lat: p[0], lng: p[1]}) > 10);
     latest = {lat: first[0], lng: first[1]};
     if (next) {
       const rad = Math.PI / 180, delta = (next[1] - first[1]) * rad;

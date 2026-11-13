@@ -165,3 +165,17 @@ test('removing a stop aborts the remaining legs without publishing a partial rou
   await assert.rejects(service.request(from, to, 'driving', {via: [stop], signal: abort.signal}), {name: 'AbortError'});
   assert.equal(calls, 1);
 });
+
+
+test('four intermediate stops compose five ordered legs and reject a fifth before any request',async()=>{
+ const via=Array.from({length:4},(_,i)=>({lat:48.421+i*.002,lng:-123.36,name:'Stop '+(i+1)})),calls=[];
+ const service=routing.create({storage:storage(false),fetch:async url=>{
+  calls.push(url);const coordinates=new URL(url).pathname.split('/').at(-1).split(';').map(pair=>pair.split(',').map(Number));
+  return ok({code:'Ok',routes:[{geometry:{type:'LineString',coordinates},distance:100,duration:30,legs:[{steps:[{distance:100,maneuver:{type:'depart',location:coordinates[0]}},{distance:0,maneuver:{type:'arrive',location:coordinates[1]}}]}]}]});
+ }});
+ const route=await service.request(from,to,'driving',{via});assert.equal(calls.length,5);assert.equal(route.stops.length,4);assert.equal(route.duration,150);
+ assert.deepEqual(route.stops.map(p=>p.name),via.map(p=>p.name));assert.equal(route.steps.filter(s=>s.type==='stop').length,4);
+ const places=[from,...via,to];for(let i=0;i<5;i++)assert(calls[i].includes(places[i].lng.toFixed(6)+','+places[i].lat.toFixed(6)+';'+places[i+1].lng.toFixed(6)+','+places[i+1].lat.toFixed(6)));
+ await assert.rejects(service.request(from,to,'driving',{via:[...via,via[0]]}),/four/);assert.equal(calls.length,5);
+ assert.equal(core.links(from,to,'driving',[...via,via[0]]),null);
+});

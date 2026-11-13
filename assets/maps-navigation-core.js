@@ -13,7 +13,7 @@
     return `${base}/${from.lng.toFixed(6)},${from.lat.toFixed(6)};${to.lng.toFixed(6)},${to.lat.toFixed(6)}?overview=full&geometries=geojson&steps=true&radiuses=${mode === 'walking' ? '250;250' : '1000;1000'}`;
   }
   function links(from, to, mode = 'driving', stops = []) {
-    if (!valid(from) || !valid(to) || !stops.every(valid)) return null;
+    if (!valid(from) || !valid(to) || !Array.isArray(stops) || stops.length > 4 || !stops.every(valid)) return null;
     const google = new URL('https://www.google.com/maps/dir/');
     for (const [key, value] of Object.entries({ api: '1', origin: coords(from), destination: coords(to), travelmode: mode, dir_action: 'navigate' })) google.searchParams.set(key, value);
     if (stops.length) google.searchParams.set('waypoints', stops.map(coords).join('|'));

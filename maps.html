@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261113-parking">
+  <link rel="stylesheet" href="assets/maps.css?v=20261113-free-drive">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -45,10 +45,11 @@
   <script src="assets/maps-aviation.js?v=20261019-aviation-worker" defer></script>
   <script src="assets/maps-ev-core.js?v=20261018-daily-fuel" defer></script>
   <script src="assets/maps-ev.js?v=20261018-daily-fuel" defer></script>
-  <script src="assets/maps-3d-layers.js?v=20261112-openfree" defer></script>
-  <script src="assets/maps-embed.js?v=20261112-openfree" defer></script>
+  <script src="assets/maps-3d-layers.js?v=20261113-aircraft-card" defer></script>
+  <script src="assets/maps-embed.js?v=20261113-aircraft-card" defer></script>
   <script src="assets/maps-aircraft-core.js?v=20261103-wide-view2" defer></script>
-  <script src="assets/maps-aircraft.js?v=20261113-rotation" defer></script>
+  <script src="assets/maps-aircraft-card.js?v=20261113" defer></script>
+  <script src="assets/maps-aircraft.js?v=20261113-card" defer></script>
   <script src="assets/maps-vessels-core.js?v=20261018-vessel-types" defer></script>
   <script src="assets/maps-vessels.js?v=20261113-rotation" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
@@ -62,18 +63,19 @@
   <script src="assets/maps-parking.js?v=20261113-key" defer></script>
   <script src="assets/maps-layers.js?v=20261113-parking" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
-  <script src="assets/maps-navigation-core.js?v=20261111-navigation-stop" defer></script>
-  <script src="assets/maps-routing.js?v=20261111-navigation-stop" defer></script>
-  <script src="assets/maps-navigation-3d.js?v=20261113-tesla-recovery" defer></script>
-  <script src="assets/maps-navigation-live.js?v=20261113-rotation" defer></script>
+  <script src="assets/maps-navigation-core.js?v=20261113-four-stops" defer></script>
+  <script src="assets/maps-routing.js?v=20261113-four-stops" defer></script>
+  <script src="assets/maps-navigation-3d.js?v=20261113-free-drive" defer></script>
+  <script src="assets/maps-navigation-live.js?v=20261113-free-drive" defer></script>
   <script src="assets/maps-transit-journey-core.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
-  <script src="assets/maps-navigation.js?v=20261112-car-home" defer></script>
+  <script src="assets/maps-navigation.js?v=20261113-free-drive" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
-  <script src="assets/maps-drawer.js?v=20261113-parking-key" defer></script>
-  <script src="assets/maps-context-menu.js?v=20261113-rotation" defer></script>
+  <script src="assets/maps-drawer.js?v=20261113-aircraft-card" defer></script>
+  <script src="assets/maps-qr.js?v=20261113" defer></script>
+  <script src="assets/maps-context-menu.js?v=20261113-qr" defer></script>
   <script src="assets/maps-saved-places.js?v=20261112-car-home" defer></script>
-  <script src="assets/maps.js?v=20261113-compass-dial" defer></script>
+  <script src="assets/maps.js?v=20261113-free-drive" defer></script>
   <script src="assets/maps-gps-test.js?v=20261112-settings-icon" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
@@ -116,6 +118,7 @@
         <button type="button" role="menuitem" id="map-context-start">Start here</button>
         <button type="button" role="menuitem" id="map-context-measure">Measure distance</button>
         <button type="button" role="menuitem" id="map-context-share">Share location</button>
+        <button type="button" role="menuitem" id="map-context-qrcode">QR code</button>
         <a role="menuitem" id="map-context-what3words" href="https://what3words.com/" target="_blank" rel="noopener noreferrer">Open in what3words ↗</a>
       </div>
       <div class="map-context-coordinates"><span id="map-context-lat"></span><span id="map-context-lng"></span><span id="map-context-pluscode"></span></div>
@@ -162,10 +165,22 @@
       <form id="directions-search-form">
         <label for="directions-from">Starting point</label>
         <div class="directions-field"><input id="directions-from" type="search" autocomplete="off" maxlength="180" placeholder="My location" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button type="button" id="directions-location" title="Use my location" aria-label="Use my location"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false" style="vertical-align:middle"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button></div>
-        <button class="directions-add-stop" id="directions-add-stop" type="button" aria-expanded="false" aria-controls="directions-stop-row"><span aria-hidden="true">＋</span> Add stop</button>
+        <button class="directions-add-stop" id="directions-add-stop" type="button" aria-expanded="false" aria-controls="directions-stop-row directions-stop2-row directions-stop3-row directions-stop4-row"><span aria-hidden="true">＋</span> Add stop</button>
         <div id="directions-stop-row" hidden>
-          <label for="directions-stop">Stop</label>
-          <div class="directions-field"><input id="directions-stop" type="search" autocomplete="off" maxlength="180" placeholder="Search a stop" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button id="directions-remove-stop" type="button" aria-label="Remove stop" title="Remove stop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+          <label for="directions-stop">Stop 1</label>
+          <div class="directions-field"><input id="directions-stop" type="search" autocomplete="off" maxlength="180" placeholder="Search stop 1" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button id="directions-remove-stop" type="button" aria-label="Remove stop 1" title="Remove stop 1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+        </div>
+        <div id="directions-stop2-row" hidden>
+          <label for="directions-stop2">Stop 2</label>
+          <div class="directions-field"><input id="directions-stop2" type="search" autocomplete="off" maxlength="180" placeholder="Search stop 2" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button id="directions-remove-stop2" type="button" aria-label="Remove stop 2" title="Remove stop 2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+        </div>
+        <div id="directions-stop3-row" hidden>
+          <label for="directions-stop3">Stop 3</label>
+          <div class="directions-field"><input id="directions-stop3" type="search" autocomplete="off" maxlength="180" placeholder="Search stop 3" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button id="directions-remove-stop3" type="button" aria-label="Remove stop 3" title="Remove stop 3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+        </div>
+        <div id="directions-stop4-row" hidden>
+          <label for="directions-stop4">Stop 4</label>
+          <div class="directions-field"><input id="directions-stop4" type="search" autocomplete="off" maxlength="180" placeholder="Search stop 4" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button id="directions-remove-stop4" type="button" aria-label="Remove stop 4" title="Remove stop 4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
         </div>
         <label for="directions-to">Destination</label>
         <div class="directions-field"><input id="directions-to" type="search" autocomplete="off" maxlength="180" placeholder="Search a destination" aria-controls="directions-results" aria-describedby="map-suggestion-help"><button type="button" id="directions-swap" aria-label="Swap start and destination">⇅</button></div>
@@ -176,7 +191,7 @@
       <div class="directions-actions"><button type="button" id="directions-route" disabled>Show route</button><button type="button" id="directions-clear">Clear route</button></div>
       <div id="directions-handoff" hidden><a id="directions-google" target="_blank" rel="noopener">Navigate in Google Maps ↗</a><a id="directions-apple" target="_blank" rel="noopener">Navigate in Apple Maps ↗</a></div>
       <div id="directions-transit-options" aria-label="Transit journey options" hidden></div><div id="directions-summary" hidden><strong id="directions-total"></strong><div class="route-traffic-row" id="directions-traffic-row" hidden><span>Use live traffic</span><button class="route-traffic-switch" id="directions-traffic" type="button" role="switch" aria-label="Use live traffic" aria-checked="false" disabled aria-describedby="directions-estimate-note"></button></div><p id="directions-estimate-note">Estimated driving time excludes live traffic and ferry waits.</p><button type="button" id="directions-traffic-connect" hidden>Connect TomTom</button><div class="directions-launch"><button type="button" id="directions-3d" disabled>3D mode</button><button type="button" id="directions-start" disabled>Start navigation</button></div><p id="journey-vehicle-status" role="status" hidden></p><a id="journey-vehicle-credit" class="transit-vehicle-credit" target="_blank" rel="noopener noreferrer" hidden></a><details><summary>Route steps</summary><ol id="directions-steps"></ol></details></div>
-      <p class="directions-credit">Routes: <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox (3D)</a> / <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a> / <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: overpass.ch / OpenStreetMap. Live navigation needs location permission and an internet connection. Route requests share your start and destination with the routing service.</p>
+      <p class="directions-credit">Routes: <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox (3D)</a> / <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a> / <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: overpass.ch / OpenStreetMap. Live navigation needs location permission and an internet connection. Route requests share your start, stops and destination with the routing service.</p>
     </section>
     <section id="transit-navigation" class="navigation-live transit-guidance map-glass" aria-label="Transit journey guidance" hidden>
       <p id="transit-guidance-progress"></p><h2 id="transit-guidance-cue" aria-live="polite"></h2>
@@ -197,6 +212,7 @@
       <div class="navigation-controls"><button id="navigation-3d" type="button" aria-pressed="false">3D mode</button><button id="navigation-follow" type="button" aria-pressed="true">Following</button><button id="navigation-voice" type="button" aria-pressed="false">Voice off</button><button id="navigation-stop" type="button">Stop</button></div>
     </section>
     <div class="map-actions" role="group" aria-label="Map tools">
+      <button class="map-icon-button" id="map-car-drive" type="button" aria-label="Drive without a destination" title="Drive without a destination" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 2-5h10l2 5M4 9h16v9H4zM7 18v3m10-3v3M7 13h2m6 0h2"/></svg></button>
       <button class="map-icon-button" id="map-car-home" type="button" aria-label="Navigate home in 3D" title="Navigate home in 3D" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8"/></svg></button>
       <button class="map-icon-button" id="map-directions-toggle" type="button" aria-label="Directions" aria-expanded="false" aria-controls="map-directions" title="Directions" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/></svg></button>
       <button class="map-icon-button" id="map-base-toggle" type="button" aria-label="Base map" aria-expanded="false" aria-controls="map-base-panel" title="Base map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/></svg></button>
@@ -383,6 +399,17 @@
     <div class="map-notice map-glass" id="map-notice" role="status" hidden></div>
     <div class="map-link-copy map-glass" id="map-link-copy" hidden><label for="map-link-input">Copy this map link</label><div><input id="map-link-input" type="url" readonly><button class="map-dismiss" id="close-map-link" type="button" aria-label="Close map link">×</button></div></div>
     <a class="map-report" href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue ↗</a>
+    <section id="aircraft-info-card" class="aircraft-info-card map-glass" aria-label="Aircraft details" hidden>
+      <div class="aircraft-info-heading"><button id="aircraft-info-drag" type="button" aria-label="Move aircraft details" aria-describedby="aircraft-info-help"><span aria-hidden="true">⠿</span> Aircraft details</button><button id="aircraft-info-close" class="map-dismiss" type="button" aria-label="Close aircraft details">×</button></div>
+      <span id="aircraft-info-help" class="sr-only">Drag to move this card. When focused, use arrow keys to move it or Home to reset its position.</span>
+      <div id="aircraft-info-content"></div>
+    </section>
+    <dialog id="map-qr-dialog" class="saved-place-dialog map-qr-dialog" aria-labelledby="map-qr-heading" aria-describedby="map-qr-status">
+      <div class="layers-heading"><h2 id="map-qr-heading" tabindex="-1">Location QR code</h2><button id="map-qr-close" class="map-dismiss" type="button" aria-label="Close location QR code">×</button></div>
+      <div id="map-qr-code" class="map-qr-code"></div>
+      <p id="map-qr-status" role="status"></p><p id="map-qr-coordinates"></p>
+      <a id="map-qr-link" target="_blank" rel="noopener">Open this location ↗</a>
+    </dialog>
     <dialog id="saved-place-dialog" class="saved-place-dialog" aria-labelledby="saved-place-heading" aria-describedby="saved-place-help">
       <div class="layers-heading"><h2 id="saved-place-heading" tabindex="-1">Home &amp; Work</h2><button id="saved-place-close" class="map-dismiss" type="button" aria-label="Close saved locations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
       <p id="saved-place-help">Saved only in this browser. Select the empty map search field, then tap Home or Work to navigate from your current location. Use the pencil to edit these locations.</p>

@@ -5,7 +5,7 @@
     const stage = document.querySelector('.map-stage'), host = $('embedded-frame'), status = $('embedded-status');
     const zoomHelp = $('embedded-zoom-help');
     const providers = {
-      '3d': { name: '3D', title: 'OpenFreeMap 3D map', full: view => '/assets/maps-3d.html' + core.makeHash(view), embed: view => '/assets/maps-3d.html' + core.makeHash(view), allow: 'geolocation; fullscreen' },
+      '3d': { name: '3D', title: 'OpenFreeMap 3D map', full: view => '/assets/maps-3d.html?v=20261113-aircraft-card' + core.makeHash(view), embed: view => '/assets/maps-3d.html?v=20261113-aircraft-card' + core.makeHash(view), allow: 'geolocation; fullscreen' },
       plugshare: { name: 'PlugShare', title: 'PlugShare EV charging stations', full: core.plugshareURL, embed: core.plugshareEmbedURL, allow: 'geolocation; fullscreen' },
       shademap: { name: 'ShadeMap', title: 'ShadeMap sunlight and shadow map', full: core.shadeMapURL, embed: core.shadeMapURL, allow: 'fullscreen' },
       adsbexchange: { name: 'ADS-B Exchange', title: 'ADS-B Exchange live aircraft map', full: core.adsbExchangeURL, embed: core.adsbExchangeEmbedURL, allow: 'fullscreen' }

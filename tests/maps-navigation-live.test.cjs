@@ -31,6 +31,7 @@ test('progress follows geometry, advances turns, detects deviation and arrival',
   assert.equal(core.progress(route, { lat: NaN, lng: 0 }), null);
 });
 function harness({connected = false, threeDFactory} = {}) {
+  const cameras = [];
   const elements = new Map(), events = {}, cleared = [], pending = [], markers = [], spoken = [], removed = [];
   let now = 1800000000000, success, failure, tick, stopMessage, routeUpdates = 0;
   class El {
@@ -47,12 +48,12 @@ function harness({connected = false, threeDFactory} = {}) {
     setInterval: f => { tick = f; return 1; }, clearInterval() {}, setTimeout: () => 1, clearTimeout() {},
     fetch: (url, options) => new Promise(resolve => pending.push({ url, options, resolve })) };
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation-live.js'), 'utf8'), context);
-  const map = { on: (e, f) => { events[e] = f; }, removeLayer: l => removed.push(l), panTo() {}, getSize: () => ({ x: 600, y: 800 }), project: () => ({ y: 100 }), unproject: p => p, setView() {} };
+  const map = { on: (e, f) => { events[e] = f; }, removeLayer: l => removed.push(l), panTo() {}, getSize: () => ({ x: 600, y: 800 }), project: () => ({ y: 100 }), unproject: p => p, setView(...args) { cameras.push(args); } };
   const routing = traffic.create({fetch: context.fetch, storage: { getItem: key => connected && key === 'gregle-maps-tomtom-key' ? 'test-key-1234567890' : null, setItem() {} }});
   if (connected) routing.setEnabled(true);
   const request = routing.request; routing.request = async (...args) => ({...await request(...args), fetchedAt: now});
   const live = context.window.GregleLiveNavigation({ map, routing, onRoute: () => { routeUpdates++; }, onStop: m => { stopMessage = m; } });
-  return { el, live, routing, context, pending, cleared, markers, spoken, removed, events, tick: () => tick(), advance: ms => { now += ms; }, routeUpdates: () => routeUpdates, message: () => stopMessage,
+  return { cameras, el, live, routing, context, pending, cleared, markers, spoken, removed, events, tick: () => tick(), advance: ms => { now += ms; }, routeUpdates: () => routeUpdates, message: () => stopMessage,
     fix: (p, accuracy = 5, age = 0) => success({ coords: { latitude: p.lat, longitude: p.lng, accuracy }, timestamp: now - age }), error: code => failure({ code }) };
 }
 test('GPS watch follows movement, recenter works, and stop clears watch ID zero', () => {
@@ -203,5 +204,34 @@ test('live rerouting retains an unvisited stop and drops it only after reaching 
   h.fix(corner); h.fix({lat: corner.lat, lng: -123.357});
   h.routing.setEnabled(true); await h.live.refreshTraffic();
   assert.equal(requests.at(-1)[3].via.length, 0);
+  h.live.stop();
+});
+
+
+test('destination-free driving follows fresh GPS without routing and releases the watch on stop', () => {
+  const h=harness({connected:true}); h.live.startDrive();
+  h.fix(origin); h.fix({lat:49,lng:-124});
+  assert.equal(h.cameras.length,2); assert.equal(h.pending.length,0);
+  assert.equal(h.el('navigation-instruction').textContent,'No destination');
+  assert.equal(h.el('navigation-remaining').textContent,''); assert(h.el('navigation-voice').hidden);
+  h.events.dragstart(); h.fix(origin); assert.equal(h.cameras.length,2);
+  h.el('navigation-follow').click(); h.fix(origin); assert.equal(h.cameras.length,3);
+  h.advance(16000);h.tick();assert.match(h.el('navigation-status').textContent,/GPS signal lost/);
+  h.fix(origin);assert.equal(h.el('navigation-instruction').textContent,'No destination');
+  h.live.refreshTraffic();assert.equal(h.pending.length,0);
+  h.live.stop();assert.deepEqual(h.cleared,[0]);assert.equal(h.message(),'Drive stopped.');
+  h.fix(origin);assert.equal(h.cameras.length,4);
+});
+
+test('destination-free 3D waits for accepted GPS and never requests a destination route', async () => {
+  const enters=[],updates=[];let active=false;
+  const view={get active(){return active;},enter:async(route,point)=>{enters.push({route,point});active=true;return true;},exit(){active=false;},setFollow(){},update:p=>updates.push(p),clearGuidance(){}};
+  const h=harness({threeDFactory:()=>view});h.live.startDrive({threeD:true});
+  assert.equal(enters.length,0);h.fix(origin,150);assert.equal(enters.length,0);
+  h.fix(origin);await new Promise(setImmediate);
+  assert.equal(enters.length,1);assert.equal(enters[0].route,null);assert.equal(enters[0].point.lat,origin.lat);
+  assert.equal(h.el('navigation-3d').textContent,'2D mode');assert.equal(h.pending.length,0);
+  h.fix(destination);assert.equal(updates.at(-1).lng,destination.lng);
+  await h.el('navigation-3d').click();h.fix(origin);assert(h.cameras.length>=2);assert.equal(h.pending.length,0);
   h.live.stop();
 });

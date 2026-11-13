@@ -12,7 +12,7 @@ function harness() {
       addEventListener(name, fn) { this.events[name] = fn; },
       click() { this.events.click(); }, focus() { document.activeElement = this; },
       getBoundingClientRect: () => ({ left: 0, top: 0 }),
-      contains: () => false, querySelectorAll: () => ['pin','navigate','start','measure','share','what3words'].map(s => el('map-context-' + s))
+      contains: () => false, querySelectorAll: () => ['pin','navigate','start','measure','share','qrcode','what3words'].map(s => el('map-context-' + s))
     });
     return els.get(id);
   }
@@ -31,7 +31,7 @@ function harness() {
   const window = { GreglePlusCodes:require('../assets/maps-pluscodes.js'), GregleMaps: core, addEventListener() {} };
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-context-menu.js'), 'utf8'), { window, document, L });
   const api = window.GregleMapContextMenu({ map, enabled: () => true, ignore: () => false,
-    onAction() {}, onPin: p => calls.push(['pin', p]), onShare: p => calls.push(['share',p]),
+    onAction() {}, onQR: p => calls.push(['qr',p]), onPin: p => calls.push(['pin', p]), onShare: p => calls.push(['share',p]),
     navigation: { choosePoint: (f,p) => calls.push([f,p]), navigateTo: p => calls.push(['to',p]) }
   });
   const rightClick = (lat=0,lng=181) => events.get('contextmenu')({ latlng: {lat,lng}, originalEvent: {preventDefault(){}} });
@@ -105,4 +105,11 @@ test('a second touch on the selected pin opens its actions while desktop clicks 
  ctx.handler({originalEvent:{pointerType:'touch'}});ctx.handler({originalEvent:{pointerType:'touch'}});
  assert.deepEqual(calls,['details','menu']);
  ctx.handler({originalEvent:{pointerType:'mouse'}});assert.equal(calls.at(-1),'details');
+});
+
+
+test('QR code uses the right-clicked point even after another context location was opened', () => {
+ const h=harness();h.rightClick(48.42,-123.36);h.rightClick(49.1,236.5);h.el('map-context-qrcode').click();
+ assert.equal(h.calls.at(-1)[0],'qr');assert.equal(h.calls.at(-1)[1].lat,49.1);assert.equal(h.calls.at(-1)[1].lng,-123.5);
+ assert.equal(h.el('map-context-menu').hidden,true);
 });

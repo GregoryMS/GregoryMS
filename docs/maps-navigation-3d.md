@@ -55,3 +55,10 @@ In car mode, directions, location results, and panel changes no longer focus tex
 fields automatically. Tap a field to type. Directions defaults to My location
 when opened without a chosen start. Ordinary map visits request current location;
 shared map views and pins retain their position, and denied GPS keeps the map usable.
+
+
+Car mode also has a Drive button for destination-free GPS following. Its 3D shortcut opens Mapbox navigation (using the planned driving route when one is available, otherwise a destination-free drive). A free drive starts in 2D and waits for an accepted GPS fix before opening 3D. It makes no directions or traffic-route requests and shows no destination pin or route line. Panning pauses following; Recenter resumes it. Stop and page exit clear the GPS watch. GPS accuracy checks and Tesla rendering/recovery limits also apply to free drives.
+
+Driving and walking support up to four ordered intermediate stops. Routes compose at most five provider legs; rerouting retains only unvisited stops. Removing a stop shifts later stops, and swapping the endpoints reverses their order. Transit keeps the stops for later driving/walking use but plans between its two endpoints. Saved journeys read both the previous single-stop format and the four-stop format.
+
+The point context menu can generate a QR code for a Gregle Maps pin at the selected coordinates. The QR encoder (qrcode-generator 1.4.4, Kazuhiko Arase, MIT licence; bundled licence alongside the script) loads only when this option is used. Encoding happens locally, without a third-party QR service.

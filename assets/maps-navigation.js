@@ -1,18 +1,29 @@
 'use strict';
-window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onConnectTraffic = () => {} }) => {
+window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onConnectTraffic = () => {}, onDriveStart = () => false, notify = () => {} }) => {
   const $ = id => document.getElementById(id), core = window.GregleNavigation;
   const routing = window.GregleMapRouting.create({defaultAvailable: config.serverTomTom === true});
   const panel = $('map-directions'), toggle = $('map-directions-toggle');
-  const inputs = { from: $('directions-from'), stop: $('directions-stop'), to: $('directions-to') }, points = { from: null, stop: null, to: null };
-  let stopEnabled = false;
-  const hasStop = () => stopEnabled && mode !== 'transit';
-  const stops = () => hasStop() && core.valid(points.stop) ? [{...points.stop}] : [];
-  const canRoute = () => core.valid(points.from) && core.valid(points.to) && (!hasStop() || core.valid(points.stop));
-  const nextField = field => field === 'from' ? (hasStop() ? 'stop' : 'to') : field === 'stop' ? 'to' : 'from';
+  const stopFields = ['stop', 'stop2', 'stop3', 'stop4'], fields = ['from', ...stopFields, 'to'];
+  const inputs = Object.fromEntries(fields.map(field => [field, $('directions-' + field)]));
+  const points = Object.fromEntries(fields.map(field => [field, null]));
+  let stopCount = 0;
+  const isStop = field => stopFields.includes(field);
+  const stopRow = field => $('directions-' + field + '-row');
+  const removeStopButton = field => $('directions-remove-' + field);
+  const hasStop = () => stopCount > 0 && mode !== 'transit';
+  const activeStops = () => hasStop() ? stopFields.slice(0, stopCount) : [];
+  const stops = () => activeStops().map(field => ({...points[field]}));
+  const canRoute = () => core.valid(points.from) && core.valid(points.to) && activeStops().every(field => core.valid(points[field]));
+  const nextField = field => { const order = ['from', ...activeStops(), 'to']; return order[(order.indexOf(field) + 1) % order.length]; };
   function syncStop() {
-    $('directions-add-stop').hidden = stopEnabled || mode === 'transit';
+    $('directions-add-stop').hidden = stopCount >= 4 || mode === 'transit';
     $('directions-add-stop').setAttribute('aria-expanded', String(hasStop()));
-    $('directions-stop-row').hidden = !hasStop();
+    stopFields.forEach((field, index) => { stopRow(field).hidden = mode === 'transit' || index >= stopCount; });
+  }
+  function resetStops() {
+    stopCount = 0;
+    for (const field of stopFields) { points[field] = null; inputs[field].value = ''; }
+    stopRow('stop4').after?.($('directions-results')); syncStop();
   }
   function syncHandoff() {
     const urls = canRoute() ? core.links(points.from, points.to, mode, stops()) : null;
@@ -50,15 +61,16 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     try {
       if (mode === 'transit' || !currentRoute || !canRoute()) return;
       localStorage.setItem(resumeKey, JSON.stringify({
-        savedAt: Date.now(), mode, threeD, stopEnabled,
-        from: points.from, stop: points.stop, to: points.to
+        savedAt: Date.now(), mode, threeD, stops: stops(),
+        from: points.from, to: points.to
       }));
     } catch {}
   };
   const clearJourney = () => { try { localStorage.removeItem(resumeKey); } catch {} };
   window.addEventListener?.('pagehide', () => { unloading = true; });
-  const navigationStopped = message => {
+  const navigationStopped = (message, {freeDrive = false} = {}) => {
     if (!unloading && !restoring) clearJourney();
+    if (freeDrive) { notify(message); $('map-car-drive')?.focus({preventScroll:true}); return; }
     showNavigationResult(message);
   };
   const live = window.GregleLiveNavigation?.({ map, routing, onRoute: renderRoute, onStop: navigationStopped });
@@ -114,7 +126,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   function setPoint(field, point) {
     points[field] = { lat: point.lat, lng: point.lng, name: point.name, detail: point.detail };
     inputs[field].value = [point.name, point.detail].filter(Boolean).join(' · ');
-    invalidate(canRoute() ? `Ready to find a ${mode} route.` : hasStop() && !points.stop ? 'Search and choose your stop.' : 'Choose the other end of your journey.');
+    invalidate(canRoute() ? `Ready to find a ${mode} route.` : hasStop() && !activeStops().every(field => core.valid(points[field])) ? 'Search and choose each stop.' : 'Choose the other end of your journey.');
   }
   // Car mode opens the keyboard only after a field itself is tapped.
   const focusField = field => { if (!document.body?.classList.contains('vehicle-layout')) inputs[field].focus(); };
@@ -126,8 +138,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     onOpen();
   }
   function choosePoint(field, point, locate = true) {
-    if (!['from', 'stop', 'to'].includes(field) || !core.valid(point)) return;
-    if (field === 'stop') { stopEnabled = true; syncStop(); }
+    if (!fields.includes(field) || !core.valid(point)) return;
+    if (isStop(field)) { stopCount = Math.max(stopCount, stopFields.indexOf(field) + 1); syncStop(); }
     open(); setPoint(field, point);
     active = nextField(field); focusField(active);
     if (locate && field === 'to') defaultStart();
@@ -144,7 +156,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       mode = 'driving';
       for (const travel of ['driving', 'walking', 'transit']) $('directions-' + travel)?.setAttribute('aria-pressed', String(travel === mode));
     }
-    stopEnabled = false; points.stop = null; inputs.stop.value = ''; syncStop();
+    resetStops();
     open(); setPoint('to', point);
     // Saved shortcuts always start at the device, even after a manually planned route.
     points.from = null; inputs.from.value = '';
@@ -161,8 +173,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     if (travel === mode) return;
     mode = travel;
     for (const choice of ['driving', 'walking', 'transit']) $('directions-' + choice)?.setAttribute('aria-pressed', String(choice === mode));
-    syncStop(); if (active === 'stop' && mode === 'transit') active = 'to';
-    invalidate(mode === 'transit' && stopEnabled ? 'Transit uses the start and destination. Your stop is kept for driving or walking.' : `Choose locations, then show your ${mode} route.`);
+    syncStop(); if (isStop(active) && mode === 'transit') active = 'to';
+    invalidate(mode === 'transit' && stopCount ? 'Transit uses the start and destination. Your stops are kept for driving or walking.' : `Choose locations, then show your ${mode} route.`);
   });
   function startNavigation(threeD = false) {
     const engine=mode==='transit'?transitLive:live;
@@ -181,6 +193,26 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       showNavigationResult(message);
     }
   }
+  function startDrive({threeD = false} = {}) {
+    if (!live?.startDrive) return;
+    invalidate(); clearJourney();
+    const base3D = onDriveStart();
+    panel.hidden = true; toggle.setAttribute('aria-expanded', 'false');
+    document.querySelector('.map-stage').classList.remove('directions-open');
+    try {
+      live.startDrive({threeD: threeD || base3D});
+      if (live.active) $('navigation-stop').focus({preventScroll:true});
+    } catch { live.stop('Driving could not start. Check location access for this site, then try again.'); }
+  }
+  const driveButton = $('map-car-drive');
+  if (driveButton && live?.startDrive) {
+    driveButton.disabled = false;
+    driveButton.addEventListener('click', () => startDrive());
+  }
+  function startCar3D() {
+    if (currentRoute && mode === 'driving') { onDriveStart(); startNavigation(true); }
+    else startDrive({threeD:true});
+  }
   $('directions-start').addEventListener('click', () => startNavigation());
   $('directions-3d')?.addEventListener('click', () => startNavigation(true));
   toggle.addEventListener('click', () => {
@@ -192,8 +224,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   });
   $('close-directions').addEventListener('click', close);
   panel.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } });
-  for (const field of ['from', 'stop', 'to']) {
-    inputs[field].addEventListener('focus', () => {if(active!==field){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();else if(resultsField!==field){$('directions-results').replaceChildren();resultsField=null;}} active = field; $('directions-search').textContent = `Find ${field === 'from' ? 'starting point' : field === 'stop' ? 'stop' : 'destination'}`; });
+  for (const field of fields) {
+    inputs[field].addEventListener('focus', () => {if(active!==field){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();else if(resultsField!==field){$('directions-results').replaceChildren();resultsField=null;}} active = field; $('directions-search').textContent = `Find ${field === 'from' ? 'starting point' : isStop(field) ? 'stop ' + (stopFields.indexOf(field) + 1) : 'destination'}`; });
     const suggest=(schedule=true)=>{active=field;points[field]=null;const eligible=inputs[field].value.trim().length>=3;invalidate(eligible?'Updating suggestions…':'Search and choose a matching place.',eligible&&resultsField===field);if(schedule&&!composing.has(field)&&eligible)suggestionTimer=setTimeout(()=>searchPlaces(field,true),450);};
     inputs[field].addEventListener('input',event=>suggest(!event.isComposing));
     inputs[field].addEventListener('compositionstart',()=>{composing.add(field);suggest(false);});
@@ -207,21 +239,34 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     });
   }
   $('directions-add-stop').addEventListener('click', () => {
-    stopEnabled = true; syncStop(); invalidate('Search and choose a stop.'); active = 'stop'; $('directions-search').textContent = 'Find stop'; focusField('stop');
+    if (stopCount >= 4 || mode === 'transit') return;
+    const field = stopFields[stopCount++];
+    syncStop(); invalidate('Search and choose stop ' + stopCount + '.'); active = field;
+    $('directions-search').textContent = 'Find stop ' + stopCount; focusField(field);
   });
-  $('directions-remove-stop').addEventListener('click', () => {
-    stopEnabled = false; points.stop = null; inputs.stop.value = '';
-    $('directions-stop-row').after?.($('directions-results'));
-    syncStop(); invalidate(); active = 'to'; $('directions-search').textContent = 'Find destination'; $('directions-add-stop').focus({preventScroll: true});
+  for (const field of stopFields) removeStopButton(field).addEventListener('click', () => {
+    const index = stopFields.indexOf(field); if (index >= stopCount) return;
+    for (let i = index; i < stopCount - 1; i++) {
+      points[stopFields[i]] = points[stopFields[i + 1]];
+      inputs[stopFields[i]].value = inputs[stopFields[i + 1]].value;
+    }
+    const last = stopFields[--stopCount]; points[last] = null; inputs[last].value = '';
+    stopRow('stop4').after?.($('directions-results'));
+    syncStop(); invalidate(); active = index < stopCount ? field : 'to';
+    $('directions-search').textContent = active === 'to' ? 'Find destination' : 'Find stop ' + (index + 1);
+    $('directions-add-stop').focus({preventScroll:true});
   });
   $('directions-swap').addEventListener('click', () => {
     [points.from, points.to] = [points.to, points.from];
-    [inputs.from.value, inputs.to.value] = [inputs.to.value, inputs.from.value]; invalidate();
+    [inputs.from.value, inputs.to.value] = [inputs.to.value, inputs.from.value];
+    const reversed = stopFields.slice(0, stopCount).map(field => ({point:points[field],value:inputs[field].value})).reverse();
+    reversed.forEach((item,index) => { points[stopFields[index]] = item.point; inputs[stopFields[index]].value = item.value; });
+    invalidate();
   });
   $('directions-clear').addEventListener('click', () => {
     clearJourney();
-    stopEnabled = false; points.from = points.stop = points.to = null; inputs.from.value = inputs.stop.value = inputs.to.value = '';
-    $('directions-stop-row').after?.($('directions-results')); syncStop(); invalidate(); active = 'from'; focusField('from');
+    resetStops(); points.from = points.to = null; inputs.from.value = inputs.to.value = '';
+    invalidate(); active = 'from'; focusField('from');
   });
   function useLocation(routeAfter = false, startAfter = false, threeD = false) {
     invalidate();
@@ -249,7 +294,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       if(!results){
         if(Date.now()<nextSearch){if(automatic)suggestionTimer=setTimeout(()=>searchPlaces(field,true),nextSearch-Date.now());else status('Please wait a moment, then search again.');return;}
         nextSearch=Date.now()+1000;controller=new AbortController();current=controller;lookupField=field;timer=setTimeout(()=>current.abort(),10000);
-        panel.setAttribute('aria-busy','true');status(`Finding ${field==='from'?'starting points':field==='stop'?'stops':'destinations'}…`);
+        panel.setAttribute('aria-busy','true');status(`Finding ${field==='from'?'starting points':isStop(field)?'stops':'destinations'}…`);
         const response=await fetch(url,{signal:current.signal});if(!response.ok)throw Error('Search unavailable');
         results=window.GregleMaps.readResults(await response.json());if(token!==version||active!==field)return;
         searchCache.set(key,results);while(searchCache.size>20)searchCache.delete(searchCache.keys().next().value);
@@ -276,13 +321,13 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   document.addEventListener?.('visibilitychange',()=>{if(document.hidden&&(suggestionTimer||lookupField)){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();}});
   window.addEventListener?.('pagehide',()=>{clearTimeout(suggestionTimer);controller?.abort();});
   async function calculateRoute(refresh = false, startAfter = false, threeD = false) {
-    if (!canRoute()) { status(hasStop() ? 'Choose a starting point, stop and destination.' : 'Choose a starting point and destination.'); return; }
+    if (!canRoute()) { status(hasStop() ? 'Choose a starting point, every stop and a destination.' : 'Choose a starting point and destination.'); return; }
     if (refresh) { version++; controller?.abort(); }
     else invalidate();
     if (!refresh && Date.now() < nextRoute) { status('Please wait a moment, then show the route again.'); return; }
     nextRoute = Date.now() + 1100;
     const token = version, from = { ...points.from }, to = { ...points.to };
-    controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), mode==='transit'?25000:hasStop()?30000:15000);
+    controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), mode==='transit'?25000:15000 * (activeStops().length + 1));
     panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; $('directions-start').disabled = true; $('directions-3d').disabled = true;
     status(mode === 'driving' && routing.enabled && routing.connected ? 'Finding a route with live traffic…' : `Finding a ${mode} route…`);
     try {
@@ -330,7 +375,9 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   function renderRoute(route, from, to, fit = true) {
     if (!fit && live?.active) {
       points.from = { ...from, name: 'My location' }; inputs.from.value = 'My location';
-      if (hasStop() && !route.stops?.length) { stopEnabled = false; points.stop = null; inputs.stop.value = ''; syncStop(); }
+      const remaining = route.stops || []; resetStops(); stopCount = Math.min(4, remaining.length);
+      remaining.slice(0,4).forEach((point,index) => { const field=stopFields[index]; points[field]={...point}; inputs[field].value=[point.name,point.detail].filter(Boolean).join(' · '); });
+      syncStop();
       syncHandoff();
     }
     currentRoute = route; routeLayers.clearLayers(); $('directions-steps').replaceChildren();
@@ -357,17 +404,18 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   // Re-request routing rather than storing stale geometry, traffic or GPS fixes.
   try {
     const saved = JSON.parse(localStorage.getItem(resumeKey) || 'null');
+    const savedStops = Array.isArray(saved?.stops) ? saved.stops : saved?.stopEnabled ? [saved.stop] : [];
     if (saved && Date.now() - saved.savedAt > 0 && Date.now() - saved.savedAt < 12 * 60 * 60 * 1000 &&
         ['driving', 'walking'].includes(saved.mode) && core.valid(saved.from) && core.valid(saved.to) &&
-        (!saved.stopEnabled || core.valid(saved.stop))) {
+        savedStops.length <= 4 && savedStops.every(core.valid)) {
       restoring = true;
       mode = saved.mode;
       for (const choice of ['driving', 'walking', 'transit'])
         $('directions-' + choice)?.setAttribute('aria-pressed', String(choice === mode));
-      stopEnabled = !!saved.stopEnabled;
+      stopCount = savedStops.length;
       syncStop();
-      for (const field of ['from', 'stop', 'to']) {
-        const point = saved[field];
+      for (const field of fields) {
+        const point = isStop(field) ? savedStops[stopFields.indexOf(field)] : saved[field];
         points[field] = point && core.valid(point) ? point : null;
         inputs[field].value = points[field] ? [point.name, point.detail].filter(Boolean).join(' · ') : '';
       }
@@ -385,5 +433,5 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
       }, 400);
     } else if (saved) clearJourney();
   } catch { clearJourney(); }
-  return { close, refreshTraffic, choosePoint, navigateTo, navigateSaved };
+  return { close, refreshTraffic, choosePoint, navigateTo, navigateSaved, startDrive, startCar3D };
 };

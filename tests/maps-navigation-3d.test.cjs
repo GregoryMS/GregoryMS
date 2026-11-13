@@ -51,3 +51,14 @@ test('Tesla camera updates are capped at one per second and repeated graphics lo
  for(let i=0;i<2;i++){v.events.webglcontextlost();v.events.webglcontextrestored();}
  v.events.webglcontextlost();assert.equal(h.failed(),1);assert(v.removed);
 });
+
+
+test('destination-free 3D starts at GPS without a route line or destination marker',async()=>{
+ const h=setup(),pending=h.api.enter(null,{lat:48.425,lng:-123.355});await new Promise(setImmediate);
+ const v=h.view();v.events.load();assert.equal(await pending,true);
+ assert.equal(v.options.center[0],-123.355);assert.equal(v.options.center[1],48.425);
+ assert.equal(v.layers.length,0);assert.equal(Object.keys(v.sources).length,0);
+ h.advance(1001);h.api.update({lat:48.426,lng:-123.356},{heading:110,speed:10});
+ assert.equal(v.jumps.at(-1).center[0],-123.356);assert.equal(v.jumps.at(-1).bearing,110);
+ h.api.exit();await assert.rejects(h.api.enter(null),/current location/);
+});

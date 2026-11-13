@@ -121,7 +121,7 @@
       try { const value = storage?.getItem('gregle-maps-tomtom-key'); return typeof value === 'string' ? value.trim() : ''; } catch { return ''; }
     }
     async function request(from, to, mode = 'driving', { signal, via = [] } = {}) {
-      if (!Array.isArray(via) || via.length > 1 || !via.every(core.valid)) throw new Error('Choose a valid stop.');
+      if (!Array.isArray(via) || via.length > 4 || !via.every(core.valid)) throw new Error('Choose up to four valid stops.');
       if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
       if (via.length) {
         const places = [from, ...via, to], legs = [];

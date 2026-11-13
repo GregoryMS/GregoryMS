@@ -200,3 +200,30 @@ test('add and remove stop controls require a selected stop and preserve route en
   assert.equal(new URL(h.el('directions-google').href).searchParams.has('waypoints'), false);
   assert.equal(h.el('directions-to').value, b.name);
 });
+
+
+test('car 3D starts a destination-free drive until a driving route is available',async()=>{
+ const calls=[];
+ const h=harness({liveFactory:()=>({active:false,startDrive:options=>calls.push(['drive',options.threeD]),start:(route,mode,to,options)=>calls.push(['route',options.threeD])})});
+ h.api.startCar3D();assert.deepEqual(calls,[['drive',true]]);assert.equal(h.pending.length,0);
+ await endpoints(h);const work=h.el('directions-route').click();h.pending[0].resolve({ok:true,json:async()=>data()});await work;
+ h.api.startCar3D();assert.deepEqual(calls.at(-1),['route',true]);
+});
+
+
+test('four stops stay ordered, removing a middle stop shifts later stops, and swapping reverses them',async()=>{
+ const h=harness();await endpoints(h);
+ const fields=['stop','stop2','stop3','stop4'];
+ for(let i=0;i<4;i++){
+  await h.el('directions-add-stop').click();assert.equal(h.el('directions-'+fields[i]+'-row').hidden,false);
+  assert.equal(h.el('directions-route').disabled,true);h.api.choosePoint(fields[i],{lat:48.43+i*.01,lng:-123.36,name:'Stop '+(i+1)});
+ }
+ assert.equal(h.el('directions-add-stop').hidden,true);assert.equal(h.el('directions-route').disabled,false);
+ assert.equal(new URL(h.el('directions-google').href).searchParams.get('waypoints').split('|').length,4);
+ await h.el('directions-add-stop').click();assert.equal(h.el('directions-add-stop').hidden,true);
+ await h.el('directions-remove-stop2').click();assert.equal(h.el('directions-stop2').value,'Stop 3');assert.equal(h.el('directions-stop3').value,'Stop 4');assert.equal(h.el('directions-stop4-row').hidden,true);
+ await h.el('directions-swap').click();assert.equal(h.el('directions-stop').value,'Stop 4');assert.equal(h.el('directions-stop3').value,'Stop 1');
+ await h.el('directions-transit').click();assert.equal(h.el('directions-stop-row').hidden,true);
+ await h.el('directions-driving').click();assert.equal(h.el('directions-stop3-row').hidden,false);assert.equal(h.el('directions-stop3').value,'Stop 1');
+ await h.el('directions-clear').click();for(const f of fields)assert.equal(h.el('directions-'+f+'-row').hidden,true);
+});

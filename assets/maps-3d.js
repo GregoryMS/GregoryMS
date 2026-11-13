@@ -26,6 +26,7 @@
     };
     window.addEventListener('message',event=>{
       if (event.source !== window.parent || event.origin !== location.origin) return;
+      if(event.data?.type==='gregle-3d-close-details'){popup?.remove();popup=null;}
       if (event.data?.type === 'gregle-3d-overlays' && event.data.data?.type === 'FeatureCollection') { overlays=event.data.data; draw(); }
       if (event.data?.type === 'gregle-3d-details' && typeof event.data.text === 'string' && event.data.point) { popup?.remove(); popup = new window.maplibregl.Popup().setLngLat(event.data.point).setText(event.data.text).addTo(map); }
     });

@@ -562,8 +562,8 @@
 .vehicle-layout .topbar { padding: 10px 20px; }
 .vehicle-layout .map-stage { --map-tools-top: 100px; margin: 0 10px 10px; border-radius: 18px; }
 .vehicle-layout .map-icon-button { width: 56px; height: 56px; padding: 14px; }
-#map-car-home { display: none; }
-.vehicle-layout #map-car-home { display: flex; }
+#map-car-home, #map-car-drive { display: none; }
+.vehicle-layout #map-car-home, .vehicle-layout #map-car-drive { display: flex; }
 .vehicle-layout .map-icon-button svg { width: 26px; height: 26px; }
 .vehicle-layout .map-actions { top: var(--map-tools-top); left: 20px; right: auto; display: flex; flex-wrap: wrap; width: max-content; max-width: calc(100% - 40px); justify-content: flex-start; gap: 8px; }
 .vehicle-layout .map-stage .leaflet-top.leaflet-right { top: calc(var(--map-tools-top) + var(--map-tools-height, 56px) + 12px); left: 20px; right: auto; bottom: auto; }
@@ -991,3 +991,28 @@
 .victoria-parking-marker { border:2px solid white; border-radius:50%; background:#0089b6; color:white; display:grid; place-items:center; box-sizing:border-box; box-shadow:0 1px 4px #0005; font:700 21px/1 system-ui; }
 .victoria-parking-marker.is-lot { background:white; color:#0089b6; border-color:#0089b6; }
 .victoria-parking-marker small { position:absolute; right:-5px; bottom:-3px; border:1px solid #0089b6; border-radius:50%; background:white; color:#0089b6; padding:2px 3px; font:600 10px/1 system-ui; }
+
+/* Destination-free driving uses the same GPS and camera controls as navigation. */
+.free-driving .navigation-trip, .free-driving #navigation-arrow { display:none; }
+.free-driving .navigation-controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+.free-driving .navigation-controls button { min-width:0; }
+
+.map-qr-dialog { width:min(380px,calc(100% - 24px)); text-align:center; }
+.map-qr-code svg { display:block; width:100%; max-width:300px; aspect-ratio:1; margin:12px auto; background:#fff; shape-rendering:crispEdges; }
+.map-qr-dialog a { color:var(--map-accent); }
+
+/* Aircraft details float away from the selected flight and remain movable. */
+#gregle-map .aircraft-map-popup { display:none !important; }
+.aircraft-info-card { position:absolute; z-index:640; width:290px; max-width:calc(100% - 24px); max-height:calc(100% - 100px); display:flex; flex-direction:column; padding:12px 14px; border-radius:18px; box-sizing:border-box; background:rgba(255,255,255,.78); background:color-mix(in srgb,var(--map-surface) 78%,transparent); backdrop-filter:none; -webkit-backdrop-filter:none; }
+.aircraft-info-card[hidden] { display:none; }
+.aircraft-info-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+#aircraft-info-drag { display:flex; align-items:center; gap:6px; min-height:40px; border:0; padding:2px 4px; border-radius:8px; background:transparent; color:var(--text); font:600 13px/1.4 system-ui,sans-serif; cursor:grab; touch-action:none; }
+#aircraft-info-drag:active { cursor:grabbing; }
+#aircraft-info-drag:hover { background:var(--map-accent-soft); color:var(--map-accent); }
+#aircraft-info-drag:focus-visible { outline:2px solid var(--map-accent); outline-offset:2px; }
+#aircraft-info-content { overflow:auto; overscroll-behavior:contain; min-height:0; }
+.aircraft-info-card .aircraft-popup { width:auto !important; color:var(--text); }
+.aircraft-info-card .aircraft-popup :is(dt,.aircraft-meta) { color:var(--muted); }
+.aircraft-info-card .aircraft-popup a { color:var(--map-accent); }
+:is(.navigating,.streetview-active) .aircraft-info-card { display:none; }
+@media(max-width:420px){.aircraft-info-card {width:250px;max-height:calc(100% - 120px);}}

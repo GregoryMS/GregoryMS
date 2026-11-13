@@ -2,6 +2,7 @@
   'use strict';
   window.GregleAircraft = ({ map, notify }) => {
     const core = window.GregleAircraftCore;
+    const infoCard = window.GregleAircraftCard?.({onClose:()=>map.closePopup()});
     const output = document.getElementById('aircraft-layer-status'), refresh = document.getElementById('aircraft-refresh');
     document.getElementById('aircraft-altitude-gradient').style.background = core.altitudeGradient;
     document.getElementById('aircraft-altitude-neutral').style.background = core.neutralColour;
@@ -62,6 +63,7 @@
       card.options.autoPan = false;
       entry.marker.setPopupContent(() => popup(entry.plane, entry.marker));
       card.options.autoPan = autoPan;
+      if (pinnedAircraft === id) infoCard?.show(popup(entry.plane, entry.marker));
     }
     function renderPath() {
       pathGroup.clearLayers();
@@ -139,7 +141,7 @@
       else clearPath();
     }
     function clear() {
-      clearTimeout(hoverTimer); pinnedAircraft = null; hoveredAircraft = null;
+      clearTimeout(hoverTimer); pinnedAircraft = null; hoveredAircraft = null; infoCard?.hide();
       clearPath(); group.clearLayers(); displayed.clear();
     }
     function render() {
@@ -168,9 +170,10 @@
           previous.marker.options.title = title; previous.marker.options.alt = title; previous.marker.setIcon(icon(plane));
           previous.marker.setPopupContent(() => popup(plane, previous.marker));
           card.options.autoPan = autoPan;
+          if (pinnedAircraft === plane.id) infoCard?.show(popup(plane, previous.marker));
         } else {
           const marker = L.marker(point, { rotateWithView:true, title, alt: title, icon: icon(plane), keyboard: true, riseOnHover: true, bubblingMouseEvents: false, zIndexOffset: 100 });
-          marker.bindPopup(() => popup(plane, marker), { minWidth: 140, maxWidth: 290, autoPanPaddingTopLeft: [12, 90], autoPanPaddingBottomRight: [68, 35] }).addTo(group);
+          marker.bindPopup(() => popup(plane, marker), { ...(infoCard ? {className:'aircraft-map-popup',autoPan:false} : {}), minWidth: 140, maxWidth: 290, autoPanPaddingTopLeft: [12, 90], autoPanPaddingBottomRight: [68, 35] }).addTo(group);
           displayed.set(plane.id, { marker, plane, worldLng: point[1] });
           marker.on('mouseover', () => {
             clearTimeout(hoverTimer);
@@ -185,9 +188,10 @@
           });
           marker.on('popupopen', () => {
             clearTimeout(hoverTimer); hoveredAircraft = null; pinnedAircraft = plane.id; updatePathSelection();
+            const entry = displayed.get(plane.id); if(entry) infoCard?.show(popup(entry.plane, marker));
           });
           marker.on('popupclose', () => {
-            if (pinnedAircraft === plane.id) { pinnedAircraft = null; updatePathSelection(); }
+            if (pinnedAircraft === plane.id) { pinnedAircraft = null; infoCard?.hide(); updatePathSelection(); }
           });
         }
       }

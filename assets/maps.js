@@ -278,10 +278,14 @@
   placeDetails = window.GregleMapPlaces({ map, config, onPlace: point => { renderPin(point, false); updateURL(); } });
   syncMapMode(false);
   renderPin(initial.pin); syncStreetView(); updateURL();
-  navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected, onOpen: () => drawer?.show('map-directions', true), onConnectTraffic: () => layerControl.connectTraffic() });
+  navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected, notify, onDriveStart: () => {
+    const state = layerControl.getState(), threeD = state.base === '3d';
+    if (core.isEmbeddedBase(state.base) || state.streetview) layerControl.setState({...state, base:core.isEmbeddedBase(state.base) ? 'street' : state.base, streetview:false}, true);
+    return threeD;
+  }, onOpen: () => drawer?.show('map-directions', true), onConnectTraffic: () => layerControl.connectTraffic() });
   window.GregleSavedPlaces?.({ map, config, navigation, getSelected: () => selected, notify });
   controls.forEach(control => { control.disabled = false; });
-  window.GregleMapRotation?.({map,zoomControl,on3D:()=>layerControl.setState({...layerControl.getState(),base:'3d'},true),onChange:()=>{intent++;updateURL();}});
+  window.GregleMapRotation?.({map,zoomControl,on3D:()=>{if(document.body.classList.contains('vehicle-layout'))navigation?.startCar3D();else layerControl.setState({...layerControl.getState(),base:'3d'},true);},onChange:()=>{intent++;updateURL();}});
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
@@ -307,7 +311,9 @@
     onPin: touch => dropPin({ latlng: map.mouseEventToLatLng(touch), originalEvent: { target: touch.target } }),
   });
   map.on('dblclick', event => { if (!pinGestures.ignoreDoubleClick(event.originalEvent)) dropPin(event); });
+  const showQR = window.GregleMapQR?.();
   contextTools = window.GregleMapContextMenu?.({
+    onQR: point => showQR?.(point),
     map, navigation, enabled: () => !usingEmbed, onShare: shareLocation,
     ignore: event => pinGestures.ignoreDoubleClick(event),
     onAction: () => { intent++; cancelSearch(); hideSearch(); },

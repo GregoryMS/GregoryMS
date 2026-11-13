@@ -22,7 +22,9 @@
     function select({id,point}) {
       const layer=layers.get(Number(id)); if (!layer) return;
       try {
-        let content=layer.getPopup?.()?.getContent();
+        const popup=layer.getPopup?.();
+        if(popup?.options?.className==='aircraft-map-popup'){layer.openPopup();send({type:'gregle-3d-close-details'});return;}
+        let content=popup?.getContent();
         if (typeof content === 'function') content=content(layer);
         let text=content?.textContent;
         if (typeof content === 'string') { const node=document.createElement('div'); node.innerHTML=content; text=node.textContent; }
