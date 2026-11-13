@@ -64,7 +64,7 @@ test('pinch protection applies only to cancellable frame gestures and is removed
 
 test('3D base loads OpenFreeMap at the current view, shares camera changes and restores native maps',()=>{
   const h=setup();h.api.setBase('3d');const frame=h.created[0];frame.contentWindow={};
-  assert.match(frame.src,/^\/assets\/maps-3d.html#map=9\//);assert(frame.allow.includes('geolocation'));
+  const url=new URL(frame.src,'https://maps.gregle.uk');assert.equal(url.pathname,'/assets/maps-3d.html');assert.match(url.hash,/^#map=9\//);assert(frame.allow.includes('geolocation'));
   assert.equal(core.readLayers(core.makeHash(core.defaultView,null,{base:'3d'})).base,'3d');
   h.events.message({source:frame.contentWindow,origin:'https://maps.gregle.uk',data:{type:'gregle-3d-view',view:{lat:49,lng:-123,zoom:12}}});
   assert.equal(h.created.length,1);
