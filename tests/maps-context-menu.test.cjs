@@ -92,7 +92,7 @@ test('sharing links pin the supplied point and support native, clipboard and man
 test('what3words opens the exact menu coordinates without an API request, including pin menu access',()=>{
  const h=harness();h.api.open({lat:48.4284,lng:236.6344});
  assert.equal(h.el('map-context-what3words').href,'https://what3words.com/48.428400,-123.365600');
- assert.match(h.el('map-context-pluscode').textContent,/^Plus Code: [23456789CFGHJMPQRVWX]{8}\+[23456789CFGHJMPQRVWX]{3}$/);
+ assert.match(h.el('map-context-pluscode').textContent,/^OLC: [23456789CFGHJMPQRVWX]{8}\+[23456789CFGHJMPQRVWX]{3}$/);
  assert.equal(h.el('map-context-menu').hidden,false);
  h.el('map-context-what3words').click();assert.equal(h.el('map-context-menu').hidden,true);
 });
