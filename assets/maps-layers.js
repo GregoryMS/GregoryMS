@@ -25,6 +25,7 @@
     const vessels = window.GregleVessels({ map, notify });
     const embed = window.GregleMapEmbed({ map });
     const transit = window.GregleTransit?.({ map });
+    const parking = window.GregleVictoriaParking?.({map});
     const streetView = window.GregleStreetView({ map, getSelected, onOpen: onStreetViewOpen, onSelect: onStreetViewSelect, onClose: () => setState({ ...state, streetview: false }, true) });
     let applied, navigation3D = false;
     window.addEventListener('gregle-navigation-3d',event=>{ navigation3D = event.detail === true; setState(state); });
@@ -113,6 +114,8 @@
       $('vessels-options').hidden = !state.vessels;
       $('map-aircraft').setAttribute('aria-checked', String(state.aircraft));
       $('aircraft-options').hidden = !state.aircraft;
+      $('map-victoria-parking').checked=state.parking;
+      $('victoria-parking-options').hidden=!state.parking;
       $('map-fuel').checked = state.fuel;
       $('fuel-type').value = state.fuelType;
       $('map-ev').checked = state.ev;
@@ -305,6 +308,7 @@
       applied = active;
       if (first || previous.base !== state.base || (!baseLayer && !core.isEmbeddedBase(state.base))) changeBase();
       if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();
+      if(first || previous.parking !== active.parking) parking?.setEnabled(active.parking);
       if (first || previous.fuel !== active.fuel || previous.fuelType !== active.fuelType) fuel.setSelection(active.fuel, active.fuelType);
       if (first || previous.evSource !== state.evSource) { if(!active.ev&&!active.tesla)ev.setSelection(false,false); ev.setSource(state.evSource); }
       if (first || previous.ev !== active.ev || previous.tesla !== active.tesla) ev.setSelection(active.ev, active.tesla);
@@ -342,6 +346,7 @@
       if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); closePanel(true); }
     });
     basePanel.querySelectorAll('input[name="map-base"]').forEach(input => input.addEventListener('change', () => { if (input.checked) setState({ ...state, base: input.value }, true); }));
+    $('map-victoria-parking').addEventListener('change',()=>setState({...state,parking:$('map-victoria-parking').checked},true));
     $('map-fuel').addEventListener('change', () => setState({...state, fuel: $('map-fuel').checked}, true));
     $('fuel-type').addEventListener('change', () => setState({...state, fuelType: $('fuel-type').value}, true));
     $('map-ev').addEventListener('change', () => setState({ ...state, ev: $('map-ev').checked, tesla: $('map-ev').checked }, true));

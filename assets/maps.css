@@ -979,3 +979,15 @@
 
 .map-navigation-controls #map-locate { display:grid; place-items:center; padding:0; }
 .map-navigation-controls #map-locate svg { display:block; width:24px; height:24px; margin:0; }
+
+.victoria-parking-options { padding:8px 0 14px; }
+.victoria-parking-options > button { padding:8px 12px; border:1px solid var(--map-border); border-radius:10px; background:var(--map-accent-soft); color:var(--map-accent); cursor:pointer; }
+.victoria-parking-table { max-width:100%; overflow-x:auto; margin-top:12px; }
+.victoria-parking-table table { width:100%; border-collapse:collapse; font-size:11px; color:var(--text); }
+.victoria-parking-table caption { text-align:left; font-weight:600; margin-bottom:8px; }
+.victoria-parking-table :is(th,td) { padding:7px 4px; text-align:left; border-bottom:1px solid var(--map-border); white-space:nowrap; }
+.parking-swatch { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:5px; border:1px solid #0002; }
+.parking-key-p { background:#0089b6; color:white; padding:1px 5px; border-radius:50%; font-weight:bold; }
+.victoria-parking-marker { border:2px solid white; border-radius:50%; background:#0089b6; color:white; display:grid; place-items:center; box-sizing:border-box; box-shadow:0 1px 4px #0005; font:700 21px/1 system-ui; }
+.victoria-parking-marker.is-lot { background:white; color:#0089b6; border-color:#0089b6; }
+.victoria-parking-marker small { position:absolute; right:-5px; bottom:-3px; border:1px solid #0089b6; border-radius:50%; background:white; color:#0089b6; padding:2px 3px; font:600 10px/1 system-ui; }

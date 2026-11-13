@@ -407,6 +407,8 @@
     // =====================================================================
     var _rendererOnAdd = L.Renderer.prototype.onAdd;
     L.Renderer.prototype.onAdd = function (map) {
+      // Gregle: Leaflet Canvas calls this super method without a map argument.
+      map = map || this._map;
       _rendererOnAdd.call(this, map);
       if (map._rotate) {
         L.DomUtil.addClass(this._container, "leaflet-zoom-animated");
@@ -435,7 +437,8 @@
       // covers the padded viewport at ANY bearing. Independent of bearing, so
       // the SVG isn't re-sized every rotation frame (avoids flicker) and is
       // large enough to never clip shapes when rotated.
-      var p = Math.max(this.options.padding || 0, 1.5);
+      // Gregle: bound Canvas backing-store memory on in-car browsers.
+      var p = this instanceof L.Canvas ? Math.min(this.options.padding || 0.1, 0.25) : Math.max(this.options.padding || 0, 1.5);
       var map = this._map;
       var size = map.getSize();
       var center = map.containerPointToLayerPoint(size.divideBy(2));

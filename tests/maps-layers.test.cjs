@@ -24,7 +24,7 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
   });
   const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener:(name,fn)=>events[name]=fn};
   window.GregleTransit=provider('transit');
-  for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed'}))window[name]=provider(key);
+  for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed',GregleVictoriaParking:'parking'}))window[name]=provider(key);
   const document={body:{classList:{contains:()=>false}},documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
   const L={TileLayer:{extend:()=>function(){}},tileLayer:(url,options)=>{const tile={url,options,events:{},on(name,fn){this.events[name]=fn;return this;},setZIndex(){return this;},addTo(){return this;}};tiles.push(tile);return tile;}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/../assets/maps-layers.js','utf8'),{
@@ -199,4 +199,12 @@ test('3D navigation suspends background providers and restores selected layers o
  assert.equal(h.api.getState().aircraft,true);h.calls.length=0;
  h.emit('gregle-navigation-3d',false);
  for(const name of ['aircraft','drivebc','ev'])assert(h.calls.some(c=>c[0]===name&&c[1]===true),name);
+});
+
+test('Victoria parking is opt-in, stays in OpenFreeMap 3D, and pauses behind external embeds or 3D navigation',()=>{
+ const h=setup({initial:{parking:true}});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
+ h.calls.length=0;h.api.setState({parking:true,base:'plugshare'});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===false));assert.equal(h.api.getState().parking,true);
+ h.calls.length=0;h.api.setState({parking:true,base:'3d'});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
+ h.calls.length=0;h.emit('gregle-navigation-3d',true);assert(h.calls.some(c=>c[0]==='parking'&&c[1]===false));
+ h.calls.length=0;h.emit('gregle-navigation-3d',false);assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
 });
