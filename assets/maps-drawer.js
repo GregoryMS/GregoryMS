@@ -9,6 +9,7 @@ window.GregleMapDrawer = ({ map }) => {
     ['map-place', 'Place', 'clear-pin'], ['map-search-content', 'Search'],
     ['map-directions', 'Directions', 'close-directions'], ['map-base-panel', 'Base map', 'close-map-base'], ['map-layers-panel', 'Layers', 'close-map-layers'],
     ['map-fuel-card', 'Fuel'], ['vessels-legend', 'Vessel key', 'close-vessels-legend'],
+    ['victoria-parking-legend', 'Parking key', 'close-victoria-parking-legend'],
     ['map-feature-details', 'Details'], ['map-link-copy', 'Copy link', 'close-map-link'],
   ];
   let active, rendered, height = 0, expandedHeight = 0, gesture, popupState, currentPopup;

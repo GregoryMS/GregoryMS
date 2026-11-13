@@ -3,6 +3,24 @@
  window.GregleVictoriaParking=({map})=>{
   const $=id=>document.getElementById(id),core=window.GregleParking,group=L.layerGroup().addTo(map),renderer=L.canvas({padding:.2});
   let enabled=false,snapshot,pending,generation=0;
+  const legendToggle=$('victoria-parking-legend-toggle'),legend=$('victoria-parking-legend');
+  function closeLegend(restoreFocus=false){
+   legend.hidden=true;legendToggle.setAttribute('aria-expanded','false');
+   if(restoreFocus&&!legendToggle.hidden)legendToggle.focus({preventScroll:true});
+  }
+  legendToggle.addEventListener('click',()=>{
+   if(!enabled)return;
+   if(!legend.hidden){closeLegend();return;}
+   legend.hidden=false;legendToggle.setAttribute('aria-expanded','true');
+   $('close-victoria-parking-legend').focus({preventScroll:true});
+  });
+  $('close-victoria-parking-legend').addEventListener('click',()=>closeLegend(true));
+  document.addEventListener('click',event=>{
+   if(!event.target.closest?.('#map-drawer')&&!legend.hidden&&!legend.contains(event.target)&&!legendToggle.contains(event.target))closeLegend();
+  });
+  document.addEventListener('keydown',event=>{
+   if(event.key==='Escape'&&!legend.hidden){event.preventDefault();closeLegend(true);}
+  });
   const report=text=>$('victoria-parking-status').textContent=text;
   const money=n=>'$'+n.toFixed(2);
   function popup(title,lines,url){const box=document.createElement('div'),heading=document.createElement('strong');heading.textContent=title;box.append(heading);for(const line of lines){const p=document.createElement('p');p.textContent=line;box.append(p);}const link=document.createElement('a');link.textContent='City of Victoria parking information ↗';link.href=url;link.target='_blank';link.rel='noopener';box.append(link);return box;}
@@ -36,6 +54,12 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden)group.clearLayers();else if(enabled)load();});
   window.addEventListener('pagehide',()=>{generation++;group.clearLayers();});
   window.addEventListener('pageshow',event=>{if(event.persisted&&enabled)load();});
-  return {setEnabled(value){enabled=value;generation++;group.clearLayers();if(enabled)load();}};
+  return {setEnabled(value){
+   enabled=value;generation++;group.clearLayers();legendToggle.hidden=!enabled;
+   if(!enabled){
+    const restoreFocus=legend.contains(document.activeElement)||document.activeElement===legendToggle;
+    closeLegend();if(restoreFocus)$('map-victoria-parking').focus({preventScroll:true});
+   }else load();
+  }};
  };
 })();

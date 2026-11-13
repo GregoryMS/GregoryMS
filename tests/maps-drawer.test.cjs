@@ -23,7 +23,7 @@ function setup(viewport) {
   const get=id=>{if(!nodes.has(id))nodes.set(id,new Node(id));return nodes.get(id);};
   const stage=get('stage'); stage.getBoundingClientRect=()=>({bottom:830});
   const document={activeElement:null,body:get('document-body'),getElementById:get,querySelector:()=>stage,createElement:()=>new Node(),createComment:()=>new Node()};
-  const ids=['map-place','map-search-content','map-directions','map-base-panel','map-layers-panel','map-fuel-card','vessels-legend','map-feature-details','map-link-copy'];
+  const ids=['map-place','map-search-content','map-directions','map-base-panel','map-layers-panel','map-fuel-card','vessels-legend','victoria-parking-legend','map-feature-details','map-link-copy'];
   for(const id of ids)stage.append(get(id));
   const media={matches:true,addEventListener(name,fn){this.changed=fn;}};
   const map={on(name,fn){mapEvents[name]=fn;},closePopup(){mapEvents.popupclose?.({popup:popup});},panInside(point,options){this.pan={point,options};}};

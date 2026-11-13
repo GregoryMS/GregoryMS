@@ -59,7 +59,7 @@
   <script src="assets/maps-transit-route.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-transit.js?v=20261109-transit-route" defer></script>
   <script src="assets/maps-parking-core.js?v=20261113" defer></script>
-  <script src="assets/maps-parking.js?v=20261113" defer></script>
+  <script src="assets/maps-parking.js?v=20261113-key" defer></script>
   <script src="assets/maps-layers.js?v=20261113-parking" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261111-navigation-stop" defer></script>
@@ -70,7 +70,7 @@
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-navigation.js?v=20261112-car-home" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
-  <script src="assets/maps-drawer.js?v=20261112-keyboard-drawer" defer></script>
+  <script src="assets/maps-drawer.js?v=20261113-parking-key" defer></script>
   <script src="assets/maps-context-menu.js?v=20261113-rotation" defer></script>
   <script src="assets/maps-saved-places.js?v=20261112-car-home" defer></script>
   <script src="assets/maps.js?v=20261113-compass-dial" defer></script>
@@ -203,8 +203,16 @@
       <button class="map-icon-button" id="map-layers-toggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="map-layers-panel" title="Map layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
       <button class="map-icon-button" id="map-locate" type="button" aria-label="My location" title="My location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button>
       <button class="map-icon-button" id="map-fullscreen" type="button" aria-label="Enter full screen" title="Full screen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/></svg></button>
+      <button class="map-icon-button" id="victoria-parking-legend-toggle" type="button" aria-label="Victoria parking key" aria-expanded="false" aria-controls="victoria-parking-legend" title="Victoria parking key" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="5" height="3" rx="1" fill="#92cfea" stroke="none"/><rect x="3" y="7" width="5" height="3" rx="1" fill="#5baea4" stroke="none"/><rect x="3" y="11" width="5" height="3" rx="1" fill="#cb6278" stroke="none"/><rect x="3" y="15" width="5" height="3" rx="1" fill="#342d8e" stroke="none"/><rect x="3" y="19" width="5" height="3" rx="1" fill="#d8c96b" stroke="none"/><path d="M12 5h9M12 13h9M12 21h9"/></svg></button>
       <button class="map-icon-button" id="vessels-legend-toggle" type="button" aria-label="Vessel type key" aria-expanded="false" aria-controls="vessels-legend" title="Vessel type key" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="5" height="4" rx="1" fill="#27934b" stroke="none"/><rect x="3" y="10" width="5" height="4" rx="1" fill="#d94141" stroke="none"/><rect x="3" y="16" width="5" height="4" rx="1" fill="#2d6cdf" stroke="none"/><path d="M12 6h9M12 12h9M12 18h9"/></svg></button>
     </div>
+    <section class="vessels-legend map-glass" id="victoria-parking-legend" aria-labelledby="victoria-parking-legend-heading" hidden>
+      <div class="layers-heading"><h2 id="victoria-parking-legend-heading">Victoria parking key</h2><button class="map-dismiss" id="close-victoria-parking-legend" type="button" aria-label="Close Victoria parking key">×</button></div>
+      <div class="victoria-parking-table"><table><caption>On-street parking key · CAD per hour</caption><thead><tr><th scope="col">Zone</th><th scope="col">Mon–Sat</th><th scope="col">Limit</th><th scope="col">Sun</th><th scope="col">Limit</th></tr></thead><tbody><tr><th scope="row"><span class="parking-swatch" style="background:#92cfea" aria-hidden="true"></span>1</th><td>$4</td><td>90 min</td><td>$2.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#5baea4" aria-hidden="true"></span>2</th><td>$3</td><td>4 hrs</td><td>$1.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#cb6278" aria-hidden="true"></span>3</th><td>$3</td><td>2 hrs</td><td>$1.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#342d8e" aria-hidden="true"></span>4</th><td>$2.50</td><td>4 hrs</td><td>$1.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#d8c96b" aria-hidden="true"></span>5</th><td>$2</td><td>24 hrs</td><td>$1.50</td><td>24 hrs</td></tr></tbody></table></div>
+      <p class="layer-status"><span class="parking-key-p">P</span> City parkade · outlined P: City surface lot. Coloured dots mark general metered spaces, not empty spaces.</p>
+      <p class="layer-status">Street payment hours: daily 8 a.m.–8 p.m.; free evenings and designated holidays. Special-use bays are excluded. Follow signs at the space. The City table lists a 4-hour limit for Zone 4, while some GIS records retain 3 hours.</p>
+      <p class="layer-status">Geometry and rates checked 13 November 2026. Contains information licensed under the <a href="https://opendata.victoria.ca/pages/open-data-licence" target="_blank" rel="noopener">Open Government Licence – City of Victoria</a>. <a href="https://www.victoria.ca/getting-around/parking/street-parking" target="_blank" rel="noopener">Official rates &amp; rules ↗</a>.</p>
+    </section>
     <section class="vessels-legend map-glass" id="vessels-legend" aria-labelledby="vessels-legend-heading" hidden>
       <div class="layers-heading"><h2 id="vessels-legend-heading">Vessel types</h2><button class="map-dismiss" id="close-vessels-legend" type="button" aria-label="Close vessel type key">×</button></div>
       <ul class="vessels-legend-list" id="vessels-legend-list"></ul>
@@ -235,16 +243,6 @@
     <section class="map-layers-panel map-glass" id="map-layers-panel" aria-labelledby="map-layers-heading" hidden>
       <div class="layers-heading"><h2 id="map-layers-heading">Layers</h2><div id="car-layers-zoom" class="car-layers-zoom" role="group" aria-label="Map zoom" hidden></div><button class="map-dismiss" id="close-map-layers" type="button" aria-label="Close layers">×</button></div>
       <fieldset class="map-overlay-options"><legend>Overlays</legend>
-        <label><span><strong>Victoria parking</strong><small>Metered spaces, City parkades &amp; surface lots</small></span><input id="map-victoria-parking" type="checkbox" aria-describedby="victoria-parking-status"></label>
-        <div id="victoria-parking-options" class="victoria-parking-options" hidden>
-          <p id="victoria-parking-status" class="layer-status" role="status"></p>
-          <button id="victoria-parking-show" type="button">Show Victoria</button>
-          <div class="victoria-parking-table"><table><caption>On-street parking key · CAD per hour</caption><thead><tr><th scope="col">Zone</th><th scope="col">Mon–Sat</th><th scope="col">Limit</th><th scope="col">Sun</th><th scope="col">Limit</th></tr></thead><tbody><tr><th scope="row"><span class="parking-swatch" style="background:#92cfea" aria-hidden="true"></span>1</th><td>$4</td><td>90 min</td><td>$2.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#5baea4" aria-hidden="true"></span>2</th><td>$3</td><td>4 hrs</td><td>$1.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#cb6278" aria-hidden="true"></span>3</th><td>$3</td><td>2 hrs</td><td>$1.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#342d8e" aria-hidden="true"></span>4</th><td>$2.50</td><td>4 hrs</td><td>$1.50</td><td>4 hrs</td></tr><tr><th scope="row"><span class="parking-swatch" style="background:#d8c96b" aria-hidden="true"></span>5</th><td>$2</td><td>24 hrs</td><td>$1.50</td><td>24 hrs</td></tr></tbody></table></div>
-          <p class="layer-status"><span class="parking-key-p">P</span> City parkade · outlined P: City surface lot. Coloured dots mark general metered spaces, not empty spaces.</p>
-          <p class="layer-status">Street payment hours: daily 8 a.m.–8 p.m.; free evenings and designated holidays. Special-use bays are excluded. Follow signs at the space. The City table lists a 4-hour limit for Zone 4, while some GIS records retain 3 hours.</p>
-          <p class="layer-status">Geometry and rates checked 13 November 2026. Contains information licensed under the <a href="https://opendata.victoria.ca/pages/open-data-licence" target="_blank" rel="noopener">Open Government Licence – City of Victoria</a>. <a href="https://www.victoria.ca/getting-around/parking/street-parking" target="_blank" rel="noopener">Official rates &amp; rules ↗</a>.</p>
-        </div>
-
         <div class="map-live-toggles" role="group" aria-label="Live traffic">
           <div class="map-live-control"><button class="gregle-theme-switch map-live-switch" id="map-aircraft" type="button" role="switch" aria-label="Live planes" aria-checked="false" aria-controls="aircraft-options" aria-describedby="aircraft-layer-status" title="Live planes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a1.5 1.5 0 0 0-1.5 1.5V9L3 14v2l7.5-2.5V19L8 21v1l4-1 4 1v-1l-2.5-2v-5.5L21 16v-2l-7.5-5V3.5A1.5 1.5 0 0 0 12 2Z"/></svg></button></div>
           <div class="map-live-control"><button class="gregle-theme-switch map-live-switch" id="map-vessels" type="button" role="switch" aria-label="Live ships" aria-checked="false" aria-controls="vessels-options" aria-describedby="vessels-layer-status" title="Live ships"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12V6h14v6M9 6V3h6v3M12 10l9 4-3 6H6l-3-6Z"/><path d="M12 10v10M2 22c2 0 3-1 4-1s2 1 4 1 3-1 4-1 2 1 4 1 3-1 4-1"/></svg></button></div>
@@ -293,6 +291,11 @@
         </div>
         <button class="map-more-toggle map-layers-more-toggle" id="map-layers-more-toggle" type="button" aria-expanded="false" aria-controls="map-layers-more-options">More<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="map-more-options map-layers-more-options" id="map-layers-more-options" hidden>
+          <label><span><strong>Victoria parking</strong><small>Metered spaces, City parkades &amp; surface lots</small></span><input id="map-victoria-parking" type="checkbox" aria-describedby="victoria-parking-status"></label>
+          <div id="victoria-parking-options" class="victoria-parking-options" hidden>
+            <p id="victoria-parking-status" class="layer-status" role="status"></p>
+            <button id="victoria-parking-show" type="button">Show Victoria</button>
+          </div>
           <div class="map-layer-heading">
             <button class="map-options-toggle" id="fuel-options-toggle" type="button" aria-label="Fuel prices options" aria-expanded="false" aria-controls="fuel-sublayers"><span><strong id="fuel-layer-label">Fuel prices</strong><small>Canada · daily city averages &amp; station locations</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
             <label class="map-layer-check"><input id="map-fuel" type="checkbox" aria-labelledby="fuel-layer-label" aria-describedby="fuel-layer-status"></label>
