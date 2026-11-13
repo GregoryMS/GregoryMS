@@ -25,8 +25,8 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   }
   const liveStatus = text => { $('navigation-status').textContent = text; };
   let wants3D = false, switchVersion = 0, lastCoords = null;
-  const threeD = window.GregleNavigation3D?.({onBrowse: () => setFollow(false), onError: () => {
-    disable3D(); liveStatus('3D map unavailable. Continuing navigation in 2D.');
+  const threeD = window.GregleNavigation3D?.({onBrowse: () => setFollow(false), onStatus: liveStatus, onError: reason => {
+    disable3D(); liveStatus(reason || '3D map unavailable. Continuing navigation in 2D.');
   }});
   function disable3D() {
     const was3D = threeD?.active;

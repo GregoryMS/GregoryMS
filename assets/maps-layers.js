@@ -26,7 +26,8 @@
     const embed = window.GregleMapEmbed({ map });
     const transit = window.GregleTransit?.({ map });
     const streetView = window.GregleStreetView({ map, getSelected, onOpen: onStreetViewOpen, onSelect: onStreetViewSelect, onClose: () => setState({ ...state, streetview: false }, true) });
-    let applied;
+    let applied, navigation3D = false;
+    window.addEventListener('gregle-navigation-3d',event=>{ navigation3D = event.detail === true; setState(state); });
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const layerOptions = { maxZoom: 19, updateWhenIdle: true, keepBuffer: 1 };
@@ -300,7 +301,7 @@
       const first = !applied, previous = applied || core.normalizeLayers(null);
       state = core.normalizeLayers(next);
       // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
-      const active = state.base === '3d' ? {...state, maritime:false, aviation:false, traffic:false, google:false, streetview:false} : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
+      const active = navigation3D ? core.normalizeLayers({base:state.base}) : state.base === '3d' ? {...state, maritime:false, aviation:false, traffic:false, google:false, streetview:false} : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
       applied = active;
       if (first || previous.base !== state.base || (!baseLayer && !core.isEmbeddedBase(state.base))) changeBase();
       if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();

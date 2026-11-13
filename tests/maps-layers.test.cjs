@@ -5,7 +5,7 @@ const vm=require('node:vm');
 const core=require('../assets/maps-core.js');
 
 function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom=13,onTrafficKeyChange=()=>{}}={}) {
-  const elements=new Map(),calls=[],tiles=[],timers=[],notices=[];
+  const elements=new Map(),calls=[],tiles=[],timers=[],notices=[],events={};
   let themeObserver;
   const get=id=>{
     if(!elements.has(id))elements.set(id,{
@@ -22,7 +22,7 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
     setSelection(...args){calls.push([name,...args]);},setSource(){},hasKey:()=>true,
     setBase(value){calls.push(['embed',value]);}
   });
-  const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener(){}};
+  const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener:(name,fn)=>events[name]=fn};
   window.GregleTransit=provider('transit');
   for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed'}))window[name]=provider(key);
   const document={body:{classList:{contains:()=>false}},documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
@@ -35,7 +35,7 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
   });
   const api=window.GregleMapLayers({map:{getZoom:()=>zoom,setMaxZoom(value){calls.push(['maxZoom',value]);zoom=Math.min(zoom,value);},removeLayer(){},closePopup(){}},config,initial,notify(...args){notices.push(args);},onChange(){},onTrafficKeyChange});
   const change=(id,value)=>{get(id).checked=value;get(id).events.change();};
-  return {api,get,calls,storage,change,tiles,notices,flush:()=>{while(timers.length)timers.shift()();},theme:value=>{dark=value;themeObserver();}};
+  return {api,get,calls,storage,change,tiles,notices,emit:(name,detail)=>events[name]?.({detail}),flush:()=>{while(timers.length)timers.shift()();},theme:value=>{dark=value;themeObserver();}};
 }
 
 test('transit station schedules follow the base map and pause for Street View and embeds',()=>{
@@ -190,4 +190,13 @@ test('OpenFreeMap 3D retains live vector overlays and preserves raster preferenc
  assert.equal(h.get('map-layers-panel').querySelector('.map-overlay-options').disabled,false);
  h.calls.length=0;h.api.setState({...state,base:'street'});
  assert(h.calls.some(c=>c[0]==='aviation'&&c[1]===true));assert(h.calls.some(c=>c[0]==='google'&&c[1]===true));
+});
+
+test('3D navigation suspends background providers and restores selected layers on exit',()=>{
+ const h=setup({initial:{aircraft:true,drivebc:true,ev:true}});h.calls.length=0;
+ h.emit('gregle-navigation-3d',true);
+ for(const name of ['aircraft','drivebc','ev'])assert(h.calls.some(c=>c[0]===name&&c[1]===false),name);
+ assert.equal(h.api.getState().aircraft,true);h.calls.length=0;
+ h.emit('gregle-navigation-3d',false);
+ for(const name of ['aircraft','drivebc','ev'])assert(h.calls.some(c=>c[0]===name&&c[1]===true),name);
 });

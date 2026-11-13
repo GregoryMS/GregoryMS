@@ -1,12 +1,12 @@
 'use strict';
 // Loaded cheaply with the page; GL JS and its styles load only on entering 3D.
-window.GregleNavigation3D = ({onBrowse, onError}) => {
+window.GregleNavigation3D = ({onBrowse, onError, onStatus = () => {}}) => {
   const $ = id => document.getElementById(id), stage = document.querySelector('.map-stage');
   const container = $('navigation-map-3d'), core = window.GregleNavigation;
   let view = null, arrow = null, target = null, route = null, latest = null, heading = 0, generation = 0, follow = true;
-  let loader, cancelLoad;
+  let loader, cancelLoad, recoveryTimer, contextLost = false, losses = 0, lastCamera = 0;
   const lightweight = /Tesla/i.test(navigator.userAgent);
-  const pitch = lightweight ? 45 : 58;
+  const pitch = lightweight ? 35 : 58;
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function loadLibrary() {
     if (window.mapboxgl) return Promise.resolve();
@@ -27,8 +27,11 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
       {top: Math.min(card.height + 30, bounds.height * .54), bottom: 65, left: 20, right: 20};
   }
   function camera(animate = true) {
-    if (!view || !latest || !follow || document.hidden) return;
-    const options = {center: [latest.lng, latest.lat], bearing: heading, pitch, zoom: latest.speed > 22 ? 16 : 17, padding: padding()};
+    if (!view || !latest || !follow || document.hidden || contextLost) return;
+    const now = Date.now();
+    if (lightweight && animate && now - lastCamera < 1000) return;
+    lastCamera = now;
+    const options = {center: [latest.lng, latest.lat], bearing: heading, pitch, zoom: lightweight ? (latest.speed > 22 ? 15.5 : 16) : (latest.speed > 22 ? 16 : 17), padding: padding()};
     // Avoid continuous render loops on the in-car GPU; GPS still updates the camera.
     if (lightweight || !animate || reduced()) view.jumpTo(options);
     else view.easeTo({...options, duration: 850, essential: false});
@@ -42,7 +45,7 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
     const source = view.getSource('navigation-route');
     if (source) source.setData(lineData());
     else {
-      view.addSource('navigation-route', {type: 'geojson', data: lineData()});
+      view.addSource('navigation-route', {type: 'geojson', data: lineData(), ...(lightweight ? {tolerance: .75, buffer:64, maxzoom:16} : {})});
       view.addLayer({id: 'navigation-route-casing', type: 'line', source: 'navigation-route', ...(lightweight ? {} : {slot: 'middle'}), layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': '#fff', 'line-width': 12, 'line-opacity': .9}});
       view.addLayer({id: 'navigation-route-line', type: 'line', source: 'navigation-route', ...(lightweight ? {} : {slot: 'middle'}), layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': '#7637cc', 'line-width': 7}});
     }
@@ -104,6 +107,7 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
     const config = await response.json();
     if (token !== generation) return false;
     if (typeof config.publicToken !== 'string' || !config.publicToken.startsWith('pk.')) throw Error('3D map configuration unavailable');
+    contextLost = false; losses = 0; lastCamera = 0;
     route = value; latest = null; heading = 0; follow = true;
     const first = route.points[0], next = route.points.find(p => core.meters({lat: first[0], lng: first[1]}, {lat: p[0], lng: p[1]}) > 10);
     latest = {lat: first[0], lng: first[1]};
@@ -114,8 +118,8 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
     if (lightweight) { window.mapboxgl.workerCount = 1; window.mapboxgl.maxParallelImageRequests = 4; }
     container.hidden = false;
     view = new window.mapboxgl.Map({container, accessToken: config.publicToken, style: lightweight ? (document.documentElement.classList.contains('dark-mode') ? 'mapbox://styles/mapbox/navigation-night-v1' : 'mapbox://styles/mapbox/navigation-day-v1') : 'mapbox://styles/mapbox/standard',
-      ...(lightweight ? {maxTileCacheSize: 32, maxPitch: 50, maxZoom: 18, renderWorldCopies: false, projection: 'mercator', failIfMajorPerformanceCaveat: true} : {config: {basemap: {lightPreset: document.documentElement.classList.contains('dark-mode') ? 'night' : 'day', show3dObjects: true}}}),
-      center: [first[1], first[0]], zoom: 16.5, pitch, bearing: heading, attributionControl: true, logoPosition: 'bottom-left',
+      ...(lightweight ? {maxTileCacheSize: 16, maxPitch: 40, maxZoom: 17, renderWorldCopies: false, projection: 'mercator', failIfMajorPerformanceCaveat: true} : {config: {basemap: {lightPreset: document.documentElement.classList.contains('dark-mode') ? 'night' : 'day', show3dObjects: true}}}),
+      center: [first[1], first[0]], zoom: lightweight ? 16 : 16.5, pitch, bearing: heading, attributionControl: true, logoPosition: 'bottom-left',
       cooperativeGestures: false, antialias: false, fadeDuration: lightweight || reduced() ? 0 : 150});
     stage.classList.add('navigation-3d'); $('gregle-map').inert = true;
     const currentView = view; let ready = false;
@@ -125,16 +129,36 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
       currentView.once('load', () => { ready = true; clearTimeout(timeout); cancelLoad = null; resolve(); });
       currentView.on('error', () => {
         if (token !== generation) return;
-        clearTimeout(timeout); cancelLoad = null; reject(Error('3D map could not load'));
-        if (ready) onError();
+        // GL error events include recoverable tile/network failures. Keep guidance
+        // running and let GL retry; the startup timeout still bounds a failed load.
+        if (ready && !contextLost) onStatus('Some 3D map data is unavailable. Navigation is continuing.');
       });
-      currentView.on('webglcontextlost', () => {
+      currentView.on('webglcontextlost', event => {
         if (token !== generation) return;
-        clearTimeout(timeout); cancelLoad = null;
-        if (ready) onError(); else reject(Error('3D graphics context lost'));
+        event?.originalEvent?.preventDefault?.();
+        contextLost = true;
+        if (!ready) { clearTimeout(timeout); cancelLoad = null; reject(Error('3D graphics context lost')); return; }
+        clearTimeout(recoveryTimer);
+        if (++losses > 2) { onError('3D graphics repeatedly reset. Continuing navigation in 2D.'); return; }
+        onStatus('3D graphics paused. Waiting for the browser to restore them…');
+        recoveryTimer = setTimeout(() => {
+          if (token === generation && contextLost) onError('3D graphics did not recover. Continuing navigation in 2D.');
+        }, 12000);
+      });
+      currentView.on('webglcontextrestored', () => {
+        if (token !== generation || !ready) return;
+        clearTimeout(recoveryTimer); contextLost = false;
+        currentView.resize(); camera(false);
+        onStatus('3D graphics restored. Navigation is continuing.');
       });
     });
     if (token !== generation) return false;
+    if (lightweight) {
+      for (const layer of view.getStyle?.()?.layers || []) {
+        if (layer.type === 'fill-extrusion' || /poi|transit.*label/i.test(layer.id)) view.setLayoutProperty(layer.id,'visibility','none');
+      }
+    }
+    window.dispatchEvent?.(new CustomEvent('gregle-navigation-3d',{detail:true}));
     setRoute(route);
     view.addControl(new window.mapboxgl.NavigationControl({showCompass: true, visualizePitch: true}), 'bottom-right');
     const element = document.createElement('div'); element.className = 'navigation-position navigation-3d-position'; element.innerHTML = '<span aria-hidden="true">▲</span>';
@@ -145,9 +169,10 @@ window.GregleNavigation3D = ({onBrowse, onError}) => {
     return true;
   }
   function exit() {
-    generation++; cancelLoad?.(); view?.remove(); view = arrow = target = null; latest = null;
+    generation++; clearTimeout(recoveryTimer); contextLost = false; cancelLoad?.(); view?.remove(); view = arrow = target = null; latest = null;
     container.hidden = true; stage.classList.remove('navigation-3d'); $('gregle-map').inert = false;
     clearGuidance();
+    window.dispatchEvent?.(new CustomEvent('gregle-navigation-3d',{detail:false}));
   }
   let lastWidth = 0, lastHeight = 0;
   const resize = () => {
