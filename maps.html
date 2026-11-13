@@ -56,7 +56,7 @@
   <script src="assets/maps-transit-roads.js?v=20261109-road-routes" defer></script>
   <script src="assets/maps-transit-route.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-transit.js?v=20261109-transit-route" defer></script>
-  <script src="assets/maps-layers.js?v=20261113-layers-more" defer></script>
+  <script src="assets/maps-layers.js?v=20261113-fuel-more" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261111-navigation-stop" defer></script>
   <script src="assets/maps-routing.js?v=20261111-navigation-stop" defer></script>
@@ -274,21 +274,21 @@
           <details class="aircraft-sources"><summary>EV data sources &amp; licences</summary><p id="ev-source-ocm-info">Locations supplied through <a href="https://openchargemap.org" target="_blank" rel="noopener">Open Charge Map</a>, using openly licensed records. Data is formatted for this map. Each source retains its own licence and attribution below and in station details. <a href="https://www.openchargemap.org/about/terms" target="_blank" rel="noopener">Terms of use</a>.</p><p id="ev-source-osm-info" hidden>Charging locations from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>, under the <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">Open Database Licence (ODbL)</a>. Data is formatted for this map. Station details link to the original map records.</p><div id="ev-source-credits"></div><p>Information may be incomplete or out of date. Verify charging access and costs with the operator. Live charger availability is not provided.</p></details>
         </div>
         <div class="map-layer-heading">
-          <button class="map-options-toggle" id="fuel-options-toggle" type="button" aria-label="Fuel prices options" aria-expanded="false" aria-controls="fuel-sublayers"><span><strong id="fuel-layer-label">Fuel prices</strong><small>Canada · daily city averages &amp; station locations</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <label class="map-layer-check"><input id="map-fuel" type="checkbox" aria-labelledby="fuel-layer-label" aria-describedby="fuel-layer-status"></label>
-        </div>
-        <div class="ev-sublayer fuel-sublayer" id="fuel-sublayers" hidden>
-          <label for="fuel-type">Fuel type <select id="fuel-type"><option value="regular">Regular</option><option value="midgrade">Mid-grade</option><option value="premium">Premium</option><option value="diesel">Diesel</option></select></label>
-          <p class="layer-status" id="fuel-layer-status" role="status">Turn on Fuel prices to see the latest daily survey and nearby petrol stations.</p>
-          <div class="traffic-options"><button id="fuel-retry" type="button" hidden>Retry fuel data</button></div>
-          <details class="aircraft-sources"><summary>Fuel data sources</summary><p>Daily city-average pump prices: <a href="https://charting.kalibrate.com/WPPS_Public/DPPS_Public.htm" target="_blank" rel="noopener">Kalibrate Canada’s Daily Pump Price Survey</a>, produced with Government of Canada funding. The report is normally published around 2 p.m. Eastern. The survey date is always shown; a report for today may not yet be available.</p><p>Station locations: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>, <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL</a>. Zoom in to see stations. City averages are not individual station prices.</p></details>
-        </div>
-        <div class="map-layer-heading">
           <button class="map-options-toggle" id="tomtom-options-toggle" type="button" aria-label="TomTom API key options" aria-expanded="false" aria-controls="tomtom-options"><span><strong id="traffic-layer-label">TomTom traffic</strong><small id="traffic-layer-description">API key required for traffic</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <label class="map-layer-check"><input id="map-traffic" type="checkbox" aria-labelledby="traffic-layer-label"></label>
         </div>
         <button class="map-more-toggle map-layers-more-toggle" id="map-layers-more-toggle" type="button" aria-expanded="false" aria-controls="map-layers-more-options">More<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="map-more-options map-layers-more-options" id="map-layers-more-options" hidden>
+          <div class="map-layer-heading">
+            <button class="map-options-toggle" id="fuel-options-toggle" type="button" aria-label="Fuel prices options" aria-expanded="false" aria-controls="fuel-sublayers"><span><strong id="fuel-layer-label">Fuel prices</strong><small>Canada · daily city averages &amp; station locations</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+            <label class="map-layer-check"><input id="map-fuel" type="checkbox" aria-labelledby="fuel-layer-label" aria-describedby="fuel-layer-status"></label>
+          </div>
+          <div class="ev-sublayer fuel-sublayer" id="fuel-sublayers" hidden>
+            <label for="fuel-type">Fuel type <select id="fuel-type"><option value="regular">Regular</option><option value="midgrade">Mid-grade</option><option value="premium">Premium</option><option value="diesel">Diesel</option></select></label>
+            <p class="layer-status" id="fuel-layer-status" role="status">Turn on Fuel prices to see the latest daily survey and nearby petrol stations.</p>
+            <div class="traffic-options"><button id="fuel-retry" type="button" hidden>Retry fuel data</button></div>
+            <details class="aircraft-sources"><summary>Fuel data sources</summary><p>Daily city-average pump prices: <a href="https://charting.kalibrate.com/WPPS_Public/DPPS_Public.htm" target="_blank" rel="noopener">Kalibrate Canada’s Daily Pump Price Survey</a>, produced with Government of Canada funding. The report is normally published around 2 p.m. Eastern. The survey date is always shown; a report for today may not yet be available.</p><p>Station locations: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>, <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL</a>. Zoom in to see stations. City averages are not individual station prices.</p></details>
+          </div>
           <label class="map-layer-row"><span><strong>Maritime</strong><small>OpenSeaMap · buoys, lights &amp; harbour marks</small></span><span class="map-layer-check"><input id="map-maritime" type="checkbox"></span></label>
           <p class="layer-status" id="maritime-layer-status" role="status" hidden></p>
           <label class="map-layer-row"><span><strong>Aviation</strong><small>OpenAIP · airports, airspace &amp; navigation aids</small></span><span class="map-layer-check"><input id="map-aviation" type="checkbox"></span></label>

@@ -74,7 +74,7 @@
     const openPanel = (keyForm = false, routingOnly = false) => {
       closeBasePanel();
       panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
-      if (state.aviation || state.maritime) layersMore.setOpen(true);
+      if (state.aviation || state.maritime || state.fuel) layersMore.setOpen(true);
       onOpen();
       if (keyForm) {
         connectForRouting = routingOnly;
