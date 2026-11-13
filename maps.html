@@ -24,6 +24,8 @@
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
+  <script src="assets/openlocationcode.js?v=20261112" defer></script>
+  <script src="assets/maps-pluscodes.js?v=20261112" defer></script>
   <script src="assets/maps-core.js?v=20261112-3d-base" defer></script>
   <script src="assets/maps-places-core.js?v=20261021-nearest-address" defer></script>
   <script src="assets/maps-places.js?v=20261021-nearest-address" defer></script>
@@ -65,9 +67,9 @@
   <script src="assets/maps-navigation.js?v=20261112-car-home" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
   <script src="assets/maps-drawer.js?v=20261112-keyboard-drawer" defer></script>
-  <script src="assets/maps-context-menu.js?v=20261112-what3words" defer></script>
+  <script src="assets/maps-context-menu.js?v=20261112-pluscodes" defer></script>
   <script src="assets/maps-saved-places.js?v=20261112-car-home" defer></script>
-  <script src="assets/maps.js?v=20261112-what3words" defer></script>
+  <script src="assets/maps.js?v=20261112-pluscodes" defer></script>
   <script src="assets/maps-gps-test.js?v=20261112-settings-icon" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
@@ -112,7 +114,7 @@
         <button type="button" role="menuitem" id="map-context-share">Share location</button>
         <a role="menuitem" id="map-context-what3words" href="https://what3words.com/" target="_blank" rel="noopener noreferrer">Open in what3words ↗</a>
       </div>
-      <div class="map-context-coordinates"><span id="map-context-lat"></span><span id="map-context-lng"></span></div>
+      <div class="map-context-coordinates"><span id="map-context-lat"></span><span id="map-context-lng"></span><span id="map-context-pluscode"></span></div>
     </section>
     <section class="map-measure map-glass" id="map-measure" aria-label="Measure distance" hidden>
       <div><strong id="map-measure-total" role="status" aria-live="polite">0 m</strong><button type="button" id="map-measure-clear" aria-label="Clear measurement">×</button></div>
@@ -133,7 +135,7 @@
       <form id="map-search-form" role="search" aria-label="Search the map">
         <svg class="map-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
         <label class="sr-only" for="map-query">Search places and addresses near this map area</label>
-        <input id="map-query" type="search" placeholder="Search this area" autocomplete="off" minlength="2" maxlength="180" required aria-controls="map-results" aria-describedby="map-suggestion-help">
+        <input id="map-query" type="search" placeholder="Places or Plus Codes" autocomplete="off" minlength="2" maxlength="180" required aria-controls="map-results" aria-describedby="map-suggestion-help">
         <button class="map-search-clear" id="map-search-clear" type="button" aria-label="Clear search" title="Clear search" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
         <span id="map-suggestion-help" class="sr-only">Type at least three characters for place suggestions. Use the down arrow to choose a suggestion, or Escape to dismiss.</span><button class="map-search-submit" type="submit" aria-label="Search map" title="Search map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
       </form>

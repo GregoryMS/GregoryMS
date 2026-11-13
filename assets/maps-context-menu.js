@@ -62,6 +62,7 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
     $('map-context-what3words').href = `https://what3words.com/${lat.toFixed(6)},${lng.toFixed(6)}`;
     $('map-context-lat').textContent = `Latitude: ${lat.toFixed(6)}`;
     $('map-context-lng').textContent = `Longitude: ${lng.toFixed(6)}`;
+    if (window.GreglePlusCodes) $('map-context-pluscode').textContent = 'Plus Code: ' + window.GreglePlusCodes.encode(lat,lng);
     menu.hidden = false;
     const anchor = map.latLngToContainerPoint(point), mapRect = container.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
     menu.style.left = `${Math.max(8, Math.min(anchor.x + mapRect.left - stageRect.left, stage.clientWidth - menu.offsetWidth - 8))}px`;

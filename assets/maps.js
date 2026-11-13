@@ -292,6 +292,15 @@
     if (term.length < (automatic?3:2)||automatic&&(composing||document.hidden||usingEmbed)) return;
     intent++; cancelSearch(automatic);
     const version = searchVersion;
+    const plusCode = window.GreglePlusCodes?.read(term);
+    if (plusCode && (!plusCode.short || !plusCode.locality)) {
+      const point = window.GreglePlusCodes.point(plusCode,view());
+      if (!automatic) selectPoint(point,point.zoom);
+      else { searchContent.hidden=false; drawer?.show('map-search-content',true); showResults([point],true); }
+      return;
+    }
+    const searchTerm = plusCode?.locality || term;
+    const present = results => showResults(plusCode ? results.map(place => ({...window.GreglePlusCodes.point(plusCode,place),detail:'Plus Code near '+place.name+(place.detail ? ' · '+place.detail : '')})) : results, worldwide);
     const fallback = new URL(core.osmURL(view())); fallback.pathname = '/search'; fallback.searchParams.set('query', term);
     $('osm-search').href = fallback.href; $('osm-search').hidden = true;
     $('map-search-scope').hidden = true;
@@ -301,11 +310,11 @@
     let timer;
     try {
       const bounds = map.getBounds();
-      const area = worldwide ? null : core.searchArea(view(), [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
-      const url = new URL(core.searchURL(config.searchURL, term, area));
-      const cacheURL = new URL(url); cacheURL.searchParams.set('q', term.toLocaleLowerCase());
+      const area = worldwide || plusCode ? null : core.searchArea(view(), [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
+      const url = new URL(core.searchURL(config.searchURL, searchTerm, area));
+      const cacheURL = new URL(url); cacheURL.searchParams.set('q', searchTerm.toLocaleLowerCase());
       const key = cacheURL.href;
-      if (cache.has(key)) { showResults(cache.get(key), worldwide); return; }
+      if (cache.has(key)) { present(cache.get(key)); return; }
       if (Date.now() < nextSearch) { if(automatic){suggestionTimer=setTimeout(()=>search(worldwide,true),nextSearch-Date.now());$('map-search-status').textContent='Finding suggestions…';}else{$('map-search-status').textContent = 'Please wait a moment, then search again.'; showScopeAction(worldwide);}return; }
       nextSearch = Date.now() + 1000;
       searchController = new AbortController();
@@ -318,7 +327,7 @@
       const results = core.readResults(await response.json(), area);
       if (version !== searchVersion) return;
       if (cache.size >= 30) cache.delete(cache.keys().next().value);
-      cache.set(key, results); showResults(results, worldwide);
+      cache.set(key, results); present(results);
     } catch {
       if (version !== searchVersion) return;
       $('map-search-status').textContent = 'Place search is unavailable right now. Try again or search on OpenStreetMap.';
