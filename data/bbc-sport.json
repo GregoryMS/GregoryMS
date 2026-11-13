@@ -1,23 +1,31 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-13T13:25:46+00:00",
-  "fetchedAt": "2026-11-13T13:25:48.268188+00:00",
+  "feedUpdatedAt": "2026-11-13T20:39:11+00:00",
+  "fetchedAt": "2026-11-13T20:39:17.107867+00:00",
   "items": [
     {
-      "title": "How Ferguson-inspired Pochettino can succeed where Carrick failed at Man Utd",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm2kljzkw77ko?at_medium=RSS&at_campaign=rss"
+      "title": "Tearful Pochettino on 'difficult' decision to leave USA for Man Utd",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmd61qne8352o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Eight sentenced to jail over Nurmagomedov-Dvalishvili brawl",
+      "link": "https://www.bbc.co.uk/sport/mixed-martial-arts/articles/cm3wgpl28yzgo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Surfing speedster Beardman gives a glimpse of Ashes future",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/c6vg2dkyxp00o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Fernandes rejects second Man Utd contract offer",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm782d4pz9jyo?at_medium=RSS&at_campaign=rss"
+      "title": "Sharks, ladders and a four-year plan - how England won World Cup",
+      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/crly54evvvv4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Whatever happened to the diamond that went missing in F1 crash?",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c60735md0jrpo?at_medium=RSS&at_campaign=rss"
+      "title": "Ronaldinho, 46, to play first game since 2015",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqz0k4e00v0mo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Fernandes rejects second Man Utd contract offer",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm782d4pz9jyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "The driving-maul try machine - why rugby's steamroller gained traction",
@@ -28,20 +36,12 @@
       "link": "https://www.bbc.co.uk/sport/cricket/articles/cwq6e4y9525mo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Liverpool and Van Dijk have a decision to make",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ck4gnd2pgd06o?at_medium=RSS&at_campaign=rss"
+      "title": "Whatever happened to the diamond that went missing in F1 crash?",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c60735md0jrpo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Lazraq-Khlass banned for whereabouts violation",
-      "link": "https://www.bbc.co.uk/sport/athletics/articles/cqvg2lrkdz97o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "England win Wheelchair World Cup for third time",
-      "link": "https://www.bbc.co.uk/sport/rugby-league/articles/cmlyd6kxk72po?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "The club preparing to play again after the death of a player",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6vg7gz9w5edo?at_medium=RSS&at_campaign=rss"
+      "title": "Cameron-Mayer rematch added to Paul Christmas Eve card",
+      "link": "https://www.bbc.co.uk/sport/boxing/articles/cvde1nx6j6g3o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
