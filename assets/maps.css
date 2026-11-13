@@ -1027,3 +1027,5 @@
 #gregle-map-3d .maplibregl-ctrl-scale {background:var(--map-control-surface);color:var(--text);border-color:var(--muted);font:12px/1.5 system-ui,sans-serif;}
 #gregle-map-3d .maplibregl-ctrl-attrib {font:10px/1.5 system-ui,sans-serif;}
 #gregle-map-3d .maplibregl-ctrl-bottom-right {max-width:calc(100% - 100px);}
+
+.native-3d-active #map-layers-toggle { display:none !important; }

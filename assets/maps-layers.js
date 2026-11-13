@@ -308,6 +308,7 @@
     function setState(next, changed = false) {
       const first = !applied, previous = applied || core.normalizeLayers(null);
       state = core.normalizeLayers(next);
+      if(state.base==='3d')closePanel();
       // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
       const active = navigation3D || state.base==='3d' ? core.normalizeLayers({base:state.base}) : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
       applied = active;
