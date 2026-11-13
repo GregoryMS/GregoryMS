@@ -949,11 +949,11 @@
 
 /* Rotation lives in the main toolbar, clear of Leaflet's distance scale. */
 .map-actions > .map-icon-button { justify-self:end; }
-.map-actions .gregle-map-rotation { display:flex; align-items:center; gap:3px; justify-self:end; flex:0 0 auto; }
-.map-actions .gregle-map-rotation .map-icon-button { width:34px; height:44px; flex:0 0 34px; padding:8px 6px; border:1px solid var(--map-border); border-radius:13px; background:var(--map-control-surface); color:var(--text); }
-.map-actions .gregle-map-rotation .map-icon-button:nth-child(2) { width:40px; flex-basis:40px; }
+.map-actions .gregle-map-rotation { display:flex; flex-direction:column; align-items:center; gap:3px; justify-self:end; flex:0 0 auto; }
+.map-actions .gregle-map-rotation .map-icon-button { box-sizing:border-box; min-height:0; width:40px; height:36px; flex:0 0 36px; padding:7px; border:1px solid var(--map-border); border-radius:13px; background:var(--map-control-surface); color:var(--text); }
+.map-actions .gregle-map-rotation .map-icon-button:nth-child(2) { width:40px; flex-basis:36px; }
 .map-actions .gregle-map-rotation .map-icon-button:hover { color:var(--map-accent); background:var(--map-control-accent-soft); }
 .map-actions .gregle-map-rotation .map-icon-button:focus-visible { outline:2px solid var(--map-accent); outline-offset:-2px; }
 .map-actions .gregle-map-rotation svg { width:20px; height:20px; }
-.vehicle-layout .map-actions .gregle-map-rotation .map-icon-button { height:48px; width:38px; flex-basis:38px; }
+.vehicle-layout .map-actions .gregle-map-rotation .map-icon-button { min-height:44px; height:44px; width:44px; flex-basis:44px; }
 .vehicle-layout .map-actions .gregle-map-rotation .map-icon-button:nth-child(2) { width:44px; flex-basis:44px; }
