@@ -86,8 +86,8 @@
     }
     const render = () => {
       const embedded = core.isEmbeddedBase(state.base), overlays = panel.querySelector('.map-overlay-options');
-      overlays.hidden = embedded; overlays.disabled = embedded;
-      $('layers-footnote').textContent = embedded ? `Use ${state.base === '3d' ? 'Mapbox 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
+      overlays.hidden = embedded && state.base !== '3d'; overlays.disabled = embedded && state.base !== '3d';
+      $('layers-footnote').textContent = state.base === '3d' ? 'OpenFreeMap 3D shows live pins and road lines with simplified details. Traffic, aviation and nautical tiles resume on other base maps.' : embedded ? `Use ${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
       basePanel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
@@ -134,7 +134,7 @@
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
       map.setMaxZoom(state.base === 'satellite' ? 23 : 19);
       embed.setBase(state.base);
-      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === '3d' ? 'Mapbox 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
+      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
       const satellite = state.base === 'satellite', topographic = state.base === 'topographic', dark = state.base === 'dark';
       const cycle = state.base === 'cycle', transit = state.base === 'transit';
       const name = satellite ? 'Satellite imagery' : topographic ? 'Topographic tiles' : cycle ? 'Cycle map tiles' : transit ? 'Transit map tiles' : 'Street map tiles';
@@ -283,7 +283,7 @@
       const first = !applied, previous = applied || core.normalizeLayers(null);
       state = core.normalizeLayers(next);
       // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
-      const active = core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
+      const active = state.base === '3d' ? {...state, maritime:false, aviation:false, traffic:false, google:false, streetview:false} : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
       applied = active;
       if (first || previous.base !== state.base || (!baseLayer && !core.isEmbeddedBase(state.base))) changeBase();
       if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();

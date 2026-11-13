@@ -180,3 +180,14 @@ test('unavailable cycle and transit tiles recover to the street map with a notic
     assert.equal(h.api.getState().base,'street');assert.equal(h.tiles.at(-1).url,'street');assert.match(h.notices.at(-1)[0],/unavailable/);
   }
 });
+
+test('OpenFreeMap 3D retains live vector overlays and preserves raster preferences for return',()=>{
+ const state={base:'3d',aircraft:true,drivebc:true,ev:true,aviation:true,maritime:true,google:true};
+ const h=setup({initial:state,dark:true});
+ assert.equal(h.api.getState().base,'3d');
+ for(const name of ['aircraft','drivebc','ev'])assert(h.calls.some(c=>c[0]===name&&c[1]===true),name);
+ assert(!h.calls.some(c=>['aviation','google'].includes(c[0])&&c[1]===true));
+ assert.equal(h.get('map-layers-panel').querySelector('.map-overlay-options').disabled,false);
+ h.calls.length=0;h.api.setState({...state,base:'street'});
+ assert(h.calls.some(c=>c[0]==='aviation'&&c[1]===true));assert(h.calls.some(c=>c[0]==='google'&&c[1]===true));
+});

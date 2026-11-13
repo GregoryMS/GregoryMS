@@ -62,7 +62,7 @@ test('pinch protection applies only to cancellable frame gestures and is removed
   h.api.setBase('street');assert(h.get('embedded-zoom-help').hidden);fire({});assert.equal(cancelled,1);
 });
 
-test('3D base loads Mapbox at the current view, shares camera changes and restores native maps',()=>{
+test('3D base loads OpenFreeMap at the current view, shares camera changes and restores native maps',()=>{
   const h=setup();h.api.setBase('3d');const frame=h.created[0];frame.contentWindow={};
   assert.match(frame.src,/^\/assets\/maps-3d.html#map=9\//);assert(frame.allow.includes('geolocation'));
   assert.equal(core.readLayers(core.makeHash(core.defaultView,null,{base:'3d'})).base,'3d');
