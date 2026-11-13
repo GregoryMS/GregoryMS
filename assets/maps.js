@@ -32,8 +32,11 @@
     if (document.hidden || usingEmbed) return;
     const { latitude: lat, longitude: lng, accuracy: radius } = position.coords;
     if (!core.validPoint(lat, lng)) return;
-    const age = Date.now() - Number(position.timestamp);
-    if (Number.isFinite(age) && age > 60000) return;
+    // Tesla can report zero/non-epoch timestamps. Use receipt time for those,
+    // while still rejecting genuinely old epoch-based fixes.
+    const stamp = Number(position.timestamp), now = Date.now();
+    const age = Number.isFinite(stamp) && stamp > 946684800000 && stamp <= now + 60000 ? Math.max(0, now - stamp) : 0;
+    if (age > 60000) return;
     const point = [lat, lng];
     if (!locationDot) locationDot = L.circleMarker(point, { radius: 7, color: '#fff', weight: 3, fillColor: '#2476e8', fillOpacity: 1, bubblingMouseEvents: false }).bindTooltip('Your current location').addTo(map);
     else locationDot.setLatLng(point);
@@ -59,15 +62,53 @@
         if (generation === locationGeneration) showLocation(position);
       }, error => {
         if (generation !== locationGeneration) return;
-        clearLocation();
+        // Transient failures must not erase a still-fresh fix; its expiry timer owns that.
         if (error.code === 1) { locationEnabled = false; stopLocation(); }
-      }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+      }, { enableHighAccuracy: false, timeout: 20000, maximumAge: 60000 });
     } catch { stopLocation(); }
   }
   function acceptLocation(position) {
     locationEnabled = true;
     showLocation(position);
     startLocation();
+  }
+  // Start with the approximate-location path used successfully by Weather.
+  // Navigation keeps its separate, stricter live-GPS accuracy requirements.
+  function getLocation(success, failure) {
+    let settled = false, attempt = 0;
+    function request(precise) {
+      const token = ++attempt;
+      try {
+        navigator.geolocation.getCurrentPosition(position => {
+          if (settled || token !== attempt) return;
+          settled = true;
+          success(position);
+        }, error => {
+          if (settled || token !== attempt) return;
+          if (!precise && error.code !== 1) { request(true); return; }
+          settled = true;
+          failure(error);
+        }, { enableHighAccuracy: precise, timeout: precise ? 20000 : 12000, maximumAge: precise ? 0 : 60000 });
+      } catch (error) {
+        if (settled || token !== attempt) return;
+        settled = true;
+        failure({ code: 2, message: error.message });
+      }
+    }
+    request(false);
+  }
+  async function observeLocationPermission() {
+    try {
+      const permission = await navigator.permissions?.query?.({ name: 'geolocation' });
+      if (!permission) return;
+      const changed = () => {
+        locationEnabled = permission.state === 'granted';
+        if (locationEnabled) startLocation(); else stopLocation();
+      };
+      if (permission.state === 'granted') changed();
+      if (typeof permission.addEventListener === 'function') permission.addEventListener('change', changed);
+      else permission.onchange = changed;
+    } catch { /* Permission introspection is optional; the location button must still work. */ }
   }
   let lastTappedPin = null;
   const cache = new Map();
@@ -246,21 +287,15 @@
   // Shared map views keep their position; ordinary visits start near the device.
   if (!explicitInitialLocation && !usingEmbed && navigator.geolocation) {
     const initialIntent = intent;
-    navigator.geolocation.getCurrentPosition(position => {
+    getLocation(position => {
       acceptLocation(position);
       if (intent !== initialIntent || document.querySelector('.map-stage').classList.contains('navigating')) return;
       const {latitude: lat, longitude: lng} = position.coords;
       if (core.validPoint(lat, lng)) map.setView([Math.max(-85.051129, Math.min(85.051129, lat)), lng], 15, {animate: false});
-    }, () => {}, {enableHighAccuracy: true, timeout: 12000, maximumAge: 0});
+    }, () => {});
   }
   // A shared view stays put, while an already allowed device location can still be shown.
-  navigator.permissions?.query({ name: 'geolocation' }).then(permission => {
-    if (permission.state === 'granted') { locationEnabled = true; startLocation(); }
-    permission.addEventListener('change', () => {
-      locationEnabled = permission.state === 'granted';
-      if (locationEnabled) startLocation(); else stopLocation();
-    });
-  }).catch(() => {});
+  observeLocationPermission();
   const dropPin = event => {
     if (contextTools?.measuring || usingEmbed || layerControl.getState().streetview || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     const point = { lat: event.latlng.lat, lng: core.wrapLongitude(event.latlng.lng), name: 'Dropped pin', detail: 'A place to come back to. Copy the link to save or share it.' };
@@ -396,7 +431,7 @@
     if (!navigator.geolocation) { notify('Your browser does not support location sharing. Search for a place instead.'); return; }
     const token = ++intent, button = $('map-locate');
     button.disabled = true; button.setAttribute('aria-busy', 'true'); notify('Finding your location…');
-    navigator.geolocation.getCurrentPosition(position => {
+    getLocation(position => {
       button.disabled = false; button.removeAttribute('aria-busy');
       acceptLocation(position);
       if (token !== intent) return;
@@ -410,7 +445,7 @@
       button.disabled = false; button.removeAttribute('aria-busy');
       if (token !== intent) return;
       notify(error.code === 1 ? 'Location access was declined. Search for a place instead.' : 'Your location could not be found. Try again or search for a place.');
-    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+    });
   });
   $('share-pin').addEventListener('click', share);
   $('close-map-link').addEventListener('click', () => { $('map-link-copy').hidden = true; $('map-query').focus(); });
