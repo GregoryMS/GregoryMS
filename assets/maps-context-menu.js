@@ -54,19 +54,24 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
     container.focus({ preventScroll: true });
   });
   $('map-measure-clear').addEventListener('click', () => { clear(); container.focus({ preventScroll: true }); });
-  map.on('contextmenu', event => {
-    if (!enabled() || ignore(event.originalEvent)) return;
-    const lat = event.latlng.lat, lng = core.wrapLongitude(event.latlng.lng);
+  function open(point) {
+    if (!enabled()) return;
+    const lat = point.lat, lng = core.wrapLongitude(point.lng);
     if (!core.validPoint(lat, lng)) return;
-    event.originalEvent?.preventDefault();
     target = { lat, lng, name: 'Dropped pin', detail: `${lat.toFixed(6)}, ${lng.toFixed(6)}` };
+    $('map-context-what3words').href = `https://what3words.com/${lat.toFixed(6)},${lng.toFixed(6)}`;
     $('map-context-lat').textContent = `Latitude: ${lat.toFixed(6)}`;
     $('map-context-lng').textContent = `Longitude: ${lng.toFixed(6)}`;
     menu.hidden = false;
-    const anchor = map.latLngToContainerPoint(event.latlng), mapRect = container.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
+    const anchor = map.latLngToContainerPoint(point), mapRect = container.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
     menu.style.left = `${Math.max(8, Math.min(anchor.x + mapRect.left - stageRect.left, stage.clientWidth - menu.offsetWidth - 8))}px`;
     menu.style.top = `${Math.max(8, Math.min(anchor.y + mapRect.top - stageRect.top, stage.clientHeight - menu.offsetHeight - 8))}px`;
     buttons[0].focus({ preventScroll: true });
+  }
+  $('map-context-what3words').addEventListener('click', () => { dismiss(); onAction(); });
+  map.on('contextmenu', event => {
+    if (!enabled() || ignore(event.originalEvent)) return;
+    event.originalEvent?.preventDefault(); open(event.latlng);
   });
   map.on('click', event => {
     dismiss();
@@ -95,5 +100,5 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
     }
     if (event.key === 'Tab') dismiss();
   });
-  return { clear, get measuring() { return measuring; } };
+  return { open, clear, get measuring() { return measuring; } };
 };

@@ -799,8 +799,8 @@
 #gregle-map .gregle-dark-basemap { filter:invert(1) hue-rotate(180deg) brightness(.85) saturate(.75); }
 
 .map-context-menu { position: absolute; z-index: 800; width: 228px; max-width: calc(100% - 16px); max-height: calc(100% - 16px); overflow-y: auto; box-sizing: border-box; padding: 6px; border-radius: 14px; }
-.map-context-menu button { display: block; width: 100%; min-height: 42px; border: 0; border-radius: 9px; padding: 10px 12px; background: transparent; color: var(--text); text-align: left; font: 500 14px/1.4 system-ui, sans-serif; cursor: pointer; }
-.map-context-menu button:hover, .map-context-menu button:focus-visible { background: var(--map-accent-soft); color: var(--map-accent); outline: none; }
+.map-context-menu :is(button,a) { display: block; width: 100%; min-height: 42px; border: 0; border-radius: 9px; padding: 10px 12px; background: transparent; color: var(--text); text-align: left; font: 500 14px/1.4 system-ui, sans-serif; cursor: pointer; }
+.map-context-menu :is(button,a):hover, .map-context-menu :is(button,a):focus-visible { background: var(--map-accent-soft); color: var(--map-accent); outline: none; }
 .map-context-coordinates { display: grid; gap: 4px; margin-top: 5px; padding: 10px 12px 6px; border-top: 1px solid var(--map-border); color: var(--muted); font: 12px/1.4 system-ui, sans-serif; font-variant-numeric: tabular-nums; user-select: text; }
 .map-measure { position: absolute; z-index: 660; bottom: 46px; left: 50%; transform: translateX(-50%); width: 300px; max-width: calc(100% - 24px); box-sizing: border-box; padding: 12px 16px; border-radius: 16px; }
 .map-measure > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -934,3 +934,5 @@
 .gregle-car-settings > summary svg { display:block; width:22px; height:22px; transition:color .2s; }
 .gregle-car-settings > summary:hover, .gregle-car-settings[open] > summary { color:var(--map-accent); background:var(--map-accent-soft); }
 .gregle-car-settings > summary:hover svg, .gregle-car-settings[open] > summary svg { color:#9850ff; }
+
+.map-context-menu a { box-sizing:border-box; text-decoration:none; }

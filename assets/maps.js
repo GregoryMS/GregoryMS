@@ -69,6 +69,7 @@
     showLocation(position);
     startLocation();
   }
+  let lastTappedPin = null;
   const cache = new Map();
   let suggestionTimer,composing=false;
   const notify = (message, kind = 'action', persistent = false) => {
@@ -97,6 +98,7 @@
   };
   function renderPin(point, lookup = true, nearby = false) {
     const changed = point && (!selected || point.lat !== selected.lat || point.lng !== selected.lng);
+    if (changed || !point) lastTappedPin = null;
     selected = point;
     busyness?.select(point);
     if ($('route-pin-actions')) $('route-pin-actions').hidden = !point;
@@ -113,7 +115,13 @@
     if (point) {
       const icon = L.divIcon({ className: 'gregle-map-pin', iconSize: [38, 46], iconAnchor: [19, 44], html: '<svg viewBox="0 0 38 46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19 2C9.6 2 2 9.6 2 19c0 11 17 25 17 25s17-14 17-25C36 9.6 28.4 2 19 2Z" fill="#7637cc" stroke="#fff" stroke-width="2.5"/><circle cx="19" cy="18" r="6" fill="#fff"/></svg>' });
       marker = L.marker([point.lat, point.lng], { icon, title: point.name, alt: 'Map pin', keyboard: true }).addTo(map);
-      marker.on('click', () => placeDetails?.select(point, { nearby: !point.osm }));
+      marker.on('click', event => {
+        const touch = event.originalEvent?.pointerType === 'touch' || event.originalEvent?.sourceCapabilities?.firesTouchEvents || window.matchMedia('(pointer: coarse)').matches;
+        const key = `${point.lat},${point.lng}`;
+        if (touch && lastTappedPin === key) { contextTools?.open(point); return; }
+        lastTappedPin = key;
+        placeDetails?.select(point, { nearby: !point.osm });
+      });
     }
     if (lookup && !usingEmbed) placeDetails?.select(point, { nearby });
     if (changed && lookup) { drawer?.show('map-place', true); drawer?.revealPoint(point); }

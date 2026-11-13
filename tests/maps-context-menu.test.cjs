@@ -12,7 +12,7 @@ function harness() {
       addEventListener(name, fn) { this.events[name] = fn; },
       click() { this.events.click(); }, focus() { document.activeElement = this; },
       getBoundingClientRect: () => ({ left: 0, top: 0 }),
-      contains: () => false, querySelectorAll: () => ['pin','navigate','start','measure','share'].map(s => el('map-context-' + s))
+      contains: () => false, querySelectorAll: () => ['pin','navigate','start','measure','share','what3words'].map(s => el('map-context-' + s))
     });
     return els.get(id);
   }
@@ -87,4 +87,21 @@ test('sharing links pin the supplied point and support native, clipboard and man
   navigator.share=undefined; await share(point); assert.equal(copied,shared.url);
   navigator.clipboard.writeText=async()=>{throw new Error('Unavailable');};
   await share(point); assert.equal(el('map-link-input').value,shared.url); assert.equal(shown,'map-link-copy');
+});
+
+test('what3words opens the exact menu coordinates without an API request, including pin menu access',()=>{
+ const h=harness();h.api.open({lat:48.4284,lng:236.6344});
+ assert.equal(h.el('map-context-what3words').href,'https://what3words.com/48.428400,-123.365600');
+ assert.equal(h.el('map-context-menu').hidden,false);
+ h.el('map-context-what3words').click();assert.equal(h.el('map-context-menu').hidden,true);
+});
+
+test('a second touch on the selected pin opens its actions while desktop clicks retain place details',()=>{
+ const source=fs.readFileSync(require.resolve('../assets/maps.js'),'utf8');
+ const body=source.match(/marker.on\('click', event => \{([\s\S]*?)\n      \}\);/)[1];
+ const calls=[],ctx={point:{lat:48,lng:-123},lastTappedPin:null,window:{matchMedia:()=>({matches:false})},contextTools:{open:p=>calls.push('menu')},placeDetails:{select:()=>calls.push('details')}};
+ vm.createContext(ctx);vm.runInContext('handler = event => {'+body+'}',ctx);
+ ctx.handler({originalEvent:{pointerType:'touch'}});ctx.handler({originalEvent:{pointerType:'touch'}});
+ assert.deepEqual(calls,['details','menu']);
+ ctx.handler({originalEvent:{pointerType:'mouse'}});assert.equal(calls.at(-1),'details');
 });
