@@ -31,11 +31,24 @@
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
     const layerOptions = { maxZoom: 19, updateWhenIdle: true, keepBuffer: 1 };
     const persist = () => { try { localStorage.setItem(preferenceKey, JSON.stringify({...state, teslaDefault: true})); } catch {} };
-    function disclosure(buttonId, contentId, preference, onOpen = () => {}) {
+    function disclosure(buttonId, contentId, preference, onOpen = () => {}, slide = false) {
       const button = $(buttonId), content = $(contentId);
+      let animation, expanded = false;
       const setOpen = (open, remember = false) => {
         const restoreFocus = !open && content.contains(document.activeElement);
+        const from = slide && !content.hidden ? content.getBoundingClientRect?.().height || 0 : 0;
+        animation?.cancel();
         content.hidden = !open;
+        if (slide) {
+          content.inert = !open;
+          content.setAttribute('aria-hidden', String(!open));
+          if (remember && content.animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            content.hidden = false;
+            animation = content.animate([{height: `${from}px`}, {height: `${open ? content.scrollHeight : 0}px`}], {duration: 220, easing: 'ease-in-out'});
+            animation.onfinish = () => { content.hidden = !open; animation = null; };
+          }
+        }
+        expanded = open;
         button.setAttribute('aria-expanded', String(open));
         if (open) onOpen();
         if (restoreFocus) button.focus();
@@ -44,9 +57,10 @@
       let open = false;
       try { open = localStorage.getItem(preference) === 'open'; } catch {}
       setOpen(open);
-      button.addEventListener('click', () => setOpen(content.hidden, true));
+      button.addEventListener('click', () => setOpen(!expanded, true));
       return { setOpen };
     }
+    const baseMore = disclosure('map-base-more-toggle', 'map-base-more-options', 'gregle-maps-base-more', () => {}, true);
     disclosure('drivebc-options-toggle', 'drivebc-sublayers', 'gregle-maps-drivebc-options');
     disclosure('fuel-options-toggle', 'fuel-sublayers', 'gregle-maps-fuel-options');
     disclosure('ev-options-toggle', 'ev-sublayers', 'gregle-maps-ev-options');
@@ -81,6 +95,7 @@
       basePanel.hidden = false;
       baseToggle.setAttribute('aria-expanded', 'true');
       embedToggle.setAttribute('aria-expanded', 'true');
+      if (['cycle', 'plugshare', 'shademap', 'adsbexchange', '3d'].includes(state.base)) baseMore.setOpen(true);
       onOpen('map-base-panel');
       basePanel.querySelector('input[name="map-base"]:checked')?.focus({ preventScroll: true });
     }
