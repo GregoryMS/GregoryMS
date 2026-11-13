@@ -1380,8 +1380,7 @@
       const condition = globalThis.GregleWeather.condition(code);
       const icon = globalThis.GregleWeather.weatherIcon(Number.isFinite(temp) ? condition : '', isDay === 0);
       const temperature = Number.isFinite(temp) ? `${Math.round(temp)}°C` : '--°C';
-      weatherChip.querySelector('.weather-chip-icon').innerHTML = icon;
-      weatherChip.querySelector('.weather-chip-temperature').textContent = temperature;
+      weatherChip.innerHTML = `<span class="weather-chip-icon" aria-hidden="true">${icon}</span><span class="weather-chip-temperature">${temperature}</span><span class="weather-alert-indicator" hidden aria-hidden="true">!</span>`;
       const link = new URL('https://weather.gregle.uk/');
       link.searchParams.set('lat', String(lat));
       link.searchParams.set('lon', String(lon));

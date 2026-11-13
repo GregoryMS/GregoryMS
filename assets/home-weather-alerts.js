@@ -7,6 +7,7 @@
   let location, key, version = 0, request, timer, expiry, directory, station, alerts = [], baseLabel, baseTitle;
   function render() {
     if (!baseLabel) return;
+    const badge = chip.querySelector('.weather-alert-indicator');
     alerts = alerts.filter(alert => alert.expires > win.Date.now());
     badge.hidden = !alerts.length;
     badge.dataset.colour = alerts[0]?.colour || 'neutral';
