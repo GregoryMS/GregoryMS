@@ -271,7 +271,7 @@
   const initial = core.readHash(location.hash);
   map = L.map('gregle-map', { rotate:true, bearing:initial.view.bearing || 0, rotateControl:false, dragRotate:false, touchRotate:true, shiftKeyRotate:true, zoomControl: false, doubleClickZoom: false, tapHold: false, minZoom: 2, maxZoom: 23, worldCopyJump: true }).setView([initial.view.lat, initial.view.lng], initial.view.zoom);
   drawer = window.GregleMapDrawer?.({ map });
-  L.control.zoom({ position: 'topright' }).addTo(map);
+  const zoomControl=L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 110 }).addTo(map);
   layerControl = window.GregleMapLayers({ map, config, initial: core.readLayers(location.hash), notify, getSelected: () => layerControl ? selected : initial.pin, onStreetViewOpen: () => { navigation?.close(); $('map-place').hidden = true; }, onTrafficKeyChange: () => navigation?.refreshTraffic(), onStreetViewSelect: point => { intent++; cancelSearch(); hideSearch(); renderPin(point, false); $('map-place').hidden = true; updateURL(); }, onChange: () => { syncMapMode(); syncStreetView(); updateURL(); }, onOpen: (panelId = 'map-layers-panel') => drawer?.show(panelId, true) });
   busyness = window.GregleMapBusyness?.();
@@ -281,7 +281,7 @@
   navigation = window.GregleMapNavigation?.({ map, config, getSelected: () => selected, onOpen: () => drawer?.show('map-directions', true), onConnectTraffic: () => layerControl.connectTraffic() });
   window.GregleSavedPlaces?.({ map, config, navigation, getSelected: () => selected, notify });
   controls.forEach(control => { control.disabled = false; });
-  window.GregleMapRotation?.({map,onChange:()=>{intent++;updateURL();}});
+  window.GregleMapRotation?.({map,zoomControl,on3D:()=>layerControl.setState({...layerControl.getState(),base:'3d'},true),onChange:()=>{intent++;updateURL();}});
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
