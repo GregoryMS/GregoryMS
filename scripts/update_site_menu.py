@@ -64,7 +64,7 @@ def menu(page):
         href = canonical(href)
         links.append(f'<a class="gregle-app" href="{href}"{current}{identity}><img src="/{icon}" width="44" height="44" alt="" loading="lazy" decoding="async"><span>{label}</span></a>')
     extras = ''
-    extra_links = EXTRAS if page == 'index.html' else MAP_EXTRAS if page == 'maps.html' else []
+    extra_links = EXTRAS if page == 'index.html' else MAP_EXTRAS if page == 'maps.html' else [('FotMob News', 'https://www.fotmob.com/news'), ('BBC Sport', 'https://www.bbc.co.uk/sport/my')] if page == 'sports.html' else []
     if extra_links:
         extras = '<section class="gregle-menu-more" aria-label="More links"><h3>More links</h3><div>' + ''.join(f'<a href="{canonical(href)}" rel="noreferrer">{label}</a>' for label, href in extra_links) + '</div></section>'
     return '\n'.join([
