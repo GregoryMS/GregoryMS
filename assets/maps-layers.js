@@ -61,6 +61,7 @@
       return { setOpen };
     }
     const baseMore = disclosure('map-base-more-toggle', 'map-base-more-options', 'gregle-maps-base-more', () => {}, true);
+    const layersMore = disclosure('map-layers-more-toggle', 'map-layers-more-options', 'gregle-maps-layers-more', () => {}, true);
     disclosure('drivebc-options-toggle', 'drivebc-sublayers', 'gregle-maps-drivebc-options');
     disclosure('fuel-options-toggle', 'fuel-sublayers', 'gregle-maps-fuel-options');
     disclosure('ev-options-toggle', 'ev-sublayers', 'gregle-maps-ev-options');
@@ -73,6 +74,7 @@
     const openPanel = (keyForm = false, routingOnly = false) => {
       closeBasePanel();
       panel.hidden = false; toggle.setAttribute('aria-expanded', 'true');
+      if (state.aviation || state.maritime) layersMore.setOpen(true);
       onOpen();
       if (keyForm) {
         connectForRouting = routingOnly;

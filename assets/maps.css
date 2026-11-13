@@ -198,14 +198,16 @@
 .map-layers-panel fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .map-layers-panel legend { margin-bottom: 9px; padding: 0; color: var(--muted); font-size: 11px; }
 .map-base-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.map-base-more-toggle { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 40px; border: 1px solid var(--map-border); border-radius: 12px; padding: 10px 12px; background: transparent; color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
-.map-base-more-toggle:is(:hover, :focus-visible) { background: var(--map-accent-soft); }
-.map-base-more-toggle:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
-.map-base-more-toggle svg { width: 16px; height: 16px; color: var(--muted); transition: transform 220ms ease; }
-.map-base-more-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
-.map-base-more-options { grid-column: 1 / -1; overflow: hidden; }
+.map-more-toggle { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 40px; border: 1px solid var(--map-border); border-radius: 12px; padding: 10px 12px; background: transparent; color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
+.map-more-toggle:is(:hover, :focus-visible) { background: var(--map-accent-soft); }
+.map-more-toggle:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
+.map-more-toggle svg { width: 16px; height: 16px; color: var(--muted); transition: transform 220ms ease; }
+.map-more-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.map-more-options { grid-column: 1 / -1; overflow: hidden; }
+.map-layers-more-toggle { margin-top: 8px; }
+.map-layers-more-options { padding: 2px; }
 .map-base-more-options > .map-base-options { padding: 2px; }
-@media (prefers-reduced-motion: reduce) { .map-base-more-toggle svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .map-more-toggle svg { transition: none; } }
 .map-base-options label { display: flex; align-items: flex-start; gap: 7px; border: 1px solid var(--map-border); border-radius: 12px; padding: 10px 8px; cursor: pointer; }
 .map-base-options label:has(input:checked) { background: var(--map-accent-soft); border-color: var(--map-accent); }
 .map-base-options label:has(input:focus-visible) { outline: 2px solid var(--map-accent); outline-offset: 2px; }
