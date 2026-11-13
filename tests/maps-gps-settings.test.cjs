@@ -5,9 +5,9 @@ test('car settings GPS Debug toggles diagnostics and stops GPS on close, leaving
   constructor(){this.children=new Map();this.events={};this.attrs={};this.style={};this.hidden=false;this.textContent='';}
   querySelector(id){if(!this.children.has(id)){const el=new Element();if(id==='#gps-debug-toggle')el.attrs['aria-checked']='false';this.children.set(id,el);}return this.children.get(id);}
   setAttribute(k,v){this.attrs[k]=v;}getAttribute(k){return this.attrs[k];}addEventListener(n,f){this.events[n]=f;}
-  contains(node){return node===this;}focus(){}click(){this.events.click();}
+  append(){} contains(node){return node===this;}focus(){}click(){this.events.click();}
  }
- const body={classList:{contains:()=>vehicle},append(){}},car={parentNode:{},after(){}};
+ const body={classList:{contains:()=>vehicle},append(){}},car={parentNode:{},before(){}};
  const document={body,createElement(){const el=new Element();created.push(el);return el;},getElementById:()=>car,addEventListener(){}};
  const window={isSecureContext:true,addEventListener:(n,f)=>events[n]=f};
  const navigator={geolocation:{watchPosition(s){success=s;return 0;},clearWatch:id=>cleared.push(id)}};

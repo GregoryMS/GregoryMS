@@ -917,9 +917,10 @@
 .vehicle-layout .map-directions button.directions-add-stop { min-height: 40px; font-size: 13px; }
 
 /* Car settings: touch-sized dropdown and GPS diagnostics switch. */
-.gregle-car-settings { position:relative; z-index:1602; color:var(--text); }
+.map-car-controls { display:inline-flex; align-items:center; flex-shrink:0; gap:6px; white-space:nowrap; }
+.gregle-car-settings { align-self:center; flex-shrink:0; position:relative; z-index:1602; color:var(--text); }
 .gregle-car-settings[hidden] { display:none; }
-.gregle-car-settings > summary { display:flex; align-items:center; justify-content:center; min-height:48px; padding:0 14px; border:1px solid var(--map-border); border-radius:12px; cursor:pointer; list-style:none; font:600 14px system-ui; }
+.gregle-car-settings > summary { display:flex; align-items:center; justify-content:center; width:48px; height:48px; box-sizing:border-box; padding:12px; border:0; border-radius:12px; color:var(--text); cursor:pointer; list-style:none; }
 .gregle-car-settings > summary::-webkit-details-marker { display:none; }
 .gregle-car-settings-menu { position:absolute; top:calc(100% + 8px); right:0; z-index:1600; width:230px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px; border:1px solid var(--map-border); border-radius:14px; background:var(--map-surface); box-shadow:0 8px 24px #0004; font:500 16px system-ui; }
 #gps-debug-toggle { width:52px; height:32px; padding:4px; border:0; border-radius:18px; background:#697180; cursor:pointer; }
@@ -929,3 +930,7 @@
 .gregle-car-settings :is(summary,button):focus-visible { outline:3px solid #9c72db; outline-offset:3px; }
 
 .gregle-gps-panel button { min-height:48px; padding:8px 16px; cursor:pointer; }
+
+.gregle-car-settings > summary svg { display:block; width:22px; height:22px; transition:color .2s; }
+.gregle-car-settings > summary:hover, .gregle-car-settings[open] > summary { color:var(--map-accent); background:var(--map-accent-soft); }
+.gregle-car-settings > summary:hover svg, .gregle-car-settings[open] > summary svg { color:#9850ff; }

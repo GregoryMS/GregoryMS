@@ -3,7 +3,7 @@
   // Optional GPS diagnostics for Tesla and other browsers. No coordinates leave this page.
   const settings = document.createElement('details');
   settings.className = 'gregle-car-settings'; settings.hidden = true;
-  settings.innerHTML = '<summary aria-label="Car settings">Settings</summary><div class="gregle-car-settings-menu"><span id="gps-debug-label">GPS Debug</span><button type="button" id="gps-debug-toggle" role="switch" aria-checked="false" aria-labelledby="gps-debug-label"><span aria-hidden="true"></span></button></div>';
+  settings.innerHTML = '<summary aria-label="Car settings" title="Car settings"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.6 2.2-1.8 1L4.4 6l-2 3.4L4 11v2l-1.6 1.6 2 3.4 2.2-.2 1.8 1L9 21h4l.6-2.2 1.8-1 2.2.2 2-3.4L18 13v-2l1.6-1.6-2-3.4-2.2.2-1.8-1L13 3Z"/><circle cx="11" cy="12" r="3"/></svg></summary><div class="gregle-car-settings-menu"><span id="gps-debug-label">GPS Debug</span><button type="button" id="gps-debug-toggle" role="switch" aria-checked="false" aria-labelledby="gps-debug-label"><span aria-hidden="true"></span></button></div>';
   const toggle = settings.querySelector('#gps-debug-toggle');
   const panel = document.createElement('section');
   panel.className = 'gregle-gps-panel';
@@ -11,7 +11,10 @@
   panel.style.cssText = 'position:fixed;right:12px;top:90px;z-index:1501;width:min(340px,calc(100vw - 24px));padding:16px;border-radius:14px;background:#201c2b;color:white;box-shadow:0 4px 24px #0008;font:14px/1.5 system-ui';
   panel.innerHTML = '<strong>Live GPS diagnostics</strong><p id="gregle-gps-state" role="status">Ready.</p><pre id="gregle-gps-data" style="white-space:pre-wrap;font:13px/1.6 monospace"></pre><button id="gregle-gps-close" type="button">Close</button><p style="font-size:12px;opacity:.8">Updates are displayed locally only. GPS may be unavailable in some Tesla browser versions.</p>';
   const carButton = document.getElementById('map-car-layout');
-  if (carButton?.parentNode) carButton.after(settings); else document.querySelector('.top-actions')?.prepend(settings);
+  if (carButton?.parentNode) {
+    const controls = document.createElement('span'); controls.className = 'map-car-controls';
+    carButton.before(controls); controls.append(carButton,settings);
+  } else document.querySelector('.top-actions')?.prepend(settings);
   document.body.append(panel);
   function syncCarMode() {
     const enabled = document.body.classList.contains('vehicle-layout');
