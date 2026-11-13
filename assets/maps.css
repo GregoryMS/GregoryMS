@@ -974,3 +974,5 @@
 @media(max-height:520px) {
  .maps-page:not(.vehicle-layout) .map-stage:not(.streetview-active) .map-actions { right:88px; left:auto; width:auto; flex-direction:row; }
 }
+
+.vehicle-layout .map-navigation-controls { left:22px; right:auto; }
