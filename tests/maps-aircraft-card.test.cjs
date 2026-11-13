@@ -3,7 +3,7 @@ function setup(){
  const events={},nodes=new Map();let closed=0,resize,width=1000,height=700;
  const el=id=>{if(!nodes.has(id))nodes.set(id,{hidden:true,style:{},scrollTop:0,events:{},addEventListener(n,fn){this.events[n]=fn;},replaceChildren(node){this.content=node;},setPointerCapture(){},getBoundingClientRect(){return {left:parseFloat(this.style.left)||0,top:parseFloat(this.style.top)||0,width:290,height:350};}});return nodes.get(id);};
  const stage={getBoundingClientRect:()=>({left:0,top:0,width,height}),querySelector:()=>({getBoundingClientRect:()=>({left:930,width:52})})};
- const window={},document={getElementById:el,querySelector:()=>stage};
+ const window={addEventListener(){}},document={getElementById:el,querySelector:()=>stage};
  vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-aircraft-card.js'),'utf8'),{window,document,ResizeObserver:class{constructor(fn){resize=fn;}observe(){}}});
  const api=window.GregleAircraftCard({onClose(){closed++;}}),card=el('aircraft-info-card'),handle=el('aircraft-info-drag');
  const pointer=(x,y)=>({isPrimary:true,button:0,pointerId:1,clientX:x,clientY:y,preventDefault(){}});
