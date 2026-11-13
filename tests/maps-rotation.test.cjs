@@ -10,7 +10,7 @@ test('rotation buttons rotate left/right and compass returns north with a synchr
  let bearing=0,onRotate,changes=0;const buttons=[];
  const window={},L={control:()=>({addTo(){this.onAdd();}}),DomUtil:{create(tag){const el={style:{},setAttribute(){},querySelector:()=>({style:{}})};if(tag==='button')buttons.push(el);return el;}},DomEvent:{on(el,event,fn){el.click=()=>fn({});},stop(){},disableClickPropagation(){},disableScrollPropagation(){}}};
  const map={setBearing(v){bearing=(v+360)%360;onRotate();},getBearing:()=>bearing,on:(name,fn)=>onRotate=fn};
- vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-rotation.js'),'utf8'),{window,L});
+ vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-rotation.js'),'utf8'),{window,L,document:{querySelector:()=>({append(){}})}});
  window.GregleMapRotation({map,onChange:()=>changes++});buttons[2].click();assert.equal(bearing,15);assert.match(buttons[1].title,/345°/);
  buttons[0].click();assert.equal(bearing,0);buttons[0].click();assert.equal(bearing,345);buttons[1].click();assert.equal(bearing,0);assert.equal(changes,5);
 });
