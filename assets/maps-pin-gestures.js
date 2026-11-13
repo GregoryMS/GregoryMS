@@ -3,7 +3,7 @@
 
   function pinGestures({ container, onPin }) {
     const doubleTapDelay = 450, tapDistance = 32, moveTolerance = 15, holdDelay = 550;
-    const excluded = '.leaflet-interactive, .leaflet-popup, .leaflet-control';
+    const excluded = '.leaflet-interactive, .leaflet-popup, .leaflet-control, .native-3d-pin, .maplibregl-control-container';
     let previous = null, gesture = null, holdTimer, lastTouch = -Infinity;
     const distance = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
     const cancel = () => { clearTimeout(holdTimer); gesture = null; previous = null; };

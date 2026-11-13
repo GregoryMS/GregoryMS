@@ -5,10 +5,11 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
   const menu = $('map-context-menu'), panel = $('map-measure');
   const buttons = Array.from(menu.querySelectorAll('[role="menuitem"]'));
   const layers = L.layerGroup().addTo(map);
+  const focusMap=()=>map.native3D?.active?map.native3D.focus():container.focus({preventScroll:true});
   let target = null, measuring = false, points = [];
   const dismiss = (focus = false) => {
     menu.hidden = true;
-    if (focus) container.focus({ preventScroll: true });
+    if (focus) focusMap();
   };
   function redraw() {
     layers.clearLayers();
@@ -52,9 +53,9 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
   $('map-measure-finish').addEventListener('click', () => {
     measuring = false; redraw();
     $('map-measure-help').textContent = 'Straight-line distance. Right-click and choose Measure distance to start again.';
-    container.focus({ preventScroll: true });
+    focusMap();
   });
-  $('map-measure-clear').addEventListener('click', () => { clear(); container.focus({ preventScroll: true }); });
+  $('map-measure-clear').addEventListener('click', () => { clear(); focusMap(); });
   function open(point) {
     if (!enabled()) return;
     const lat = point.lat, lng = core.wrapLongitude(point.lng);
@@ -65,7 +66,7 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
     $('map-context-lng').textContent = `Longitude: ${lng.toFixed(6)}`;
     if (window.GreglePlusCodes) $('map-context-pluscode').textContent = 'OLC: ' + window.GreglePlusCodes.encode(lat,lng);
     menu.hidden = false;
-    const anchor = map.latLngToContainerPoint(point), mapRect = container.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
+    const anchor = map.native3D?.active?map.native3D.project(point):map.latLngToContainerPoint(point), mapRect = container.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
     menu.style.left = `${Math.max(8, Math.min(anchor.x + mapRect.left - stageRect.left, stage.clientWidth - menu.offsetWidth - 8))}px`;
     menu.style.top = `${Math.max(8, Math.min(anchor.y + mapRect.top - stageRect.top, stage.clientHeight - menu.offsetHeight - 8))}px`;
     buttons[0].focus({ preventScroll: true });
@@ -90,7 +91,7 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
     if (event.key === 'Escape' && (!menu.hidden || measuring)) {
       event.preventDefault(); event.stopImmediatePropagation();
       if (!menu.hidden) dismiss(true);
-      else { clear(); container.focus({ preventScroll: true }); }
+      else { clear(); focusMap(); }
     }
   }, true);
   menu.addEventListener('keydown', event => {

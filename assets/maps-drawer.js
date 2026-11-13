@@ -99,7 +99,8 @@ window.GregleMapDrawer = ({ map }) => {
     revealFrame = requestAnimationFrame(() => {
       if (!media.matches || drawer.hidden || stage.classList.contains('streetview-active') || stage.classList.contains('navigating')) return;
       const bottom = stage.getBoundingClientRect().bottom - drawer.getBoundingClientRect().top + 24;
-      map.panInside([point.lat, point.lng], { paddingTopLeft: [24, 148], paddingBottomRight: [24, bottom], animate: false });
+      const options={paddingTopLeft:[24,148],paddingBottomRight:[24,bottom],animate:false};
+      if(map.native3D?.active)map.native3D.revealPoint(point,options);else map.panInside([point.lat,point.lng],options);
     });
   }
   function closeActive() {

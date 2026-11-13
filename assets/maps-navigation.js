@@ -179,6 +179,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   function startNavigation(threeD = false) {
     const engine=mode==='transit'?transitLive:live;
     if (!currentRoute || !engine) return;
+    onDriveStart();
     try {
       if(mode==='transit'){transitVehicles?.clear();transitLive.start(currentRoute);}else live.start(currentRoute, mode, points.to, {threeD});
       if (engine.active) {

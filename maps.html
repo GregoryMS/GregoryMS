@@ -20,12 +20,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261113-free-drive">
+  <link rel="stylesheet" href="assets/maps.css?v=20261113-native-3d">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261017-theme-switch" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="assets/leaflet-rotate.js?v=0.3.0-canvas-fix" defer></script>
-  <script src="assets/maps-rotation.js?v=20261113-compass-dial" defer></script>
+  <script src="assets/maps-rotation.js?v=20261113-native-3d" defer></script>
   <script src="assets/openlocationcode.js?v=20261112" defer></script>
   <script src="assets/maps-pluscodes.js?v=20261112" defer></script>
   <script src="assets/maps-core.js?v=20261113-parking" defer></script>
@@ -61,7 +61,8 @@
   <script src="assets/maps-transit.js?v=20261109-transit-route" defer></script>
   <script src="assets/maps-parking-core.js?v=20261113" defer></script>
   <script src="assets/maps-parking.js?v=20261113-key" defer></script>
-  <script src="assets/maps-layers.js?v=20261113-parking" defer></script>
+  <script src="assets/maps-native-3d.js?v=20261113" defer></script>
+  <script src="assets/maps-layers.js?v=20261113-native-3d" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261113-four-stops" defer></script>
   <script src="assets/maps-routing.js?v=20261113-four-stops" defer></script>
@@ -69,13 +70,13 @@
   <script src="assets/maps-navigation-live.js?v=20261113-free-drive" defer></script>
   <script src="assets/maps-transit-journey-core.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
-  <script src="assets/maps-navigation.js?v=20261113-free-drive" defer></script>
-  <script src="assets/maps-pin-gestures.js?v=20261021-mobile-pins" defer></script>
-  <script src="assets/maps-drawer.js?v=20261113-aircraft-card" defer></script>
-  <script src="assets/maps-qr.js?v=20261113" defer></script>
-  <script src="assets/maps-context-menu.js?v=20261113-qr" defer></script>
+  <script src="assets/maps-navigation.js?v=20261113-native-3d" defer></script>
+  <script src="assets/maps-pin-gestures.js?v=20261113-native-3d" defer></script>
+  <script src="assets/maps-drawer.js?v=20261113-native-3d" defer></script>
+  <script src="assets/maps-qr.js?v=20261113-native-3d" defer></script>
+  <script src="assets/maps-context-menu.js?v=20261113-native-3d" defer></script>
   <script src="assets/maps-saved-places.js?v=20261112-car-home" defer></script>
-  <script src="assets/maps.js?v=20261113-free-drive" defer></script>
+  <script src="assets/maps.js?v=20261113-native-3d" defer></script>
   <script src="assets/maps-gps-test.js?v=20261112-settings-icon" defer></script>
   <script src="assets/site-menu.js?v=20261019-docs" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
@@ -111,6 +112,7 @@
   </header>
   <main class="map-stage" aria-label="Gregle Maps">
     <div id="gregle-map" aria-label="Interactive OpenStreetMap. Right-click for map actions and coordinates. Double-click, double-tap, or touch and hold to drop a pin. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
+    <div id="gregle-map-3d" aria-label="Interactive OpenFreeMap 3D map" hidden></div>
     <section class="map-context-menu map-glass" id="map-context-menu" aria-label="Map point actions" hidden>
       <div role="menu" aria-label="Actions at this point">
         <button type="button" role="menuitem" id="map-context-pin">Drop pin</button>
@@ -249,7 +251,7 @@
             <label><input type="radio" name="map-base" value="plugshare"><span><strong>PlugShare</strong><small>EV charging map</small></span></label>
             <label><input type="radio" name="map-base" value="shademap"><span><strong>ShadeMap</strong><small>Sunlight &amp; shadows</small></span></label>
             <label><input type="radio" name="map-base" value="adsbexchange"><span><strong>ADS-B Exchange</strong><small>Live aircraft map</small></span></label>
-            <label><input type="radio" name="map-base" value="3d"><span><strong>3D</strong><small>OpenFreeMap · buildings, tilt &amp; rotation</small></span></label>
+            <label><input type="radio" name="map-base" value="3d"><span><strong>3D</strong><small>OpenFreeMap · Gregle controls, buildings &amp; tilt</small></span></label>
           </div>
         </div>
       </fieldset>

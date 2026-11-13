@@ -24,7 +24,7 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
   });
   const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener:(name,fn)=>events[name]=fn};
   window.GregleTransit=provider('transit');
-  for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed',GregleVictoriaParking:'parking'}))window[name]=provider(key);
+  for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed',GregleVictoriaParking:'parking',GregleNative3D:'native3d'}))window[name]=provider(key);
   const document={body:{classList:{contains:()=>false}},documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
   const L={TileLayer:{extend:()=>function(){}},tileLayer:(url,options)=>{const tile={url,options,events:{},on(name,fn){this.events[name]=fn;return this;},setZIndex(){return this;},addTo(){return this;}};tiles.push(tile);return tile;}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/../assets/maps-layers.js','utf8'),{
@@ -181,13 +181,14 @@ test('unavailable cycle and transit tiles recover to the street map with a notic
   }
 });
 
-test('OpenFreeMap 3D retains live vector overlays and preserves raster preferences for return',()=>{
+test('native OpenFreeMap 3D pauses data providers, keeps their preferences and restores them in 2D',()=>{
  const state={base:'3d',aircraft:true,drivebc:true,ev:true,aviation:true,maritime:true,google:true};
  const h=setup({initial:state,dark:true});
  assert.equal(h.api.getState().base,'3d');
- for(const name of ['aircraft','drivebc','ev'])assert(h.calls.some(c=>c[0]===name&&c[1]===true),name);
+ for(const name of ['aircraft','drivebc','ev'])assert(h.calls.some(c=>c[0]===name&&c[1]===false),name);
+ assert(h.calls.some(c=>c[0]==='native3d'&&c[1]===true));assert(!h.calls.some(c=>c[0]==='embed'&&c[1]==='3d'));
  assert(!h.calls.some(c=>['aviation','google'].includes(c[0])&&c[1]===true));
- assert.equal(h.get('map-layers-panel').querySelector('.map-overlay-options').disabled,false);
+ assert.equal(h.get('map-layers-panel').querySelector('.map-overlay-options').disabled,true);
  h.calls.length=0;h.api.setState({...state,base:'street'});
  assert(h.calls.some(c=>c[0]==='aviation'&&c[1]===true));assert(h.calls.some(c=>c[0]==='google'&&c[1]===true));
 });
@@ -201,10 +202,10 @@ test('3D navigation suspends background providers and restores selected layers o
  for(const name of ['aircraft','drivebc','ev'])assert(h.calls.some(c=>c[0]===name&&c[1]===true),name);
 });
 
-test('Victoria parking is opt-in, stays in OpenFreeMap 3D, and pauses behind external embeds or 3D navigation',()=>{
+test('Victoria parking preferences survive native 3D and resume on return to 2D',()=>{
  const h=setup({initial:{parking:true}});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
- h.calls.length=0;h.api.setState({parking:true,base:'plugshare'});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===false));assert.equal(h.api.getState().parking,true);
- h.calls.length=0;h.api.setState({parking:true,base:'3d'});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
- h.calls.length=0;h.emit('gregle-navigation-3d',true);assert(h.calls.some(c=>c[0]==='parking'&&c[1]===false));
- h.calls.length=0;h.emit('gregle-navigation-3d',false);assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
+ h.calls.length=0;h.api.setState({parking:true,base:'3d'});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===false));assert.equal(h.api.getState().parking,true);
+ h.calls.length=0;h.emit('gregle-navigation-3d',true);assert(!h.calls.some(c=>c[0]==='parking'&&c[1]===true));
+ h.calls.length=0;h.emit('gregle-navigation-3d',false);assert(!h.calls.some(c=>c[0]==='parking'&&c[1]===true));
+ h.calls.length=0;h.api.setState({parking:true,base:'street'});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
 });

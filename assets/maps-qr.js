@@ -1,6 +1,6 @@
 'use strict';
 // Generate QR codes locally; the selected coordinates never go to a QR service.
-window.GregleMapQR = () => {
+window.GregleMapQR = ({map}={}) => {
   const $ = id => document.getElementById(id), dialog = $('map-qr-dialog'), core = window.GregleMaps;
   let library, generation = 0;
   function loadEncoder() {
@@ -15,7 +15,7 @@ window.GregleMapQR = () => {
     return library;
   }
   $('map-qr-close').addEventListener('click', () => dialog.close());
-  dialog.addEventListener('close', () => { generation++; $('gregle-map').focus({preventScroll:true}); });
+  dialog.addEventListener('close', () => { generation++; if(map?.native3D?.active)map.native3D.focus();else $('gregle-map').focus({preventScroll:true}); });
   return async point => {
     const lng = core.wrapLongitude(point.lng), lat = point.lat;
     if (!core.validPoint(lat, lng)) return;

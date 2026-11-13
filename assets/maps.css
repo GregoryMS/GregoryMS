@@ -1016,3 +1016,14 @@
 .aircraft-info-card .aircraft-popup a { color:var(--map-accent); }
 :is(.navigating,.streetview-active) .aircraft-info-card { display:none; }
 @media(max-width:420px){.aircraft-info-card {width:250px;max-height:calc(100% - 120px);}}
+
+/* The regular 3D renderer shares the page and Gregle's existing controls. */
+#gregle-map-3d {position:absolute;inset:0;z-index:1;background:var(--map-surface);}
+#gregle-map-3d[hidden] {display:none;}
+.native-3d-active #gregle-map {visibility:hidden;}
+.native-3d-pin {width:38px;height:46px;padding:0;border:0;background:transparent;cursor:pointer;}
+.native-3d-pin svg {display:block;width:38px;height:46px;}
+.native-3d-pin:focus-visible {outline:3px solid var(--map-accent);outline-offset:3px;border-radius:50%;}
+#gregle-map-3d .maplibregl-ctrl-scale {background:var(--map-control-surface);color:var(--text);border-color:var(--muted);font:12px/1.5 system-ui,sans-serif;}
+#gregle-map-3d .maplibregl-ctrl-attrib {font:10px/1.5 system-ui,sans-serif;}
+#gregle-map-3d .maplibregl-ctrl-bottom-right {max-width:calc(100% - 100px);}

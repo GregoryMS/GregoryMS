@@ -24,6 +24,10 @@
     const aircraft = window.GregleAircraft({ map, notify });
     const vessels = window.GregleVessels({ map, notify });
     const embed = window.GregleMapEmbed({ map });
+    const native3D = window.GregleNative3D?.({map,onStatus:text=>{ $('base-layer-status').textContent=text; },onError:text=>{
+      if(state.base!=='3d')return;
+      setState({...state,base:'street'},true);notify(text,'3d');
+    }});
     const transit = window.GregleTransit?.({ map });
     const parking = window.GregleVictoriaParking?.({map});
     const streetView = window.GregleStreetView({ map, getSelected, onOpen: onStreetViewOpen, onSelect: onStreetViewSelect, onClose: () => setState({ ...state, streetview: false }, true) });
@@ -92,7 +96,7 @@
       basePanel.hidden = true;
       baseToggle.setAttribute('aria-expanded', 'false');
       embedToggle.setAttribute('aria-expanded', 'false');
-      if (restoreFocus) (core.isEmbeddedBase(state.base) ? embedToggle : baseToggle).focus();
+      if (restoreFocus) (core.isEmbeddedBase(state.base)&&state.base!=='3d' ? embedToggle : baseToggle).focus();
     }
     function openBasePanel() {
       closePanel();
@@ -105,8 +109,8 @@
     }
     const render = () => {
       const embedded = core.isEmbeddedBase(state.base), overlays = panel.querySelector('.map-overlay-options');
-      overlays.hidden = embedded && state.base !== '3d'; overlays.disabled = embedded && state.base !== '3d';
-      $('layers-footnote').textContent = state.base === '3d' ? 'OpenFreeMap 3D shows live pins and road lines with simplified details. Traffic, aviation and nautical tiles resume on other base maps.' : embedded ? `Use ${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
+      overlays.hidden = embedded && state.base !== '3d'; overlays.disabled = embedded;
+      $('layers-footnote').textContent = state.base === '3d' ? 'OpenFreeMap 3D uses your Gregle controls. Extra layers are paused; your selections resume in 2D.' : embedded ? `Use ${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
       basePanel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
@@ -154,7 +158,8 @@
     function changeBase(satelliteNativeZoom = 23) {
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
       map.setMaxZoom(state.base === 'satellite' ? 23 : 19);
-      embed.setBase(state.base);
+      embed.setBase(state.base==='3d'?'street':state.base);
+      if(state.base==='3d'){map.closePopup();status('base-layer-status','OpenFreeMap 3D · Gregle controls are available. Extra layers resume in 2D.');return;}
       if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
       const satellite = state.base === 'satellite', topographic = state.base === 'topographic', dark = state.base === 'dark';
       const cycle = state.base === 'cycle', transit = state.base === 'transit';
@@ -304,8 +309,9 @@
       const first = !applied, previous = applied || core.normalizeLayers(null);
       state = core.normalizeLayers(next);
       // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
-      const active = navigation3D ? core.normalizeLayers({base:state.base}) : state.base === '3d' ? {...state, maritime:false, aviation:false, traffic:false, google:false, streetview:false} : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
+      const active = navigation3D || state.base==='3d' ? core.normalizeLayers({base:state.base}) : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
       applied = active;
+      native3D?.setEnabled(state.base==='3d'&&!navigation3D);
       if (first || previous.base !== state.base || (!baseLayer && !core.isEmbeddedBase(state.base))) changeBase();
       if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();
       if(first || previous.parking !== active.parking) parking?.setEnabled(active.parking);
@@ -414,7 +420,7 @@
         setState({ ...state, base: lightBase }, true);
       }
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return { getState: () => ({ ...state }), setState: next => setState(next, false), connectTraffic: () => openPanel(true, true), openStreetView: point => {
+    return { getState: () => ({ ...state }), setState: (next,changed=false) => setState(next,changed), connectTraffic: () => openPanel(true, true), openStreetView: point => {
       setState({ ...state, base: core.isEmbeddedBase(state.base) ? 'street' : state.base, streetview: true }, true);
       closePanel(); closeBasePanel(); onStreetViewOpen(); streetView.showAt(point);
     } };

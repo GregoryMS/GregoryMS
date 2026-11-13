@@ -175,16 +175,16 @@
     map.setView([Math.max(-85.051129, Math.min(85.051129, point.lat)), point.lng], zoom, mobile ? { animate: false } : {});
     if (layerControl.getState().streetview) layerControl.openStreetView(point);
     updateURL();
-    $('gregle-map').focus({ preventScroll: true });
+    if(map.native3D?.active)map.native3D.focus();else $('gregle-map').focus({ preventScroll: true });
   }
   function clearPin() {
     intent++;
     renderPin(null);
     updateURL();
-    $('gregle-map').focus({ preventScroll: true });
+    if(map.native3D?.active)map.native3D.focus();else $('gregle-map').focus({ preventScroll: true });
   }
   function syncMapMode(restoreDetails = true) {
-    const embedded = core.isEmbeddedBase(layerControl.getState().base);
+    const base=layerControl.getState().base,embedded = core.isEmbeddedBase(base)&&base!=='3d';
     if (embedded === usingEmbed) return;
     usingEmbed = embedded; intent++; cancelSearch(); hideSearch();
     if (embedded) stopLocation(); else startLocation();
@@ -285,7 +285,7 @@
   }, onOpen: () => drawer?.show('map-directions', true), onConnectTraffic: () => layerControl.connectTraffic() });
   window.GregleSavedPlaces?.({ map, config, navigation, getSelected: () => selected, notify });
   controls.forEach(control => { control.disabled = false; });
-  window.GregleMapRotation?.({map,zoomControl,on3D:()=>{if(document.body.classList.contains('vehicle-layout'))navigation?.startCar3D();else layerControl.setState({...layerControl.getState(),base:'3d'},true);},onChange:()=>{intent++;updateURL();}});
+  window.GregleMapRotation?.({map,zoomControl,on3D:()=>{if(document.body.classList.contains('vehicle-layout'))navigation?.startCar3D();else{const state=layerControl.getState();layerControl.setState({...state,base:state.base==='3d'?'street':'3d'},true);}},onChange:()=>{intent++;updateURL();}});
   map.on('moveend', updateURL);
   map.on('dragstart zoomstart', () => { intent++; });
   map.on('movestart', () => { cancelSearch(); hideSearch(); });
@@ -311,7 +311,7 @@
     onPin: touch => dropPin({ latlng: map.mouseEventToLatLng(touch), originalEvent: { target: touch.target } }),
   });
   map.on('dblclick', event => { if (!pinGestures.ignoreDoubleClick(event.originalEvent)) dropPin(event); });
-  const showQR = window.GregleMapQR?.();
+  const showQR = window.GregleMapQR?.({map});
   contextTools = window.GregleMapContextMenu?.({
     onQR: point => showQR?.(point),
     map, navigation, enabled: () => !usingEmbed, onShare: shareLocation,
@@ -447,7 +447,7 @@
       if (!core.validPoint(point.lat, point.lng)) { notify('Your device did not return a usable location. Try searching instead.'); return; }
       cancelSearch(); hideSearch();
       map.setView([Math.max(-85.051129, Math.min(85.051129, point.lat)), point.lng], 15);
-      $('gregle-map').focus({ preventScroll: true });
+      if(map.native3D?.active)map.native3D.focus();else $('gregle-map').focus({ preventScroll: true });
       notify('Showing your approximate location.');
     }, error => {
       button.disabled = false; button.removeAttribute('aria-busy');
