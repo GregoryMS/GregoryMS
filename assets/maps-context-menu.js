@@ -79,7 +79,7 @@ window.GregleMapContextMenu = ({ map, navigation, enabled, ignore, onAction, onP
     if (!measuring || !enabled() || event.originalEvent?.target?.closest?.('.leaflet-interactive, .leaflet-popup, .leaflet-control')) return;
     onAction(); addPoint(event.latlng);
   });
-  map.on('movestart resize', () => dismiss());
+  map.on('movestart resize rotate', () => dismiss());
   window.addEventListener('resize', () => dismiss());
   window.addEventListener('hashchange', clear);
   document.addEventListener('pointerdown', event => {

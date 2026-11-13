@@ -205,7 +205,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
   }
   function start(nextRoute, nextMode, to, {threeD: start3D = false} = {}) {
     if (!navigator.geolocation?.watchPosition) { onStop('Live location is unavailable in this browser. You can still use the route steps.'); return; }
-    cleanup(); route = nextRoute; pendingStops = (route.stops || []).map(stop => ({...stop})); mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; lastStationary = false; spoken = ''; lastTrafficAttempt = Date.now();
+    cleanup(); map.setBearing?.(0); route = nextRoute; pendingStops = (route.stops || []).map(stop => ({...stop})); mode = nextMode; destination = { ...to }; previous = null; offSince = 0; lastReroute = 0; firstFix = true; lastFix = 0; lastStationary = false; spoken = ''; lastTrafficAttempt = Date.now();
     running = true; const token = session; setFollow(true); card.hidden = false;
     stage.classList.add('navigating'); $('navigation-stop').textContent = 'Stop';
     enterFullscreen();

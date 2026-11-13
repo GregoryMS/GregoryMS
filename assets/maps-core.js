@@ -21,6 +21,8 @@
       const [zoom, lat, lng] = parts.map(Number);
       if (Number.isInteger(zoom) && zoom >= 2 && zoom <= 23 && validPoint(lat, lng) && Math.abs(lat) <= 85.05113) view = { lat, lng, zoom };
     }
+    const bearing=Number(params.get('bearing'));
+    if(params.has('bearing') && Number.isFinite(bearing) && bearing>0 && bearing<360) view.bearing=bearing;
     const coords = (params.get('pin') || '').split(',');
     const [lat, lng] = coords.map(Number);
     const pin = coords.length === 2 && coords.every(part => part.trim() !== '') && validPoint(lat, lng) ? { lat, lng, name: text(params.get('name')) || 'Dropped pin', detail: '' } : null;
@@ -42,6 +44,7 @@
   }
   function makeHash(view, pin, layers) {
     let hash = '#' + viewHash(view);
+    if(Number.isFinite(view.bearing) && view.bearing%360) hash += '&bearing=' + ((view.bearing%360+360)%360).toFixed(1);
     if (pin && validPoint(pin.lat, pin.lng)) hash += `&pin=${pin.lat.toFixed(5)},${pin.lng.toFixed(5)}&name=${encodeURIComponent(text(pin.name) || 'Dropped pin')}`;
     if (pin?.osm && osmReference(...pin.osm.split('/')) === pin.osm) hash += `&osm=${pin.osm}`;
     if (layers) {

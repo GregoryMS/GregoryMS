@@ -93,7 +93,7 @@
           previous.marker.setPopupContent(() => popup(vessel, previous.marker));
           card.options.autoPan = autoPan;
         } else {
-          const marker = L.marker(point, { title, alt: title, icon: icon(vessel), keyboard: true, riseOnHover: true, bubblingMouseEvents: false, zIndexOffset: 100 });
+          const marker = L.marker(point, { rotateWithView:true, title, alt: title, icon: icon(vessel), keyboard: true, riseOnHover: true, bubblingMouseEvents: false, zIndexOffset: 100 });
           marker.bindPopup(() => popup(vessel, marker), { minWidth: 140, maxWidth: 290, autoPanPaddingTopLeft: [12, 90], autoPanPaddingBottomRight: [68, 35] }).addTo(group);
           displayed.set(vessel.id, { marker, vessel, worldLng: point[1] });
         }

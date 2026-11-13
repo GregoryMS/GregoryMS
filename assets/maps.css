@@ -946,3 +946,12 @@
 .gregle-car-settings > summary:hover svg, .gregle-car-settings[open] > summary svg { color:#9850ff; }
 
 .map-context-menu a { box-sizing:border-box; text-decoration:none; }
+
+.gregle-map-rotation button { display:grid; place-items:center; width:46px; height:44px; padding:10px; border:0; border-bottom:1px solid var(--map-border); background:var(--map-control-surface); color:var(--text); cursor:pointer; font:26px/1 system-ui; }
+.gregle-map-rotation button:last-child { border-bottom:0; }
+.gregle-map-rotation button:hover,.gregle-map-rotation button:focus-visible { color:var(--map-accent); background:var(--map-accent-soft); }
+.gregle-map-rotation button:focus-visible { outline:2px solid var(--map-accent); outline-offset:-3px; }
+.gregle-map-rotation svg { width:24px; height:24px; }
+.vehicle-layout .gregle-map-rotation { display:flex; }
+.vehicle-layout .gregle-map-rotation button { width:48px; height:48px; border-bottom:0; border-right:1px solid var(--map-border); }
+.vehicle-layout .gregle-map-rotation button:last-child { border-right:0; }
