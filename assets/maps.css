@@ -915,3 +915,17 @@
 .map-directions button.directions-add-stop:hover, .map-directions button.directions-add-stop:focus-visible { color: var(--map-accent); background: var(--map-accent-soft); }
 .directions-add-stop span { font-size: 16px; line-height: 1; }
 .vehicle-layout .map-directions button.directions-add-stop { min-height: 40px; font-size: 13px; }
+
+/* Car settings: touch-sized dropdown and GPS diagnostics switch. */
+.gregle-car-settings { position:relative; z-index:1602; color:var(--text); }
+.gregle-car-settings[hidden] { display:none; }
+.gregle-car-settings > summary { display:flex; align-items:center; justify-content:center; min-height:48px; padding:0 14px; border:1px solid var(--map-border); border-radius:12px; cursor:pointer; list-style:none; font:600 14px system-ui; }
+.gregle-car-settings > summary::-webkit-details-marker { display:none; }
+.gregle-car-settings-menu { position:absolute; top:calc(100% + 8px); right:0; z-index:1600; width:230px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px; border:1px solid var(--map-border); border-radius:14px; background:var(--map-surface); box-shadow:0 8px 24px #0004; font:500 16px system-ui; }
+#gps-debug-toggle { width:52px; height:32px; padding:4px; border:0; border-radius:18px; background:#697180; cursor:pointer; }
+#gps-debug-toggle > span { display:block; width:24px; height:24px; border-radius:50%; background:white; transition:transform .15s; }
+#gps-debug-toggle[aria-checked="true"] { background:#7637cc; }
+#gps-debug-toggle[aria-checked="true"] > span { transform:translateX(20px); }
+.gregle-car-settings :is(summary,button):focus-visible { outline:3px solid #9c72db; outline-offset:3px; }
+
+.gregle-gps-panel button { min-height:48px; padding:8px 16px; cursor:pointer; }
