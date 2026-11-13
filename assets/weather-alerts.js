@@ -1,7 +1,10 @@
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  else root.GregleWeatherAlerts = api.createController(root);
+  else {
+    root.GregleWeatherAlertsCore = api;
+    if (root.document.getElementById('weatherAlerts')) root.GregleWeatherAlerts = api.createController(root);
+  }
 })(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
   const REFRESH_MS = 5 * 60 * 1000;

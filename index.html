@@ -219,6 +219,11 @@
     }
 
     .weather-chip { gap:7px; }
+    .weather-alert-indicator { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; flex-shrink:0; background:#596574; color:#fff; font-size:12px; font-weight:800; }
+    .weather-alert-indicator[hidden] { display:none; }
+    .weather-alert-indicator[data-colour="yellow"] { background:#efc32e; color:#242424; }
+    .weather-alert-indicator[data-colour="orange"] { background:#ee8328; color:#242424; }
+    .weather-alert-indicator[data-colour="red"] { background:#df434c; }
     .weather-chip-icon { display:inline-flex; width:28px; height:28px; color:var(--text); flex-shrink:0; --panel:var(--panel-strong); }
     .weather-chip-icon svg { width:100%; height:100%; }
     .weather-chip .sun-stroke { stroke:#be831b; }
@@ -885,7 +890,7 @@
 <body>
   <header class="gregle-menu-header topbar">
     <div class="left-tools">
-      <a class="weather-chip" id="weatherChip" href="https://weather.gregle.uk/?lat=48.4284&amp;lon=-123.3656&amp;name=Victoria&amp;country=CA&amp;tz=America%2FVancouver" aria-label="Open weather forecast for Victoria"><span class="weather-chip-icon" aria-hidden="true"></span><span>--°C</span></a>
+      <a class="weather-chip" id="weatherChip" href="https://weather.gregle.uk/?lat=48.4284&amp;lon=-123.3656&amp;name=Victoria&amp;country=CA&amp;tz=America%2FVancouver" aria-label="Open weather forecast for Victoria"><span class="weather-chip-icon" aria-hidden="true"></span><span class="weather-chip-temperature">--°C</span><span class="weather-alert-indicator" hidden aria-hidden="true">!</span></a>
       <div class="utc-chip" id="utcClock"><strong>UTC</strong>&nbsp; --:--</div>
       <div class="home-scores" id="homeScores" aria-label="Live scores for followed teams" hidden></div>
     </div>
@@ -984,6 +989,8 @@
   </main>
 
   <script src="assets/weather-core.js?v=20261002-icons"></script>
+  <script src="assets/weather-alerts.js?v=20261112-chip"></script>
+  <script src="assets/home-weather-alerts.js?v=20261112"></script>
   <script>
     const searchInput = document.getElementById('searchInput');
     const gregleSearchButton = document.getElementById('gregleSearch');
@@ -1373,7 +1380,8 @@
       const condition = globalThis.GregleWeather.condition(code);
       const icon = globalThis.GregleWeather.weatherIcon(Number.isFinite(temp) ? condition : '', isDay === 0);
       const temperature = Number.isFinite(temp) ? `${Math.round(temp)}°C` : '--°C';
-      weatherChip.innerHTML = `<span class="weather-chip-icon" aria-hidden="true">${icon}</span><span>${temperature}</span>`;
+      weatherChip.querySelector('.weather-chip-icon').innerHTML = icon;
+      weatherChip.querySelector('.weather-chip-temperature').textContent = temperature;
       const link = new URL('https://weather.gregle.uk/');
       link.searchParams.set('lat', String(lat));
       link.searchParams.set('lon', String(lon));
@@ -1383,6 +1391,7 @@
       weatherChip.href = link.href;
       weatherChip.setAttribute('aria-label', `Open weather forecast for ${name}${Number.isFinite(temp) ? `: ${condition}, ${temperature}` : ''}`);
       weatherChip.title = `Weather for ${name}`;
+      globalThis.GregleHomeWeatherAlerts?.setLocation({latitude:lat, longitude:lon, name, country:country || (isDefault ? 'CA' : '')});
     }
 
     function setWeatherFallback() {
