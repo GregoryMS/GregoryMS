@@ -21,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261114-coastal-transit2">
+  <link rel="stylesheet" href="assets/maps.css?v=20261114-bctransit-link">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261113-shared-device1" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -408,6 +408,7 @@
       <div class="layers-heading"><h2 id="transit-browser-title">Bus routes &amp; stations</h2><button id="close-transit-browser" class="map-dismiss" type="button" aria-label="Close bus routes">×</button></div>
       <p class="transit-browser-intro">Choose a number. See the whole route.</p>
       <label class="transit-city-label" for="transit-city">Transit area<span class="transit-select-wrap"><select id="transit-city"><option value="victoria">Victoria</option><option value="vancouver">Vancouver</option></select><svg class="transit-select-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7.5 5 5 5-5"/></svg></span></label>
+      <a class="transit-operator-link" href="https://www.bctransit.com/" target="_blank" rel="noopener noreferrer">BC Transit website <span aria-hidden="true">↗</span></a>
       <label class="transit-search-label" for="transit-route-search">Find a route or station<input id="transit-route-search" type="search" placeholder="Route number, destination or station" autocomplete="off" spellcheck="false" maxlength="100" aria-controls="transit-route-results"></label>
       <p id="transit-browser-status" class="transit-meta" role="status"></p>
       <ul id="transit-route-results" class="transit-route-results" aria-label="Routes and stations"></ul>

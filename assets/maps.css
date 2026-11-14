@@ -44,6 +44,9 @@
 .transit-browser { position: absolute; z-index: 480; top: 86px; right: 80px; width: 360px; max-width: calc(100% - 110px); max-height: calc(100% - 110px); overflow-y: auto; padding: 20px; border-radius: 20px; box-sizing: border-box; font-size: 13px; }
 .transit-browser h2 { margin: 0; font-size: 19px; }
 .transit-browser-intro { color: var(--muted); margin: 4px 0 16px; }
+.transit-operator-link { display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 44px; padding: 8px 12px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--map-accent-soft); color: var(--map-accent); font-weight: 500; text-decoration: none; }
+.transit-operator-link:hover { border-color: var(--map-accent); }
+.transit-operator-link:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 3px; }
 .transit-city-label, .transit-search-label, .transit-direction-label { display: block; margin: 12px 0; font-size: 12px; font-weight: 500; }
 .transit-browser :is(input, select), .transit-direction-label select { display: block; box-sizing: border-box; width: 100%; margin-top: 6px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--map-surface); color: var(--text); font: inherit; font-size: 14px; }
 .transit-select-wrap { position: relative; display: block; }
