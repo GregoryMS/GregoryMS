@@ -130,7 +130,7 @@ test('holidays and quoted instructions remain visible alongside daily hours', ()
 
 test('24-hour businesses, midnight and overnight shifts avoid ambiguous AM/PM labels', () => {
   for (const raw of ['24/7', '00:00-24:00']) assert(places.readHours(raw).days.every(day => day.times[0] === 'Open 24 hours'));
-  assert.deepEqual(places.readHours('09:00-24:00').days[0].times, ['09:00 – 24:00']);
+  assert.deepEqual(places.readHours('09:00-24:00').days[0].times, ['09:00 – 00:00']);
   const schedule = places.readHours('Fr-Mo 20:00-02:00');
   assert.deepEqual(schedule.days[4].times, ['20:00 – 02:00 (next day)']);
   assert.deepEqual(schedule.days[0].times, ['20:00 – 02:00 (next day)']);
@@ -138,8 +138,17 @@ test('24-hour businesses, midnight and overnight shifts avoid ambiguous AM/PM la
   assert.deepEqual(places.readHours('Mo 20:00-26:00').days[0].times, ['20:00 – 02:00 (next day)']);
 });
 
-test('seasonal, solar and complex overnight schedules preserve their original conditions', () => {
-  for (const raw of ['Jun-Aug Mo-Fr 09:00-17:00', 'Mo-Fr 09:00-17:00; Dec 25 off', 'sunrise-sunset', 'Mo[1] 10:00-14:00', 'Mo 20:00-26:00; Tu 20:00-24:00', 'Mo-Fr 09:00-17:00 || "By appointment"', 'Mo 99:00-12:00', 'Mo 09:90-12:00', 'Mo 00:00-48:00']) {
+test('different closing times after midnight render as a weekly timetable', () => {
+  const schedule = places.readHours('Su-Th 10:00-24:00; Fr,Sa 10:00-25:00');
+  assert.equal(schedule.weekly, true);
+  assert.deepEqual(schedule.days.slice(0, 4).map(day => day.times[0]), Array(4).fill('10:00 – 00:00'));
+  assert.deepEqual(schedule.days.slice(4, 6).map(day => day.times[0]), Array(2).fill('10:00 – 01:00 (next day)'));
+  assert.deepEqual(schedule.days[6].times, ['10:00 – 00:00']);
+  assert.equal(places.readHours('Mo 20:00-26:00; Tu 20:00-24:00').weekly, true);
+});
+
+test('seasonal, solar and unsupported schedules preserve their original conditions', () => {
+  for (const raw of ['Jun-Aug Mo-Fr 09:00-17:00', 'Mo-Fr 09:00-17:00; Dec 25 off', 'sunrise-sunset', 'Mo[1] 10:00-14:00', 'Mo-Fr 09:00-17:00 || "By appointment"', 'Mo 99:00-12:00', 'Mo 09:90-12:00', 'Mo 00:00-48:00']) {
     const schedule = places.readHours(raw);
     assert.equal(schedule.weekly, false, raw); assert.equal(schedule.raw, raw); assert.deepEqual(schedule.days, []);
   }
