@@ -43,6 +43,10 @@ test('business identity, search text and fallback URLs preserve names without in
   for (const point of [null, {...shop, osm: null}, {...shop, name: ''}, {...shop, lat: 91}, {...shop, lng: Infinity}]) assert.equal(core.identity(point), null);
   assert.equal(core.query(shop), 'A & B Coffee, 12 Main St, Victoria');
   const url = new URL(core.googleURL({...shop, name: '<b>Coffee & Tea</b>'}));
+  const apple=new URL(core.appleURL(shop));
+  assert.equal(apple.origin,'https://maps.apple.com');
+  assert.equal(apple.searchParams.get('coordinate'),'48.42800,-123.36500');
+  assert.equal(apple.searchParams.get('name'),'A & B Coffee, 12 Main St, Victoria');
   assert.equal(url.origin, 'https://www.google.com');
   assert.equal(url.searchParams.get('query'), '<b>Coffee & Tea</b>, 12 Main St, Victoria near 48.42800,-123.36500');
 });
@@ -102,7 +106,8 @@ test('selecting OSM places is free of Google requests until explicitly opened; t
   assert.equal(details.children[0].place, 'google-business');
   const popular = details.children.find(e => e.tagName === 'gmp-place-popular-times'); popular.rendered = true; details.emit('gmp-load');
   assert.equal(h.get('busyness-status').hidden, true);
-  h.api.select({...shop, tags: {...shop.tags, phone: 'new'}}); assert.equal(h.widget(), details);
+  h.api.select({...shop, lat:48.429, tags: {...shop.tags, phone: 'new'}}); assert.equal(h.widget(), details);
+  assert.equal(new URL(h.get('busyness-apple-link').href).searchParams.get('coordinate'),'48.42900,-123.36500');
   assert.equal(h.calls.length, 1);
   assert(!h.created.some(e => /advanced|gmp-map|autocomplete/.test(e.tagName)));
 });

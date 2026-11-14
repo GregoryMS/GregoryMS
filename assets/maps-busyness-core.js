@@ -22,6 +22,12 @@
     url.searchParams.set('query', query(place) + ` near ${place.lat.toFixed(5)},${place.lng.toFixed(5)}`);
     return url.href;
   }
+  function appleURL(place) {
+    const url = new URL('https://maps.apple.com/place');
+    url.searchParams.set('coordinate', `${place.lat.toFixed(5)},${place.lng.toFixed(5)}`);
+    url.searchParams.set('name', query(place));
+    return url.href;
+  }
   function singleMatch(selected, places) {
     if (!identity(selected) || !Array.isArray(places) || places.length !== 1) return null;
     const place = places[0];
@@ -55,5 +61,5 @@
       return Number.isFinite(until) && until > now && until <= now + 27 * 3600000 ? until : 0;
     } catch { return 0; }
   }
-  return {identity, query, googleURL, singleMatch, nextReset, pauseUntil};
+  return {identity, query, googleURL, appleURL, singleMatch, nextReset, pauseUntil};
 });

@@ -59,6 +59,7 @@
     const button = document.getElementById('busyness-show');
     const back = document.getElementById('busyness-back');
     const fallback = document.getElementById('busyness-google-link');
+    const apple = document.getElementById('busyness-apple-link');
     let current, key, version = 0, timer, paused = 0;
     try { paused = core.pauseUntil(sessionStorage.getItem(storageKey)); } catch {}
 
@@ -164,7 +165,7 @@
     return {select(place) {
       const nextKey = core.identity(place);
       if (nextKey && nextKey === key) {
-        current = place; fallback.href = core.googleURL(place);
+        current = place; fallback.href = core.googleURL(place); apple.href = core.appleURL(place);
         if (paused && paused <= Date.now()) {
           paused = 0; button.hidden = false; button.disabled = false; button.textContent = 'Show popular times';
           message('See when this business is usually busiest.');
@@ -176,7 +177,7 @@
       section.hidden = !current;
       button.disabled = false; button.hidden = false; button.textContent = 'Show popular times'; back.hidden = true;
       if (!current) return;
-      fallback.href = core.googleURL(place);
+      fallback.href = core.googleURL(place); apple.href = core.appleURL(place);
       if (paused > Date.now()) pauseMessage();
       else message('See when this business is usually busiest.');
     }};
