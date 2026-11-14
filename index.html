@@ -1353,9 +1353,9 @@
     const WEATHER_CACHE_KEY = 'gregle-weather-cache';
     const WEATHER_CACHE_MAX_AGE = 30 * 60 * 1000;
 
-    async function fetchWeather(lat, lon, retries = 1) {
+    async function fetchWeather(lat, lon) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&temperature_unit=celsius&timezone=auto`;
 
       try {
@@ -1364,12 +1364,7 @@
           cache: 'no-store'
         });
         if (!response.ok) throw new Error('Weather request failed');
-        return response.json();
-      } catch (error) {
-        if (retries > 0) {
-          return fetchWeather(lat, lon, retries - 1);
-        }
-        throw error;
+        return await response.json();
       } finally {
         clearTimeout(timeoutId);
       }
@@ -1429,10 +1424,11 @@
       });
     }
 
-    async function loadWeatherForLocation(location, label = '') {
+    async function loadWeatherForLocation(location, label = '', shouldUpdate = () => true) {
       const data = await fetchWeather(location.latitude, location.longitude);
       const current = data.current;
       if (!Number.isFinite(current?.temperature_2m) || !Number.isInteger(current?.weather_code)) throw Error('Weather data unavailable');
+      if (!shouldUpdate()) return;
       const name = label || location.name || '';
       setWeatherChip(current.temperature_2m, current.weather_code, location.latitude, location.longitude, name, current.is_day, data.timezone, location.country);
       writeCachedWeather({
@@ -1447,7 +1443,10 @@
       });
     }
 
+    let weatherLoadVersion = 0;
     async function loadWeather() {
+      const version = ++weatherLoadVersion;
+      let localWeatherLoaded = false;
       const cached = readCachedWeather();
       if (cached) {
         setWeatherChip(cached.temperature, cached.weatherCode, cached.latitude, cached.longitude, cached.label || '', cached.isDay, cached.timezone, cached.country);
@@ -1455,21 +1454,29 @@
         setWeatherFallback();
       }
 
+      // Fetch immediately while location permission/GPS is pending. Reuse the
+      // saved location on repeat visits instead of waiting for a new GPS fix.
+      const initialLocation = cached ? {
+        latitude: cached.latitude, longitude: cached.longitude, name: cached.label,
+        country: cached.country, timezone: cached.timezone
+      } : DEFAULT_WEATHER_LOCATION;
+      const initialWeather = loadWeatherForLocation(initialLocation, '',
+        () => version === weatherLoadVersion && !localWeatherLoaded).catch(() => {});
+
       try {
         const { coords } = await getCurrentPosition({ timeout: 10000, maximumAge: 900000, enableHighAccuracy: false });
-        await loadWeatherForLocation({ latitude: coords.latitude, longitude: coords.longitude });
-        return;
+        const location = { latitude: coords.latitude, longitude: coords.longitude };
+        if (version === weatherLoadVersion && globalThis.GregleWeather.coordinates(location.latitude, location.longitude)
+            && globalThis.GregleWeather.distance(initialLocation, location) >= 1) {
+          await loadWeatherForLocation(location, '', () => {
+            if (version !== weatherLoadVersion) return false;
+            localWeatherLoaded = true;
+            return true;
+          });
+        }
       } catch {}
 
-      if (cached) {
-        return;
-      }
-
-      try {
-        await loadWeatherForLocation(DEFAULT_WEATHER_LOCATION, '');
-      } catch {
-        setWeatherFallback();
-      }
+      await initialWeather;
     }
 
     let tickerPaused = false;

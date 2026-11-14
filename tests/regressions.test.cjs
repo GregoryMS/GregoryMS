@@ -49,6 +49,7 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}, ov
   const get = id => nodes[id] ||= element();
   const ready = {};
   const timers = new Map();
+  const weatherTimers = new Map();
   let timerId = 0;
   const map = { handlers: {}, setView() { return this; }, removeLayer() {}, fitBounds() {},
     on(name, callback) { this.handlers[name] = callback; } };
@@ -58,8 +59,10 @@ function environment(file, fetch = () => new Promise(() => {}), storage = {}, ov
     querySelector: get, querySelectorAll: () => [], body: element(), documentElement: element(), head: element(),
     addEventListener(name, callback) { ready[name] = callback; } };
   const context = vm.createContext({ document, console, URL, AbortController,
-    setTimeout(callback) { timers.set(++timerId, callback); return timerId; },
-    clearTimeout(id) { timers.delete(id); }, setInterval() {}, requestAnimationFrame: () => 1, cancelAnimationFrame() {},
+    // Homepage weather now starts before GPS resolves. Keep its independent
+    // request deadline out of autocomplete's mock timer queue.
+    setTimeout(callback, ms) { (file === 'index.html' && ms === 6000 ? weatherTimers : timers).set(++timerId, callback); return timerId; },
+    clearTimeout(id) { timers.delete(id); weatherTimers.delete(id); }, setInterval() {}, requestAnimationFrame: () => 1, cancelAnimationFrame() {},
     localStorage: { getItem: () => null, setItem() {}, ...storage },
     navigator: { geolocation: { getCurrentPosition() {} } },
     matchMedia: () => ({ matches: false }), addEventListener() {}, fetch,
