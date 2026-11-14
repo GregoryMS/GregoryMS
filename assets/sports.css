@@ -1,6 +1,6 @@
 /* Sports dashboard; shared menu and theme stay in their existing modules. */
 .sports-body { --bg:#f6f6f9; --panel:#fff; --text:#20202d; --muted:#646472; --line:#e2e2eb; --soft:#f0eff5; --sports-accent:#7044c7; --sports-soft:#eee8fa; --ink:#252235; background:var(--bg); font-size:14px; }
-:root.dark-mode .sports-body { --bg:#19191f; --panel:#23232c; --text:#f1eff8; --muted:#b1adbf; --line:#3a3845; --soft:#2d2b37; --sports-accent:#bf9bff; --sports-soft:#382b4c; --ink:#f1eff8; }
+:root.dark-mode .sports-body { --bg:#242424; --panel:#23232c; --text:#f1eff8; --muted:#b1adbf; --line:#3a3845; --soft:#2d2b37; --sports-accent:#bf9bff; --sports-soft:#382b4c; --ink:#f1eff8; }
 .sports-body .topbar { max-width:1360px; padding:22px 32px; flex-wrap:wrap; }
 .sports-body .brand { color:var(--text); }
 .sports-body .breadcrumb { font-size:13px; }
