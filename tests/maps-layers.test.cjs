@@ -48,8 +48,10 @@ test('car mode refuses transit links and stops transit providers when enabled mi
 
 test('transit station schedules follow the base map and pause for Street View and embeds',()=>{
  const h=setup({initial:{base:'transit'}});assert(h.calls.some(c=>c[0]==='transit'&&c[1]===true));
- for(const next of [{base:'transit',streetview:true},{base:'street'},{base:'plugshare'}]){h.calls.length=0;h.api.setState(next);assert(h.calls.some(c=>c[0]==='transit'&&c[1]===false));}
+ assert.equal(h.get('transit-browser-toggle').hidden,false);
+ for(const next of [{base:'transit',streetview:true},{base:'street'},{base:'dark'},{base:'satellite'},{base:'cycle'},{base:'plugshare'},{base:'trainsfyi'},{base:'3d'}]){h.calls.length=0;h.api.setState(next);assert(h.calls.some(c=>c[0]==='transit'&&c[1]===false));assert.equal(h.get('transit-browser-toggle').hidden,true);}
  h.calls.length=0;h.api.setState({base:'transit'});assert(h.calls.some(c=>c[0]==='transit'&&c[1]===true));
+ assert.equal(h.get('transit-browser-toggle').hidden,false);
 });
 
 test('the DriveBC switch starts every non-webcam provider and turns the group off together',()=>{

@@ -336,6 +336,7 @@
         if (active.traffic) loadTraffic(); else { removeTraffic(); trafficPaused = false; scheduleTraffic(); }
       }
       if (first || previous.streetview !== active.streetview) streetView.setEnabled(active.streetview);
+      $('transit-browser-toggle').hidden = active.base !== 'transit' || active.streetview;
       transit?.setEnabled(active.base === 'transit' && !active.streetview);
       render();
       if (changed) { persist(); onChange(); }
