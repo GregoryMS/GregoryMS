@@ -63,7 +63,7 @@
 .transit-stops-details ol { padding-left: 20px; max-height: 210px; overflow-y: auto; }
 .transit-stops-details button { width: 100%; padding: 8px 5px; border: 0; background: transparent; color: var(--text); text-align: left; font: inherit; cursor: pointer; }
 .transit-stops-details button:hover { color: var(--map-accent); }
-.transit-stop-label.leaflet-tooltip { padding: 3px 5px; border: 0; border-radius: 4px; background: #fffffff0; color: #182735; box-shadow: 0 1px 3px #0002; font: 500 11px/1.25 system-ui,sans-serif; max-width: 165px; white-space: normal; }
+.transit-stop-label.leaflet-tooltip { padding: 3px 5px; border: 0; border-radius: 4px; background: #fffffff0; color: #182735; box-shadow: 0 1px 3px #0002; font: 500 11px/1.25 system-ui,sans-serif; width: max-content; max-width: 165px; white-space: normal; }
 .transit-network-selected .transit-network-line { opacity: .18; pointer-events: none; }
 .transit-route-active .leaflet-tile-pane { filter: grayscale(.3); opacity: .82; }
 .dark-mode .transit-route-active .leaflet-tile-pane { opacity: .82; }
