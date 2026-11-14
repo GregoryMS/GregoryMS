@@ -3,49 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-14T19:10:41.885801+00:00",
+      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
       "listings": [
-        {
-          "home": "VfL Wolfsburg (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-14T16:55:00+00:00",
-          "channels": [
-            "DAZN UK"
-          ]
-        },
-        {
-          "home": "Norway",
-          "away": "Wales",
-          "start": "2026-11-14T17:00:00+00:00",
-          "channels": [
-            "BBC Sport online",
-            "BBC Two",
-            "BBC Two Northern Ireland",
-            "BBC Two Wales",
-            "BBC iPlayer",
-            "S4C",
-            "S4C Clic"
-          ]
-        },
-        {
-          "home": "Brighton (W)",
-          "away": "Liverpool (W)",
-          "start": "2026-11-14T17:15:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports Premier League",
-            "Sky Sports+ app",
-            "WSL YouTube"
-          ]
-        },
-        {
-          "home": "Sweden",
-          "away": "Bosnia and Herzegovina",
-          "start": "2026-11-14T19:45:00+00:00",
-          "channels": [
-            "Prime Video PPV (UK)"
-          ]
-        },
         {
           "home": "Sunderland (W)",
           "away": "Newcastle United (W)",
@@ -165,42 +124,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-14T19:10:41.885801+00:00",
+      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
       "listings": [
-        {
-          "home": "VfL Wolfsburg (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-14T16:55:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
-        {
-          "home": "Norway",
-          "away": "Wales",
-          "start": "2026-11-14T17:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
-        {
-          "home": "Brighton (W)",
-          "away": "Liverpool (W)",
-          "start": "2026-11-14T17:15:00+00:00",
-          "channels": [
-            "Sportsnet NOW",
-            "Sportsnet World",
-            "Sportsnet+"
-          ]
-        },
-        {
-          "home": "Sweden",
-          "away": "Bosnia and Herzegovina",
-          "start": "2026-11-14T19:45:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Arsenal (W)",
           "away": "London City Lionesses (W)",
@@ -267,44 +192,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-14T19:10:41.885801+00:00",
+      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
       "listings": [
-        {
-          "home": "VfL Wolfsburg (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-14T16:55:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "Viaplay NO"
-          ]
-        },
-        {
-          "home": "Norway",
-          "away": "Wales",
-          "start": "2026-11-14T17:00:00+00:00",
-          "channels": [
-            "TV 2 Direkte",
-            "TV 2 Play (NO)"
-          ]
-        },
-        {
-          "home": "Brighton (W)",
-          "away": "Liverpool (W)",
-          "start": "2026-11-14T17:15:00+00:00",
-          "channels": [
-            "VG TV"
-          ]
-        },
-        {
-          "home": "Sweden",
-          "away": "Bosnia and Herzegovina",
-          "start": "2026-11-14T19:45:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "TV 2 Sport Premium",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Arsenal (W)",
           "away": "London City Lionesses (W)",
@@ -406,42 +295,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-14T19:10:41.885801+00:00",
+      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
       "listings": [
-        {
-          "home": "VfL Wolfsburg (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-14T16:55:00+00:00",
-          "channels": [
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Norway",
-          "away": "Wales",
-          "start": "2026-11-14T17:00:00+00:00",
-          "channels": [
-            "V Sport Premium",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Brighton (W)",
-          "away": "Liverpool (W)",
-          "start": "2026-11-14T17:15:00+00:00",
-          "channels": [
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Sweden",
-          "away": "Bosnia and Herzegovina",
-          "start": "2026-11-14T19:45:00+00:00",
-          "channels": [
-            "Viaplay SE",
-            "Viaplay Sport"
-          ]
-        },
         {
           "home": "Arsenal (W)",
           "away": "London City Lionesses (W)",
@@ -533,45 +388,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-14T19:10:41.885801+00:00",
+      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
       "listings": [
-        {
-          "home": "VfL Wolfsburg (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-14T16:55:00+00:00",
-          "channels": [
-            "ARD-Mediathek",
-            "DAZN Deutschland",
-            "Das Erste",
-            "Magenta Sport",
-            "OneFootball Deutschland",
-            "Sportschau.de"
-          ]
-        },
-        {
-          "home": "Norway",
-          "away": "Wales",
-          "start": "2026-11-14T17:00:00+00:00",
-          "channels": [
-            "DAZN Deutschland"
-          ]
-        },
-        {
-          "home": "Brighton (W)",
-          "away": "Liverpool (W)",
-          "start": "2026-11-14T17:15:00+00:00",
-          "channels": [
-            "Sportdigital+"
-          ]
-        },
-        {
-          "home": "Sweden",
-          "away": "Bosnia and Herzegovina",
-          "start": "2026-11-14T19:45:00+00:00",
-          "channels": [
-            "DAZN Deutschland"
-          ]
-        },
         {
           "home": "Arsenal (W)",
           "away": "London City Lionesses (W)",
