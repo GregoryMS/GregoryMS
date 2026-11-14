@@ -39,6 +39,24 @@ test('TV listings stay country-specific and match names, sides, time and gender'
   snapshot.countries.CA.listings[0].home = 'Manchester City'; snapshot.countries.CA.listings[0].away = 'Arsenal';
   assert.deepEqual(L.broadcastListings(snapshot, match, S, NOW)[1].channels, []);
 });
+test('current FotMob opponent names match ESPN fixtures without crossing gender', () => {
+  for (const [source, espn, followed] of [
+    ['Bosnia and Herzegovina', 'Bosnia-Herzegovina', 'Sweden'],
+    ['Austria Wien W (W)', 'Austria Vienna', 'Bayern Munich'],
+    ['1. FC Köln', 'FC Cologne', 'Bayern Munich']
+  ]) {
+    const women = source.includes('(W)');
+    const team = S.teams.find(t => t.name === followed && t.group.startsWith('women') === women);
+    assert(team, followed);
+    const snapshot = { countries: { GB: { checkedAt: new Date(NOW).toISOString(), listings: [
+      { home: source, away: followed + (women ? ' (W)' : ''), start: new Date(NOW).toISOString(), channels: ['Confirmed channel'] }
+    ] } } };
+    const match = { home: { id: 'opponent', name: espn }, away: { id: team.id, name: followed }, timestamp: NOW };
+    assert.deepEqual(L.broadcastListings(snapshot, match, S, NOW)[0].channels, ['Confirmed channel']);
+    snapshot.countries.GB.listings[0].away = followed + (women ? '' : ' (W)');
+    assert.deepEqual(L.broadcastListings(snapshot, match, S, NOW)[0].channels, []);
+  }
+});
 test('expired or malformed TV data and unconfirmed kick-off times do not produce channel claims', () => {
   const match = S.event(raw());
   assert(L.broadcastListings(tv(NOW - 7 * 3600000), match, S, NOW).every(c => !c.fresh && !c.channels.length));
