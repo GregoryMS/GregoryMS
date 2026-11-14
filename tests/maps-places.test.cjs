@@ -147,6 +147,30 @@ test('different closing times after midnight render as a weekly timetable', () =
   assert.equal(places.readHours('Mo 20:00-26:00; Tu 20:00-24:00').weekly, true);
 });
 
+test('Dairy Queen comma-separated hours render daily rows including next-day closing', () => {
+  const raw = 'Su-Th 10:00-24:00, Fr,Sa 10:00-25:00';
+  const schedule = places.readHours(raw);
+  assert.equal(schedule.weekly, true);
+  assert.equal(schedule.raw, raw);
+  assert.deepEqual(schedule.days.map(day => day.times), [
+    ['10:00 – 00:00'], ['10:00 – 00:00'], ['10:00 – 00:00'], ['10:00 – 00:00'],
+    ['10:00 – 01:00 (next day)'], ['10:00 – 01:00 (next day)'], ['10:00 – 00:00']
+  ]);
+});
+
+test('additional weekday rules add shifts while semicolons still override them', () => {
+  const schedule = places.readHours('Mo-Fr 09:00-12:00, We 15:00-18:00; Fr 10:00-14:00');
+  assert.equal(schedule.weekly, true);
+  assert.deepEqual(schedule.days[2].times, ['09:00 – 12:00', '15:00 – 18:00']);
+  assert.deepEqual(schedule.days[4].times, ['10:00 – 14:00']);
+  assert.deepEqual(places.readHours('Mo,We 08:00-12:00,13:00-17:00, Fr 10:00-14:00').days[2].times,
+    ['08:00 – 12:00', '13:00 – 17:00']);
+  const quoted = places.readHours('Mo 09:00-17:00 "Call first, Fr,Sa; appointments", Tu 10:00-18:00');
+  assert.deepEqual(quoted.days[0].times, ['09:00 – 17:00', 'Call first, Fr,Sa; appointments']);
+  assert.deepEqual(quoted.days[1].times, ['10:00 – 18:00']);
+  assert.equal(places.readHours('Mo 09:00-17:00, Jun-Aug Tu 10:00-14:00').weekly, false);
+});
+
 test('seasonal, solar and unsupported schedules preserve their original conditions', () => {
   for (const raw of ['Jun-Aug Mo-Fr 09:00-17:00', 'Mo-Fr 09:00-17:00; Dec 25 off', 'sunrise-sunset', 'Mo[1] 10:00-14:00', 'Mo-Fr 09:00-17:00 || "By appointment"', 'Mo 99:00-12:00', 'Mo 09:90-12:00', 'Mo 00:00-48:00']) {
     const schedule = places.readHours(raw);

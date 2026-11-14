@@ -192,3 +192,22 @@ test('an address timeout offers a retry, while closing the pin quietly cancels t
   closed.api.clear();await attempt;assert(closed.calls[2].options.signal.aborted);assert(closed.get('place-tags').hidden);
   assert.equal(closed.get('place-tags').textContent,'');
 });
+
+
+test('Dairy Queen hours use the same seven-day table as Starbucks', async () => {
+  for (const [name, hours, friday] of [
+    ['Dairy Queen', 'Su-Th 10:00-24:00, Fr,Sa 10:00-25:00', '10:00 – 01:00 (next day)'],
+    ['Starbucks', 'Mo-Fr 04:30-19:30; Sa,Su 05:00-19:30', '04:30 – 19:30']
+  ]) {
+    const h = setup(), run = h.choose();
+    await h.respond(0, full(1, name, { opening_hours: hours })); await run;
+    const table = h.get('place-tags').querySelector('table');
+    assert(table, name);
+    assert.equal(table.attrs['aria-label'], 'Weekly opening hours');
+    const rows = table.querySelector('tbody').children;
+    assert.deepEqual(rows.map(row => row.children[0].textContent),
+      ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+    assert.equal(rows[4].children[1].textContent, friday);
+    assert(!h.get('place-tags').textContent.includes('Special schedule'));
+  }
+});

@@ -130,14 +130,21 @@
     const codes = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     const special = () => ({ days: [], notes: [], raw, weekly: false });
     if (!raw || raw.includes('||')) return special();
-    // Semicolons inside quoted instructions are part of that instruction.
-    const rules = []; let start = 0, quoted = false;
+    // A comma after hours introduces an additional weekday rule. Commas in
+    // weekday lists, split shifts and quoted instructions stay within the rule.
+    const rules = []; let start = 0, quoted = false, additional = false;
     for (let i = 0; i < raw.length; i++) {
       if (raw[i] === '"') quoted = !quoted;
-      if (raw[i] === ';' && !quoted) { rules.push(raw.slice(start, i).trim()); start = i + 1; }
+      if (quoted) continue;
+      const extra = raw[i] === ',' && /^\s*(?:Mo|Tu|We|Th|Fr|Sa|Su|PH|SH)\b/.test(raw.slice(i + 1)) &&
+        /\d:\d|(?:^|\s)(?:24\/7|open|off|closed)(?:\s|$)|"/.test(raw.slice(start, i));
+      if (raw[i] === ';' || extra) {
+        rules.push({ text: raw.slice(start, i).trim(), additional });
+        start = i + 1; additional = extra;
+      }
     }
     if (quoted) return special();
-    rules.push(raw.slice(start).trim());
+    rules.push({ text: raw.slice(start).trim(), additional });
     const days = names.map(day => ({ day, times: ['Closed'], closed: true })), notes = [];
     let weeklyRules = 0;
     function clock(minutes, end = false) {
@@ -170,7 +177,7 @@
       if (comment) times.push(comment);
       return { times, closed };
     }
-    for (const rule of rules) {
+    for (const { text: rule, additional } of rules) {
       if (!rule) return special();
       const holiday = rule.match(/^(PH|SH)\s+(.+)$/);
       if (holiday) {
@@ -191,7 +198,11 @@
         const from = codes.indexOf(first), to = codes.indexOf(last);
         for (let offset = 0; offset <= (to - from + 7) % 7; offset++) selected.add((from + offset) % 7);
       }
-      for (const i of selected) days[i] = { day: names[i], times: [...hours.times], closed: hours.closed };
+      for (const i of selected) {
+        const times = additional && !days[i].closed && !hours.closed
+          ? [...new Set([...days[i].times, ...hours.times])] : [...hours.times];
+        days[i] = { day: names[i], times, closed: hours.closed };
+      }
       weeklyRules++;
     }
     // Each day's displayed closing time belongs to that day's opening interval,
