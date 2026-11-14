@@ -101,7 +101,11 @@ window.GregleNative3D = ({map,onError,onStatus=()=>{}}) => {
         }
         // The Dark style has flat footprints; use the same OpenMapTiles building heights as Liberty.
         if(dark&&!current.getLayer('gregle-dark-buildings')){
-          const labels=current.getStyle().layers.find(layer=>layer.type==='symbol')?.id;
+          const layers=current.getStyle().layers;
+          const lastGround=layers.reduce((last,layer,index)=>layer.type==='symbol'?last:index,-1);
+          const labels=layers.slice(lastGround+1).find(layer=>layer.type==='symbol')?.id;
+          // Flat footprints must stop before extrusions, or they paint over their roofs.
+          if(current.getLayer('building'))current.setLayerZoomRange('building',12,14);
           current.addLayer({id:'gregle-dark-buildings',type:'fill-extrusion',source:'openmaptiles','source-layer':'building',minzoom:14,filter:['!',['has','hide_3d']],paint:{'fill-extrusion-base':['coalesce',['get','render_min_height'],0],'fill-extrusion-height':['coalesce',['get','render_height'],0],'fill-extrusion-color':'#4b4558','fill-extrusion-opacity':.94}},labels);
         }
         ready=true;draw();

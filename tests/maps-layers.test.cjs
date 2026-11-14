@@ -209,3 +209,10 @@ test('Victoria parking preferences survive native 3D and resume on return to 2D'
  h.calls.length=0;h.emit('gregle-navigation-3d',false);assert(!h.calls.some(c=>c[0]==='parking'&&c[1]===true));
  h.calls.length=0;h.api.setState({parking:true,base:'street'});assert(h.calls.some(c=>c[0]==='parking'&&c[1]===true));
 });
+
+
+test('leaving 3D for the street map respects dark mode and returns to street when the page turns light',()=>{
+ const h=setup({initial:{base:'3d'},dark:true});h.api.setState({base:'street'});
+ assert.equal(h.api.getState().base,'dark');assert.equal(h.tiles.at(-1).options.className,'gregle-dark-basemap');
+ h.theme(false);assert.equal(h.api.getState().base,'street');
+});

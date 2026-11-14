@@ -15,3 +15,5 @@ Sources: https://openfreemap.org/quick_start/ and https://maplibre.org/maplibre-
 ## Light and dark themes
 
 The regular 3D map follows the page’s `dark-mode` class, including changes while it is open. Light mode uses OpenFreeMap Liberty; dark mode uses OpenFreeMap Dark with a building extrusion layer using the same `render_height` and `render_min_height` source properties. Changing styles preserves the camera and DOM pin, and rebuilds Gregle’s UI geometry after the new style loads. Extra data layers retain the existing 3D pause behaviour.
+
+Dark-mode building extrusions render above the basemap geometry. Flat building footprints stop at zoom 14, where the 3D layer begins, so they cannot paint over the roofs. Requests to return from 3D to the street basemap follow the current page theme, including from the 2D shortcut and 3D error recovery.
