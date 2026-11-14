@@ -653,53 +653,56 @@ used as the requested origin for planning. The UI is in
 `assets/maps-transit-journey-core.js` and `assets/maps-transit-journey-live.js`;
 no new keys or server deployment are needed.
 
-**Bus routes** opens a searchable Victoria / Vancouver menu and activates the
-Transit map. Select by route number, route name, destination, or station name.
-Car mode hides the transit menu, transit base and transit journey option; entering car mode switches an active transit map/journey to the street map and driving.
+**Bus routes** opens a searchable menu covering Vancouver Island, Salt Spring,
+the Lower Mainland and the Sea-to-Sky corridor. Areas are grouped in the selector:
+Victoria, Cowichan Valley, Nanaimo/Parksville/Qualicum, Comox Valley, Campbell
+River, Port Alberni, Tofino/Ucluelet, Mount Waddington/North Island, Salt Spring,
+Metro Vancouver/TransLink, Fraser Valley/Abbotsford/Chilliwack/Hope, Squamish,
+Whistler and Pemberton's Whistler connections. Interior BC systems are not added.
+The menu selects the nearest system; map stop layers combine overlapping feeds
+so commuter routes do not hide local stops at regional boundaries.
 
-Exact numeric matches come first. Selecting a number displays every published
-branch in both directions; the direction selector narrows the map, and **Show
-entire route** fits the complete geometry around the route card/mobile drawer.
-A named stop list and clickable map dots open the existing departure board.
-Selecting a number in a Victoria/Vancouver departure board opens this same
-whole-route view. Other regions retain the selected-trip route view.
+Select by route number, name, destination or station. Exact numeric matches come
+first. Selecting a number shows all published branches and both directions;
+the direction selector narrows it. **Show entire route** sits on its own full-width
+row below Direction and fits the path around the route card/mobile drawer.
+The heading contains only the route number and close button. A named stop list
+and clickable map dots open departures. Ordinary stops appear from zoom 14,
+names from zoom 16, with screen-space spacing limiting density. The wide-view
+notice is a compact row and refers to bus stops rather than implying rapid
+transit is present in rural areas.
 
 The transit base is OpenFreeMap Positron in flat 2D, using MapLibre GL JS 5.6.2
-and the vendored ISC-licensed MapLibre GL Leaflet adapter 0.1.4. It loads only
-when Transit map is selected. An OpenStreetMap raster base remains available
-when WebGL, the library or the style cannot load; the route overlays remain.
-Vancouver's Expo, Millennium and Canada lines, SeaBus, West Coast Express and
-RapidBus, and Victoria's 95 Blink corridor stay visible in the regional overview.
-These are published route shapes, not inferred live train positions.
+and the ISC-licensed MapLibre GL Leaflet adapter 0.1.4. An OpenStreetMap raster
+base remains if WebGL or the style cannot load. Vancouver's SkyTrain lines,
+SeaBus, West Coast Express and RapidBus, Victoria's 95 Blink and Nanaimo's Rapid
+Line remain visible in the overview. These are published route shapes.
 
-Ordinary bus stops appear from zoom 14, with names from zoom 16 where space
-permits. Rail/ferry stations appear in the regional overview with names from
-zoom 12. Screen-space spacing limits marker/label density; zooming reveals more
-boarding points. Selecting a route hides unrelated stops and subdues the rapid
-network. Route endpoints keep names at wider zooms. Outside these two regions,
-BC and London stops and schedules continue through the existing bounded
-Transitous viewport lookup (rail/ferry from zoom 13).
+`scripts/update_transit_network.py` reads the 14 official feeds configured in
+`data/transit-systems.json`, applies calendars/date exceptions for eight days,
+and retains actual direction/branch shapes and stop sequences. Small hashed
+route files load on selection. `data/transit/regions.json` contains regional
+bounds and menu labels; visible regions load independently and are cached for
+the page. The daily `transit-network.yml` workflow refreshes maps and timetables
+and rebuilds Pages, retaining prior hashed route files for open pages.
 
-`scripts/update_transit_network.py` reads the official BC Transit operator 48
-and TransLink static GTFS feeds. It applies calendars and date exceptions for
-the next eight days, retains real shapes and direction/branch stop sequences,
-and simplifies geometry by about two metres. It validates both feeds before
-replacing either regional index. Small, content-addressed route files load on
-selection; regional indexes supply stops and rapid-transit overviews without
-repeated external viewport queries. The daily `transit-network.yml` workflow
-refreshes the maps, preserves prior route files for open pages, and requests a
-Pages rebuild. The menu displays the source-map update date. Departures remain
-separate, with scheduled versus live estimates explicitly labelled.
+Most departure boards use Transitous, with live estimates labelled separately
+from scheduled times. North Island/Mount Waddington, Tofino/Ucluelet, Salt Spring
+and Pemberton currently use published GTFS timetables because these feeds are
+absent from the Transitous catalogue. Their per-stop board files explicitly say
+**Published schedule** and include the map update date; no live arrivals are
+inferred. **Later departures**, **Previous** and **Departures now** preserve
+paging and refresh. Opposite-direction stops and terminal bays keep their codes.
+Desktop popups stay inside the visible map as content loads or the window
+resizes; mobile details fit the scrollable drawer.
 
-Tap a marker for upcoming departures, route/destination, platform, cancellations
-and service notices. **Later departures**, **Previous** and **Departures now**
-retain their existing schedule controls. Opposite-direction boarding stops and
-terminal bays keep their own codes; rail/ferry platforms share their parent
-station's board. Operator links provide full timetables and service details. Desktop stop popups
-are clamped to the visible map and viewport as their contents load or resize;
-mobile stop details use the scrollable drawer with its available width.
-Outside Victoria/Vancouver, unavailable trip geometry shows a retry state rather
-than an invented straight line, and interlined onward route numbers are excluded.
+**Trains.fyi** is a separate opt-in embedded train map under **Base map → More**,
+with an **Open full map** link and **Change map** control. The iframe loads only
+when selected, uses the provider's independent map, and receives no automatic
+location permission. The checked public TransLink position feed supplies no
+positions for the three SkyTrain lines; Gregle does not label timetable-derived
+train positions as live. Car mode hides both Transit map and Trains.fyi and
+switches an active transit map/journey to the street map and driving.
 
 Bus traces are aligned to roads using Mapbox Map Matching through the existing
 map relay. The published trace supplies up to 100 bend-preserving anchors;
@@ -716,7 +719,7 @@ timeouts, cancellation and provider backoff as departure boards, with an
 eight-trip, five-minute in-memory cache. Leaving Transit map clears the route.
 
 Selected BC Transit and TransLink routes also show light blue **live bus** markers.
-In Victoria/Vancouver the highlighted path follows the chosen directions and
+In the supported coastal BC systems the highlighted path follows the chosen directions and
 branches; elsewhere it follows the selected departure. Bus positions cover both directions of the exact operator route ID, not other cities
 with the same bus number. A pointer around each bus marker shows its reported
 GPS bearing while the route number stays upright. Tap or hover for the compass

@@ -11,7 +11,7 @@
     let state = core.normalizeLayers(initial || (saved?.ev === true && saved.teslaDefault !== true ? {...saved, tesla: true} : saved));
     let pageDark = document.documentElement.classList.contains('dark-mode');
     let lightBase = state.base === 'dark' ? 'street' : state.base;
-    const keepsOwnStyle = base => ['satellite', 'cycle', 'transit', '3d'].includes(base);
+    const keepsOwnStyle = base => ['satellite', 'cycle', 'transit', 'trainsfyi', '3d'].includes(base);
     if (pageDark && !keepsOwnStyle(state.base)) state.base = 'dark';
     const drivebc = window.GregleDriveBC({ map, notify });
     const cameras = window.GregleDriveBCCameras({ map, config, notify });
@@ -110,7 +110,7 @@
     const render = () => {
       const embedded = core.isEmbeddedBase(state.base), overlays = panel.querySelector('.map-overlay-options');
       overlays.hidden = embedded && state.base !== '3d'; overlays.disabled = embedded;
-      $('layers-footnote').textContent = state.base === '3d' ? 'OpenFreeMap 3D uses your Gregle controls. Extra layers are paused; your selections resume in 2D.' : embedded ? `Use ${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
+      $('layers-footnote').textContent = state.base === '3d' ? 'OpenFreeMap 3D uses your Gregle controls. Extra layers are paused; your selections resume in 2D.' : embedded ? `Use ${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'trainsfyi' ? 'Trains.fyi' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'}’s map and controls. Your other layers resume when you switch back.` : 'Only enabled layers load. Your choices are included in copied map links.';
       basePanel.querySelectorAll('input[name="map-base"]').forEach(input => { input.checked = input.value === state.base; });
       $('map-maritime').checked = state.maritime;
       $('map-aviation').checked = state.aviation;
@@ -160,7 +160,7 @@
       map.setMaxZoom(state.base === 'satellite' ? 23 : 19);
       embed.setBase(state.base==='3d'?'street':state.base);
       if(state.base==='3d'){map.closePopup();status('base-layer-status','OpenFreeMap 3D · Gregle controls are available. Extra layers resume in 2D.');return;}
-      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
+      if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', state.base==='trainsfyi'?'Trains.fyi · independent train map. Use Change map to return to Gregle.':`${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'trainsfyi' ? 'Trains.fyi' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
       const satellite = state.base === 'satellite', topographic = state.base === 'topographic', dark = state.base === 'dark';
       const cycle = state.base === 'cycle', transit = state.base === 'transit';
       if(transit&&window.GregleTransitBasemap){baseLayer=window.GregleTransitBasemap({map,onStatus:message=>status('base-layer-status',message)});baseLayer.addTo(map);return;}
@@ -309,7 +309,7 @@
     function setState(next, changed = false) {
       const first = !applied, previous = applied || core.normalizeLayers(null);
       state = core.normalizeLayers(next);
-      if(document.body.classList.contains('vehicle-layout')&&state.base==='transit')state.base=pageDark?'dark':'street';
+      if(document.body.classList.contains('vehicle-layout')&&['transit','trainsfyi'].includes(state.base))state.base=pageDark?'dark':'street';
       if(pageDark&&previous.base==='3d'&&state.base==='street'){lightBase='street';state.base='dark';}
       if(state.base==='3d')closePanel();
       // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
@@ -414,7 +414,7 @@
     window.addEventListener('pageshow', event => { if (event.persisted && !core.isEmbeddedBase(state.base) && state.traffic && hasTrafficAccess() && !trafficPaused) loadTraffic(); });
     setState(state);
     window.addEventListener('resize',()=>{
-      if(document.body.classList.contains('vehicle-layout')&&state.base==='transit')setState({...state,base:pageDark?'dark':'street'},true);
+      if(document.body.classList.contains('vehicle-layout')&&['transit','trainsfyi'].includes(state.base))setState({...state,base:pageDark?'dark':'street'},true);
     });
     new MutationObserver(() => {
       const dark = document.documentElement.classList.contains('dark-mode');

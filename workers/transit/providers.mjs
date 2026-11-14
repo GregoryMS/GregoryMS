@@ -8,6 +8,8 @@ const operators = Object.freeze({
   'Fort-St-John-Transit':28, 'Fraser-Valley-Transit':13,
   'Kamloops-Transit':46, 'Nanaimo-Transit':41,
   'North-Okanagan-Transit':14, 'Port-Alberni-Transit':11,
+  'Mount-Waddington-Transit':17, 'Salt-Spring-Island-Transit':39,
+  'West-Coast-Transit':51, 'Pemberton-Valley-Transit':50,
   'Powell-River-Transit':29, 'Prince-George-Transit':22,
   'Prince-Rupert-Transit':23, 'South-Okanagan-Transit':15,
   'Squamish-Transit':43, 'Sunshine-Coast-Transit':18,

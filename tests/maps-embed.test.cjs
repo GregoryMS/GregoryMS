@@ -19,6 +19,13 @@ function setup(){
   const api=window.GregleMapEmbed({map});
   return{api,get,events,mapEvents,timers,created,move:nextView=>{if(nextView)view=nextView;mapEvents.moveend();},fireTimers:ms=>{for(const [id,timer] of [...timers])if(timer.ms<=ms){timers.delete(id);timer.fn();}}};
 }
+test('Trains.fyi is an opt-in embed with a full-site link and no automatic location permission',()=>{
+ const h=setup();assert.equal(h.created.length,0);h.api.setBase('trainsfyi');const frame=h.created[0];
+ assert.equal(frame.src,'https://trains.fyi/');assert.equal(frame.title,'Trains.fyi train map');assert.equal(frame.allow,'fullscreen');
+ assert.equal(h.get('embedded-full-map').href,'https://trains.fyi/');assert.equal(h.get('embedded-title').textContent,'Trains.fyi');
+ const layers=core.readLayers(core.makeHash(core.defaultView,null,{base:'trainsfyi'}));assert.equal(layers.base,'trainsfyi');
+ h.api.setBase('street');assert.equal(h.get('embedded-frame').children.length,0);
+});
 test('embeds load only on selection, open at the Gregle view, and leave a direct full-map fallback',()=>{
   const h=setup();assert.equal(h.created.length,0);h.api.setBase('street');assert.equal(h.created.length,0);
   h.api.setBase('adsbexchange');const frame=h.created[0],url=new URL(frame.src);

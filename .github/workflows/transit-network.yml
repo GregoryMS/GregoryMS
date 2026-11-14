@@ -1,4 +1,4 @@
-name: Refresh Victoria and Vancouver transit maps
+name: Refresh coastal BC transit maps
 
 on:
   schedule:
@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - scripts/update_transit_network.py
+      - data/transit-systems.json
       - .github/workflows/transit-network.yml
 
 permissions:
@@ -38,7 +39,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/transit
-          git commit -m "Refresh Victoria and Vancouver route maps"
+          git commit -m "Refresh coastal BC route maps"
           git pull --rebase origin main
           git push origin HEAD:main
           gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"

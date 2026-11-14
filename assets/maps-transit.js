@@ -41,7 +41,7 @@
         const marker=addMarker(stop);
         const label=make('span',stop.name);marker.bindTooltip?.(label,{permanent:labels.has(stop),direction:'right',offset:[10,0],className:'transit-stop-label'});
       }
-      report(show.length?`${show.length} stops & stations · tap for departures${zoom<16?' · zoom in for more names':''}`:zoom<14?'Rapid transit overview · choose Bus routes, or zoom in for stops.':visible.length?'Zoom in for more bus stops.':'No published stops in this view. Try a nearby area.',false,zoom<16);
+      report(show.length?`${show.length} stops · tap for departures`:zoom<14&&visible.length?'Bus stops appear closer in.':zoom<14?'Choose a route to see its path.':'No mapped stops in this view.',false,zoom<14&&visible.length>0);
     }
     function addMarker(stop){
         const rail=core.major(stop),icon=L.divIcon({className:`transit-stop-marker${rail?' transit-station-marker':''}`,html:rail?'<span aria-hidden="true">▣</span>':'<span aria-hidden="true">●</span>',iconSize:[rail?26:18,rail?26:18],iconAnchor:[rail?13:9,rail?13:9]});
@@ -74,7 +74,7 @@
       if(selectedMarker){const stop=selectedMarker.transitStop,b=map.getBounds(),middle=(((b.getWest()+b.getEast())/2+180)%360+360)%360-180;if(stop.lat<b.getSouth()||stop.lat>b.getNorth()||Math.abs(stop.lng-middle)>(b.getEast()-b.getWest())/2)map.closePopup();}
       const local=network?.stops();if(local){controller?.abort();version++;render(local);return;}
       const view=core.area(bounds(),map.getZoom());
-      if(!view){group.clearLayers();map.closePopup();const center=map.getCenter(),scope=core.region(center.lat,((center.lng+180)%360+360)%360-180);report(scope?'Zoom in to see stops and station schedules.':'Station schedules cover BC and the London area.',false,!!scope);return;}
+      if(!view){group.clearLayers();map.closePopup();const center=map.getCenter(),scope=core.region(center.lat,((center.lng+180)%360+360)%360-180);report(scope?'Zoom in for stop schedules.':'Transit schedules cover BC and London.',false,!!scope);return;}
       const key=core.stopsURL(view),cached=cache.get(key);
       if(cached&&Date.now()-cached.time<300000){render(cached.stops);return;}
       if(Date.now()<retryAt){report('Transit data is temporarily unavailable. Please retry shortly.',true);return;}
@@ -103,7 +103,7 @@
         const zone=board.zone||stop.zone;
         content.replaceChildren();next=board.next;later.hidden=!next;back.hidden=!history.length;
         const old=Date.now()-checked>=60000;
-        note.textContent=`${old?'Earlier snapshot':'Checked'} ${core.clock(checked,zone)}${old?' · refresh for current predictions':''}`;
+        note.textContent=board.published?`Published schedule · map updated ${board.updated}. Times are scheduled.`:`${old?'Earlier snapshot':'Checked'} ${core.clock(checked,zone)}${old?' · refresh for current predictions':''}`;
         heading.textContent=history.length?'Later departures':'Upcoming departures';
         if(!board.rows.length)content.append(make('p','No departures returned for this stop in this time window. Check the operator for service information.'));
         const list=make('ol',null,'transit-departures');
@@ -132,7 +132,7 @@
         const request=new AbortController();departureController=request;
         note.textContent='Loading departures…';content.setAttribute('aria-busy','true');
         for(const button of [refresh,back,later])button.disabled=true;
-        try{const result=core.readDepartures(await json(key,request.signal),stop);if(token!==boardVersion||!enabled||document.hidden)return;const time=Date.now();boards.set(key,{board:result,time});while(boards.size>20)boards.delete(boards.keys().next().value);display(result,time);}
+        try{const raw=await json(key,request.signal),result=stop.boardFile?core.readLocalDepartures(raw,stop,start,cursor):core.readDepartures(raw,stop);if(token!==boardVersion||!enabled||document.hidden)return;const time=Date.now();boards.set(key,{board:result,time});while(boards.size>20)boards.delete(boards.keys().next().value);display(result,time);}
         catch(error){if(token===boardVersion&&!request.signal.aborted){content.replaceChildren();later.hidden=true;note.textContent='Departures could not load. Try Departures now, or open the operator schedules.';}}
         finally{if(token===boardVersion){content.removeAttribute('aria-busy');for(const button of [refresh,back,later])button.disabled=false;departureController=null;marker.getPopup().update();keepPopupOnScreen(marker);}}
       }

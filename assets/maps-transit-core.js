@@ -47,6 +47,7 @@
     return result;
   }
   function departuresURL(stop, time, cursor = '') {
+    if(stop.boardFile&&/^data\/transit\/[a-z-]+\/boards\/[a-f0-9]{16}\.json$/.test(stop.boardFile))return stop.boardFile+'?'+new URLSearchParams({time,cursor});
     const url = new URL('v6/stoptimes',endpoint);
     url.search = new URLSearchParams({stopId:stop.id, time, n:'24', arriveBy:'false'});
     // Shared bus stops can have separate local and commuter feed IDs and names.
@@ -96,6 +97,19 @@
         operator:clean(item.agencyName), url:safeURL(item.routeUrl || item.agencyUrl)});
     }
     return {rows:rows.sort((a,b) => a.time-b.time).slice(0,50), alerts:[...alerts].slice(0,4), next:clean(data.nextPageCursor), zone:zone||stop.zone};
+  }
+  function readLocalDepartures(data,stop,time,cursor=''){
+    if(data?.schema!==1||data.stopId!==stop.id||!Array.isArray(data.departures)||data.departures.length>25000||!data.routes||!clean(data.updated))throw Error('Invalid published timetable');
+    const start=Date.parse(time),offset=/^local:\d+$/.test(cursor)?Number(cursor.slice(6)):0,rows=[];
+    if(!Number.isFinite(start)||offset>25000)throw Error('Invalid departure time');
+    for(const row of data.departures){
+      if(!Array.isArray(row)||row.length!==4||!Number.isFinite(row[0])||typeof row[1]!=='string'||typeof row[2]!=='string'||row[2].length>2000)throw Error('Invalid scheduled departure');
+      const route=data.routes[row[1]];if(!route||!clean(route.routeId)||!clean(route.number))throw Error('Unknown scheduled route');
+      if(row[0]<start)continue;
+      rows.push({time:row[0],scheduled:row[0],live:false,cancelled:false,tripId:row[2],routeId:route.routeId,route:clean(route.number),headsign:clean(row[3])||clean(route.name),platform:stop.platform||'',stopName:stop.name,operator:'BC Transit',url:null});
+    }
+    rows.sort((a,b)=>a.time-b.time);
+    return {rows:rows.slice(offset,offset+24),alerts:[],next:offset+24<rows.length?'local:'+(offset+24):'',zone:stop.zone,updated:data.updated,published:true};
   }
   const major = stop => stop.modes.some(mode => mode !== 'BUS' && mode !== 'COACH');
   function tripURL(row) {
@@ -149,5 +163,5 @@
     const y=rect.height>frame.bottom-frame.top?frame.top-rect.top:Math.max(frame.top-rect.top,Math.min(0,frame.bottom-rect.bottom));
     return {x,y};
   }
-  return {region, area, stopsURL, readStops, departuresURL, readDepartures, safeURL, major, clock, tripURL, readTrip, decodeGeometry, vehiclesURL, readVehiclePositions, popupOffset};
+  return {region, area, stopsURL, readStops, departuresURL, readDepartures, readLocalDepartures, safeURL, major, clock, tripURL, readTrip, decodeGeometry, vehiclesURL, readVehiclePositions, popupOffset};
 });

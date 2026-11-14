@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish small, route-specific Victoria/TransLink GTFS map snapshots."""
+"""Publish route maps for Vancouver Island, the Lower Mainland and Sea to Sky."""
 import argparse
 import collections
 import csv
@@ -8,6 +8,7 @@ import hashlib
 import io
 import json
 import math
+import re
 from pathlib import Path
 import tempfile
 import urllib.request
@@ -15,10 +16,8 @@ import zipfile
 from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = {
-    'victoria': ('https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48', 'ca-bc-Victoria-Transit_', 'BC Transit'),
-    'vancouver': ('https://gtfs-static.translink.ca/gtfs/google_transit.zip', 'ca-bc-TransLink_', 'TransLink'),
-}
+SYSTEMS = json.loads((ROOT/'data/transit-systems.json').read_text())['systems']
+SOURCES = {s['id']: (s['source'], s['prefix'], s['operator']) for s in SYSTEMS}
 MODES = {'0': 'TRAM', '1': 'SUBWAY', '2': 'RAIL', '3': 'BUS', '4': 'FERRY'}
 
 
@@ -28,7 +27,7 @@ def rows(archive, name):
     return csv.DictReader(io.TextIOWrapper(archive.open(name), encoding='utf-8-sig'))
 
 
-def active_services(archive, today):
+def service_dates(archive, today):
     days = [today + dt.timedelta(days=n) for n in range(8)]
     services = collections.defaultdict(set)
     for row in rows(archive, 'calendar.txt'):
@@ -42,7 +41,11 @@ def active_services(archive, today):
                 services[row['service_id']].add(row['date'])
             else:
                 services[row['service_id']].discard(row['date'])
-    return {key for key, dates in services.items() if dates}
+    return {key: sorted(dates) for key, dates in services.items() if dates}
+
+
+def active_services(archive, today):
+    return set(service_dates(archive, today))
 
 
 def simplify(points, tolerance=.000025):
@@ -77,9 +80,11 @@ def build(city, source, today):
     info = next(rows(archive, 'feed_info.txt'), {})
     if info.get('feed_end_date', '') < today.strftime('%Y%m%d'):
         raise ValueError('GTFS feed expired')
-    active = active_services(archive, today)
+    dates = service_dates(archive, today)
+    active = set(dates)
+    system = next(s for s in SYSTEMS if s['id'] == city)
     routes = {r['route_id']: r for r in rows(archive, 'routes.txt')}
-    patterns, trip_pattern = {}, {}
+    patterns, trip_pattern, board_trips = {}, {}, {}
     for trip in rows(archive, 'trips.txt'):
         if trip['service_id'] not in active or trip['route_id'] not in routes or not trip.get('shape_id'):
             continue
@@ -88,15 +93,29 @@ def build(city, source, today):
             patterns[key] = {'trip': trip['trip_id'], 'stops': [], 'count': 0}
             trip_pattern[trip['trip_id']] = key
         patterns[key]['count'] += 1
+        if not system['transitous']:
+            board_trips[trip['trip_id']] = trip
+    board_times = collections.defaultdict(list)
     for row in rows(archive, 'stop_times.txt'):
         if row['trip_id'] in trip_pattern:
             patterns[trip_pattern[row['trip_id']]]['stops'].append((int(row['stop_sequence']), row['stop_id']))
+        trip = board_trips.get(row['trip_id'])
+        if trip and row.get('pickup_type', '0') != '1':
+            time = row.get('departure_time') or row.get('arrival_time')
+            if time:
+                hours, minutes, seconds = map(int, time.split(':'))
+                if hours > 48 or not 0 <= minutes < 60 or not 0 <= seconds < 60:
+                    raise ValueError('Invalid scheduled time')
+                for date in dates[trip['service_id']]:
+                    midnight = dt.datetime.strptime(date, '%Y%m%d').replace(tzinfo=ZoneInfo('America/Vancouver'))
+                    stamp = int((midnight + dt.timedelta(hours=hours, minutes=minutes, seconds=seconds)).timestamp()*1000)
+                    board_times[row['stop_id']].append([stamp, trip['route_id'], trip['trip_id'], trip.get('trip_headsign', '')])
     shapes = collections.defaultdict(list)
     wanted = {key[2] for key in patterns}
     for row in rows(archive, 'shapes.txt'):
         if row['shape_id'] in wanted:
             lat, lng = float(row['shape_pt_lat']), float(row['shape_pt_lon'])
-            if not (48 <= lat <= 51 and -125 <= lng <= -120):
+            if not (48 <= lat <= 51.5 and -129 <= lng <= -120):
                 raise ValueError('Out-of-region shape')
             shapes[row['shape_id']].append((int(row['shape_pt_sequence']), [round(lat, 5), round(lng, 5)]))
     shapes = {key: simplify([p for _, p in sorted(value)]) for key, value in shapes.items()}
@@ -112,7 +131,7 @@ def build(city, source, today):
         if number.isdigit():
             number = str(int(number))
         name = raw['route_long_name']
-        is_rapid = mode != 'BUS' or (city == 'vancouver' and number.startswith('R') and number[1:].isdigit()) or (city == 'victoria' and number == '95')
+        is_rapid = mode != 'BUS' or (city == 'vancouver' and number.startswith('R') and number[1:].isdigit()) or (city == 'victoria' and number == '95') or bool(re.search(r'\brapid\b', name, re.I))
         colour = raw.get('route_color', '')
         colour = '#'+colour if len(colour) == 6 and all(c in '0123456789abcdefABCDEF' for c in colour) else '#7637cc'
         colour = {'Expo Line': '#0068b5', 'Millennium Line': '#b99500', 'Canada Line': '#0096ad', 'West Coast Express': '#772583', 'SeaBus': '#008578'}.get(name, '#18734a' if is_rapid and mode == 'BUS' else colour)
@@ -149,10 +168,18 @@ def build(city, source, today):
         lat, lng = float(raw['stop_lat']), float(raw['stop_lon'])
         if not all(map(math.isfinite, (lat, lng))):
             raise ValueError('Invalid stop coordinate')
-        stops.append({'key': stop_id, 'id': prefix+stop_id, 'name': raw['stop_name'], 'lat': round(lat, 5), 'lng': round(lng, 5), 'code': raw.get('stop_code', ''), 'parent': prefix+raw['parent_station'] if raw.get('parent_station') else '', 'modes': sorted(stop_modes[stop_id]), 'routes': sorted(stop_routes[stop_id]), 'scope': 'bc', 'zone': 'America/Vancouver'})
-    if len(catalog) < 20 or len(stops) < 500:
+        stop = {'key': stop_id, 'id': prefix+stop_id, 'system': city, 'name': raw['stop_name'], 'lat': round(lat, 5), 'lng': round(lng, 5), 'code': raw.get('stop_code', ''), 'parent': prefix+raw['parent_station'] if raw.get('parent_station') else '', 'modes': sorted(stop_modes[stop_id]), 'routes': sorted(stop_routes[stop_id]), 'scope': 'bc', 'zone': 'America/Vancouver'}
+        if not system['transitous']:
+            board = {'schema': 1, 'stopId': stop['id'], 'updated': today.isoformat(), 'zone': stop['zone'], 'routes': {r['id']: r for r in catalog if r['id'] in stop['routes']}, 'departures': sorted(board_times[stop_id])}
+            content = json.dumps(board, separators=(',', ':'), ensure_ascii=False)
+            filename = 'boards/'+hashlib.sha256(content.encode()).hexdigest()[:16]+'.json'
+            route_files[filename] = content
+            stop['boardFile'] = f'data/transit/{city}/{filename}'
+        stops.append(stop)
+    if len(catalog) < 1 or len(stops) < 2:
         raise ValueError('Unexpectedly incomplete transit feed')
-    return {'schema': 1, 'city': city, 'updated': today.isoformat(), 'feedVersion': info.get('feed_version'), 'validUntil': info.get('feed_end_date'), 'source': url, 'operator': operator, 'routes': catalog, 'stops': stops, 'rapid': rapid}, route_files
+    bounds = [round(min(s['lng'] for s in stops)-.04, 5), round(min(s['lat'] for s in stops)-.04, 5), round(max(s['lng'] for s in stops)+.04, 5), round(max(s['lat'] for s in stops)+.04, 5)]
+    return {'schema': 1, 'city': city, 'name': system['name'], 'group': system['group'], 'bounds': bounds, 'focus': system['focus'], 'updated': today.isoformat(), 'feedVersion': info.get('feed_version'), 'validUntil': info.get('feed_end_date'), 'source': url, 'operator': operator, 'routes': catalog, 'stops': stops, 'rapid': rapid}, route_files
 
 
 def main():
@@ -173,18 +200,21 @@ def main():
                 raise ValueError('GTFS download exceeds size limit')
             source = io.BytesIO(body)
         results[city] = build(city, source, today)
-    # Validate both regions before replacing either snapshot. Hashed route files
+    # Validate the regional feeds before replacing snapshots. Hashed route files
     # keep open pages consistent across refreshes; retain prior route versions.
     for city, (index, files) in results.items():
         directory = args.output/city
         directory.mkdir(parents=True, exist_ok=True)
         for filename, content in files.items():
+            (directory/filename).parent.mkdir(parents=True, exist_ok=True)
             (directory/filename).write_text(content+'\n')
         with tempfile.NamedTemporaryFile(mode='w', dir=directory, delete=False) as tmp:
             json.dump(index, tmp, separators=(',', ':'), ensure_ascii=False)
             tmp.write('\n')
         Path(tmp.name).replace(directory/'index.json')
         print(city, len(index['routes']), 'routes,', len(index['stops']), 'stops,', len(index['rapid']), 'rapid services')
+    manifest = {'schema': 1, 'systems': [{key: index[key] for key in ['city', 'name', 'group', 'bounds', 'focus']} for index, _ in results.values()]}
+    (args.output/'regions.json').write_text(json.dumps(manifest, separators=(',', ':'), ensure_ascii=False)+'\n')
 
 
 if __name__ == '__main__':

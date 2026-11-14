@@ -37,3 +37,28 @@ test('invalid route shapes, unsafe file names and out-of-region coordinates are 
   data.routes[0].file='../other.json';assert.throws(()=>core.readIndex(data,'victoria'));
   const route=structuredClone(index('vancouver').rapid[0]);route.variants[0].points[0]=[0,0];assert.throws(()=>core.readRoute(route));
 });
+
+test('coastal BC areas cover the Island, Fraser Valley and Sea to Sky with complete route geometry',()=>{
+ const systems=core.readRegions(JSON.parse(fs.readFileSync(`${__dirname}/../data/transit/regions.json`,'utf8')));
+ assert.equal(systems.length,14);assert(systems.every(s=>['Vancouver Island','Lower Mainland','Sea to Sky'].includes(s.group)));
+ let total=0;
+ for(const system of systems){const data=core.readIndex(index(system.city),system.city),stops=new Set(data.stops.map(s=>s.key));total+=data.routes.length;
+  for(const route of data.routes){const detail=core.readRoute(JSON.parse(fs.readFileSync(`${__dirname}/../data/transit/${system.city}/${route.file}`,'utf8')));assert(detail.variants.every(v=>v.stops.every(s=>stops.has(s))));}
+ }
+ assert(total>350);
+ for(const [lat,lng,city] of [[49.165,-123.94,'nanaimo'],[49.686,-124.994,'comox'],[50.024,-125.244,'campbell-river'],[50.644,-127.462,'mount-waddington'],[50.117,-122.955,'whistler'],[49.701,-123.155,'squamish']])assert.equal(core.cityAt(lat,lng,systems),city);
+ assert(core.inView([-124,48.3,-123.25,49],systems).length>1,'overlapping regional feeds must load together');
+ assert(!systems.some(s=>s.city==='kamloops'||s.city==='kelowna'));
+});
+
+test('small-system stop boards display published schedules and page without claiming live data',()=>{
+ const transit=require('../assets/maps-transit-core.js');
+ for(const city of ['salt-spring','west-coast','mount-waddington','pemberton']){
+  const data=index(city),stop=data.stops.find(s=>s.boardFile),board=JSON.parse(fs.readFileSync(`${__dirname}/../${stop.boardFile}`,'utf8'));
+  assert(board.departures.length);const time=new Date(board.departures[0][0]).toISOString(),first=transit.readLocalDepartures(board,stop,time);
+  assert(first.published);assert(first.rows.length);assert(first.rows.every(r=>r.live===false&&r.routeId.startsWith('ca-bc-')));
+  assert(transit.departuresURL(stop,time).startsWith(stop.boardFile+'?'));
+  if(first.next){const next=transit.readLocalDepartures(board,stop,time,first.next);assert(next.rows[0].time>=first.rows.at(-1).time);}
+  assert.throws(()=>transit.readLocalDepartures({...board,stopId:'other'},stop,time));
+ }
+});

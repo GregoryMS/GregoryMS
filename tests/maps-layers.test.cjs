@@ -43,6 +43,7 @@ test('car mode refuses transit links and stops transit providers when enabled mi
  h.car(false);h.api.setState({base:'transit'});assert.equal(h.api.getState().base,'transit');
  h.calls.length=0;h.car(true);assert.equal(h.api.getState().base,'street');assert(h.calls.some(c=>c[0]==='transit'&&c[1]===false));
  const dark=setup({initial:{base:'transit'},car:true,dark:true});assert.equal(dark.api.getState().base,'dark');
+ const rail=setup({initial:{base:'trainsfyi'},car:true});assert.equal(rail.api.getState().base,'street');
 });
 
 test('transit station schedules follow the base map and pause for Street View and embeds',()=>{

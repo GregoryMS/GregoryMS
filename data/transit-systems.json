@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "systems": [
+    {
+      "id": "victoria",
+      "name": "Victoria",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48",
+      "prefix": "ca-bc-Victoria-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        48.428,
+        -123.366
+      ],
+      "transitous": true
+    },
+    {
+      "id": "cowichan",
+      "name": "Cowichan Valley",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10",
+      "prefix": "ca-bc-Cowichan-Valley-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        48.779,
+        -123.708
+      ],
+      "transitous": true
+    },
+    {
+      "id": "nanaimo",
+      "name": "Nanaimo \u00b7 Parksville \u00b7 Qualicum",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
+      "prefix": "ca-bc-Nanaimo-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        49.165,
+        -123.94
+      ],
+      "transitous": true
+    },
+    {
+      "id": "comox",
+      "name": "Comox Valley",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
+      "prefix": "ca-bc-Comox-Valley-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        49.686,
+        -124.994
+      ],
+      "transitous": true
+    },
+    {
+      "id": "campbell-river",
+      "name": "Campbell River",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
+      "prefix": "ca-bc-Campbell-River-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        50.024,
+        -125.244
+      ],
+      "transitous": true
+    },
+    {
+      "id": "port-alberni",
+      "name": "Port Alberni",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
+      "prefix": "ca-bc-Port-Alberni-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        49.234,
+        -124.806
+      ],
+      "transitous": true
+    },
+    {
+      "id": "west-coast",
+      "name": "Tofino \u00b7 Ucluelet",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=51",
+      "prefix": "ca-bc-West-Coast-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        49.063,
+        -125.788
+      ],
+      "transitous": false
+    },
+    {
+      "id": "mount-waddington",
+      "name": "North Island \u00b7 Mount Waddington",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=17",
+      "prefix": "ca-bc-Mount-Waddington-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        50.644,
+        -127.462
+      ],
+      "transitous": false
+    },
+    {
+      "id": "salt-spring",
+      "name": "Salt Spring Island",
+      "group": "Vancouver Island",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=39",
+      "prefix": "ca-bc-Salt-Spring-Island-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        48.854,
+        -123.5
+      ],
+      "transitous": false
+    },
+    {
+      "id": "vancouver",
+      "name": "Metro Vancouver \u00b7 TransLink",
+      "group": "Lower Mainland",
+      "source": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
+      "prefix": "ca-bc-TransLink_",
+      "operator": "TransLink",
+      "focus": [
+        49.283,
+        -123.12
+      ],
+      "transitous": true
+    },
+    {
+      "id": "fraser-valley",
+      "name": "Fraser Valley \u00b7 Abbotsford \u00b7 Chilliwack \u00b7 Hope",
+      "group": "Lower Mainland",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13",
+      "prefix": "ca-bc-Fraser-Valley-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        49.116,
+        -122.23
+      ],
+      "transitous": true
+    },
+    {
+      "id": "squamish",
+      "name": "Squamish",
+      "group": "Sea to Sky",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
+      "prefix": "ca-bc-Squamish-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        49.701,
+        -123.155
+      ],
+      "transitous": true
+    },
+    {
+      "id": "whistler",
+      "name": "Whistler",
+      "group": "Sea to Sky",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
+      "prefix": "ca-bc-Whistler-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        50.117,
+        -122.955
+      ],
+      "transitous": true
+    },
+    {
+      "id": "pemberton",
+      "name": "Pemberton \u00b7 Whistler connections",
+      "group": "Sea to Sky",
+      "source": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50",
+      "prefix": "ca-bc-Pemberton-Valley-Transit_",
+      "operator": "BC Transit",
+      "focus": [
+        50.321,
+        -122.805
+      ],
+      "transitous": false
+    }
+  ]
+}
