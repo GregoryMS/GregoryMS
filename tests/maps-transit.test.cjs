@@ -57,6 +57,15 @@ test('individual boarding stops preserve opposite directions and terminal bays w
 
 const flush=async()=>{for(let i=0;i<25;i++)await Promise.resolve();};
 
+test('stop popup offsets keep each edge and corner inside the visible map without moving the stop',()=>{
+ const frame={left:12,right:988,top:100,bottom:684};
+ for(const [left,top] of [[-130,-100],[850,-100],[-130,600],[850,600],[300,200]]){
+  const rect={left,top,right:left+330,bottom:top+250,width:330,height:250},shift=core.popupOffset(rect,frame);
+  assert(rect.left+shift.x>=frame.left);assert(rect.right+shift.x<=frame.right);
+  assert(rect.top+shift.y>=frame.top);assert(rect.bottom+shift.y<=frame.bottom);
+ }
+});
+
 test('shared local/commuter stops include the same coded boarding point across feeds',()=>{
  const url=new URL(core.departuresURL(pandora,new Date(NOW).toISOString(),'LATER|123'));
  assert.equal(url.searchParams.get('stopId'),pandora.id);assert.equal(url.searchParams.get('radius'),'35');assert.equal(url.searchParams.get('exactRadius'),'true');assert.equal(url.searchParams.get('pageCursor'),'LATER|123');

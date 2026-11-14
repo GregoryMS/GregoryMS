@@ -13,11 +13,11 @@ test('provider routes validate status, geometry and numeric estimates',()=>{
  assert.equal(core.duration(3600),'1 hr');assert.equal(core.duration(3660),'1 hr 1 min');assert.equal(core.distance(4500),'4.5 km');assert.equal(core.instruction({name:'Main St',maneuver:{type:'roundabout',exit:3}}),'Enter the roundabout and take exit 3 onto Main St');
 });
 function harness({connected=false,defaultAvailable=false,liveFactory,transitCore,transitLiveFactory}={}){
- const els=new Map(),children=[],saved=new Map(connected?[['gregle-maps-tomtom-key','test-key-1234567890']]:[]);let selected=a,geoSuccess,geoFailure,geoOptions,service;
+ const windowEvents={};const els=new Map(),children=[],saved=new Map(connected?[['gregle-maps-tomtom-key','test-key-1234567890']]:[]);let selected=a,geoSuccess,geoFailure,geoOptions,service;
  class El{constructor(){this.hidden=false;this.value='';this.children=[];this.events={};this.attrs={};this.classList={add(){},remove(){}};}addEventListener(e,f){(this.events[e]??=[]).push(f);}getAttribute(k){return this.attrs[k];}setAttribute(k,v){this.attrs[k]=v;}removeAttribute(k){delete this.attrs[k];}replaceChildren(...c){this.children=c;}append(...c){this.children.push(...c);}focus(){this.focused=true;}scrollIntoView(){this.revealed=true;}async fire(e){for(const f of this.events[e]||[])await f({preventDefault(){},stopPropagation(){}});}click(){return this.fire('click');}}
  const el=id=>{if(!els.has(id))els.set(id,new El());return els.get(id);};el('map-directions').hidden=true;const pending=[];
- const ctx={window:{GregleTransitJourneyCore:transitCore,GregleTransitJourneyLive:transitLiveFactory,GregleLiveNavigation:liveFactory,GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s,f,o){geoSuccess=s;geoFailure=f;geoOptions=o;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
- vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess,geoFailure:()=>geoFailure,geoOptions:()=>geoOptions,context:ctx};
+ const ctx={window:{addEventListener:(name,fn)=>windowEvents[name]=fn,GregleTransitJourneyCore:transitCore,GregleTransitJourneyLive:transitLiveFactory,GregleLiveNavigation:liveFactory,GregleNavigation:core,GregleMaps:maps,GregleMapRouting:{...routing,create:()=>service=routing.create({defaultAvailable,fetch:ctx.fetch,storage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)}})}},document:{getElementById:el,querySelector:()=>el('stage'),createElement:()=>new El()},navigator:{geolocation:{getCurrentPosition(s,f,o){geoSuccess=s;geoFailure=f;geoOptions=o;}}},L:{layerGroup:()=>({addTo(){return this;},clearLayers(){}}),polyline:()=>({addTo(){children.push(this);return this;},getBounds(){return [];}}),divIcon:()=>({}),marker:()=>({addTo(){return this;}})},fetch:(url,opts)=>new Promise(resolve=>pending.push({url,opts,resolve})),URL,AbortController,setTimeout,clearTimeout,Date};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-navigation.js'),'utf8'),ctx);const api=ctx.window.GregleMapNavigation({map:{getCenter:()=>a,getSize:()=>({x:1200}),fitBounds(){}},config:{searchURL:'https://photon.komoot.io/api/',serverTomTom:defaultAvailable},getSelected:()=>selected});return{api,el,pending,children,saved,emit:name=>windowEvents[name]?.(),routing:()=>service,select:p=>{selected=p;},geo:()=>geoSuccess,geoFailure:()=>geoFailure,geoOptions:()=>geoOptions,context:ctx};
 }
 async function endpoints(h){await h.el('directions-from-pin').click();h.select(b);await h.el('directions-to-pin').click();}
 test('editing during a route request rejects stale geometry and links',async()=>{
@@ -226,4 +226,12 @@ test('four stops stay ordered, removing a middle stop shifts later stops, and sw
  await h.el('directions-transit').click();assert.equal(h.el('directions-stop-row').hidden,true);
  await h.el('directions-driving').click();assert.equal(h.el('directions-stop3-row').hidden,false);assert.equal(h.el('directions-stop3').value,'Stop 1');
  await h.el('directions-clear').click();for(const f of fields)assert.equal(h.el('directions-'+f+'-row').hidden,true);
+});
+
+
+test('car mode changes an active transit journey to driving and rejects transit selection',async()=>{
+ const h=harness();await h.el('directions-transit').click();assert.equal(h.el('directions-transit').attrs['aria-pressed'],'true');
+ h.context.document.body={classList:{contains:name=>name==='vehicle-layout'}};h.emit('resize');
+ assert.equal(h.el('directions-driving').attrs['aria-pressed'],'true');assert.equal(h.el('directions-transit').attrs['aria-pressed'],'false');
+ await h.el('directions-transit').click();assert.equal(h.el('directions-driving').attrs['aria-pressed'],'true');
 });

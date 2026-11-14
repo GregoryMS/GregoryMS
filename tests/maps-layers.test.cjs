@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const core=require('../assets/maps-core.js');
 
-function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom=13,onTrafficKeyChange=()=>{}}={}) {
+function setup({storage=new Map(),initial,config={},dark=false,car=false,pixelRatio=1,zoom=13,onTrafficKeyChange=()=>{}}={}) {
   const elements=new Map(),calls=[],tiles=[],timers=[],notices=[],events={};
   let themeObserver;
   const get=id=>{
@@ -25,7 +25,7 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
   const window={devicePixelRatio:pixelRatio,GregleMaps:core,addEventListener:(name,fn)=>events[name]=fn};
   window.GregleTransit=provider('transit');
   for(const [name,key] of Object.entries({GregleDriveBC:'drivebc',GregleDriveBCCameras:'webcams',GregleDriveBCSigns:'signs',GregleDriveBCFerries:'ferries',GregleFuel:'fuel',GregleEVCharging:'ev',GregleGoogleTraffic:'google',GregleAviation:'aviation',GregleAircraft:'aircraft',GregleVessels:'vessels',GregleStreetView:'streetview',GregleMapEmbed:'embed',GregleVictoriaParking:'parking',GregleNative3D:'native3d'}))window[name]=provider(key);
-  const document={body:{classList:{contains:()=>false}},documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
+  const document={body:{classList:{contains:()=>car}},documentElement:{classList:{contains:()=>dark}},getElementById:get,addEventListener(){},hidden:false};
   const L={TileLayer:{extend:()=>function(){}},tileLayer:(url,options)=>{const tile={url,options,events:{},on(name,fn){this.events[name]=fn;return this;},setZIndex(){return this;},addTo(){return this;}};tiles.push(tile);return tile;}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/../assets/maps-layers.js','utf8'),{
     window,document,L,URL,AbortController,
@@ -35,8 +35,15 @@ function setup({storage=new Map(),initial,config={},dark=false,pixelRatio=1,zoom
   });
   const api=window.GregleMapLayers({map:{getZoom:()=>zoom,setMaxZoom(value){calls.push(['maxZoom',value]);zoom=Math.min(zoom,value);},removeLayer(){},closePopup(){}},config,initial,notify(...args){notices.push(args);},onChange(){},onTrafficKeyChange});
   const change=(id,value)=>{get(id).checked=value;get(id).events.change();};
-  return {api,get,calls,storage,change,tiles,notices,emit:(name,detail)=>events[name]?.({detail}),flush:()=>{while(timers.length)timers.shift()();},theme:value=>{dark=value;themeObserver();}};
+  return {api,get,calls,storage,change,tiles,notices,emit:(name,detail)=>events[name]?.({detail}),car:value=>{car=value;events.resize?.();},flush:()=>{while(timers.length)timers.shift()();},theme:value=>{dark=value;themeObserver();}};
 }
+
+test('car mode refuses transit links and stops transit providers when enabled mid-session',()=>{
+ const h=setup({initial:{base:'transit'},car:true});assert.equal(h.api.getState().base,'street');assert(!h.calls.some(c=>c[0]==='transit'&&c[1]===true));
+ h.car(false);h.api.setState({base:'transit'});assert.equal(h.api.getState().base,'transit');
+ h.calls.length=0;h.car(true);assert.equal(h.api.getState().base,'street');assert(h.calls.some(c=>c[0]==='transit'&&c[1]===false));
+ const dark=setup({initial:{base:'transit'},car:true,dark:true});assert.equal(dark.api.getState().base,'dark');
+});
 
 test('transit station schedules follow the base map and pause for Street View and embeds',()=>{
  const h=setup({initial:{base:'transit'}});assert(h.calls.some(c=>c[0]==='transit'&&c[1]===true));

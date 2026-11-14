@@ -18,11 +18,11 @@
 .transit-route-card { position: absolute; z-index: 470; left: 20px; bottom: 110px; width: 330px; max-width: calc(100% - 100px); padding: 18px 20px; border-radius: 20px; font-size: 13px; }
 .transit-route-card p { margin: 8px 0 0; line-height: 1.5; overflow-wrap: anywhere; }
 #transit-route-detail { color: var(--muted); font-size: 11px; }
-.transit-vehicle-marker > span { display: flex; align-items: center; justify-content: center; gap: 3px; min-width: 40px; height: 32px; padding: 0 4px; box-sizing: border-box; border: 2px solid white; border-radius: 10px; background: #a83e00; color: white; box-shadow: 0 2px 7px #0006; font-size: 13px; }
+.transit-vehicle-marker > span { display: flex; align-items: center; justify-content: center; gap: 3px; min-width: 40px; height: 32px; padding: 0 4px; box-sizing: border-box; border: 2px solid white; border-radius: 10px; background: #9ed8ff; color: #10374f; box-shadow: 0 2px 7px #0006; font-size: 13px; }
 .transit-vehicle-marker b { font-size: 11px; }
 .transit-vehicle-heading { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
 .transit-vehicle-heading::before, .transit-vehicle-heading::after { content: ''; position: absolute; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 13px solid white; left: -8px; top: -34px; filter: drop-shadow(0 1px 2px #0008); }
-.transit-vehicle-heading::after { border-left-width: 5px; border-right-width: 5px; border-bottom: 9px solid #a83e00; left: -5px; top: -31px; filter: none; }
+.transit-vehicle-heading::after { border-left-width: 5px; border-right-width: 5px; border-bottom: 9px solid #9ed8ff; left: -5px; top: -31px; filter: none; }
 #transit-vehicle-status { font-size: 12px; }
 .transit-vehicle-credit { display: block; margin-top: 6px; font-size: 10px; }
 .transit-vehicle-credit[hidden] { display: none; }
@@ -43,6 +43,11 @@
 .transit-browser-intro { color: var(--muted); margin: 4px 0 16px; }
 .transit-city-label, .transit-search-label, .transit-direction-label { display: block; margin: 12px 0; font-size: 12px; font-weight: 500; }
 .transit-browser :is(input, select), .transit-direction-label select { display: block; box-sizing: border-box; width: 100%; margin-top: 6px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--map-border); border-radius: 10px; background: var(--map-surface); color: var(--text); font: inherit; font-size: 14px; }
+.transit-select-wrap { position: relative; display: block; }
+.transit-select-wrap select { appearance: none; -webkit-appearance: none; padding-right: 42px; }
+.transit-select-chevron { position: absolute; right: 14px; top: 50%; width: 16px; height: 16px; margin-top: -8px; color: var(--muted); pointer-events: none; }
+.vehicle-layout :is(#transit-browser-toggle, #transit-options, #transit-browser, #transit-route-card, #transit-map-hint, #directions-transit), .vehicle-layout .map-base-options label:has(input[value="transit"]) { display: none !important; }
+.transit-popup-clamped .leaflet-popup-tip-container { visibility: hidden; }
 .transit-route-results { list-style: none; padding: 0; margin: 12px 0; }
 .transit-route-results li { margin: 0; }
 .transit-menu-route, .transit-menu-station { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 62px; padding: 10px 2px; border: 0; border-bottom: 1px solid var(--map-border); border-radius: 0; text-align: left; background: transparent; color: var(--text); font: inherit; cursor: pointer; }
@@ -74,6 +79,7 @@
   .map-drawer-body > :is(.transit-browser, .transit-route-card) { position: static; display: none; inset: auto; width: auto; max-width: none; max-height: none; overflow: visible; padding: 4px 18px 12px; margin: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
   .map-drawer-body > .transit-browser > .layers-heading { display: none; }
   .has-mobile-drawer .transit-map-hint { bottom: calc(var(--map-drawer-height, 0px) + 30px); }
+  #map-feature-details .transit-popup { width: auto !important; max-width: 100%; }
 }
 .transit-popup summary { cursor: pointer; margin-top: 10px; }
 .transit-popup button:focus-visible, .transit-popup a:focus-visible, .transit-map-hint button:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }

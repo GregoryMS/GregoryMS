@@ -655,6 +655,8 @@ no new keys or server deployment are needed.
 
 **Bus routes** opens a searchable Victoria / Vancouver menu and activates the
 Transit map. Select by route number, route name, destination, or station name.
+Car mode hides the transit menu, transit base and transit journey option; entering car mode switches an active transit map/journey to the street map and driving.
+
 Exact numeric matches come first. Selecting a number displays every published
 branch in both directions; the direction selector narrows the map, and **Show
 entire route** fits the complete geometry around the route card/mobile drawer.
@@ -693,7 +695,9 @@ Tap a marker for upcoming departures, route/destination, platform, cancellations
 and service notices. **Later departures**, **Previous** and **Departures now**
 retain their existing schedule controls. Opposite-direction boarding stops and
 terminal bays keep their own codes; rail/ferry platforms share their parent
-station's board. Operator links provide full timetables and service details.
+station's board. Operator links provide full timetables and service details. Desktop stop popups
+are clamped to the visible map and viewport as their contents load or resize;
+mobile stop details use the scrollable drawer with its available width.
 Outside Victoria/Vancouver, unavailable trip geometry shows a retry state rather
 than an invented straight line, and interlined onward route numbers are excluded.
 
@@ -711,7 +715,7 @@ The trip endpoint is requested only on route selection. It uses the same
 timeouts, cancellation and provider backoff as departure boards, with an
 eight-trip, five-minute in-memory cache. Leaving Transit map clears the route.
 
-Selected BC Transit and TransLink routes also show orange **live bus** markers.
+Selected BC Transit and TransLink routes also show light blue **live bus** markers.
 In Victoria/Vancouver the highlighted path follows the chosen directions and
 branches; elsewhere it follows the selected departure. Bus positions cover both directions of the exact operator route ID, not other cities
 with the same bus number. A pointer around each bus marker shows its reported

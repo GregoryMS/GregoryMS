@@ -309,6 +309,7 @@
     function setState(next, changed = false) {
       const first = !applied, previous = applied || core.normalizeLayers(null);
       state = core.normalizeLayers(next);
+      if(document.body.classList.contains('vehicle-layout')&&state.base==='transit')state.base=pageDark?'dark':'street';
       if(pageDark&&previous.base==='3d'&&state.base==='street'){lightBase='street';state.base='dark';}
       if(state.base==='3d')closePanel();
       // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
@@ -412,6 +413,9 @@
     window.addEventListener('pagehide', () => { clearInterval(trafficTimer); removeTraffic(); });
     window.addEventListener('pageshow', event => { if (event.persisted && !core.isEmbeddedBase(state.base) && state.traffic && hasTrafficAccess() && !trafficPaused) loadTraffic(); });
     setState(state);
+    window.addEventListener('resize',()=>{
+      if(document.body.classList.contains('vehicle-layout')&&state.base==='transit')setState({...state,base:pageDark?'dark':'street'},true);
+    });
     new MutationObserver(() => {
       const dark = document.documentElement.classList.contains('dark-mode');
       if (dark === pageDark) return;

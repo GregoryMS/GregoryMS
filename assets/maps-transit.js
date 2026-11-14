@@ -48,11 +48,21 @@
         const marker=L.marker([stop.lat,stop.lng],{icon,title:`${stop.name}${stop.platform?' · '+stop.platform:''}${stop.code?' · '+stop.code:''} · departures`,alt:`Departures at ${stop.name}`,keyboard:true,riseOnHover:true,bubblingMouseEvents:false});
         marker.transitStop=stop;
         let popupContent;
-        marker.bindPopup(()=>popupContent||(popupContent=popup(stop,marker)),{minWidth:220,maxWidth:350,maxHeight:Math.max(140,map.getSize().y-170),autoPanPaddingTopLeft:[12,85],autoPanPaddingBottomRight:[60,35]});
-        marker.on('popupopen',()=>{selectedMarker=marker;hint.hidden=true;});
-        marker.on('popupclose',()=>{popupContent=null;if(selectedMarker===marker){selectedMarker=null;cancelBoard();hint.hidden=!enabled;}});
+        marker.bindPopup(()=>popupContent||(popupContent=popup(stop,marker)),{minWidth:220,maxWidth:350,maxHeight:Math.max(140,map.getSize().y-170),autoPan:false,className:'gregle-transit-popup'});
+        marker.on('popupopen',()=>{selectedMarker=marker;hint.hidden=true;keepPopupOnScreen(marker);const el=marker.getPopup().getElement?.();if(el&&typeof ResizeObserver!=='undefined'){marker.transitPopupObserver?.disconnect();marker.transitPopupObserver=new ResizeObserver(()=>keepPopupOnScreen(marker));marker.transitPopupObserver.observe(el);}});
+        marker.on('popupclose',()=>{marker.transitPopupObserver?.disconnect();popupContent=null;if(selectedMarker===marker){selectedMarker=null;cancelBoard();hint.hidden=!enabled;}});
         marker.addTo(group);
         return marker;
+    }
+    function keepPopupOnScreen(marker){
+      const el=marker.getPopup().getElement?.(),container=map.getContainer?.();if(!el||!container)return;
+      if(container.closest('.map-stage')?.classList.contains('has-mobile-drawer')){el.style.translate='';return;}
+      const area=container.getBoundingClientRect(),viewport=window.visualViewport;
+      const frame={left:Math.max(area.left,viewport?.offsetLeft||0)+12,right:Math.min(area.right,(viewport?.offsetLeft||0)+(viewport?.width||window.innerWidth))-12,top:Math.max(area.top+85,viewport?.offsetTop||0),bottom:Math.min(area.bottom,(viewport?.offsetTop||0)+(viewport?.height||window.innerHeight))-16};
+      const scaleX=area.width/container.clientWidth||1,scaleY=area.height/container.clientHeight||1;
+      const content=el.querySelector('.leaflet-popup-content');if(content){content.style.maxHeight=Math.max(60,(frame.bottom-frame.top)/scaleY-44)+'px';content.style.overflowY='auto';}
+      el.style.translate='none';const offset=core.popupOffset(el.getBoundingClientRect(),frame);
+      el.style.translate=`${offset.x/scaleX}px ${offset.y/scaleY}px`;el.classList.toggle('transit-popup-clamped',Math.abs(offset.x)>1||Math.abs(offset.y)>1);
     }
     function openStop(stop){
       if(!enabled)return;
@@ -111,7 +121,7 @@
         for(const alert of board.alerts)content.append(make('p',alert,'transit-alert'));
         const routes=new Map();for(const row of board.rows)if(row.url)routes.set(row.route,row.url);
         if(routes.size){const details=make('details'),links=make('div',null,'transit-route-links');details.append(make('summary','Route schedules'));for(const [route,url]of routes)links.append(link(route+' ↗',url));details.append(links);content.append(details);}
-        marker.getPopup().update();
+        marker.getPopup().update();keepPopupOnScreen(marker);
         clearTimeout(staleTimer);if(!old)staleTimer=setTimeout(()=>{if(box.isConnected)display(board,checked);},Math.max(1,checked+60001-Date.now()));
       }
       async function board(force=false) {
@@ -124,7 +134,7 @@
         for(const button of [refresh,back,later])button.disabled=true;
         try{const result=core.readDepartures(await json(key,request.signal),stop);if(token!==boardVersion||!enabled||document.hidden)return;const time=Date.now();boards.set(key,{board:result,time});while(boards.size>20)boards.delete(boards.keys().next().value);display(result,time);}
         catch(error){if(token===boardVersion&&!request.signal.aborted){content.replaceChildren();later.hidden=true;note.textContent='Departures could not load. Try Departures now, or open the operator schedules.';}}
-        finally{if(token===boardVersion){content.removeAttribute('aria-busy');for(const button of [refresh,back,later])button.disabled=false;departureController=null;marker.getPopup().update();}}
+        finally{if(token===boardVersion){content.removeAttribute('aria-busy');for(const button of [refresh,back,later])button.disabled=false;departureController=null;marker.getPopup().update();keepPopupOnScreen(marker);}}
       }
       const act=fn=>{if(Date.now()-lastAction<1500)return;lastAction=Date.now();fn();};
       refresh.addEventListener('click',()=>act(()=>{history=[];cursor='';start=new Date().toISOString();board(true);}));
@@ -145,6 +155,7 @@
     zoomButton.addEventListener('click',()=>map.setZoom(Math.max(15,map.getZoom()+1)));
     retryButton.addEventListener('click',load);
     map.on('transitnetworkready',load);
+    map.on('resize zoomend moveend',()=>{if(selectedMarker)keepPopupOnScreen(selectedMarker);});
     map.on('transitroutechange',event=>{routeSelected=event.active;if(routeSelected){group.clearLayers();selectedMarker=null;}else if(enabled)load();});
     map.on('moveend',()=>{if(enabled&&!document.hidden){controller?.abort();version++;controller=null;clearTimeout(debounce);debounce=setTimeout(load,500);}});
     document.addEventListener('visibilitychange',()=>{cancel();if(document.hidden){map.closePopup();}else if(enabled)load();});

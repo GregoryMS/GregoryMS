@@ -170,12 +170,14 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   }
   toggle.disabled = false;
   for (const travel of ['driving', 'walking', 'transit']) $('directions-' + travel)?.addEventListener('click', () => {
+    if(travel==='transit'&&document.body?.classList.contains('vehicle-layout'))return;
     if (travel === mode) return;
     mode = travel;
     for (const choice of ['driving', 'walking', 'transit']) $('directions-' + choice)?.setAttribute('aria-pressed', String(choice === mode));
     syncStop(); if (isStop(active) && mode === 'transit') active = 'to';
     invalidate(mode === 'transit' && stopCount ? 'Transit uses the start and destination. Your stops are kept for driving or walking.' : `Choose locations, then show your ${mode} route.`);
   });
+  window.addEventListener?.('resize',()=>{if(mode==='transit'&&document.body?.classList.contains('vehicle-layout'))$('directions-driving').click();});
   function startNavigation(threeD = false) {
     const engine=mode==='transit'?transitLive:live;
     if (!currentRoute || !engine) return;

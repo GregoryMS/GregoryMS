@@ -144,5 +144,10 @@
     try { return new Date(value).toLocaleString(undefined,{timeZone:zone,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZoneName:'short'}); }
     catch { return new Date(value).toLocaleString(undefined,{timeZone:'UTC',hourCycle:'h23'}) + ' UTC'; }
   }
-  return {region, area, stopsURL, readStops, departuresURL, readDepartures, safeURL, major, clock, tripURL, readTrip, decodeGeometry, vehiclesURL, readVehiclePositions};
+  function popupOffset(rect,frame) {
+    const x=rect.width>frame.right-frame.left?frame.left-rect.left:Math.max(frame.left-rect.left,Math.min(0,frame.right-rect.right));
+    const y=rect.height>frame.bottom-frame.top?frame.top-rect.top:Math.max(frame.top-rect.top,Math.min(0,frame.bottom-rect.bottom));
+    return {x,y};
+  }
+  return {region, area, stopsURL, readStops, departuresURL, readDepartures, safeURL, major, clock, tripURL, readTrip, decodeGeometry, vehiclesURL, readVehiclePositions, popupOffset};
 });
