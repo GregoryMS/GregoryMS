@@ -139,9 +139,9 @@
     if (quoted) return special();
     rules.push(raw.slice(start).trim());
     const days = names.map(day => ({ day, times: ['Closed'], closed: true })), notes = [];
-    let weeklyRules = 0, hasOvernight = false;
+    let weeklyRules = 0;
     function clock(minutes, end = false) {
-      if (minutes === 1440 && end) return '24:00';
+      if (minutes === 1440 && end) return '00:00';
       minutes %= 1440;
       const hour = Math.floor(minutes / 60), minute = minutes % 60;
       return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
@@ -163,7 +163,6 @@
           if (from >= 1440 || to > 2880 || from === to) return null;
           const end = to < from ? to + 1440 : to;
           if (end - from > 1440) return null;
-          if (end > 1440) hasOvernight = true;
           if (from === 0 && end === 1440) times.push('Open 24 hours');
           else times.push(`${clock(from)} – ${clock(to, true)}${end > 1440 ? ' (next day)' : ''}`);
         }
@@ -195,9 +194,9 @@
       for (const i of selected) days[i] = { day: names[i], times: [...hours.times], closed: hours.closed };
       weeklyRules++;
     }
-    // Separate overnight rules can overwrite the previous day's spillover at midnight.
-    // Preserve their original meaning rather than flattening those cases incorrectly.
-    return weeklyRules && !(hasOvernight && weeklyRules > 1) ? { days, notes, raw, weekly: true } : special();
+    // Each day's displayed closing time belongs to that day's opening interval,
+    // including closures after midnight. Separate day rules remain independent.
+    return weeklyRules ? { days, notes, raw, weekly: true } : special();
   }
   function facts(tags) {
     const rows = [];
