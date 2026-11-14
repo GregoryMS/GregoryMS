@@ -1372,27 +1372,62 @@
     const WEATHER_CACHE_KEY = 'gregle-weather-cache';
     const WEATHER_CACHE_MAX_AGE = 30 * 60 * 1000;
 
-    async function fetchWeather(lat, lon) {
+    let homeWeatherDirectory = null;
+    async function fetchWeather(lat, lon, country = '') {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000);
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&temperature_unit=celsius&timezone=auto`;
-
-      try {
-        const response = await fetch(url, {
-          signal: controller.signal,
-          cache: 'no-store'
-        });
+      async function json(url) {
+        const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) throw new Error('Weather request failed');
         return await response.json();
+      }
+      const model = async () => {
+        const data = await json(url);
+        if (!Number.isFinite(data.current?.temperature_2m) || !Number.isInteger(data.current?.weather_code)) throw Error('Weather data unavailable');
+        return data;
+      };
+      const observed = async () => {
+        const location = {latitude:lat, longitude:lon};
+        const victoria = globalThis.GregleWeather.distance(location, DEFAULT_WEATHER_LOCATION) < 10;
+        let station = 'bc-75';
+        if (!victoria) {
+          if (!country) {
+            const place = await json('https://api.bigdatacloud.net/data/reverse-geocode-client?' + new URLSearchParams({latitude:lat, longitude:lon, localityLanguage:'en'}));
+            country = place.countryCode;
+          }
+          if (country !== 'CA') throw Error('Canadian observations do not cover this location');
+          const directory = homeWeatherDirectory || await json('https://api.weather.gc.ca/collections/citypageweather-realtime/items?f=json&limit=1000&properties=identifier,name.en,name.fr');
+          const nearest = globalThis.GregleWeather.nearestStation(directory, location);
+          homeWeatherDirectory = directory;
+          station = nearest.id;
+        }
+        const data = await json('https://api.weather.gc.ca/collections/citypageweather-realtime/items/' + station + '?f=json');
+        const current = data.properties?.currentConditions;
+        const temperature = current?.temperature?.value?.en;
+        const observedAt = Date.parse(current?.timestamp?.en);
+        if (!Number.isFinite(temperature) || !Number.isFinite(observedAt) || Date.now() - observedAt > 3 * 60 * 60 * 1000 || observedAt > Date.now() + 10 * 60 * 1000) throw Error('Current Canadian observation unavailable');
+        const code = current?.iconCode?.value;
+        return {
+          current:{temperature_2m:temperature, weather_code:-1, is_day:Number.isFinite(code) && code >= 30 && code < 40 ? 0 : 1},
+          country:'CA', timezone:victoria ? DEFAULT_WEATHER_LOCATION.timezone : '',
+          homeDetails:{condition:current.condition?.en || 'Conditions unavailable', source:'Environment Canada'}
+        };
+      };
+      try {
+        // Independent sources race, so a stalled model API cannot block a
+        // fresh Canadian observation (and an unavailable station cannot block the model).
+        return await Promise.any([model(), observed()]);
       } finally {
         clearTimeout(timeoutId);
+        controller.abort();
       }
     }
 
-    function setWeatherChip(temp, code, lat, lon, label = '', isDay = null, timezone = '', country = '') {
+    function setWeatherChip(temp, code, lat, lon, label = '', isDay = null, timezone = '', country = '', details = null) {
       const isDefault = lat === DEFAULT_WEATHER_LOCATION.latitude && lon === DEFAULT_WEATHER_LOCATION.longitude;
       const name = label || (isDefault ? 'Victoria' : 'Current location');
-      const condition = globalThis.GregleWeather.condition(code);
+      const condition = typeof details?.condition === 'string' ? details.condition : globalThis.GregleWeather.condition(code);
       const icon = globalThis.GregleWeather.weatherIcon(Number.isFinite(temp) ? condition : '', isDay === 0);
       const temperature = Number.isFinite(temp) ? `${Math.round(temp)}°C` : '--°C';
       weatherChip.innerHTML = `<span class="weather-chip-icon" aria-hidden="true">${icon}</span><span class="weather-chip-temperature">${temperature}</span><span class="weather-alert-indicator" hidden aria-hidden="true">!</span>`;
@@ -1404,7 +1439,7 @@
       if (country || isDefault) link.searchParams.set('country', country || DEFAULT_WEATHER_LOCATION.country);
       weatherChip.href = link.href;
       weatherChip.setAttribute('aria-label', `Open weather forecast for ${name}${Number.isFinite(temp) ? `: ${condition}, ${temperature}` : ''}`);
-      weatherChip.title = `Weather for ${name}`;
+      weatherChip.title = `Weather for ${name}${details?.source === 'Environment Canada' ? ' · Environment Canada' : ''}`;
       globalThis.GregleHomeWeatherAlerts?.setLocation({latitude:lat, longitude:lon, name, country:country || (isDefault ? 'CA' : '')});
     }
 
@@ -1444,12 +1479,13 @@
     }
 
     async function loadWeatherForLocation(location, label = '', shouldUpdate = () => true) {
-      const data = await fetchWeather(location.latitude, location.longitude);
+      const data = await fetchWeather(location.latitude, location.longitude, location.country);
       const current = data.current;
       if (!Number.isFinite(current?.temperature_2m) || !Number.isInteger(current?.weather_code)) throw Error('Weather data unavailable');
       if (!shouldUpdate()) return;
       const name = label || location.name || '';
-      setWeatherChip(current.temperature_2m, current.weather_code, location.latitude, location.longitude, name, current.is_day, data.timezone, location.country);
+      const country = location.country || data.country || '';
+      setWeatherChip(current.temperature_2m, current.weather_code, location.latitude, location.longitude, name, current.is_day, data.timezone, country, data.homeDetails);
       writeCachedWeather({
         temperature: current.temperature_2m,
         weatherCode: current.weather_code,
@@ -1457,7 +1493,8 @@
         longitude: location.longitude,
         isDay: current.is_day,
         timezone: data.timezone,
-        country: location.country || '',
+        country,
+        details: data.homeDetails || null,
         label: name
       });
     }
@@ -1468,7 +1505,7 @@
       let localWeatherLoaded = false;
       const cached = readCachedWeather();
       if (cached) {
-        setWeatherChip(cached.temperature, cached.weatherCode, cached.latitude, cached.longitude, cached.label || '', cached.isDay, cached.timezone, cached.country);
+        setWeatherChip(cached.temperature, cached.weatherCode, cached.latitude, cached.longitude, cached.label || '', cached.isDay, cached.timezone, cached.country, cached.details);
       } else {
         setWeatherFallback();
       }
