@@ -4,6 +4,9 @@ window.GregleNative3D = ({map,onError,onStatus=()=>{}}) => {
   const host=document.getElementById('gregle-map-3d'),stage=document.querySelector('.map-stage');
   const core=window.GregleMaps, lightweight=/Tesla/i.test(navigator.userAgent);
   let wanted=false,view=null,version=0,library,frame,timer,recovery,syncing=false,ready=false,pin,pinLayer;
+  const isDark=()=>document.documentElement?.classList.contains('dark-mode')===true;
+  let dark=isDark();
+  const styleURL=()=>`https://tiles.openfreemap.org/styles/${dark?'dark':'liberty'}`;
   function loadLibrary(){
     if(window.maplibregl)return Promise.resolve();
     if(!library)library=new Promise((resolve,reject)=>{
@@ -79,13 +82,32 @@ window.GregleNative3D = ({map,onError,onStatus=()=>{}}) => {
       if(window.maplibregl.supported&&!window.maplibregl.supported())throw Error('WebGL unavailable');
       if(lightweight){window.maplibregl.setWorkerCount?.(1);window.maplibregl.setMaxParallelImageRequests?.(4);}
       const p=map.getCenter();
-      view=new window.maplibregl.Map({container:host,style:'https://tiles.openfreemap.org/styles/liberty',center:[p.lng,p.lat],zoom:map.getZoom(),bearing:-(map.getBearing?.()||0),pitch:lightweight?40:55,minZoom:2,maxZoom:19,maxPitch:60,antialias:false,fadeDuration:0,renderWorldCopies:false,attributionControl:true,...(lightweight?{maxTileCacheSize:24}:{} )});
+      view=new window.maplibregl.Map({container:host,style:styleURL(),center:[p.lng,p.lat],zoom:map.getZoom(),bearing:-(map.getBearing?.()||0),pitch:lightweight?40:55,minZoom:2,maxZoom:19,maxPitch:60,antialias:false,fadeDuration:0,renderWorldCopies:false,attributionControl:true,...(lightweight?{maxTileCacheSize:24}:{} )});
       view.doubleClickZoom.disable();
       view.addControl(new window.maplibregl.ScaleControl({unit:'metric',maxWidth:110}),'bottom-right');
       const current=view;
       timer=setTimeout(()=>{if(token===version&&!ready)fail();},20000);
       function fail(){if(token!==version)return;close();onError('OpenFreeMap 3D could not load. Returned to the street map.');}
-      current.once('load',()=>{if(token!==version)return;clearTimeout(timer);ready=true;draw();onStatus('OpenFreeMap 3D · Gregle controls are available. Extra layers resume in 2D.');});
+      let loaded=false;
+      function styleReady(){
+        if(token!==version)return;
+        clearTimeout(timer);
+        if(dark){
+          const colours={background:['background-color','#17151c'],water:['fill-color','#121e2b'],highway_path:['line-color','#2b2732'],highway_minor:['line-color','#34303c'],highway_major_casing:['line-color','#25212d'],highway_major_inner:['line-color','#46404f'],highway_major_subtle:['line-color','#383340'],highway_motorway_casing:['line-color','#28222f'],highway_motorway_inner:['line-color','#5a496c'],highway_motorway_subtle:['line-color','#3f354c']};
+          for(const [id,[property,colour]] of Object.entries(colours))if(current.getLayer(id))current.setPaintProperty(id,property,colour);
+          for(const layer of current.getStyle().layers)if(layer.type==='symbol'&&layer.layout?.['text-field']){
+            current.setPaintProperty(layer.id,'text-color','#c7c0d3');current.setPaintProperty(layer.id,'text-halo-color','#17151c');
+          }
+        }
+        // The Dark style has flat footprints; use the same OpenMapTiles building heights as Liberty.
+        if(dark&&!current.getLayer('gregle-dark-buildings')){
+          const labels=current.getStyle().layers.find(layer=>layer.type==='symbol')?.id;
+          current.addLayer({id:'gregle-dark-buildings',type:'fill-extrusion',source:'openmaptiles','source-layer':'building',minzoom:14,filter:['!',['has','hide_3d']],paint:{'fill-extrusion-base':['coalesce',['get','render_min_height'],0],'fill-extrusion-height':['coalesce',['get','render_height'],0],'fill-extrusion-color':'#4b4558','fill-extrusion-opacity':.94}},labels);
+        }
+        ready=true;draw();
+      }
+      current.once('load',()=>{if(token!==version)return;loaded=true;styleReady();onStatus('OpenFreeMap 3D · Gregle controls are available. Extra layers resume in 2D.');});
+      current.on('style.load',()=>{if(loaded)styleReady();});
       current.on('moveend',syncFrom3D);
       current.on('movestart',()=>map.fire('movestart'));
       current.on('dragstart',()=>map.fire('dragstart'));
@@ -101,6 +123,13 @@ window.GregleNative3D = ({map,onError,onStatus=()=>{}}) => {
       current.on('error',()=>{if(ready&&token===version)onStatus('Some 3D tiles are unavailable. Gregle controls remain available.');});
     }catch{if(token===version){close();onError('OpenFreeMap 3D is unavailable in this browser. Returned to the street map.');}}
   }
+  if(typeof MutationObserver!=='undefined')new MutationObserver(()=>{
+    const next=isDark();if(next===dark)return;dark=next;
+    if(!view)return;
+    ready=false;view.setStyle(styleURL(),{diff:false});
+    clearTimeout(timer);const token=version;
+    timer=setTimeout(()=>{if(token===version&&view&&!ready){close();onError('The 3D theme could not load. Returned to the street map.');}},20000);
+  }).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
   map.on('moveend rotate',syncFromLeaflet);
   map.on('layeradd layerremove moveend',scheduleDraw);
   const resize=()=>{if(view){view.resize();syncFromLeaflet();}};

@@ -1029,3 +1029,7 @@
 #gregle-map-3d .maplibregl-ctrl-bottom-right {max-width:calc(100% - 100px);}
 
 .native-3d-active #map-layers-toggle { display:none !important; }
+
+#gregle-map-3d .maplibregl-ctrl-attrib {background:var(--map-control-surface);color:var(--text);}
+#gregle-map-3d .maplibregl-ctrl-attrib a {color:var(--text);}
+.dark-mode #gregle-map-3d .maplibregl-ctrl-attrib-button {filter:invert(1);}

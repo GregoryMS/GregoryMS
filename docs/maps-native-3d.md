@@ -11,3 +11,7 @@ Extra data providers pause in regular 3D; saved selections resume on return to 2
 MapLibre and CSS load only on first use. Exiting destroys the WebGL map. Startup, cancellation and page lifecycle are bounded; a failed startup returns to the street map. Tile failures do not immediately destroy an otherwise working view. Tesla uses one worker, a lower initial pitch and a bounded tile cache; there are no continuous camera animations or overlay polling loops.
 
 Sources: https://openfreemap.org/quick_start/ and https://maplibre.org/maplibre-gl-js/docs/examples/display-buildings-in-3d/
+
+## Light and dark themes
+
+The regular 3D map follows the page’s `dark-mode` class, including changes while it is open. Light mode uses OpenFreeMap Liberty; dark mode uses OpenFreeMap Dark with a building extrusion layer using the same `render_height` and `render_min_height` source properties. Changing styles preserves the camera and DOM pin, and rebuilds Gregle’s UI geometry after the new style loads. Extra data layers retain the existing 3D pause behaviour.
