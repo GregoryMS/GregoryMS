@@ -1,0 +1,104 @@
+(() => {
+  'use strict';
+  window.GregleTransitNetwork = ({map,enableTransit,onStop,onRoute}) => {
+    const core=window.GregleTransitNetworkCore, $=id=>document.getElementById(id);
+    const panel=$('transit-browser'), button=$('transit-browser-toggle'), search=$('transit-route-search'), cityInput=$('transit-city'), results=$('transit-route-results'), status=$('transit-browser-status');
+    const overview=L.layerGroup(), cache=new Map(), routes=new Map(),pending=new Map();
+    let enabled=false,controller,version=0,city,network,selected=false,menuVersion=0,lineCity,routeController;
+    const make=(tag,text,className)=>{const el=document.createElement(tag);if(text)el.textContent=text;if(className)el.className=className;return el;};
+    const regionName=id=>id==='vancouver'?'Vancouver':'Victoria';
+    async function json(url,signal) {
+      const response=await fetch(url,{signal:AbortSignal.any([signal,AbortSignal.timeout(20000)]),credentials:'omit'});
+      if(!response.ok)throw Error('Transit map unavailable');
+      const body=await response.text();if(body.length>8000000)throw Error('Transit map too large');return JSON.parse(body);
+    }
+    async function getIndex(id,signal) {
+      if(cache.has(id))return cache.get(id);
+      if(pending.has(id))return pending.get(id);
+      const request=(async()=>{try{const data=core.readIndex(await json(`data/transit/${id}/index.json`,signal),id);cache.set(id,data);return data;}finally{pending.delete(id);}})();pending.set(id,request);return request;
+    }
+    function close() {panel.hidden=true;button.setAttribute('aria-expanded','false');menuVersion++;}
+    function routeButton(route,data) {
+      const item=make('li'),action=make('button',null,'transit-menu-route');action.type='button';
+      const number=make('strong',route.number,'transit-number');number.style.setProperty('--route-color',route.color);
+      const copy=make('span'),name=make('span',route.name),kind=make('small',route.mode==='BUS'?route.rapid?'RapidBus':'Bus':route.mode==='FERRY'?'Passenger ferry':route.mode==='SUBWAY'?'SkyTrain':'Commuter rail');
+      copy.append(name,kind);action.append(number,copy);action.addEventListener('click',()=>select(route,data));item.append(action);return item;
+    }
+    function renderMenu(data) {
+      results.replaceChildren();const found=core.search(data,search.value);
+      for(const route of found.routes.slice(0,100))results.append(routeButton(route,data));
+      if(found.routes.length>100)results.append(make('li','Type a route number or destination to narrow the list.','transit-meta'));
+      if(found.stops.length){const heading=make('li','Stops & stations','transit-menu-heading');results.append(heading);}
+      for(const stop of found.stops) {
+        const li=make('li'),action=make('button',stop.name,'transit-menu-station');action.type='button';
+        if(stop.code)action.append(make('small',`Stop ${stop.code}`));
+        action.addEventListener('click',()=>{close();map.setView([stop.lat,stop.lng],17);onStop(stop);});li.append(action);results.append(li);
+      }
+      const age=Date.now()-Date.parse(data.updated+'T12:00:00-08:00');
+      status.textContent=`${regionName(data.city)} · ${found.routes.length} route${found.routes.length===1?'':'s'}${search.value.trim()?` · ${found.stops.length} stops / stations`:''} · map updated ${data.updated}${age>14*86400000?' · older map: check operator for changes':''}.`;
+      if(!found.routes.length&&!found.stops.length)results.append(make('li','No matches. Try a route number, destination or station name.','transit-meta'));
+      $('transit-data-credit').textContent=data.city==='vancouver'?'Route and arrival data used in this product or service is provided by permission of TransLink. TransLink assumes no responsibility for the accuracy or currency of the Data used in this product or service.':'Contains information distributed by BC Transit. Published route map; check departures for current service.';
+    }
+    async function loadMenu() {
+      const token=++menuVersion;status.textContent='Loading routes…';results.replaceChildren();
+      try {const data=await getIndex(cityInput.value,controller?.signal||new AbortController().signal);if(token!==menuVersion||panel.hidden)return;renderMenu(data);}
+      catch(error){if(token===menuVersion){status.textContent='Route menu could not load. Use Retry routes to try again.';}}
+    }
+    async function open() {
+      enableTransit();panel.hidden=false;button.setAttribute('aria-expanded','true');
+      const p=map.getCenter();cityInput.value=core.cityAt(p.lat,window.GregleMaps.wrapLongitude(p.lng))||cityInput.value||'victoria';
+      await loadMenu();if(!panel.hidden)search.focus({preventScroll:true});
+    }
+    async function select(route,data) {
+      routeController?.abort();const request=new AbortController();routeController=request;
+      status.textContent=`Loading route ${route.number}…`;
+      try {
+        const key=`${data.city}/${route.file}`;
+        let detail=routes.get(key);
+        if(!detail){detail=core.readRoute(await json(`data/transit/${key}`,request.signal));if(detail.id!==route.id||detail.routeId!==route.routeId)throw Error('Route mismatch');routes.set(key,detail);while(routes.size>12)routes.delete(routes.keys().next().value);}
+        if(request.signal.aborted||!enabled||document.hidden)return;
+        close();onRoute(detail,data.stops);status.textContent=`Route ${route.number} selected.`;
+      } catch(error) {if(!request.signal.aborted)status.textContent=`Route ${route.number} could not load. Select it again to retry.`;}
+      finally{if(routeController===request)routeController=null;}
+    }
+    function drawOverview(data) {
+      if(lineCity===data.city)return;
+      overview.clearLayers();lineCity=data.city;
+      for(const route of data.rapid) {
+        const paths=route.variants.map(v=>v.points),label=make('span',route.number===route.name?route.name:`${route.number} · ${route.name}`);
+        L.polyline(paths,{color:'#fff',weight:7,opacity:.9,interactive:false,className:'transit-network-line'}).addTo(overview);
+        L.polyline(paths,{color:route.color,weight:4,opacity:.9,bubblingMouseEvents:false,className:'transit-network-line'}).bindTooltip(label,{sticky:true}).on('click',()=>select(route,data)).addTo(overview);
+      }
+    }
+    async function refresh() {
+      if(!enabled||document.hidden)return;
+      const p=map.getCenter(),id=core.cityAt(p.lat,window.GregleMaps.wrapLongitude(p.lng));
+      if(id===city&&network){drawOverview(network);return;}
+      controller?.abort();controller=new AbortController();const token=++version;city=id;network=null;overview.clearLayers();lineCity=null;
+      if(!id)return;
+      try {const data=await getIndex(id,controller.signal);if(token!==version||!enabled||document.hidden)return;network=data;drawOverview(data);map.fire('transitnetworkready');}
+      catch(error){if(token===version&&!controller.signal.aborted)map.fire('transitnetworkerror');}
+    }
+    button.addEventListener('click',()=>panel.hidden?open():close());
+    $('close-transit-browser').addEventListener('click',()=>{close();button.focus();});
+    $('transit-routes-retry').addEventListener('click',()=>{loadMenu();refresh();});
+    cityInput.addEventListener('change',()=>{routeController?.abort();search.value='';loadMenu();});
+    search.addEventListener('input',loadMenu);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!panel.hidden){event.preventDefault();close();button.focus();}});
+    map.on('moveend',refresh);
+    map.on('transitroutechange',event=>{selected=event.active;map.getContainer().classList.toggle('transit-network-selected',selected);});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){version++;controller?.abort();routeController?.abort();city=null;network=null;}else if(enabled)refresh();});
+    return {
+      setEnabled(value){if(enabled===value)return;enabled=value;if(value){overview.addTo(map);refresh();}else{version++;controller?.abort();routeController?.abort();overview.clearLayers();map.removeLayer(overview);lineCity=null;city=null;network=null;close();}},
+      stops(){return network?.stops;},
+      async showDeparture(row,stop) {
+        const id=core.cityAt(stop.lat,stop.lng);if(!id)return false;
+        try {
+          const data=await getIndex(id,controller?.signal||new AbortController().signal);
+          const route=data.routes.find(r=>r.routeId===row.routeId)||data.routes.find(r=>r.number.toLowerCase()===row.route.toLowerCase());
+          if(!route)return false;await select(route,data);return true;
+        }catch{return false;}
+      }
+    };
+  };
+})();

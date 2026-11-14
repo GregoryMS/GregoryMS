@@ -653,27 +653,49 @@ used as the requested origin for planning. The UI is in
 `assets/maps-transit-journey-core.js` and `assets/maps-transit-journey-live.js`;
 no new keys or server deployment are needed.
 
-Selecting **Transit map** also enables clickable station markers in British
-Columbia and the London area. Rail and ferry stations appear at zoom 13, and bus
-stops at zoom 15. Tap a marker for upcoming departures, route/destination,
-platform where supplied, cancellations and service notices. **Later departures**
-and **Previous** page through the published schedule; **Departures now** refreshes
-the board. Operator schedule links provide full timetables and service details.
-Individual bus boarding stops are requested instead of provider name groups,
-so opposite-direction stops and terminal bays keep their own markers and codes.
-Only duplicate feed records for the same nearby boarding code are combined.
-Rail and ferry platforms share their parent station's board. Base-map labels
-come from OpenStreetMap and can include stops absent from the timetable feeds;
-those labels do not by themselves establish current scheduled service.
+**Bus routes** opens a searchable Victoria / Vancouver menu and activates the
+Transit map. Select by route number, route name, destination, or station name.
+Exact numeric matches come first. Selecting a number displays every published
+branch in both directions; the direction selector narrows the map, and **Show
+entire route** fits the complete geometry around the route card/mobile drawer.
+A named stop list and clickable map dots open the existing departure board.
+Selecting a number in a Victoria/Vancouver departure board opens this same
+whole-route view. Other regions retain the selected-trip route view.
 
-Tap a route number in a departure board to highlight that departure's full path,
-direction and stops. The base map is subdued and the selected line uses a light purple
-stroke with a white outline; stop dots remain dark blue. The route card names the direction and endpoints;
-**Fit route** restores its extent and **×** clears the highlight. Stop dots show
-names on hover, with the original boarding stop emphasised. This uses the
-selected trip's geometry, not every branch or both directions with that number.
-Interlined onward services with other numbers are excluded. An unavailable
-geometry shows a retry message rather than an invented straight-line route.
+The transit base is OpenFreeMap Positron in flat 2D, using MapLibre GL JS 5.6.2
+and the vendored ISC-licensed MapLibre GL Leaflet adapter 0.1.4. It loads only
+when Transit map is selected. An OpenStreetMap raster base remains available
+when WebGL, the library or the style cannot load; the route overlays remain.
+Vancouver's Expo, Millennium and Canada lines, SeaBus, West Coast Express and
+RapidBus, and Victoria's 95 Blink corridor stay visible in the regional overview.
+These are published route shapes, not inferred live train positions.
+
+Ordinary bus stops appear from zoom 14, with names from zoom 16 where space
+permits. Rail/ferry stations appear in the regional overview with names from
+zoom 12. Screen-space spacing limits marker/label density; zooming reveals more
+boarding points. Selecting a route hides unrelated stops and subdues the rapid
+network. Route endpoints keep names at wider zooms. Outside these two regions,
+BC and London stops and schedules continue through the existing bounded
+Transitous viewport lookup (rail/ferry from zoom 13).
+
+`scripts/update_transit_network.py` reads the official BC Transit operator 48
+and TransLink static GTFS feeds. It applies calendars and date exceptions for
+the next eight days, retains real shapes and direction/branch stop sequences,
+and simplifies geometry by about two metres. It validates both feeds before
+replacing either regional index. Small, content-addressed route files load on
+selection; regional indexes supply stops and rapid-transit overviews without
+repeated external viewport queries. The daily `transit-network.yml` workflow
+refreshes the maps, preserves prior route files for open pages, and requests a
+Pages rebuild. The menu displays the source-map update date. Departures remain
+separate, with scheduled versus live estimates explicitly labelled.
+
+Tap a marker for upcoming departures, route/destination, platform, cancellations
+and service notices. **Later departures**, **Previous** and **Departures now**
+retain their existing schedule controls. Opposite-direction boarding stops and
+terminal bays keep their own codes; rail/ferry platforms share their parent
+station's board. Operator links provide full timetables and service details.
+Outside Victoria/Vancouver, unavailable trip geometry shows a retry state rather
+than an invented straight line, and interlined onward route numbers are excluded.
 
 Bus traces are aligned to roads using Mapbox Map Matching through the existing
 map relay. The published trace supplies up to 100 bend-preserving anchors;
@@ -690,8 +712,8 @@ timeouts, cancellation and provider backoff as departure boards, with an
 eight-trip, five-minute in-memory cache. Leaving Transit map clears the route.
 
 Selected BC Transit and TransLink routes also show orange **live bus** markers.
-The highlighted purple path is the selected departure's direction/variant; bus
-positions cover both directions of the exact operator route ID, not other cities
+In Victoria/Vancouver the highlighted path follows the chosen directions and
+branches; elsewhere it follows the selected departure. Bus positions cover both directions of the exact operator route ID, not other cities
 with the same bus number. A pointer around each bus marker shows its reported
 GPS bearing while the route number stays upright. Tap or hover for the compass
 direction; missing headings have no arrow and are explicitly labelled unavailable.

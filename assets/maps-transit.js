@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  window.GregleTransit = ({map}) => {
+  window.GregleTransit = ({map,enableTransit=()=>{}}) => {
     const core = window.GregleTransitCore, group = L.layerGroup(), cache = new Map(), boards = new Map();
     const hint = document.getElementById('transit-map-hint'), status = document.getElementById('transit-map-status');
     const options = document.getElementById('transit-options'), zoomButton = document.getElementById('transit-zoom'), retryButton = document.getElementById('transit-retry');
@@ -10,7 +10,9 @@
     const link = (text,url) => {const el=make('a',text);el.href=url;el.target='_blank';el.rel='noopener noreferrer';return el;};
     const report = (text,retry=false,zoom=false) => {status.textContent=text;retryButton.hidden=!retry;zoomButton.hidden=!zoom;};
     const bounds = () => {const b=map.getBounds();return [b.getWest(),b.getSouth(),b.getEast(),b.getNorth()];};
-    const routeView=window.GregleTransitRoute?.({map,requestJSON:json,canRequest:()=>Date.now()>=retryAt});
+    const routeView=window.GregleTransitRoute?.({map,requestJSON:json,canRequest:()=>Date.now()>=retryAt,onStop:openStop});
+    const network=window.GregleTransitNetwork?.({map,enableTransit,onStop:openStop,onRoute:(data,stops)=>routeView?.showNetwork(data,stops)});
+    let routeSelected=false;
     function cancelBoard() {boardVersion++;departureController?.abort();departureController=null;clearTimeout(staleTimer);}
     function cancel() {version++;controller?.abort();controller=null;clearTimeout(debounce);cancelBoard();}
     async function json(url,signal) {
@@ -19,9 +21,14 @@
       return response.json();
     }
     function render(stops) {
+      if(routeSelected)return;
       const b=map.getBounds(), west=b.getWest(), east=b.getEast(), wrap=value=>((value+180)%360+360)%360-180;
       const visible=stops.filter(stop=>stop.lat>=b.getSouth()&&stop.lat<=b.getNorth()&&((stop.lng-wrap(west)+360)%360)<=east-west);
-      const show=visible.filter(stop=>map.getZoom()>=15||core.major(stop)).sort((a,b)=>Number(core.major(b))-Number(core.major(a))).slice(0,500);
+      const zoom=map.getZoom(),stationIds=new Set(visible.filter(s=>core.major(s)&&!s.parent).map(s=>s.id));
+      const candidates=visible.filter(stop=>(zoom>=14||core.major(stop))&&!(core.major(stop)&&stationIds.has(stop.parent))).sort((a,b)=>Number(core.major(b))-Number(core.major(a)));
+      const project=stop=>map.latLngToContainerPoint([stop.lat,stop.lng]),layout=window.GregleTransitNetworkCore;
+      const show=layout&&map.latLngToContainerPoint?layout.spaced(candidates,project,zoom<14?35:zoom<16?24:15,180):candidates.slice(0,500);
+      const labels=new Set(layout&&map.latLngToContainerPoint?layout.spaced(show.filter(s=>core.major(s)?zoom>=12:zoom>=16),project,170,40):[]);
       const openId=selectedMarker?.transitStop?.id;
       // Reuse the current marker while its board is open; rebuilding it would
       // close the popup during Leaflet's automatic pan to keep it on screen.
@@ -31,7 +38,13 @@
       // load() closes it when the user pans away.
       for(const stop of show){
         if(group.getLayers().some(marker=>marker.transitStop.id===stop.id))continue;
-        const rail=core.major(stop),icon=L.divIcon({className:`transit-stop-marker${rail?' transit-station-marker':''}`,html:rail?'<span aria-hidden="true">▣</span>':'<span aria-hidden="true">●</span>',iconSize:[rail?30:24,rail?30:24],iconAnchor:[rail?15:12,rail?15:12]});
+        const marker=addMarker(stop);
+        const label=make('span',stop.name);marker.bindTooltip?.(label,{permanent:labels.has(stop),direction:'right',offset:[10,0],className:'transit-stop-label'});
+      }
+      report(show.length?`${show.length} stops & stations · tap for departures${zoom<16?' · zoom in for more names':''}`:zoom<14?'Rapid transit overview · choose Bus routes, or zoom in for stops.':visible.length?'Zoom in for more bus stops.':'No published stops in this view. Try a nearby area.',false,zoom<16);
+    }
+    function addMarker(stop){
+        const rail=core.major(stop),icon=L.divIcon({className:`transit-stop-marker${rail?' transit-station-marker':''}`,html:rail?'<span aria-hidden="true">▣</span>':'<span aria-hidden="true">●</span>',iconSize:[rail?26:18,rail?26:18],iconAnchor:[rail?13:9,rail?13:9]});
         const marker=L.marker([stop.lat,stop.lng],{icon,title:`${stop.name}${stop.platform?' · '+stop.platform:''}${stop.code?' · '+stop.code:''} · departures`,alt:`Departures at ${stop.name}`,keyboard:true,riseOnHover:true,bubblingMouseEvents:false});
         marker.transitStop=stop;
         let popupContent;
@@ -39,12 +52,17 @@
         marker.on('popupopen',()=>{selectedMarker=marker;hint.hidden=true;});
         marker.on('popupclose',()=>{popupContent=null;if(selectedMarker===marker){selectedMarker=null;cancelBoard();hint.hidden=!enabled;}});
         marker.addTo(group);
-      }
-      report(show.length?`${show.length}${show.length===500?'+':''} stops · tap for departures${map.getZoom()<15?' · zoom in for bus stops':''}`:visible.length?'Zoom in for bus stops and their schedules.':'No published stops in this view. Try a nearby area.',false,map.getZoom()<15||show.length===500);
+        return marker;
+    }
+    function openStop(stop){
+      if(!enabled)return;
+      const marker=group.getLayers().find(m=>m.transitStop.id===stop.id)||addMarker(stop);
+      marker.openPopup();
     }
     async function load() {
       if(!enabled||document.hidden)return;
       if(selectedMarker){const stop=selectedMarker.transitStop,b=map.getBounds(),middle=(((b.getWest()+b.getEast())/2+180)%360+360)%360-180;if(stop.lat<b.getSouth()||stop.lat>b.getNorth()||Math.abs(stop.lng-middle)>(b.getEast()-b.getWest())/2)map.closePopup();}
+      const local=network?.stops();if(local){controller?.abort();version++;render(local);return;}
       const view=core.area(bounds(),map.getZoom());
       if(!view){group.clearLayers();map.closePopup();const center=map.getCenter(),scope=core.region(center.lat,((center.lng+180)%360+360)%360-180);report(scope?'Zoom in to see stops and station schedules.':'Station schedules cover BC and the London area.',false,!!scope);return;}
       const key=core.stopsURL(view),cached=cache.get(key);
@@ -81,7 +99,7 @@
         const list=make('ol',null,'transit-departures');
         for(const row of board.rows){
           const li=make('li'),route=make(routeView&&row.tripId?'button':'strong',row.route,'transit-route');
-          if(routeView&&row.tripId){route.type='button';route.title=`Show route ${row.route} toward ${row.headsign}`;route.setAttribute('aria-label',route.title);route.addEventListener('click',()=>routeView.show(row,stop));}
+          if(routeView&&row.tripId){route.type='button';route.title=`Show entire route ${row.route}`;route.setAttribute('aria-label',route.title);route.addEventListener('click',async()=>{if(!await network?.showDeparture(row,stop))routeView.show(row,stop);});}
           const time=make('time',core.clock(row.time,zone));time.dateTime=new Date(row.time).toISOString();
           const state=row.cancelled?'Cancelled':row.live?(old?'Earlier estimate':'Live estimate'):'Scheduled';
           li.append(route,make('span',row.headsign,'transit-destination'),time,make('small',`${state}${row.platform?' · Platform '+row.platform:''}${row.operator?' · '+row.operator:''}`));
@@ -120,11 +138,14 @@
       if(enabled===(value===true))return;
       enabled=value===true;cancel();hint.hidden=!enabled;options.hidden=!enabled;
       routeView?.setEnabled(enabled);
+      network?.setEnabled(enabled);
       if(enabled){group.addTo(map);map.attributionControl.addAttribution(credit);load();}
       else{group.clearLayers();map.removeLayer(group);map.attributionControl.removeAttribution(credit);selectedMarker=null;}
     }
     zoomButton.addEventListener('click',()=>map.setZoom(Math.max(15,map.getZoom()+1)));
     retryButton.addEventListener('click',load);
+    map.on('transitnetworkready',load);
+    map.on('transitroutechange',event=>{routeSelected=event.active;if(routeSelected){group.clearLayers();selectedMarker=null;}else if(enabled)load();});
     map.on('moveend',()=>{if(enabled&&!document.hidden){controller?.abort();version++;controller=null;clearTimeout(debounce);debounce=setTimeout(load,500);}});
     document.addEventListener('visibilitychange',()=>{cancel();if(document.hidden){map.closePopup();}else if(enabled)load();});
     window.addEventListener('pagehide',()=>{cancel();map.closePopup();});

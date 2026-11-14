@@ -1,0 +1,39 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
+const core=require('../assets/maps-transit-network-core.js');
+const index=city=>JSON.parse(fs.readFileSync(`${__dirname}/../data/transit/${city}/index.json`,'utf8'));
+
+test('official regional route indexes validate every geometry, stop reference and operator route ID',()=>{
+  for(const city of ['victoria','vancouver']){
+    const data=core.readIndex(index(city),city),stops=new Set(data.stops.map(s=>s.key));
+    assert(data.routes.length>60);
+    for(const route of data.routes){
+      const path=`${__dirname}/../data/transit/${city}/${route.file}`,detail=core.readRoute(JSON.parse(fs.readFileSync(path,'utf8')));
+      assert.equal(detail.routeId,route.routeId);
+      assert(detail.variants.every(v=>v.stops.every(s=>stops.has(s))));
+    }
+  }
+  const rapid=index('vancouver').rapid.map(r=>r.name);
+  for(const name of ['Expo Line','Millennium Line','Canada Line','SeaBus','West Coast Express'])assert(rapid.includes(name));
+  assert(index('victoria').rapid.some(r=>r.number==='95'));
+});
+
+test('number lookup prioritizes exact matches, ignores unrelated short stop codes and searches station names',()=>{
+  const data=index('vancouver');
+  assert.equal(core.search(data,'099').routes[0].number,'99');
+  assert.equal(core.search(data,'99').stops.length,0);
+  assert(core.search(data,'waterfront').stops.some(s=>/Waterfront Station/.test(s.name)));
+  assert(core.search(index('victoria'),'95').routes.some(r=>r.rapid));
+  assert.equal(core.cityAt(48.42,-123.36),'victoria');assert.equal(core.cityAt(49.28,-123.12),'vancouver');assert.equal(core.cityAt(51.5,-.12),undefined);
+});
+
+test('screen-space decluttering leaves room between markers without merging boarding stop identities',()=>{
+  const items=Array.from({length:100},(_,i)=>({id:i,x:i*2,y:0})),show=core.spaced(items,p=>p,20,8);
+  assert.equal(show.length,8);assert.equal(show[0].id,0);
+  for(let i=1;i<show.length;i++)assert(show[i].x-show[i-1].x>=20);
+});
+
+test('invalid route shapes, unsafe file names and out-of-region coordinates are rejected',()=>{
+  const data=index('victoria');
+  data.routes[0].file='../other.json';assert.throws(()=>core.readIndex(data,'victoria'));
+  const route=structuredClone(index('vancouver').rapid[0]);route.variants[0].points[0]=[0,0];assert.throws(()=>core.readRoute(route));
+});

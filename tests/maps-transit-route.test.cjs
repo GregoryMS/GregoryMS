@@ -4,12 +4,13 @@ const row={tripId:fixture.selectedTripId,routeId:fixture.selectedRouteId,route:'
 const flush=async()=>{for(let i=0;i<20;i++)await Promise.resolve();};
 function setup(){
  const elements=new Map(),events={},calls=[],groups=[],fits=[],classes=new Set();let impl=async()=>fixture;
- const get=id=>{if(!elements.has(id))elements.set(id,{hidden:true,textContent:'',events:{},setAttribute(){},removeAttribute(){},addEventListener(k,f){this.events[k]=f;}});return elements.get(id);};
+ const node=()=>({hidden:true,textContent:'',value:'',children:[],events:{},setAttribute(){},removeAttribute(){},addEventListener(k,f){this.events[k]=f;},append(...items){this.children.push(...items);},replaceChildren(){this.children=[];},closest(){return this;}});
+ const get=id=>{if(!elements.has(id))elements.set(id,node());return elements.get(id);};
  const container={classList:{add:v=>classes.add(v),remove:v=>classes.delete(v)},focus(){}};
  const map={getContainer:()=>container,getSize:()=>({x:390,y:844}),closePopup(){},fitBounds:(points,options)=>fits.push({points,options}),removeLayer(){}};
  const layer=(kind,points,options)=>({kind,points,options,bindTooltip(label){this.label=label;return this;},addTo(group){group.children.push(this);return this;}});
  const L={layerGroup(){const group={children:[],clearLayers(){this.children=[];},addTo(){return this;}};groups.push(group);return group;},polyline:(p,o)=>layer('line',p,o),circleMarker:(p,o)=>layer('stop',p,o),latLngBounds:p=>p};
- const document={hidden:false,getElementById:get,createElement:()=>({textContent:''}),addEventListener:(k,f)=>events[k]=f};
+ const document={hidden:false,getElementById:get,createElement:node,addEventListener:(k,f)=>events[k]=f};
  const context={L,document,AbortController,Map,Date,window:{GregleTransitCore:core,addEventListener:(k,f)=>events[k]=f}};
  vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-transit-route.js'),'utf8'),context);
  const api=context.window.GregleTransitRoute({map,canRequest:()=>true,requestJSON:(url,signal)=>{calls.push({url,signal});return impl(url,signal);}});
@@ -29,4 +30,18 @@ test('switching maps or hiding the page aborts loading and ignores late route da
 });
 test('missing geometry gives a retry state without inventing a straight-line route',async()=>{
  const h=setup();h.setRequest(async()=>({legs:[]}));h.api.setEnabled(true);await h.api.show(row,stop);assert.equal(h.layers().length,0);assert.equal(h.get('transit-route-retry').hidden,false);assert.match(h.get('transit-route-status').textContent,/could not load/);assert.equal(h.classes.size,0);
+});
+
+test('route menu selection draws every published branch and filters directions without a departure lookup',()=>{
+ const index=JSON.parse(fs.readFileSync(`${__dirname}/../data/transit/victoria/index.json`,'utf8'));
+ const entry=index.routes.find(r=>r.number==='95'),data=JSON.parse(fs.readFileSync(`${__dirname}/../data/transit/victoria/${entry.file}`,'utf8'));
+ const h=setup();h.api.setEnabled(true);h.api.showNetwork(data,index.stops);
+ assert.equal(h.calls.length,0);assert.equal(h.get('transit-route-title').textContent,'Route 95');
+ assert.equal(h.layers().find(l=>l.kind==='line').points.length,data.variants.length);
+ assert.match(h.get('transit-route-detail').textContent,/All directions/);
+ const allStops=h.get('transit-route-stops').children.length,direction=h.get('transit-route-direction');
+ direction.value='0';direction.events.change();
+ assert.equal(h.layers().find(l=>l.kind==='line').points.length,data.variants.filter(v=>v.direction==='0').length);
+ assert(h.get('transit-route-stops').children.length<allStops);assert.match(h.get('transit-route-detail').textContent,/Selected direction/);
+ assert(h.fits.at(-1).options.paddingTopLeft[1]+h.fits.at(-1).options.paddingBottomRight[1]<844);
 });

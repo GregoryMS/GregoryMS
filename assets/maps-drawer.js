@@ -10,6 +10,7 @@ window.GregleMapDrawer = ({ map }) => {
     ['map-directions', 'Directions', 'close-directions'], ['map-base-panel', 'Base map', 'close-map-base'], ['map-layers-panel', 'Layers', 'close-map-layers'],
     ['map-fuel-card', 'Fuel'], ['vessels-legend', 'Vessel key', 'close-vessels-legend'],
     ['victoria-parking-legend', 'Parking key', 'close-victoria-parking-legend'],
+    ['transit-browser', 'Bus routes', 'close-transit-browser'], ['transit-route-card', 'Route', 'transit-route-clear'],
     ['map-feature-details', 'Details'], ['map-link-copy', 'Copy link', 'close-map-link'],
   ];
   let active, rendered, height = 0, expandedHeight = 0, gesture, popupState, currentPopup;
@@ -78,6 +79,11 @@ window.GregleMapDrawer = ({ map }) => {
     if (opened) { active = opened; if (height < 112) height = expandedHeight || 300; }
     render();
   }
+  map.on('transitroutefit',()=>{
+    if(!media.matches)return;
+    refresh();
+    resize(Math.min(280,Math.max(200,stage.clientHeight*.36)));
+  });
   function show(id, reveal = false) {
     if (!media.matches) return;
     const p = panels.find(p => p.id === id);

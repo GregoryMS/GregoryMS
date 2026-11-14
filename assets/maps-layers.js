@@ -28,7 +28,7 @@
       if(state.base!=='3d')return;
       setState({...state,base:'street'},true);notify(text,'3d');
     }});
-    const transit = window.GregleTransit?.({ map });
+    const transit = window.GregleTransit?.({ map,enableTransit:()=>setState({...state,base:'transit',streetview:false},true) });
     const parking = window.GregleVictoriaParking?.({map});
     const streetView = window.GregleStreetView({ map, getSelected, onOpen: onStreetViewOpen, onSelect: onStreetViewSelect, onClose: () => setState({ ...state, streetview: false }, true) });
     let applied, navigation3D = false;
@@ -163,6 +163,7 @@
       if (core.isEmbeddedBase(state.base)) { map.closePopup(); status('base-layer-status', `${state.base === '3d' ? 'OpenFreeMap 3D' : state.base === 'shademap' ? 'ShadeMap' : state.base === 'adsbexchange' ? 'ADS-B Exchange' : 'PlugShare'} opens at your Gregle view. Switch back to return to this area.`); return; }
       const satellite = state.base === 'satellite', topographic = state.base === 'topographic', dark = state.base === 'dark';
       const cycle = state.base === 'cycle', transit = state.base === 'transit';
+      if(transit&&window.GregleTransitBasemap){baseLayer=window.GregleTransitBasemap({map,onStatus:message=>status('base-layer-status',message)});baseLayer.addTo(map);return;}
       const name = satellite ? 'Satellite imagery' : topographic ? 'Topographic tiles' : cycle ? 'Cycle map tiles' : transit ? 'Transit map tiles' : 'Street map tiles';
       const retinaOffset = satellite && window.devicePixelRatio > 1 ? 1 : 0;
       const layer = L.tileLayer(satellite ? config.satelliteURL : topographic ? config.topographicURL : cycle ? config.cycleURL : transit ? config.transitURL : config.tileURL, {
