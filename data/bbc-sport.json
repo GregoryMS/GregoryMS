@@ -1,8 +1,24 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-13T20:39:11+00:00",
-  "fetchedAt": "2026-11-13T20:39:17.107867+00:00",
+  "feedUpdatedAt": "2026-11-14T01:04:04+00:00",
+  "fetchedAt": "2026-11-14T01:04:12.618172+00:00",
   "items": [
+    {
+      "title": "Fitness obsessed & 'control freak' - what can Man Utd expect from Pochettino?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c85y13pv69xwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "France hold nerve to edge past South Africa in thriller",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cqm2j810r2m2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Goalkeeper involved in fatal collision gets 12-game ban",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm98xy2j8k1ko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sabalenka's season ended by Svitolina at WTA Finals",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/cw30gl912vq9o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Tearful Pochettino on 'difficult' decision to leave USA for Man Utd",
       "link": "https://www.bbc.co.uk/sport/football/articles/cmd61qne8352o?at_medium=RSS&at_campaign=rss"
@@ -12,32 +28,16 @@
       "link": "https://www.bbc.co.uk/sport/mixed-martial-arts/articles/cm3wgpl28yzgo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Surfing speedster Beardman gives a glimpse of Ashes future",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c6vg2dkyxp00o?at_medium=RSS&at_campaign=rss"
+      "title": "Salah scores twice as Egypt and Nigeria win Afcon 2027 qualifiers",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cw1md9jx2r3po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Gloves are off' - how Australian papers reacted to Cummins on Khawaja",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cq1k97y4e1rxo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Sharks, ladders and a four-year plan - how England won World Cup",
       "link": "https://www.bbc.co.uk/sport/rugby-league/articles/crly54evvvv4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Ronaldinho, 46, to play first game since 2015",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqz0k4e00v0mo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Fernandes rejects second Man Utd contract offer",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm782d4pz9jyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "The driving-maul try machine - why rugby's steamroller gained traction",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmy0egy6zkk0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'Wrong' and 'nonsense' - Cummins on Khawaja sandpaper claims",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/cwq6e4y9525mo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Whatever happened to the diamond that went missing in F1 crash?",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c60735md0jrpo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Cameron-Mayer rematch added to Paul Christmas Eve card",
