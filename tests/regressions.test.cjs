@@ -635,32 +635,32 @@ test('shared tool theme restores preference and works with blocked storage', () 
   }
 });
 
-test('homepage follows device appearance on load and changes despite an old saved theme', () => {
+test('homepage restores its saved theme and keeps manual choices when device appearance changes', () => {
   let changed;
   const writes = [], appearance = { matches: false, addEventListener(event, fn) { assert.equal(event, 'change'); changed = fn; } };
   const env = environment('index.html', undefined, {
     getItem: key => key === 'gregle-theme' ? 'dark' : null,
     setItem: (key, value) => writes.push([key, value])
-  }, { matchMedia: () => appearance });
+  }, { matchMedia: query => query.includes('prefers-color-scheme') ? appearance : {matches:false} });
   const check = dark => {
     assert.equal(env.context.document.documentElement.classList.contains('dark-mode'), dark);
     assert.equal(env.context.document.body.classList.contains('dark-mode'), dark);
     assert.equal(env.get('themeToggle').attributes['aria-checked'], String(dark));
     assert.equal(env.get('brandThemeToggle').attributes['aria-pressed'], String(dark));
   };
-  check(false); assert.deepEqual(writes, []);
+  check(true); assert.deepEqual(writes, []);
   appearance.matches = true; changed(); check(true); assert.deepEqual(writes, []);
   env.get('brandThemeToggle').listeners.click(); check(false);
   assert.deepEqual(writes, [['gregle-theme', 'light']]);
   appearance.matches = false; changed(); check(false);
-  appearance.matches = true; changed(); check(true);
+  appearance.matches = true; changed(); check(false);
 });
 
 test('homepage auto theme supports older media listeners and unavailable storage or media queries', () => {
   let changed;
   const appearance = { matches: true, addListener(fn) { changed = fn; } };
   const blocked = { getItem() { throw new Error('Blocked'); }, setItem() { throw new Error('Blocked'); } };
-  const env = environment('index.html', undefined, blocked, { matchMedia: () => appearance });
+  const env = environment('index.html', undefined, blocked, { matchMedia: query => query.includes('prefers-color-scheme') ? appearance : {matches:false} });
   assert.equal(env.context.document.body.classList.contains('dark-mode'), true);
   appearance.matches = false; changed();
   assert.equal(env.context.document.body.classList.contains('dark-mode'), false);

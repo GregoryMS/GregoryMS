@@ -1,5 +1,12 @@
 (() => {
   const toggle = document.getElementById('themeToggle');
+  if (globalThis.GreglePreferences) {
+    const preferences = globalThis.GreglePreferences;
+    preferences.applyTheme();
+    toggle?.addEventListener('click', () => preferences.setTheme(
+      document.documentElement.classList.contains('dark-mode') ? 'light' : 'dark'));
+    return;
+  }
   function applyTheme(theme) {
     const dark = theme === 'dark';
     document.documentElement.classList.toggle('dark-mode', dark);

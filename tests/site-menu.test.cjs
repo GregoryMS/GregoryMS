@@ -9,7 +9,7 @@ const routes = require('../assets/site-routes.json');
 const destination = page => `https://${routes[page]}/`;
 
 test('every content page has the same valid app destinations and working icons', () => {
-  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html'].map(destination).concat(['https://satellites.gregle.uk/'], ['sports.html', 'news.html', 'finance.html', 'calc.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination), ['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/files/files', 'https://cloud.gregle.uk/apps/calendar/']);
+  const expected = ['index.html', 'maps.html', 'weather.html', 'sports.html', 'astro.html', 'finance.html', 'news.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/calendar/'], [destination('earthquakes.html'), 'https://satellites.gregle.uk/', destination('radio.html'), destination('dictionary.html'), destination('translate.html'), destination('calc.html'), 'https://cloud.gregle.uk/apps/files/files', destination('links.html')]);
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -31,6 +31,8 @@ test('every content page has the same valid app destinations and working icons',
     }
     assert(source.includes('assets/site-menu.css?'), file);
     assert(source.includes('assets/site-menu.js?'), file);
+    assert.equal((source.match(/src="assets\/preferences\.js\?/g) || []).length, 1, file);
+    assert(source.indexOf('assets/preferences.js?') < source.indexOf('<style') || !source.includes('<style'), file);
     const headerWithoutMenu = source.match(/<header\b[\s\S]*?<\/header>/)[0].replace(/<!-- Gregle app menu -->[\s\S]*?<!-- \/Gregle app menu -->/, '');
     assert(!/<a\b[^>]*>\s*←?\s*(?:Home|Tools|All tools|Back to Gregle)\s*<\/a>/i.test(headerWithoutMenu), file);
     const current = [...menu.matchAll(/href="([^"]+)" aria-current="page"/g)].map(m => m[1]);
@@ -129,4 +131,14 @@ test('Docs and Cloud keep independent positions with the same destination and le
   assert.equal(saved.filter(id=>id==='docs').length,1);
   const restored=launcher(env.stored(),true);
   assert.deepEqual(restored.grid.children.map(app=>app.attrs['data-gregle-app-id']||app.attrs.href),saved);
+});
+
+test('More stays last when restoring an old order or adding a missing app', () => {
+  const env = launcher();
+  env.apps[10].attrs['data-gregle-app-id'] = '/links.html';
+  env.window.listeners.storage({key:'gregle-app-order', newValue:'["/links.html","/app-3"]'});
+  assert.equal(env.grid.children[0], env.apps[3]); assert.equal(env.grid.children.at(-1), env.apps[10]);
+  env.panel.listeners.keydown(key('ArrowLeft', env.apps[10], {altKey:true}));
+  assert.equal(env.grid.children.at(-1), env.apps[10]);
+  assert.equal(JSON.parse(env.stored()).at(-1), '/links.html');
 });

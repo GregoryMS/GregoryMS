@@ -7,6 +7,7 @@
   const grid = menu.querySelector('.gregle-app-grid');
   const status = menu.querySelector('[data-gregle-app-status]');
   const orderKey = 'gregle-app-order';
+  const preferences = globalThis.GreglePreferences;
   const apps = () => Array.from(grid.querySelectorAll('.gregle-app'));
   const appId = app => app.getAttribute('data-gregle-app-id') || app.getAttribute('href');
   const appAt = target => {
@@ -14,10 +15,19 @@
     return app?.parentElement === grid ? app : null;
   };
   const saveOrder = () => {
-    try { localStorage.setItem(orderKey, JSON.stringify(apps().map(appId))); } catch {}
+    moreLast();
+    const order = apps().map(appId);
+    if (preferences) preferences.setOrder(order);
+    else try { localStorage.setItem(orderKey, JSON.stringify(order)); } catch {}
+  };
+  const moreLast = () => {
+    const more = apps().find(app => appId(app) === '/links.html');
+    if (more && apps().at(-1) !== more) grid.append(more);
   };
   const restoreOrder = saved => {
     if (!Array.isArray(saved)) return;
+    if (JSON.stringify(saved) === JSON.stringify(apps().map(appId))) { moreLast(); return; }
+    const focused = apps().find(app => app === document.activeElement);
     const remaining = new Map(apps().map(app => [appId(app), app]));
     for (const id of saved) {
       if (!remaining.has(id)) continue;
@@ -25,8 +35,11 @@
       remaining.delete(id);
     }
     for (const app of remaining.values()) grid.append(app);
+    moreLast();
+    focused?.focus();
   };
-  try { restoreOrder(JSON.parse(localStorage.getItem(orderKey))); } catch {}
+  if (preferences) restoreOrder(preferences.getOrder());
+  else try { restoreOrder(JSON.parse(localStorage.getItem(orderKey))); } catch {}
   for (const app of apps()) {
     app.draggable = true;
     app.setAttribute('aria-describedby', 'gregleAppHelp');
@@ -36,7 +49,12 @@
   const announce = app => {
     if (status) status.textContent = `${app.textContent.trim()} moved to position ${apps().indexOf(app) + 1} of ${apps().length}.`;
   };
-  let drag = null, touch = null, frame = 0, suppressClickUntil = 0;
+  let drag = null, touch = null, frame = 0, suppressClickUntil = 0, pendingOrder = null;
+  preferences?.subscribe(() => {
+    const order = preferences.getOrder();
+    if (drag) pendingOrder = order;
+    else restoreOrder(order);
+  });
   const beginDrag = (app, x, y, isTouch = false) => {
     drag = { app, original: apps(), x, y, isTouch, preview: null };
     app.classList.add('gregle-app-dragging');
@@ -65,7 +83,11 @@
     app.classList.remove('gregle-app-dragging');
     preview?.remove();
     if (commit) { saveOrder(); announce(app); }
-    else for (const item of original) grid.append(item);
+    else {
+      for (const item of original) grid.append(item);
+      if (pendingOrder) restoreOrder(pendingOrder);
+    }
+    pendingOrder = null;
     suppressClickUntil = Date.now() + 400;
   };
   const clearTouch = () => {
@@ -176,7 +198,7 @@
   };
   menu.addEventListener('toggle', () => {
     toggle.setAttribute('aria-expanded', String(menu.open));
-    if (menu.open) position();
+    if (menu.open) { preferences?.refresh(); position(); }
     else { clearTouch(); finishDrag(false); }
   });
   document.addEventListener('click', event => {
@@ -227,6 +249,7 @@
   });
   window.addEventListener('resize', () => { if (menu.open) position(); });
   window.addEventListener('storage', event => {
+    if (preferences) return;
     if (event.key !== orderKey || drag) return;
     try { restoreOrder(JSON.parse(event.newValue)); } catch {}
   });
