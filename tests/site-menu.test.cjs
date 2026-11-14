@@ -9,7 +9,7 @@ const routes = require('../assets/site-routes.json');
 const destination = page => `https://${routes[page]}/`;
 
 test('every content page has the same valid app destinations and working icons', () => {
-  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html', 'sports.html', 'news.html', 'finance.html', 'calc.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/files/files', 'https://cloud.gregle.uk/apps/calendar/']);
+  const expected = ['index.html', 'translate.html', 'weather.html', 'earthquakes.html', 'astro.html'].map(destination).concat(['https://satellites.gregle.uk/'], ['sports.html', 'news.html', 'finance.html', 'calc.html', 'links.html', 'radio.html', 'dictionary.html', 'maps.html'].map(destination), ['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/files/files', 'https://cloud.gregle.uk/apps/calendar/']);
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -24,8 +24,9 @@ test('every content page has the same valid app destinations and working icons',
     assert.match(menu, /href="https:\/\/cloud\.gregle\.uk\/apps\/calendar\/" data-gregle-app-id="calendar"><img src="\/assets\/calendar-app\/icon\.svg"[^>]*><span>Calendar<\/span>/, file);
     for (const [,href,icon] of apps) {
       const host = new URL(href).hostname;
-      assert(host === 'cloud.gregle.uk' || Object.values(routes).includes(host), href);
-      if (host !== 'cloud.gregle.uk') assert(fs.existsSync(path.join(root, Object.keys(routes).find(page => routes[page] === host))), href);
+      const external = ['cloud.gregle.uk', 'satellites.gregle.uk'].includes(host);
+      assert(external || Object.values(routes).includes(host), href);
+      if (!external) assert(fs.existsSync(path.join(root, Object.keys(routes).find(page => routes[page] === host))), href);
       assert(fs.existsSync(path.join(root, new URL(icon, 'https://gregle.uk').pathname.slice(1))), icon);
     }
     assert(source.includes('assets/site-menu.css?'), file);

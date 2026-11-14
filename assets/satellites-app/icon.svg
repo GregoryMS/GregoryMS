@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <title>Satellites</title>
+  <rect width="192" height="192" rx="46" fill="#242424"/>
+  <g transform="rotate(-40 96 96)" stroke="#242424" stroke-width="4" stroke-linejoin="round">
+    <path d="M28 77h43v38H28Zm93 0h43v38h-43Z" fill="#b77aff"/>
+    <path d="M49 77v38m94-38v38M28 96h43m50 0h43" fill="none"/>
+    <path d="M70 69h52v54H70Z" fill="#faf9f6"/>
+    <path d="M96 69V48m-12 0h24" fill="none" stroke="#faf9f6" stroke-width="6" stroke-linecap="round"/>
+    <path d="M79 124a22 22 0 0 0 34 0Z" fill="#9850ff"/>
+  </g>
+</svg>
