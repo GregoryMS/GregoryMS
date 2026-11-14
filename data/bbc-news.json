@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-14T03:37:35+00:00",
-  "fetchedAt": "2026-11-14T03:37:42.369480+00:00",
+  "feedUpdatedAt": "2026-11-14T10:58:33+00:00",
+  "fetchedAt": "2026-11-14T10:58:42.804032+00:00",
   "items": [
     {
-      "title": "'Miracle on Mississippi' - All passengers rescued after New Orleans cruise ship collision",
+      "title": "Young people should have legal guarantee of job or training, Milburn tells BBC",
+      "link": "https://www.bbc.co.uk/news/articles/c69vwp09d7vvo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "What we know about the US ground stop and what to do if your flight is affected",
+      "link": "https://www.bbc.co.uk/news/articles/cqx2wyvyr3zzo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "US has floated Ukraine ceding Donbas for Nato membership, Zelensky says",
+      "link": "https://www.bbc.co.uk/news/articles/cwvg2l312ylqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Cruise ship left on its side after collision with tanker on Mississippi",
       "link": "https://www.bbc.co.uk/news/articles/cw20xmy0m5yyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "US Air Force says it responded to 'suspected drones' over RAF Lakenheath",
-      "link": "https://www.bbc.co.uk/news/articles/c6jd75geegzyo?at_medium=RSS&at_campaign=rss"
+      "title": "King jokes with Elton John as he marks 78th birthday with radio show",
+      "link": "https://www.bbc.co.uk/news/articles/ck0jx8pxxx6eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Trump, Putin and Xi plan historic joint meeting in China next week, White House says",
-      "link": "https://www.bbc.co.uk/news/articles/ckz74jzpy18do?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Police investigating David Walliams over reports alleging serious sexual offences",
-      "link": "https://www.bbc.co.uk/news/articles/cwx2emg4xe72o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Setback for SpaceX Starship rocket's double-catch test",
-      "link": "https://www.bbc.co.uk/news/articles/ckregdgnl0xpo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Goalkeeper involved in fatal collision gets 12-game ban",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cm98xy2j8k1ko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Microsoft 'deeply sorry' for global outage as it reports broad recovery",
-      "link": "https://www.bbc.co.uk/news/articles/c6rrg51rkz09o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Rosenberg: Uncompromising Putin ups demands for peace with Ukraine",
-      "link": "https://www.bbc.co.uk/news/articles/cq39glwprknjo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Widespread frost and freezing fog forecast as cold health alerts continue",
+      "title": "Widespread frost and freezing fog as cold health alerts continue",
       "link": "https://www.bbc.co.uk/weather/articles/cqlyml59mdj0o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "New campaign against EU membership launches ahead of UK-EU summit",
-      "link": "https://www.bbc.co.uk/news/articles/c6174l2q99ejo?at_medium=RSS&at_campaign=rss"
+      "title": "Brand, Walliams and Married at First Sight: Is this a reckoning for the entertainment industry?",
+      "link": "https://www.bbc.co.uk/news/articles/cqn70lz71lg8o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Even Grand Theft Auto's original creators haven't been able to play GTA 6",
+      "link": "https://www.bbc.co.uk/news/articles/c6jd7k5ryl1mo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Jojo the gorilla has spent his life alone. Can he finally find a companion?",
+      "link": "https://www.bbc.co.uk/news/articles/cwm2mn272nqlo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Eurovision is finally coming to Asia - meet the stars gearing up to take the stage",
+      "link": "https://www.bbc.co.uk/news/articles/cw4gn0ky2pgdo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
