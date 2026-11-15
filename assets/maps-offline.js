@@ -129,12 +129,12 @@
         L.rectangle([[b[1],b[0]],[b[3],b[2]]],{pane:'offlineBackground',color:'#7637cc',weight:1,fillColor:'#f1f0e9',fillOpacity:1,interactive:false}).addTo(footprint);
         const keys=['overview'],x1=Math.max(Math.floor(bounds.getWest()*4),Math.floor(b[0]*4)),x2=Math.min(Math.floor(bounds.getEast()*4),Math.floor(b[2]*4)),y1=Math.max(Math.floor(bounds.getSouth()*4),Math.floor(b[1]*4)),y2=Math.min(Math.floor(bounds.getNorth()*4),Math.floor(b[3]*4));
         if(map.getZoom()>=10&&(x2-x1+1)*(y2-y1+1)<=16)for(let x=x1;x<=x2;x++)for(let y=y1;y<=y2;y++)keys.push(`${x}_${y}`);
-        let labels=0;
+        const labelCandidates=[];
         for(const key of keys){const data=await features(selected,key);if(token!==drawVersion)return;
           const geojson=[];
           for(const [kind,name,coords,polygon] of data){
             if(key==='overview'&&keys.length>1&&kind!=='place')continue;
-            if(kind==='place'){if(labels<80&&bounds.contains(coords)){const el=document.createElement('span');el.textContent=name;L.marker(coords,{icon:L.divIcon({className:'offline-place-label',html:el}),interactive:false}).addTo(vector);labels++;}continue;}
+            if(kind==='place'){if(name&&bounds.contains(coords))labelCandidates.push({p:coords,name,place:true});continue;}
             if(!polygon&&map.getZoom()<13&&!['motorway','trunk','primary','secondary','ferry','water','coastline','river'].includes(kind))continue;
             geojson.push({type:'Feature',properties:{kind,name,polygon},geometry:{type:polygon?'Polygon':'LineString',coordinates:polygon?[coords.map(p=>[p[1],p[0]])]:coords.map(p=>[p[1],p[0]])}});
           }
@@ -142,7 +142,19 @@
             const {kind,polygon}=f.properties,water=['water','coastline','river','stream','riverbank'].includes(kind),park=kind==='park',major=['motorway','trunk','primary'].includes(kind);
             return {color:water?'#90bfd0':park?'#bad3a6':major?'#dfba76':'#c5c0b7',weight:polygon?1:major?4:2,fillColor:water?'#b8dce6':'#d6e3c9',fillOpacity:polygon?.85:0,dashArray:['footway','path','steps','ferry'].includes(kind)?'3 5':null};
           }}).addTo(vector);
-          if(map.getZoom()>=15)for(const [kind,name,coords,polygon] of data){if(labels>=100)break;if(!name||kind==='place'||polygon)continue;const p=coords[Math.floor(coords.length/2)];if(!bounds.contains(p))continue;const el=document.createElement('span');el.textContent=name;L.marker(p,{icon:L.divIcon({className:'offline-road-label',html:el}),interactive:false}).addTo(vector);labels++;}
+          if(map.getZoom()>=15)for(const [kind,name,coords,polygon] of data){if(!name||kind==='place'||polygon)continue;const p=coords[Math.floor(coords.length/2)];if(bounds.contains(p))labelCandidates.push({p,name,place:false});}
+        }
+        // Label a street once near the centre, keeping clear of other names.
+        const occupied=[],names=new Set(),size=map.getSize();
+        for(const candidate of labelCandidates){candidate.screen=map.latLngToContainerPoint(candidate.p);candidate.distance=Math.hypot(candidate.screen.x-size.x/2,candidate.screen.y-size.y/2);}
+        labelCandidates.sort((a,b)=>Number(b.place)-Number(a.place)||a.distance-b.distance);
+        for(const {p,name,place,screen} of labelCandidates){
+          if(names.has(name)||names.size>=80)continue;
+          const box={left:screen.x-10,right:screen.x+Math.min(180,name.length*6.3)+10,top:screen.y-10,bottom:screen.y+(place?18:14)};
+          if(occupied.some(b=>box.left<b.right&&box.right>b.left&&box.top<b.bottom&&box.bottom>b.top))continue;
+          names.add(name);occupied.push(box);
+          const el=document.createElement('span');el.textContent=name;
+          L.marker(p,{icon:L.divIcon({className:place?'offline-place-label':'offline-road-label',html:el}),interactive:false}).addTo(vector);
         }
       }catch(e){if(token===drawVersion)notify('The downloaded map could not be read. Remove and download this region again.');}
     }
