@@ -1098,12 +1098,11 @@
 .dark-mode .offline-maps-active .leaflet-overlay-pane{filter:brightness(.8)}
 @media(max-width:700px){#map-offline-panel{max-height:none;overflow:visible}#offline-connection{bottom:calc(var(--map-drawer-height,0px) + 28px)}}
 
-.offline-open { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; margin-top: 8px; padding: 10px 12px; border: 1px solid var(--map-border); border-radius: 12px; background: transparent; color: var(--text); font: inherit; font-size: 12px; text-align: left; cursor: pointer; transition: background 160ms ease, border-color 160ms ease; }
-.offline-open > span { display: grid; flex: 1; gap: 3px; }
-.offline-open strong { font-size: 12px; font-weight: 500; }
-.offline-open small { color: var(--muted); font-size: 11px; line-height: 1.35; }
-.offline-open .offline-open-icon { box-sizing: content-box; flex: 0 0 17px; width: 17px; height: 17px; padding: 7px; border-radius: 9px; background: var(--map-accent-soft); color: var(--map-accent); }
-.offline-open .offline-open-chevron { flex: 0 0 15px; width: 15px; height: 15px; color: var(--muted); }
+.offline-open { display: flex; align-items: flex-start; gap: 7px; width: 100%; margin: 0; padding: 10px 8px; border: 1px solid var(--map-border); border-radius: 12px; background: transparent; color: var(--text); font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
+.offline-open > span { display: grid; gap: 3px; min-width: 0; }
+.offline-open strong { font-size: 12px; font-weight: 500; line-height: 1.4; }
+.offline-open small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.offline-open .offline-open-icon { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; color: var(--map-accent); }
 .offline-open:is(:hover, :focus-visible) { border-color: var(--map-accent); background: var(--map-accent-soft); }
 .offline-open:focus-visible { outline: 2px solid var(--map-accent); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { .offline-open { transition: none; } }
+.vehicle-layout .offline-open { min-height: 60px; }
