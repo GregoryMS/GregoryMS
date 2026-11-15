@@ -3,34 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-15T17:11:24.085970+00:00",
+      "checkedAt": "2026-11-15T21:49:22.426455+00:00",
       "listings": [
-        {
-          "home": "Arsenal (W)",
-          "away": "London City Lionesses (W)",
-          "start": "2026-11-15T16:30:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Mix",
-            "Sky One",
-            "Sky Sports Main Event",
-            "Sky Sports Main Event UHD",
-            "Sky Sports Premier League",
-            "Sky Sports UHD 1",
-            "Sky Sports+ app"
-          ]
-        },
-        {
-          "home": "Spain",
-          "away": "England",
-          "start": "2026-11-15T19:45:00+00:00",
-          "channels": [
-            "ITV1",
-            "ITVX",
-            "STV",
-            "STV Player"
-          ]
-        },
         {
           "home": "Switzerland",
           "away": "Scotland",
@@ -152,25 +126,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-15T17:11:24.085970+00:00",
+      "checkedAt": "2026-11-15T21:49:22.426455+00:00",
       "listings": [
-        {
-          "home": "Arsenal (W)",
-          "away": "London City Lionesses (W)",
-          "start": "2026-11-15T16:30:00+00:00",
-          "channels": [
-            "Sportsnet NOW",
-            "Sportsnet+"
-          ]
-        },
-        {
-          "home": "Spain",
-          "away": "England",
-          "start": "2026-11-15T19:45:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Switzerland",
           "away": "Scotland",
@@ -256,26 +213,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-15T17:11:24.085970+00:00",
+      "checkedAt": "2026-11-15T21:49:22.426455+00:00",
       "listings": [
-        {
-          "home": "Arsenal (W)",
-          "away": "London City Lionesses (W)",
-          "start": "2026-11-15T16:30:00+00:00",
-          "channels": [
-            "VG TV"
-          ]
-        },
-        {
-          "home": "Spain",
-          "away": "England",
-          "start": "2026-11-15T19:45:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "TV 2 Sport Premium",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Switzerland",
           "away": "Scotland",
@@ -394,26 +333,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-15T17:11:24.085970+00:00",
+      "checkedAt": "2026-11-15T21:49:22.426455+00:00",
       "listings": [
-        {
-          "home": "Arsenal (W)",
-          "away": "London City Lionesses (W)",
-          "start": "2026-11-15T16:30:00+00:00",
-          "channels": [
-            "SVT Play",
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Spain",
-          "away": "England",
-          "start": "2026-11-15T19:45:00+00:00",
-          "channels": [
-            "Viaplay SE",
-            "Viaplay Sport"
-          ]
-        },
         {
           "home": "Switzerland",
           "away": "Scotland",
@@ -514,25 +435,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-15T17:11:24.085970+00:00",
+      "checkedAt": "2026-11-15T21:49:22.426455+00:00",
       "listings": [
-        {
-          "home": "Arsenal (W)",
-          "away": "London City Lionesses (W)",
-          "start": "2026-11-15T16:30:00+00:00",
-          "channels": [
-            "Sportdigital+",
-            "Sportdigital1+"
-          ]
-        },
-        {
-          "home": "Spain",
-          "away": "England",
-          "start": "2026-11-15T19:45:00+00:00",
-          "channels": [
-            "DAZN Deutschland"
-          ]
-        },
         {
           "home": "Switzerland",
           "away": "Scotland",
