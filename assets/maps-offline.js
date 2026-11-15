@@ -44,6 +44,8 @@
     const $=id=>document.getElementById(id),panel=$('map-offline-panel'),button=$('map-offline-toggle'),status=$('offline-status');
     const credit='Offline data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · <a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL</a>';
     let catalog,download,drawVersion=0,vector=L.layerGroup(),footprint=L.layerGroup(),lastMode=false;
+    map.createPane('offlineBackground').style.zIndex='210';
+    const renderer=L.canvas({padding:.2});
     const cache=new Map();
     const message=text=>{status.textContent=text;};
     const size=bytes=>bytes<1048576?`${(bytes/1024).toFixed(0)} KB`:`${(bytes/1048576).toFixed(1)} MB`;
@@ -123,7 +125,7 @@
       if(!selected)return;
       try{
         const b=selected.bounds;
-        L.rectangle([[b[1],b[0]],[b[3],b[2]]],{color:'#7637cc',weight:1,fillColor:'#f1f0e9',fillOpacity:1,interactive:false}).addTo(footprint);
+        L.rectangle([[b[1],b[0]],[b[3],b[2]]],{pane:'offlineBackground',color:'#7637cc',weight:1,fillColor:'#f1f0e9',fillOpacity:1,interactive:false}).addTo(footprint);
         const keys=['overview'],x1=Math.max(Math.floor(bounds.getWest()*4),Math.floor(b[0]*4)),x2=Math.min(Math.floor(bounds.getEast()*4),Math.floor(b[2]*4)),y1=Math.max(Math.floor(bounds.getSouth()*4),Math.floor(b[1]*4)),y2=Math.min(Math.floor(bounds.getNorth()*4),Math.floor(b[3]*4));
         if(map.getZoom()>=10&&(x2-x1+1)*(y2-y1+1)<=16)for(let x=x1;x<=x2;x++)for(let y=y1;y<=y2;y++)keys.push(`${x}_${y}`);
         let labels=0;
@@ -135,9 +137,9 @@
             if(!polygon&&map.getZoom()<13&&!['motorway','trunk','primary','secondary','ferry','water','coastline','river'].includes(kind))continue;
             geojson.push({type:'Feature',properties:{kind,name,polygon},geometry:{type:polygon?'Polygon':'LineString',coordinates:polygon?[coords.map(p=>[p[1],p[0]])]:coords.map(p=>[p[1],p[0]])}});
           }
-          L.geoJSON({type:'FeatureCollection',features:geojson},{renderer:L.canvas({padding:.2}),interactive:false,style:f=>{
+          L.geoJSON({type:'FeatureCollection',features:geojson},{renderer,interactive:false,style:f=>{
             const {kind,polygon}=f.properties,water=['water','coastline','river','stream','riverbank'].includes(kind),park=kind==='park',major=['motorway','trunk','primary'].includes(kind);
-            return {color:water?'#90bfd0':park?'#bad3a6':major?'#dfba76':'#fff',weight:polygon?1:major?4:2,fillColor:water?'#b8dce6':'#d6e3c9',fillOpacity:polygon?.85:0,dashArray:['footway','path','steps','ferry'].includes(kind)?'3 5':null};
+            return {color:water?'#90bfd0':park?'#bad3a6':major?'#dfba76':'#c5c0b7',weight:polygon?1:major?4:2,fillColor:water?'#b8dce6':'#d6e3c9',fillOpacity:polygon?.85:0,dashArray:['footway','path','steps','ferry'].includes(kind)?'3 5':null};
           }}).addTo(vector);
           if(map.getZoom()>=15)for(const [kind,name,coords,polygon] of data){if(labels>=100)break;if(!name||kind==='place'||polygon)continue;const p=coords[Math.floor(coords.length/2)];if(!bounds.contains(p))continue;const el=document.createElement('span');el.textContent=name;L.marker(p,{icon:L.divIcon({className:'offline-road-label',html:el}),interactive:false}).addTo(vector);labels++;}
         }

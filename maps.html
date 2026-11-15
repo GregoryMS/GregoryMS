@@ -21,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css" integrity="sha256-M3v8pcq9A7OYFbJwD+vis7ft9VkhxZzUn4jssyghIwM=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261115-offline1">
+  <link rel="stylesheet" href="assets/maps.css?v=20261115-offline2">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261113-shared-device1" defer></script>
   <script src="assets/vendor/leaflet/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -279,7 +279,7 @@
           </div>
         </div>
       </fieldset>
-      <button class="offline-open" type="button" id="map-offline-toggle" aria-expanded="false" aria-controls="map-offline-panel">Offline maps ↓</button>
+      <button class="offline-open" type="button" id="map-offline-toggle" aria-expanded="false" aria-controls="map-offline-panel" aria-label="Offline maps"><svg class="offline-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m-4-4 4 4 4-4M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg><span><strong>Offline maps</strong><small>Download regions for later</small></span><svg class="offline-open-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
       <p class="layer-status" id="base-layer-status" role="status"></p>
       <div id="transit-options" hidden><p class="layer-status">Vancouver Island, the Lower Mainland and Sea to Sky: use Bus routes to choose a number, destination or station. Rapid transit stays visible in the overview. Bus stops appear as you zoom in; names appear where there is room. Tap a stop for departures.</p><p class="layer-status"><a href="https://transitous.org/sources/" target="_blank" rel="noopener">Transitous · departure data &amp; licences ↗</a></p></div>
     </section>

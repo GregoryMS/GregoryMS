@@ -180,7 +180,12 @@ def build(source, output, version):
                         complex_rules[incoming].append(via_ways[0])
 
         handler = Handler()
-        handler.apply_file(str(source), locations=True, idx=f'sparse_file_array,{temp}/nodes.idx')
+        print('Indexing OSM locations and reading tagged map features', flush=True)
+        handler.apply_file(str(source), locations=True, idx=f'sparse_file_array,{temp}/nodes.idx', filters=[
+            osmium.filter.KeyFilter('barrier', 'place').enable_for(osmium.osm.NODE),
+            osmium.filter.KeyFilter('highway', 'route', 'natural', 'waterway', 'leisure', 'landuse').enable_for(osmium.osm.WAY),
+            osmium.filter.KeyFilter('restriction', 'restriction:conditional', 'restriction:motorcar', 'restriction:motor_vehicle').enable_for(osmium.osm.RELATION),
+        ])
         db.commit()
         print('Read OSM features; compressing navigable intersections', flush=True)
         forced.update(barriers)
@@ -199,8 +204,8 @@ def build(source, output, version):
                 if length <= 0:
                     start = index
                     continue
-                times = [round(length / (speed/3.6) + (1200 if tags.get('route') == 'ferry' else 0), 2) if drive else 0,
-                         round(length / (3/3.6 if tags.get('highway') == 'steps' else 1.4), 2) if walk else 0]
+                times = [round(length / (speed/3.6), 2) if drive else 0,
+                         round(length / (20/3.6 if tags.get('route') == 'ferry' else 3/3.6 if tags.get('highway') == 'steps' else 1.4), 2) if walk else 0]
                 one = direction(tags)
                 for reverse in (False, True):
                     points = list(reversed(section)) if reverse else section

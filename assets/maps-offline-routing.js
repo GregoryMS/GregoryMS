@@ -61,7 +61,7 @@
     }
     const starts=await snap(from),ends=await snap(to),queue=new Heap(),best=new Map();
     let goal=null,visited=0;
-    const heuristic = p => Math.max(0,core.meters(point(p),to)-Math.max(...ends.map(e=>e.away)))/(profile?1.4:130/3.6);
+    const heuristic = p => Math.max(0,core.meters(point(p),to)-Math.max(...ends.map(e=>e.away)))/(profile?20/3.6:130/3.6);
     function offer(item) {const key=`${item.node}|${item.way}|${item.prev}`;if(item.cost>=(best.get(key)??Infinity))return;best.set(key,item.cost);queue.push({...item,key,priority:item.cost+heuristic(item.position)});}
     for(const s of starts){
       const edge=clipped(s.edge,s,true);
@@ -96,10 +96,10 @@
     function bearing(a,b){return Math.atan2((b[1]-a[1])*Math.cos(a[0]*Math.PI/180),b[0]-a[0])*180/Math.PI;}
     edges.forEach((edge,i)=>{
       const coords=edge[5],length=lengths(coords).at(-1),previous=edges[i-1],name=edge[6];
-      const angle=previous?(bearing(coords[0],coords.at(-1))-bearing(previous[5][0],previous[5].at(-1))+540)%360-180:0;
-      if(!i||name!==previous[6]||Math.abs(angle)>35||edge[7]==='roundabout'&&previous[7]!=='roundabout'){
+      const angle=previous?(bearing(coords[0],coords.find(p=>meters(coords[0],p)>0.1)||coords.at(-1))-bearing([...previous[5]].reverse().find(p=>meters(previous[5].at(-1),p)>0.1)||previous[5][0],previous[5].at(-1))+540)%360-180:0;
+      if(!i||!(edge[7]==='roundabout'&&previous[7]==='roundabout')&&(name!==previous[6]||Math.abs(angle)>35||edge[7]==='roundabout'||previous[7]==='roundabout')){
         const modifier=Math.abs(angle)>155?'uturn':Math.abs(angle)<25?'straight':angle>0?'right':'left';
-        const text=!i?`Start${name?' on '+name:''}`:edge[7]==='roundabout'?'Enter the roundabout':previous[7]==='roundabout'?`Exit the roundabout${name?' onto '+name:''}`:`${modifier==='straight'?'Continue':modifier==='uturn'?'Make a U-turn':'Turn '+modifier}${name?' onto '+name:''}`;
+        const text=edge[7]==='ferry'&&previous?.[7]!=='ferry'?`Take the ferry${name?' · '+name:''}`:!i?`Start${name?' on '+name:''}`:edge[7]==='roundabout'?'Enter the roundabout':previous[7]==='roundabout'?`Exit the roundabout${name?' onto '+name:''}`:`${modifier==='straight'?'Continue':modifier==='uturn'?'Make a U-turn':'Turn '+modifier}${name?' onto '+name:''}`;
         steps.push({text,start:total,distance:0,type:!i?'depart':'turn',modifier});
       }
       coords.forEach(p=>{if(!geometry.length||meters(geometry.at(-1),p)>0.01)geometry.push(p);});
