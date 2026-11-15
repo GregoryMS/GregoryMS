@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
+      "checkedAt": "2026-11-15T02:39:30.207305+00:00",
       "listings": [
         {
           "home": "Sunderland (W)",
@@ -119,12 +119,48 @@
             "BBC Sport online",
             "BBC iPlayer"
           ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Fulham",
+          "start": "2026-11-21T12:30:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 1",
+            "TNT Sports Ultimate"
+          ]
+        },
+        {
+          "home": "Liverpool (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-11-21T12:45:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky One",
+            "Sky Sports Mix",
+            "Sky Sports Premier League",
+            "Sky Sports UHD 1",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Arsenal",
+          "start": "2026-11-21T17:30:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports Premier League",
+            "Sky Sports UHD 1",
+            "Sky Sports+ app"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
+      "checkedAt": "2026-11-15T02:39:30.207305+00:00",
       "listings": [
         {
           "home": "Arsenal (W)",
@@ -187,12 +223,48 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Fulham",
+          "start": "2026-11-21T12:30:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Liverpool (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-11-21T12:45:00+00:00",
+          "channels": [
+            "Sportsnet NOW",
+            "Sportsnet One"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Leeds United",
+          "start": "2026-11-21T15:00:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Arsenal",
+          "start": "2026-11-21T17:30:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
+      "checkedAt": "2026-11-15T02:39:30.207305+00:00",
       "listings": [
         {
           "home": "Arsenal (W)",
@@ -290,12 +362,47 @@
             "TV 2 Play (NO)",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Fulham",
+          "start": "2026-11-21T12:30:00+00:00",
+          "channels": [
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Liverpool (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-11-21T12:45:00+00:00",
+          "channels": [
+            "VG TV"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Leeds United",
+          "start": "2026-11-21T15:00:00+00:00",
+          "channels": [
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Arsenal",
+          "start": "2026-11-21T17:30:00+00:00",
+          "channels": [
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
+      "checkedAt": "2026-11-15T02:39:30.207305+00:00",
       "listings": [
         {
           "home": "Arsenal (W)",
@@ -383,12 +490,39 @@
             "V Sport Premium",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Fulham",
+          "start": "2026-11-21T12:30:00+00:00",
+          "channels": [
+            "Prime Video (SE)"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Leeds United",
+          "start": "2026-11-21T15:00:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Arsenal",
+          "start": "2026-11-21T17:30:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "V Ultra HD",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-14T22:58:34.271648+00:00",
+      "checkedAt": "2026-11-15T02:39:30.207305+00:00",
       "listings": [
         {
           "home": "Arsenal (W)",
@@ -474,6 +608,43 @@
             "Sky Bundesliga UHD",
             "Sky Showcase",
             "Sky Top Event",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Manchester City",
+          "away": "Fulham",
+          "start": "2026-11-21T12:30:00+00:00",
+          "channels": [
+            "RTL+",
+            "Sky Sport Premier League",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Liverpool (W)",
+          "away": "Chelsea (W)",
+          "start": "2026-11-21T12:45:00+00:00",
+          "channels": [
+            "Sportdigital+",
+            "Sportdigital1+"
+          ]
+        },
+        {
+          "home": "Chelsea",
+          "away": "Leeds United",
+          "start": "2026-11-21T15:00:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Newcastle United",
+          "away": "Arsenal",
+          "start": "2026-11-21T17:30:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
             "WOW"
           ]
         }
