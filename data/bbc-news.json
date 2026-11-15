@@ -1,15 +1,11 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-15T01:05:12+00:00",
-  "fetchedAt": "2026-11-15T01:05:18.490017+00:00",
+  "feedUpdatedAt": "2026-11-15T07:46:25+00:00",
+  "fetchedAt": "2026-11-15T07:46:33.379919+00:00",
   "items": [
     {
-      "title": "US has floated Ukraine ceding Donbas for Nato membership, Zelensky says",
-      "link": "https://www.bbc.co.uk/news/articles/cwvg2l312ylqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Neets review won't be for the faint-hearted - and will test Burnham's appetite for a welfare fight",
-      "link": "https://www.bbc.co.uk/news/articles/cmg46qgkl7r4o?at_medium=RSS&at_campaign=rss"
+      "title": "Ex-Met Police inspector lied about wife's death in Barbados hotel room, BBC learns",
+      "link": "https://www.bbc.co.uk/news/articles/c6jd7k7g57x5o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Alleged Russell Brand rape victim wants age of consent law changed",
@@ -20,16 +16,16 @@
       "link": "https://www.bbc.co.uk/news/videos/cwlym2gy3y3eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Copper wire upgrade caused nationwide flight suspension, US transport secretary says",
-      "link": "https://www.bbc.co.uk/news/articles/c6wy9lynq4qno?at_medium=RSS&at_campaign=rss"
+      "title": "Neets review won't be for the faint-hearted - and will test Burnham's appetite for a welfare fight",
+      "link": "https://www.bbc.co.uk/news/articles/cmg46qgkl7r4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "New Orleans port sues tanker owners over cruise ship collision for $1m",
-      "link": "https://www.bbc.co.uk/news/articles/cwe89y2r5j20o?at_medium=RSS&at_campaign=rss"
+      "title": "US has floated Ukraine ceding Donbas for Nato membership, Zelensky says",
+      "link": "https://www.bbc.co.uk/news/articles/cwvg2l312ylqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Wales stun New Zealand to end 73-year losing streak",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c63dgev0p8pgo?at_medium=RSS&at_campaign=rss"
+      "title": "Hannah Fry feels 'unbelievably lucky' after cervical cancer treatment",
+      "link": "https://www.bbc.co.uk/news/articles/cw62p4n3n1xyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Beauty advent calendars can cost hundreds - but are they value for money?",
@@ -42,6 +38,10 @@
     {
       "title": "Holly Humberstone: People can't connect to a pop star who's 'too polished'",
       "link": "https://www.bbc.co.uk/news/articles/cw77p7yj42k5o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Judo champion shakes up French  presidential race with surprise candidacy",
+      "link": "https://www.bbc.co.uk/news/articles/c6dj1e8wyykmo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
