@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261115-nspire2';
+const VERSION='20261115-nspire3';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -11,7 +11,7 @@ const ASSETS=[
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',
   '/assets/calc.css?v=20261102-heading1',
   '/assets/calc-graph.css?v=20261101-dpad-restored1',
-  '/assets/calc-emulator.css?v=20261115-nspire2',
+  '/assets/calc-emulator.css?v=20261115-nspire3',
   '/assets/site-menu.css?v=20261103-pointer-cursor2',
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',

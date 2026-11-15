@@ -78,13 +78,15 @@
 .tinspire-active #graphCalculator > :not(.graph-brand):not(#tinspireView) {display:none!important}
 .tinspire-active .trace-form {display:none}
 .nspire-hardware {margin:0 -5px;border:1px solid #1d1d23;border-radius:5px 5px 20px 20px;overflow:hidden;background:#141416}
-.nspire-navigation {display:grid;grid-template-columns:56px minmax(0,1fr) 56px;gap:16px;align-items:stretch;padding:20px 12px 12px}
-.nspire-side-keys {display:flex;flex-direction:column;justify-content:space-between;gap:22px}
+.nspire-navigation {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:11px;align-items:stretch;padding:20px 9px 12px}
+.nspire-side-keys {display:flex;flex-direction:column;justify-content:space-between;gap:22px;grid-row:1}
+.nspire-side-keys:first-child {grid-column:1}
+.nspire-side-keys:last-child {grid-column:5}
 .nspire-hardware .hardware-key {position:relative;min-width:0;min-height:34px;border:1px solid #7f8490;border-radius:6px;background:linear-gradient(#2d2b3d,#22212f);box-shadow:0 2px 2px #0005;color:#f0eff5;font:15px/1 ui-monospace,monospace;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .nspire-side-keys .hardware-key {font-size:13px}
 .nspire-hardware .hardware-key.is-down {filter:brightness(1.4);transform:translateY(1px)}
 .nspire-hardware .emu-legend {justify-content:center;bottom:calc(100% + 4px);font-size:10px;color:#a4dbed}
-.nspire-touchpad {position:relative;min-height:146px;aspect-ratio:1.28;border:3px solid #b9cad8;border-radius:26px;box-shadow:inset 0 0 0 3px #34343e,0 0 0 1px #8d9cb8;background:radial-gradient(ellipse at center,#303035,#222227);color:#d8e5ed;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair}
+.nspire-touchpad {position:relative;grid-column:2/5;grid-row:1;align-self:center;width:100%;min-height:0;box-sizing:border-box;aspect-ratio:3/2;border:3px solid #b9cad8;border-radius:26px;box-shadow:inset 0 0 0 3px #34343e,0 0 0 1px #8d9cb8;background:radial-gradient(ellipse at center,#303035,#222227);color:#d8e5ed;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair}
 .nspire-touchpad:focus-visible {outline:3px solid #c5a8ef;outline-offset:3px}
 .nspire-touchpad.is-down {background:#38383f}
 .nspire-touchpad>span {position:absolute;pointer-events:none}
@@ -92,7 +94,7 @@
 .nspire-pad-up {top:8px}.nspire-pad-down {bottom:8px}
 .nspire-pad-left,.nspire-pad-right {top:50%;transform:translateY(-50%);font-size:9px}
 .nspire-pad-left {left:8px}.nspire-pad-right {right:8px}
-.nspire-pad-center {display:grid;place-content:center;inset:29% 32%;border:2px solid #c0cad2;border-radius:10px;text-align:center;font:15px/1.1 ui-monospace,monospace}
+.nspire-pad-center {display:grid;place-content:center;left:50%;top:50%;width:30%;aspect-ratio:1;box-sizing:border-box;transform:translate(-50%,-50%);border:2px solid #c0cad2;border-radius:10px;text-align:center;font:15px/1.1 ui-monospace,monospace}
 .nspire-pad-contact {width:12px;height:12px;border-radius:50%;background:#a5cdf080;transform:translate(-50%,-50%);box-shadow:0 0 8px #a5cdf080}
 .nspire-lower {padding:22px 9px 12px;background:#44464a;border-top:2px solid #24252a}
 .nspire-modifiers,.nspire-number-keys {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px 11px}
