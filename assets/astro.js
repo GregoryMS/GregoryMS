@@ -155,7 +155,15 @@
     $('hourly').replaceChildren(element('p', 'Loading hourly forecast…', 'empty'));
     $('forecast-status').textContent = 'Loading modelled conditions and forecast…';
     try {
-      const data = A.parseForecast(await json(A.forecastURL(place), forecastController));
+      let data;
+      const hostname = new URL(window.location.href).hostname;
+      for (const url of A.forecastURLs(place, hostname)) {
+        if (version !== selection) return;
+        forecastController = new AbortController();
+        try { data = A.parseForecast(await json(url, forecastController)); break; }
+        catch (_) { if (version !== selection) return; }
+      }
+      if (!data) throw Error('Forecast unavailable');
       if (version !== selection) return;
       forecast = data; checkedAt = Date.now(); renderConditions(); renderHourly(); skySummary(); updateWeatherLink();
       $('forecast-status').textContent = `Open-Meteo · ${data.current ? 'Modelled conditions at ' + localTime(data.current.time * 1000) : 'Current conditions unavailable'} · Forecast retrieved ${localTime(checkedAt)} · ${data.timezone}`;

@@ -3,6 +3,7 @@ import {mapsGoogleConfig} from './maps-config.mjs';
 import {mapsSearch} from './maps-search.mjs';
 import {mapsTomTom} from './maps-tomtom.mjs';
 import {sportsHeadlines} from './sports-headlines.mjs';
+import {astroForecast} from './astro-forecast.mjs';
 
 const pageForHost = new Map(Object.entries(pages).map(([page, host]) => [host, page]));
 const pageForPath = new Map(Object.keys(pages).flatMap(page => [[`/${page}`, page], [`/${page.slice(0, -5)}`, page]]));
@@ -18,6 +19,7 @@ function redirect(host, search) {
 export default {
   async fetch(request, env = {}) {
     const url = new URL(request.url);
+    if (url.protocol === 'https:' && url.hostname === 'astro.gregle.uk' && url.pathname === '/api/astro/forecast') return astroForecast(request);
     if (url.protocol === 'https:' && url.hostname === 'maps.gregle.uk' && url.pathname === '/api/maps/search') return mapsSearch(request, env);
     if (url.protocol === 'https:' && url.hostname === 'sports.gregle.uk' && url.pathname === '/api/sports/headlines') return sportsHeadlines(request);
     if (url.protocol === 'https:' && url.hostname === 'maps.gregle.uk' && (url.pathname === '/api/maps/tomtom-config' || url.pathname.startsWith('/api/maps/tomtom/'))) return mapsTomTom(request, env);

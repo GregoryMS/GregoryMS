@@ -49,6 +49,31 @@ test('fractional Kp storm categories match NOAA thirds', () => {
   assert.match(C.activity(8.67), /^G4/);
   assert.match(C.activity(9), /^G5/);
 });
+const bulletin = require('node:fs').readFileSync('tests/fixtures/noaa-3-day-forecast.txt','utf8');
+test('official NOAA text restores today when the JSON feed skips a UTC day', () => {
+  const time=Date.parse('2026-11-15T01:07:00Z');
+  const result=C.forecastText(bulletin,time);
+  assert.equal(result.rows.length,24);
+  assert.deepEqual(result.days.map(day=>day.date),['2026-11-15','2026-11-16','2026-11-17']);
+  assert.equal(result.days[2].peak,4.67);
+  assert.equal(result.issued,Date.parse('2026-11-15T00:30:00Z'));
+  const json=result.rows.map(row=>({time_tag:new Date(row.time).toISOString(),kp:row.kp,observed:'predicted'}));
+  assert.throws(()=>C.forecast(json.filter(row=>!row.time_tag.startsWith('2026-11-15')),time));
+  assert.throws(()=>C.forecast(json.filter((_,i)=>i!==4),time));
+});
+test('NOAA bulletin rejects stale, future, malformed and incomplete forecasts', () => {
+  const time=Date.parse('2026-11-15T01:07:00Z');
+  assert.throws(()=>C.forecastText(bulletin,time+4*24*3600000));
+  assert.throws(()=>C.forecastText(bulletin,time-24*3600000));
+  for(const text of [bulletin.replace('0030 UTC','2460 UTC'),bulletin.replace('Nov 15       Nov 16','Nov 32       Nov 16'),
+    bulletin.replace('1.67         3.33','-999         3.33'),bulletin.replace(/^03-06UT.*$/m,''),'<html>Unavailable</html>']) {
+    assert.throws(()=>C.forecastText(text,time));
+  }
+});
+test('NOAA bulletin dates cross the year boundary without shifting a day', () => {
+  const text=bulletin.replace(':Issued: 2026 Nov 15',':Issued: 2026 Dec 31').replace('Nov 15       Nov 16       Nov 17','Dec 31       Jan 01       Jan 02');
+  assert.deepEqual(C.forecastText(text,Date.parse('2026-12-31T01:00:00Z')).days.map(day=>day.date),['2026-12-31','2027-01-01','2027-01-02']);
+});
 
 const solarData = (...rows) => ':Product: Daily Solar Data            DSD.txt\n' + rows.join('\n');
 const solarRow = '2026 10 30   90     36      100      1    -999      *   0  0  0  1  0  0  0';

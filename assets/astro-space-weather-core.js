@@ -55,7 +55,8 @@
       .filter(row => row.time + 3 * HOUR > now && row.time <= now + 72 * HOUR)
       .sort((a, b) => a.time - b.time);
     // Do not describe an expired or severely incomplete forecast as three days.
-    if (!rows.length || rows[0].time > now + 6 * HOUR || rows.at(-1).time < now + 24 * HOUR) throw new Error('Current forecast unavailable');
+    if (!rows.length || rows[0].time > now || rows.at(-1).time < now + 24 * HOUR ||
+        rows.some((row,i) => i && row.time - rows[i-1].time !== 3 * HOUR)) throw new Error('Current forecast unavailable');
     const days = [];
     for (const row of rows) {
       const date = new Date(row.time).toISOString().slice(0, 10);
@@ -75,5 +76,35 @@
     if (value >= 3) return 'Unsettled geomagnetic conditions';
     return 'Quiet geomagnetic conditions';
   }
-  return {timestamp, kp, wind, magnetic, sunspots, forecast, activity};
+  function forecastText(text, now = Date.now()) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    if (typeof text !== 'string' || !/^:Product:\s+3-Day Forecast\s*$/m.test(text)) throw Error('Invalid NOAA bulletin');
+    const issued = /^:Issued:\s+(\d{4}) (\w{3}) (\d{2}) (\d{2})(\d{2}) UTC\s*$/m.exec(text);
+    if (!issued || !months.includes(issued[2])) throw Error('Invalid bulletin date');
+    const issueTime = Date.UTC(+issued[1],months.indexOf(issued[2]),+issued[3],+issued[4],+issued[5]);
+    const issueDate = new Date(issueTime);
+    if (+issued[4]>23 || +issued[5]>59 || issueDate.getUTCMonth()!==months.indexOf(issued[2]) || issueDate.getUTCDate()!==+issued[3]) throw Error('Invalid bulletin date');
+    if (issueTime > now + 60000 || issueTime < now - 36 * HOUR) throw Error('Expired NOAA bulletin');
+    const table = text.split(/NOAA Kp index breakdown[^\n]*\n/)[1]?.split(/\nRationale:|\nB\./)[0];
+    if (!table) throw Error('Missing Kp table');
+    const lines = table.trim().split(/\r?\n/);
+    const dates = [...lines.shift().matchAll(/([A-Z][a-z]{2})\s+(\d{1,2})/g)].map(([,month,day]) => {
+      if (!months.includes(month) || +day<1 || +day>31) throw Error('Invalid Kp date');
+      const candidates = [-1,0,1].map(offset => Date.UTC(+issued[1]+offset, months.indexOf(month), +day));
+      const date = candidates.sort((a,b)=>Math.abs(a-issueTime)-Math.abs(b-issueTime))[0];
+      if (new Date(date).getUTCMonth()!==months.indexOf(month)) throw Error('Invalid Kp date');
+      return date;
+    });
+    if (dates.length !== 3 || dates.some((date,i)=>Math.abs(date-issueTime)>3*24*HOUR || (i && date-dates[i-1]!==24*HOUR))) throw Error('Invalid Kp dates');
+    const rows = [];
+    for (let hour=0;hour<24;hour+=3) {
+      const label = String(hour).padStart(2,'0')+'-'+String((hour+3)%24).padStart(2,'0')+'UT';
+      const line = lines.find(line => line.trim().startsWith(label));
+      const values = line?.trim().slice(label.length).replace(/\(G[1-5]\)/g,'').trim().split(/\s+/);
+      if (!values || values.length!==3 || values.some(value=>!/^\d(?:\.\d{1,2})?$/.test(value) || +value>9)) throw Error('Incomplete Kp table');
+      dates.forEach((date,i)=>rows.push({time_tag:new Date(date+hour*HOUR).toISOString(),kp:+values[i],observed:'predicted'}));
+    }
+    return {...forecast(rows,now), issued:issueTime};
+  }
+  return {timestamp, kp, wind, magnetic, sunspots, forecast, forecastText, activity};
 });

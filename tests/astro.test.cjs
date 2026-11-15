@@ -29,6 +29,22 @@ test('missing data stays unknown instead of becoming clear skies or no dew', () 
   assert.equal(A.dewRisk(row.temperature_2m, row.dew_point_2m), 'Unknown');
   assert.equal(A.dewRisk(3, 2), 'High'); assert.equal(A.dewRisk(4, 1), 'Moderate'); assert.equal(A.dewRisk(10, 2), 'Low');
 });
+test('unavailable optional metrics do not hide the remaining weather data', () => {
+  const data=response(); delete data.hourly.visibility; delete data.hourly.precipitation_probability;
+  const parsed=A.parseForecast(data,now);
+  assert.equal(parsed.current.cloud_cover,0);
+  assert.equal(parsed.rows.length,48);
+  assert.equal(parsed.rows[0].visibility,null);
+  assert.equal(A.outlook(parsed.rows[0],-25),'Unknown');
+  data.current.time=now/1000+3600;
+  assert.equal(A.parseForecast(data,now).current,null);
+});
+test('hosted forecast prefers Gregle while static previews use Open-Meteo directly', () => {
+  const urls=A.forecastURLs(place,'astro.gregle.uk');
+  assert.match(urls[0],/^\/api\/astro\/forecast\?/);
+  assert.equal(urls[1],A.forecastURL(place));
+  assert.deepEqual(A.forecastURLs(place,'localhost'),[A.forecastURL(place)]);
+});
 test('stale, malformed and misaligned forecasts fail explicitly', () => {
   const data = response(); data.current.time -= 3 * 3600;
   assert.equal(A.parseForecast(data, now).current, null);
@@ -96,7 +112,7 @@ function harness(deferImages = false, href = 'https://gregle.uk/astro.html') {
   class FixedDate extends Date { static now(){return now;} }
   const siteDirectory=A.parseSites(require('../data/astro-sites.json'));
   const browser={create({onChart}){return {setLocation(place){onChart(A.nearbySites(siteDirectory,place)[0] || null);}};}};
-  const context={window:{location:{href},GregleTides:T,GregleAstro:{...A,parseForecast:data=>A.parseForecast(data,now)},GregleWeather:W,SunCalc:S,GregleAstroSites:browser},document,Date:FixedDate,Intl,URLSearchParams,AbortController,
+  const context={window:{location:{href},GregleTides:T,GregleAstro:{...A,parseForecast:data=>A.parseForecast(data,now)},GregleWeather:W,SunCalc:S,GregleAstroSites:browser},document,Date:FixedDate,Intl,URL,URLSearchParams,AbortController,
     setTimeout,clearTimeout,setInterval(){},navigator:{geolocation:{getCurrentPosition(success){geoSuccess=success;}}},
     Image:class {set src(value){if(value){images.push(this);if(!deferImages)queueMicrotask(()=>this.onload?.());}}},
     fetch:url=>url.startsWith('https://aa.usno.navy.mil/') ? Promise.resolve({ok:false}) : new Promise((resolve,reject)=>pending.push({url,resolve:body=>resolve({ok:true,json:async()=>body}),reject}))};
@@ -110,6 +126,18 @@ test('a slow forecast cannot overwrite a newly selected location', async () => {
   assert.equal(h.get('place-name').textContent,'Victoria');
   h.pending[0].resolve({...response(),current:{time:now/1000,cloud_cover:1}}); await h.flush();
   assert.equal(h.get('conditions').children[0].children[1].textContent,'72%');
+});
+test('a failed relay falls back to direct weather, but an old request cannot start a new fallback', async () => {
+  const h=harness(false,'https://astro.gregle.uk/');
+  assert.match(h.pending[0].url,/^\/api\/astro\/forecast/);
+  h.pending[0].reject(Error('Relay unavailable')); await h.flush();
+  assert.match(h.pending[1].url,/^https:\/\/api.open-meteo.com/);
+  h.buttons[1].fire('click');
+  h.pending[1].reject(Error('Old failure')); await h.flush();
+  assert.equal(h.pending.length,3);
+  h.pending[2].resolve(response()); await h.flush();
+  assert.equal(h.get('place-name').textContent,'Victoria');
+  assert.equal(h.get('conditions').children[0].children[1].textContent,'0%');
 });
 test('search failure is recoverable and pending geolocation cannot override a shortcut', async () => {
   const h=harness(); h.pending[0].resolve(response()); await h.flush();

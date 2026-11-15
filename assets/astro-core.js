@@ -7,20 +7,26 @@
     if (!coordinates(place.latitude, place.longitude)) throw Error('Invalid coordinates');
     const params = new URLSearchParams({latitude: place.latitude.toFixed(2), longitude: place.longitude.toFixed(2),
       current: 'temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m', hourly: fields.join(','),
-      timeformat: 'unixtime', timezone: 'auto', forecast_days: '4'});
+      timeformat: 'unixtime', timezone: 'auto', forecast_days: '4', temperature_unit:'celsius', wind_speed_unit:'kmh'});
     return 'https://api.open-meteo.com/v1/forecast?' + params;
+  }
+  function forecastURLs(place, hostname) {
+    const direct = forecastURL(place);
+    return hostname === 'astro.gregle.uk' ? ['/api/astro/forecast?' + new URLSearchParams({
+      latitude:place.latitude.toFixed(2), longitude:place.longitude.toFixed(2)
+    }), direct] : [direct];
   }
   function parseForecast(data, now = Date.now()) {
     const h = data?.hourly;
     if (data?.error || !h || !Array.isArray(h.time) || !h.time.length || !data.timezone) throw Error('Incomplete forecast');
     new Intl.DateTimeFormat('en', {timeZone: data.timezone});
-    if (fields.some(key => !Array.isArray(h[key]) || h[key].length !== h.time.length)) throw Error('Incomplete hourly data');
+    if (fields.some(key => h[key] != null && (!Array.isArray(h[key]) || h[key].length !== h.time.length))) throw Error('Incomplete hourly data');
     if (h.time.some((t, i) => !Number.isFinite(t) || (i && t <= h.time[i - 1]))) throw Error('Invalid forecast times');
-    const rows = h.time.map((t, i) => Object.fromEntries([['time', t * 1000], ...fields.map(key => [key, Number.isFinite(h[key][i]) ? h[key][i] : null])]))
+    const rows = h.time.map((t, i) => Object.fromEntries([['time', t * 1000], ...fields.map(key => [key, Number.isFinite(h[key]?.[i]) ? h[key][i] : null])]))
       .filter(row => row.time >= Math.floor(now / HOUR) * HOUR && row.time < Math.floor(now / HOUR) * HOUR + 48 * HOUR);
     if (!rows.length) throw Error('Forecast is out of date');
     const c = data.current;
-    const current = c && Number.isFinite(c.time) && Math.abs(c.time * 1000 - now) <= 2 * HOUR ? c : null;
+    const current = c && Number.isFinite(c.time) && c.time * 1000 <= now + 60000 && c.time * 1000 >= now - 2 * HOUR ? c : null;
     return {rows, current, timezone: data.timezone};
   }
   function dewRisk(temp, dew) {
@@ -127,6 +133,6 @@
     if (events.length !== 4 || new Set(events.map(e=>e.name)).size !== 4 || events.some((e,i)=>e.time > now + 35*24*HOUR || (i && e.time <= events[i-1].time))) throw Error('Incomplete moon dates');
     return events;
   }
-  const api = {HOUR, fields, coordinates, forecastURL, parseForecast, dewRisk, outlook, parseSites, distance, nearbySites, searchSites, chartURL, riseSetTimes, moonPhase, upcomingMoonPhases, parseMoonPhases};
+  const api = {HOUR, fields, coordinates, forecastURL, forecastURLs, parseForecast, dewRisk, outlook, parseSites, distance, nearbySites, searchSites, chartURL, riseSetTimes, moonPhase, upcomingMoonPhases, parseMoonPhases};
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.GregleAstro = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -34,8 +34,7 @@
       $('aurora-forecast-status').textContent = 'Current NOAA forecast unavailable. Please try refreshing.';
     }
   }
-  function renderForecast(data) {
-    const parsed = C.forecast(data);
+  function renderForecast(parsed) {
     const cards = parsed.days.map(day => {
       const card = el('div', undefined, 'aurora-day');
       card.append(el('h4', new Intl.DateTimeFormat('en-GB', {timeZone:'UTC', weekday:'short', month:'short', day:'numeric'}).format(new Date(day.date + 'T12:00:00Z')) + ' · UTC'));
@@ -54,7 +53,18 @@
       tr.append(time, value, el('td', row.kind === 'predicted' ? 'Forecast' : 'Estimate')); body.append(tr);
     }
     table.append(head, body); $('aurora-intervals').replaceChildren(table);
-    $('aurora-forecast-status').textContent = 'Retrieved ' + utc(Date.now()) + ' · dates and intervals shown in UTC.';
+    $('aurora-forecast-status').textContent = (parsed.issued ? 'NOAA bulletin issued ' + utc(parsed.issued) + ' · ' : '') + 'Retrieved ' + utc(Date.now()) + ' · dates and intervals shown in UTC.';
+  }
+  async function readForecastBulletin() {
+    const controller = new AbortController(); controllers.push(controller);
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch(base + 'text/3-day-forecast.txt', {signal:controller.signal, credentials:'omit'});
+      if (!response.ok) throw Error('NOAA bulletin unavailable');
+      const text = await response.text();
+      if (document.hidden || controller.signal.aborted) throw Error('Refresh interrupted');
+      renderForecast(C.forecastText(text));
+    } finally { clearTimeout(timer); }
   }
   async function read(key) {
     const controller = new AbortController(); controllers.push(controller);
@@ -64,7 +74,7 @@
       if (!response.ok) throw new Error('NOAA data unavailable');
       const data = key === 'sunspots' ? await response.text() : await response.json();
       if (document.hidden || controller.signal.aborted) throw new Error('Refresh interrupted');
-      if (key === 'forecast') { renderForecast(data); return; }
+      if (key === 'forecast') { renderForecast(C.forecast(data)); return; }
       if (key === 'sunspots') {
         const row = C.sunspots(data);
         const date = new Intl.DateTimeFormat('en-GB', {timeZone:'UTC', year:'numeric', month:'short', day:'numeric'}).format(row.time);
@@ -78,7 +88,12 @@
         metric('density', row.proton_density.toFixed(1) + ' /cm³', time);
       }
       if (key === 'magnetic') metric('bz', row.bz_gsm.toFixed(1) + ' nT', (row.bz_gsm < 0 ? 'Southward' : row.bz_gsm > 0 ? 'Northward' : 'Neutral') + ' · ' + time);
-    } catch (error) { unavailable(key); throw error; }
+    } catch (error) {
+      if (key === 'forecast' && !document.hidden) {
+        try { await readForecastBulletin(); return; } catch (_) {}
+      }
+      unavailable(key); throw error;
+    }
     finally { clearTimeout(timer); }
   }
   function loadMap() {
