@@ -31,7 +31,7 @@
     const transit = window.GregleTransit?.({ map,enableTransit:()=>setState({...state,base:'transit',streetview:false},true) });
     const parking = window.GregleVictoriaParking?.({map});
     const streetView = window.GregleStreetView({ map, getSelected, onOpen: onStreetViewOpen, onSelect: onStreetViewSelect, onClose: () => setState({ ...state, streetview: false }, true) });
-    let applied, navigation3D = false;
+    let applied, navigation3D = false, wasOffline = false;
     window.addEventListener('gregle-navigation-3d',event=>{ navigation3D = event.detail === true; setState(state); });
     let baseLayer, maritimeLayer, trafficLayer, trafficTimer, lastTrafficRequest = 0, trafficPaused = false, trafficGood = false;
     const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
@@ -157,6 +157,7 @@
     };
     function changeBase(satelliteNativeZoom = 23) {
       if (baseLayer) { map.removeLayer(baseLayer); baseLayer = null; }
+      if (window.GregleOfflineMaps?.active()) { embed.setBase('street'); map.setMaxZoom(19); status('base-layer-status','Downloaded street map · choose Offline maps to manage regions.'); return; }
       map.setMaxZoom(state.base === 'satellite' ? 23 : 19);
       embed.setBase(state.base==='3d'?'street':state.base);
       if(state.base==='3d'){map.closePopup();status('base-layer-status','OpenFreeMap 3D · Gregle controls are available. Extra layers resume in 2D.');return;}
@@ -309,14 +310,16 @@
     function setState(next, changed = false) {
       const first = !applied, previous = applied || core.normalizeLayers(null);
       state = core.normalizeLayers(next);
+      const offline = window.GregleOfflineMaps?.active();
+      if (offline) state.base = pageDark ? 'dark' : 'street';
       if(document.body.classList.contains('vehicle-layout')&&['transit','trainsfyi'].includes(state.base))state.base=pageDark?'dark':'street';
       if(pageDark&&previous.base==='3d'&&state.base==='street'){lightBase='street';state.base='dark';}
       if(state.base==='3d')closePanel();
       // Keep saved overlay selections while suspending all Gregle providers behind the separate embed.
-      const active = navigation3D || state.base==='3d' ? core.normalizeLayers({base:state.base}) : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
+      const active = offline ? core.normalizeLayers({base:state.base}) : navigation3D || state.base==='3d' ? core.normalizeLayers({base:state.base}) : core.isEmbeddedBase(state.base) ? core.normalizeLayers({ base: state.base }) : state;
       applied = active;
-      native3D?.setEnabled(state.base==='3d'&&!navigation3D);
-      if (first || previous.base !== state.base || (!baseLayer && !core.isEmbeddedBase(state.base))) changeBase();
+      native3D?.setEnabled(!offline&&state.base==='3d'&&!navigation3D);
+      if (first || wasOffline !== !!offline || previous.base !== state.base || (!baseLayer && !core.isEmbeddedBase(state.base))) changeBase();
       if (first || previous.maritime !== active.maritime || (active.maritime && !maritimeLayer)) changeMaritime();
       if(first || previous.parking !== active.parking) parking?.setEnabled(active.parking);
       if (first || previous.fuel !== active.fuel || previous.fuelType !== active.fuelType) fuel.setSelection(active.fuel, active.fuelType);
@@ -338,6 +341,7 @@
       if (first || previous.streetview !== active.streetview) streetView.setEnabled(active.streetview);
       $('transit-browser-toggle').hidden = active.base !== 'transit' || active.streetview;
       transit?.setEnabled(active.base === 'transit' && !active.streetview);
+      wasOffline = !!offline;
       render();
       if (changed) { persist(); onChange(); }
     }

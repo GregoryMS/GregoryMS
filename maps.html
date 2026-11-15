@@ -19,12 +19,12 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/maps-app/icon-192.png?v=20261017-maps">
   <link rel="icon" type="image/svg+xml" href="/assets/maps-app/icon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css" integrity="sha256-M3v8pcq9A7OYFbJwD+vis7ft9VkhxZzUn4jssyghIwM=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261114-bctransit-link">
+  <link rel="stylesheet" href="assets/maps.css?v=20261115-offline1">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261113-shared-device1" defer></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
+  <script src="assets/vendor/leaflet/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <script src="assets/leaflet-rotate.js?v=0.3.0-canvas-fix" defer></script>
   <script src="assets/maps-rotation.js?v=20261113-native-3d" defer></script>
   <script src="assets/openlocationcode.js?v=20261112" defer></script>
@@ -66,21 +66,23 @@
   <script src="assets/maps-parking-core.js?v=20261113" defer></script>
   <script src="assets/maps-parking.js?v=20261113-key" defer></script>
   <script src="assets/maps-native-3d.js?v=20261113-dark-buildings" defer></script>
-  <script src="assets/maps-layers.js?v=20261114-transit-button" defer></script>
+  <script src="assets/maps-layers.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-display.js?v=20261022-car-layers" defer></script>
   <script src="assets/maps-navigation-core.js?v=20261113-four-stops" defer></script>
-  <script src="assets/maps-routing.js?v=20261113-four-stops" defer></script>
+  <script src="assets/maps-routing.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-navigation-3d.js?v=20261113-free-drive" defer></script>
-  <script src="assets/maps-navigation-live.js?v=20261113-free-drive" defer></script>
+  <script src="assets/maps-navigation-live.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-transit-journey-core.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
-  <script src="assets/maps-navigation.js?v=20261114-transit-polish" defer></script>
+  <script src="assets/maps-navigation.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261113-native-3d" defer></script>
-  <script src="assets/maps-drawer.js?v=20261114-transit-network2" defer></script>
+  <script src="assets/maps-drawer.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-qr.js?v=20261113-native-3d" defer></script>
   <script src="assets/maps-context-menu.js?v=20261113-native-3d" defer></script>
   <script src="assets/maps-saved-places.js?v=20261112-car-home" defer></script>
-  <script src="assets/maps.js?v=20261113-native-3d" defer></script>
+  <script src="assets/maps-offline-store.js?v=20261115-offline1" defer></script>
+  <script src="assets/maps-offline.js?v=20261115-offline1" defer></script>
+  <script src="assets/maps.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-gps-test.js?v=20261112-settings-icon" defer></script>
   <script src="assets/site-menu.js?v=20261113-shared-device1" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
@@ -118,6 +120,7 @@
   <main class="map-stage" aria-label="Gregle Maps">
     <div id="gregle-map" aria-label="Interactive OpenStreetMap. Right-click for map actions and coordinates. Double-click, double-tap, or touch and hold to drop a pin. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
     <div id="gregle-map-3d" aria-label="Interactive OpenFreeMap 3D map" hidden></div>
+    <p id="offline-connection" role="status" hidden></p>
     <section class="map-context-menu map-glass" id="map-context-menu" aria-label="Map point actions" hidden>
       <div role="menu" aria-label="Actions at this point">
         <button type="button" role="menuitem" id="map-context-pin">Drop pin</button>
@@ -198,7 +201,7 @@
       <div class="directions-actions"><button type="button" id="directions-route" disabled>Show route</button><button type="button" id="directions-clear">Clear route</button></div>
       <div id="directions-handoff" hidden><a id="directions-google" target="_blank" rel="noopener">Navigate in Google Maps ↗</a><a id="directions-apple" target="_blank" rel="noopener">Navigate in Apple Maps ↗</a></div>
       <div id="directions-transit-options" aria-label="Transit journey options" hidden></div><div id="directions-summary" hidden><strong id="directions-total"></strong><div class="route-traffic-row" id="directions-traffic-row" hidden><span>Use live traffic</span><button class="route-traffic-switch" id="directions-traffic" type="button" role="switch" aria-label="Use live traffic" aria-checked="false" disabled aria-describedby="directions-estimate-note"></button></div><p id="directions-estimate-note">Estimated driving time excludes live traffic and ferry waits.</p><button type="button" id="directions-traffic-connect" hidden>Connect TomTom</button><div class="directions-launch"><button type="button" id="directions-3d" disabled>3D mode</button><button type="button" id="directions-start" disabled>Start navigation</button></div><p id="journey-vehicle-status" role="status" hidden></p><a id="journey-vehicle-credit" class="transit-vehicle-credit" target="_blank" rel="noopener noreferrer" hidden></a><details><summary>Route steps</summary><ol id="directions-steps"></ol></details></div>
-      <p class="directions-credit">Routes: <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox (3D)</a> / <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a> / <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: overpass.ch / OpenStreetMap. Live navigation needs location permission and an internet connection. Route requests share your start, stops and destination with the routing service.</p>
+      <p class="directions-credit">Routes: <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox (3D)</a> / <a href="https://www.tomtom.com/" target="_blank" rel="noopener">TomTom</a> / <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">FOSSGIS</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>. Search: overpass.ch / OpenStreetMap. Live navigation needs location permission. Download a region’s route navigation for offline use. Route requests share your start, stops and destination with the routing service.</p>
     </section>
     <section id="transit-navigation" class="navigation-live transit-guidance map-glass" aria-label="Transit journey guidance" hidden>
       <p id="transit-guidance-progress"></p><h2 id="transit-guidance-cue" aria-live="polite"></h2>
@@ -242,6 +245,20 @@
       <ul class="vessels-legend-list" id="vessels-legend-list"></ul>
       <p>Colours show the reported AIS vessel type. Ferries use Passenger. Grey means other or unreported. A circle means the vessel shows 0.0 kn or its heading is unknown.</p>
     </section>
+    <section class="map-layers-panel map-glass" id="map-offline-panel" aria-labelledby="map-offline-heading" hidden>
+      <div class="layers-heading"><h2 id="map-offline-heading">Offline maps</h2><button class="map-dismiss" id="close-map-offline" type="button" aria-label="Close offline maps">×</button></div>
+      <p id="offline-shell-status" role="status">Preparing Maps for offline opening…</p>
+      <label class="offline-use"><input id="offline-use" type="checkbox"> Use downloaded maps and routing</label>
+      <p>Save a street map and optionally route navigation before you travel. GPS, map pins and saved Home/Work locations work offline. Local search finds downloaded street and town names; full address search, satellite, 3D, transit and live layers need a connection.</p>
+      <p id="offline-status" role="status" aria-live="polite">Choose a preset region below.</p>
+      <progress id="offline-progress" max="1" value="0" aria-label="Offline download progress" hidden></progress>
+      <button type="button" id="offline-cancel" hidden>Cancel download</button>
+      <div id="offline-regions"></div>
+      <button type="button" id="offline-refresh">Check for updates</button>
+      <p id="offline-storage"></p>
+      <p>Keep Maps open while downloading. Downloads belong to this browser and device. Your browser may remove them when storage is low; check before travelling. Offline routes follow mapped access and turns, with estimated times excluding traffic and ferry waits.</p>
+      <p>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · <a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL 1.0</a> · Extracts from <a href="https://download.geofabrik.de/north-america/canada/british-columbia.html">Geofabrik</a>.</p>
+    </section>
     <section class="map-layers-panel map-base-panel map-glass" id="map-base-panel" aria-labelledby="map-base-heading" hidden>
       <div class="layers-heading"><h2 id="map-base-heading">Base map</h2><button class="map-dismiss" id="close-map-base" type="button" aria-label="Close base map">×</button></div>
       <fieldset class="map-base-options"><legend>Base map</legend>
@@ -262,6 +279,7 @@
           </div>
         </div>
       </fieldset>
+      <button class="offline-open" type="button" id="map-offline-toggle" aria-expanded="false" aria-controls="map-offline-panel">Offline maps ↓</button>
       <p class="layer-status" id="base-layer-status" role="status"></p>
       <div id="transit-options" hidden><p class="layer-status">Vancouver Island, the Lower Mainland and Sea to Sky: use Bus routes to choose a number, destination or station. Rapid transit stays visible in the overview. Bus stops appear as you zoom in; names appear where there is room. Tap a stop for departures.</p><p class="layer-status"><a href="https://transitous.org/sources/" target="_blank" rel="noopener">Transitous · departure data &amp; licences ↗</a></p></div>
     </section>

@@ -10,5 +10,5 @@
     {"name": "TOMTOM_ROUTE_LIMIT", "namespace_id": "2026110201", "simple": {"limit": 30, "period": 60}},
     {"name": "TOMTOM_TILE_LIMIT", "namespace_id": "2026110202", "simple": {"limit": 600, "period": 60}}
   ],
-  "observability": {"enabled": true, "head_sampling_rate": 0.1, "redact_query_string": true}
+  "observability": {"enabled": true, "head_sampling_rate": 0.1, "redact_query_string": true, "traces": {"enabled": true, "head_sampling_rate": 0.1}}
 }

@@ -179,6 +179,7 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   });
   window.addEventListener?.('resize',()=>{if(mode==='transit'&&document.body?.classList.contains('vehicle-layout'))$('directions-driving').click();});
   function startNavigation(threeD = false) {
+    if (window.GregleOfflineMaps?.active() || currentRoute?.provider === 'offline') threeD = false;
     const engine=mode==='transit'?transitLive:live;
     if (!currentRoute || !engine) return;
     onDriveStart();
@@ -293,7 +294,8 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
     try {
       const url = new URL(window.GregleMaps.searchURL(config.searchURL, term));
       const center = map.getCenter(); url.searchParams.set('lat', center.lat); url.searchParams.set('lon', window.GregleMaps.wrapLongitude(center.lng));
-      const key=url.href;let results=searchCache.get(key);
+      const offline=window.GregleOfflineMaps?.active();
+      const key=(offline?'offline:':'')+url.href;let results=offline?await window.GregleOfflineMaps.search(term,center):searchCache.get(key);
       if(!results){
         if(Date.now()<nextSearch){if(automatic)suggestionTimer=setTimeout(()=>searchPlaces(field,true),nextSearch-Date.now());else status('Please wait a moment, then search again.');return;}
         nextSearch=Date.now()+1000;controller=new AbortController();current=controller;lookupField=field;timer=setTimeout(()=>current.abort(),10000);
@@ -324,13 +326,14 @@ window.GregleMapNavigation = ({ map, config, getSelected, onOpen = () => {}, onC
   document.addEventListener?.('visibilitychange',()=>{if(document.hidden&&(suggestionTimer||lookupField)){clearTimeout(suggestionTimer);suggestionTimer=null;if(lookupField)invalidate();}});
   window.addEventListener?.('pagehide',()=>{clearTimeout(suggestionTimer);controller?.abort();});
   async function calculateRoute(refresh = false, startAfter = false, threeD = false) {
+    if (mode==='transit' && window.GregleOfflineMaps?.active()) {status('Offline routing supports driving and walking. Transit journeys need a connection.');return;}
     if (!canRoute()) { status(hasStop() ? 'Choose a starting point, every stop and a destination.' : 'Choose a starting point and destination.'); return; }
     if (refresh) { version++; controller?.abort(); }
     else invalidate();
     if (!refresh && Date.now() < nextRoute) { status('Please wait a moment, then show the route again.'); return; }
     nextRoute = Date.now() + 1100;
     const token = version, from = { ...points.from }, to = { ...points.to };
-    controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), mode==='transit'?25000:15000 * (activeStops().length + 1));
+    controller = new AbortController(); const current = controller, timer = setTimeout(() => current.abort(), window.GregleOfflineMaps?.active()?120000:mode==='transit'?25000:15000 * (activeStops().length + 1));
     panel.setAttribute('aria-busy', 'true'); $('directions-route').disabled = true; $('directions-start').disabled = true; $('directions-3d').disabled = true;
     status(mode === 'driving' && routing.enabled && routing.connected ? 'Finding a route with live traffic…' : `Finding a ${mode} route…`);
     try {

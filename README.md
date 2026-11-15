@@ -990,3 +990,70 @@ removal and imports racing background preparation in Chromium and WebKit.
 The resize handle has a fixed blank strip below the fitted calculator. This
 space stays clear of ENTER at every supported size, and is reclaimed in
 installed/pop-out views where the handle is hidden.
+
+## Offline Gregle Maps
+
+Open **Base map → Offline maps** on `maps.gregle.uk`. Download a street map,
+route navigation, or both for Victoria, Greater Victoria, Vancouver Island,
+Greater Vancouver or British Columbia. The displayed download sizes are actual
+compressed package sizes. Presets use the rectangular bounds defined in
+`scripts/build_offline_maps.py`; the Island preset includes nearby coastlines.
+Download with Maps open, then select **Use downloaded maps and routing** to try
+it before travelling. An offline connection selects downloaded maps automatically.
+Download routing for a region containing the whole journey, including stops.
+Pins, saved Home/Work locations, local street/town search, GPS turn guidance and
+route recalculation use the existing map/navigation interface. Address-level
+search, satellite imagery, 3D, transit and live overlays require a connection.
+GPS still requires browser permission and a usable satellite/location fix.
+Keep the app open for live guidance; background GPS is controlled by the OS.
+
+A shared root worker, `gregle-sw.js`, imports only the relevant app on the Maps
+and Calculator subdomains and both handlers on the apex. This prevents one app
+from unregistering the other's offline support. Maps installs a complete local
+shell, including vendored Leaflet 1.9.4 and its BSD license. Google Fonts are
+optional; offline text uses local font fallbacks. Offline shell updates activate
+after all controlled tabs close, preserving a running navigation session.
+Run `python3 scripts/update_maps_offline_shell.py` after changing Maps HTML,
+versioned dependencies or any cached file. Commit the resulting
+`assets/maps-offline-shell.js` with the changes. Partial installs retain the old
+complete cache; only app-owned shell caches are retired.
+
+The monthly/manual **Build offline map regions** action reads the public
+Geofabrik BC PBF once and publishes ODbL-derived vector maps and road graphs as
+versioned GitHub release assets. The `offline-current` release contains only a
+catalog; it is updated after all versioned packages finish uploading. Old
+releases remain available to clients that already fetched their catalogs.
+No third-party raster tiles, API keys or visitors' routes enter the packages.
+The fixed `/api/maps/offline/` relay in the existing app router streams only
+these public assets. Deploy the app router when changing that relay; plain
+static previews can use local package fixtures.
+
+Package members are quarter-degree cells, individually gzip-compressed and
+SHA-256 indexed inside each region/component archive. IndexedDB stores the
+compressed archive as a Blob; the renderer and routing worker read only needed
+members. Routing uses a 12-shard LRU and a 500,000-state search limit, so an
+exceptionally long/complex route can ask for a closer stop rather than exhaust
+memory. Storage estimates, persistent-storage requests, cancellable downloads,
+complete-file and member-hash checks, atomic replacement and per-component
+removal retain a working previous download on interruption or quota failure.
+Browser/OS storage eviction can still remove downloaded data; check the saved
+regions before a trip. Downloads are specific to the browser/device/origin.
+
+The local engine uses driving/walking access, directed edges, speed estimates,
+roundabout direction, node-via no/only-turn and U-turn restrictions, barriers,
+and ferry connections. It excludes private/destination-only and conditional
+access roads conservatively. Complex via-way restrictions block entry to the
+affected via way, which can produce a longer route or no route; this is an
+explicit conservative limitation rather than allowing the forbidden manoeuvre.
+Offline ETA excludes current traffic/closures and does not include ferry
+schedule/wait accuracy. Coverage is limited to the extract and downloaded preset
+bounds. Always follow road signs and local restrictions.
+
+Local package build (Pyosmium is only needed by the data builder):
+
+```sh
+python3 -m pip install osmium==4.1.1
+python3 scripts/build_offline_maps.py path/to/british-columbia.osm.pbf
+node --test tests/maps-offline.test.cjs
+python3 -m unittest discover -s tests -p 'test_offline_maps.py'
+```

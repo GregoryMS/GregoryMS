@@ -284,6 +284,7 @@
     return threeD;
   }, onOpen: () => drawer?.show('map-directions', true), onConnectTraffic: () => layerControl.connectTraffic() });
   window.GregleSavedPlaces?.({ map, config, navigation, getSelected: () => selected, notify });
+  window.GregleOfflineMaps?.attach({map,layers:layerControl,drawer,notify});
   controls.forEach(control => { control.disabled = false; });
   window.GregleMapRotation?.({map,zoomControl,on3D:()=>{if(document.body.classList.contains('vehicle-layout'))navigation?.startCar3D();else{const state=layerControl.getState();layerControl.setState({...state,base:state.base==='3d'?'street':'3d'},true);}},onChange:()=>{intent++;updateURL();}});
   map.on('moveend', updateURL);
@@ -340,6 +341,13 @@
       const point = window.GreglePlusCodes.point(plusCode,view());
       if (!automatic) selectPoint(point,point.zoom);
       else { searchContent.hidden=false; drawer?.show('map-search-content',true); showResults([point],true); }
+      return;
+    }
+    if (window.GregleOfflineMaps?.active()) {
+      const results = await window.GregleOfflineMaps.search(term, map.getCenter());
+      if (version !== searchVersion) return;
+      searchContent.hidden=false; drawer?.show('map-search-content',true); showResults(results,false);
+      $('map-search-status').textContent=results.length?'Downloaded streets and places':'No downloaded name found. Drop a map pin or use a saved place.';
       return;
     }
     const searchTerm = plusCode?.locality || term;

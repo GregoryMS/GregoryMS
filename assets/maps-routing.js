@@ -113,7 +113,7 @@
       trafficPartial: !traffic && legs.some(leg => leg.traffic), trafficReason: legs.find(leg => !leg.traffic)?.trafficReason,
       trafficDelay: legs.reduce((sum, leg) => sum + (leg.trafficDelay || 0), 0), fetchedAt: Math.min(...legs.map(leg => leg.fetchedAt))};
   }
-  function create({ fetch: send = globalThis.fetch, storage, defaultAvailable = false } = {}) {
+  function create({ fetch: send = globalThis.fetch, storage, defaultAvailable = false, offline = globalThis.GregleOfflineMaps } = {}) {
     try { storage ??= globalThis.localStorage; } catch {}
     let enabled = false, blockedKey = '', mapbox = false;
     try { enabled = storage?.getItem('gregle-maps-route-traffic') === 'on'; } catch {}
@@ -131,6 +131,14 @@
         }
         return combineRoutes(legs, via);
       }
+      if (offline?.active()) return offline.route(from, to, mode, {signal});
+      try { return await onlineRequest(from, to, mode, {signal}); }
+      catch (error) {
+        if (signal?.aborted || error.name === 'AbortError' || !offline) throw error;
+        try { return await offline.route(from,to,mode,{signal}); } catch (localError) { if (signal?.aborted) throw localError; throw error; }
+      }
+    }
+    async function onlineRequest(from,to,mode,{signal}) {
       const standardURL = core.routeURL(from, to, mode), apiKey = key();
       if (mapbox && mode === 'driving') {
         const response = await send(mapboxEndpoint + '/route', {method: 'POST', credentials: 'omit', cache: 'no-store', signal,
@@ -175,6 +183,7 @@
     } };
   }
   function note(route, mode = 'driving') {
+    if (route?.provider === 'offline') return 'Offline route · estimated time excludes traffic, closures and ferry waits. Follow local signs.';
     if (mode === 'walking') return 'Estimated walking time. Routes follow mapped pedestrian access.';
     if (route?.trafficPartial) return 'Live traffic is unavailable for part of this route. Ferry waits may vary.';
     if (route?.provider === 'mapbox') return route.traffic ? 'Mapbox traffic included where available. Ferry waits may vary.' : 'Mapbox route · Live traffic off. Ferry waits may vary.';

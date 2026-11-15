@@ -37,6 +37,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     if (route) trafficUI();
   }
   async function toggle3D() {
+    if (window.GregleOfflineMaps?.active() || route?.provider === 'offline') {liveStatus('Offline guidance uses the downloaded 2D street map.'); return;}
     if (!running || mode !== 'driving' || !threeD) return;
     if (wants3D) { disable3D(); return; }
     if (freeDrive && (!marker || !lastFix || Date.now() - lastFix > 15000)) { liveStatus('Waiting for your location before opening 3D.'); return; }
@@ -58,6 +59,9 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     }
   }
   $('navigation-3d')?.addEventListener('click', toggle3D);
+  window.addEventListener?.('gregle-offline-change', () => {
+    if (window.GregleOfflineMaps?.active() && wants3D) { disable3D(); liveStatus('Connection lost. Continuing GPS guidance on the downloaded street map.'); }
+  });
   function trafficUI() {
     $('navigation-traffic-row').hidden = true;
     $('navigation-traffic').setAttribute('aria-checked', String(routing.enabled));
@@ -139,7 +143,7 @@ window.GregleLiveNavigation = ({ map, routing, onRoute, onStop }) => {
     const current = new AbortController(); controller = current;
     updatingTraffic = trafficRefresh;
     if (trafficRefresh) trafficUI();
-    const timeout = setTimeout(() => current.abort(), 15000 * (pendingStops.length + 1));
+    const timeout = setTimeout(() => current.abort(), window.GregleOfflineMaps?.active() ? 120000 : 15000 * (pendingStops.length + 1));
     liveStatus(trafficRefresh ? 'Updating your route for traffic…' : 'Recalculating from your location…');
     try {
       const updated = await routing.request(point, destination, mode, { signal: current.signal, via: pendingStops.map(stop => ({lat: stop.lat, lng: stop.lng, name: stop.name, detail: stop.detail})) });

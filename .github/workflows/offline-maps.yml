@@ -1,0 +1,45 @@
+name: Build offline map regions
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 9 2 * *'
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_offline_maps.py
+      - .github/workflows/offline-maps.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: offline-map-packages
+  cancel-in-progress: false
+
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install osmium==4.1.1
+      - run: python3 -m unittest discover -s tests -p 'test_offline_maps.py'
+      - name: Build self-hosted ODbL vector maps and road graphs
+        run: |
+          mkdir -p work
+          curl -fL --retry 3 https://download.geofabrik.de/north-america/canada/british-columbia-latest.osm.pbf -o work/bc.osm.pbf
+          python3 scripts/build_offline_maps.py work/bc.osm.pbf --output work/offline-packages
+      - name: Publish complete packages, then the current catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c 'import json; print(json.load(open("work/offline-packages/catalog.json"))["version"])')
+          gh release create "$version" work/offline-packages/* --title "Offline maps $version" --notes 'OpenStreetMap regional street maps and directed routing graphs. © OpenStreetMap contributors, ODbL 1.0. Source and license are included.' --target "$GITHUB_SHA" --latest=false
+          if ! gh release view offline-current >/dev/null 2>&1; then
+            gh release create offline-current --title 'Current offline map catalog' --notes 'Catalog pointing to the latest complete, versioned offline map packages.' --target "$GITHUB_SHA" --latest=false
+          fi
+          gh release upload offline-current work/offline-packages/catalog.json --clobber

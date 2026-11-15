@@ -1082,3 +1082,18 @@
 #gregle-map-3d .maplibregl-ctrl-attrib {background:var(--map-control-surface);color:var(--text);}
 #gregle-map-3d .maplibregl-ctrl-attrib a {color:var(--text);}
 .dark-mode #gregle-map-3d .maplibregl-ctrl-attrib-button {filter:invert(1);}
+
+/* The offline manager shares the normal glass panels and phone drawer. */
+#map-offline-panel{z-index:1100;max-height:calc(100% - 100px);overflow:auto}
+#map-offline-panel p{font-size:.8rem;line-height:1.5;color:var(--muted,#777)}
+#map-offline-panel h3{font-size:.9rem;margin:1.1rem 0 .4rem}
+.offline-use{display:flex;gap:.6rem;align-items:center;font-size:.9rem;margin:1rem 0}
+.offline-package{display:flex;gap:.45rem;align-items:center;margin:.5rem 0;font-size:.77rem}
+.offline-package span{flex:1}.offline-package button,.offline-open,#offline-refresh,#offline-cancel{font:inherit;border:1px solid #9d8caf66;border-radius:8px;padding:.45rem .6rem;background:transparent;color:inherit;cursor:pointer}
+.offline-package button:disabled{opacity:.55;cursor:default}#offline-progress{width:100%;accent-color:#7637cc}
+#offline-connection{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:450;background:#342542ed;color:#fff;border-radius:8px;padding:.4rem .7rem;font-size:.72rem;max-width:85%;pointer-events:none}
+.offline-place-label,.offline-road-label{white-space:nowrap;width:max-content!important;text-shadow:1px 1px 2px #fff,-1px -1px 2px #fff;color:#45423e;font-family:Arial,sans-serif;font-size:12px;font-weight:600;pointer-events:none}
+.offline-road-label{font-size:10px;font-weight:400}.offline-maps-active #gregle-map{background:#e7e4de}
+.offline-maps-active .leaflet-tile-pane{visibility:hidden}
+.dark-mode .offline-maps-active .leaflet-overlay-pane{filter:brightness(.8)}
+@media(max-width:700px){#map-offline-panel{max-height:none;overflow:visible}#offline-connection{bottom:calc(var(--map-drawer-height,0px) + 28px)}}
