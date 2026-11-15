@@ -39,7 +39,7 @@
     result[3] *= ratio; result[4] *= ratio;
     return result;
   }
-  async function route(from, to, mode, {load, keys, tile, inside, check = () => {}}) {
+  async function route(from, to, mode, {load, keys, tile, inside, check = () => {}, snapTolerance = 3}) {
     if(!core.valid(from)||!core.valid(to)||!['driving','walking'].includes(mode))throw Error('Choose two valid locations and driving or walking.');
     const profile=mode==='walking'?1:0,costIndex=profile+3;
     async function snap(p) {
@@ -55,9 +55,9 @@
       }
       if(!candidates.length)throw Error('No accessible downloaded road near this point. Try a pin closer to a road in your saved region.');
       candidates.sort((a,b)=>a.away-b.away);
-      // Keep both directions of the nearest physical road, not a parallel road
-      // across a river or a motorway median.
-      return candidates.filter(s=>s.away<=candidates[0].away+3).slice(0,12);
+      // Start with the closest physical road. A disconnected driveway can
+      // retry nearby roads; snap distance is heavily penalised in that retry.
+      return candidates.filter(s=>s.away<=candidates[0].away+snapTolerance).slice(0,snapTolerance===3?12:250);
     }
     const starts=await snap(from),ends=await snap(to),queue=new Heap(),best=new Map();
     let goal=null,visited=0;
@@ -66,12 +66,13 @@
     for(const s of starts){
       const edge=clipped(s.edge,s,true);
       if(!edge[5].every(p=>inside(point(p))))continue;
-      offer({node:edge[0],shard:edge[1],way:edge[2],prev:s.id,cost:edge[costIndex],position:edge[5].at(-1),parent:null,edge});
+      offer({node:edge[0],shard:edge[1],way:edge[2],prev:s.id,cost:edge[costIndex]+s.away*5,position:edge[5].at(-1),parent:null,edge});
       for(const e of ends)if(s.id===e.id&&s.edge[0]===e.edge[0]&&s.edge[2]===e.edge[2]&&s.along<=e.along){
         const direct=clipped(s.edge,s,true),last=e.index-s.index+1;
         direct[5]=[s.q,...s.edge[5].slice(s.index,e.index),e.q];
         direct[costIndex]=s.edge[costIndex]*(e.along-s.along)/(s.total||1);
-        if(!goal||direct[costIndex]<goal.cost)goal={cost:direct[costIndex],edge:direct,parent:null};
+        const cost=direct[costIndex]+s.away*5+e.away*5;
+        if(!goal||cost<goal.cost)goal={cost,edge:direct,parent:null};
       }
     }
     while(queue.length){
@@ -81,7 +82,7 @@
       if(++visited>500000)throw Error('This offline route is too large for this device. Try a closer stop.');
       const node=(await load(current.shard))?.[current.node];if(!node)continue;
       for(const end of ends)if(end.id===current.node&&allowed(node,current.way,current.prev,end.edge,profile)){
-        const edge=clipped(end.edge,end,false),cost=current.cost+edge[costIndex];
+        const edge=clipped(end.edge,end,false),cost=current.cost+edge[costIndex]+end.away*5;
         if(edge[5].every(p=>inside(point(p)))&&(!goal||cost<goal.cost))goal={cost,parent:current,edge};
       }
       for(const edge of node[2]){
@@ -90,6 +91,7 @@
       }
       if(visited%250===0)await new Promise(resolve=>setTimeout(resolve,0));
     }
+    if(!goal&&snapTolerance===3)return route(from,to,mode,{load,keys,tile,inside,check,snapTolerance:100});
     if(!goal)throw Error('No connected offline route inside this downloaded region. Download a larger region or choose closer points.');
     const edges=[];for(let cursor=goal;cursor;cursor=cursor.parent)edges.push(cursor.edge);edges.reverse();
     const geometry=[],steps=[];let total=0,elapsed=0;
@@ -107,9 +109,9 @@
     });
     if(geometry.length<2)throw Error('These points are already at the same location.');
     const cumulative=lengths(geometry);total=cumulative.at(-1);
-    steps.push({text:'Arrive at your destination',start:total,distance:0,type:'arrive',modifier:''});
+    steps.push({text:core.meters(to,point(geometry.at(-1)))>50?'Arrive near your destination':'Arrive at your destination',start:total,distance:0,type:'arrive',modifier:''});
     steps.forEach((s,i)=>s.distance=(steps[i+1]?.start??total)-s.start);
-    return {points:geometry,cumulative,length:total,distance:total,duration:elapsed,steps,provider:'offline',traffic:false,fetchedAt:Date.now()};
+    return {endSnap:core.meters(to,point(geometry.at(-1))),points:geometry,cumulative,length:total,distance:total,duration:elapsed,steps,provider:'offline',traffic:false,fetchedAt:Date.now()};
   }
   return {Heap, project, allowed, route};
 });

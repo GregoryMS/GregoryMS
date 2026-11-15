@@ -58,3 +58,23 @@ test('generated offline shell covers required local dependencies and never prefe
   assert(data.assets.some(p=>p.includes('vendor/leaflet/leaflet.js')));assert(!data.assets.some(p=>p.startsWith('http')));
   assert.equal(fs.readFileSync(require.resolve('../gregle-sw.js'),'utf8').includes("'/calc-sw.js', '/maps-sw.js'"),true);
 });
+
+test('a disconnected nearby driveway retries a connected road while keeping legal road geometry',async()=>{
+  const n=network();n.coords[5]=[48.42005,-123.369];n.coords[6]=[48.42005,-123.367];
+  for(const id of [5,6])n.nodes[id]=[...n.coords[id],[],[],[false,false]];
+  n.edge(5,6,50);n.edge(6,5,50);
+  const r=await n.route([48.42005,-123.368],[48.428,-123.36]);
+  assert.equal(r.points[0][0],48.42);assert(r.steps.some(s=>s.text.includes('Road 10')));
+  assert(!r.points.some(p=>p[0]===48.42005),'the disconnected driveway never becomes a fabricated connector');
+});
+test('routing crosses downloaded shard boundaries and respects a no-U-turn rule',async()=>{
+  const coords={1:[48.42,-123.501],2:[48.42,-123.5],3:[48.42,-123.499]},shards={},calls=[];
+  for(const [id,p]of Object.entries(coords))(shards[store.tile(...p)]??={})[id]=[...p,[],[],[false,false]];
+  const node=id=>shards[store.tile(...coords[id])][id];
+  for(const [a,b]of [[1,2],[2,1],[2,3],[3,2]])node(a)[2].push([b,store.tile(...coords[b]),10,10,10,[coords[a],coords[b]],'Boundary Road','residential',[]]);
+  node(2)[3].push([10,[10],false,true]);
+  assert.equal(local.allowed(node(2),10,1,node(2)[2].find(e=>e[0]===1),0),false);
+  assert.equal(local.allowed(node(2),10,1,node(2)[2].find(e=>e[0]===3),0),true);
+  const r=await local.route({lat:48.42,lng:-123.5008},{lat:48.42,lng:-123.4992},'driving',{load:async key=>{calls.push(key);return shards[key];},keys:new Set(Object.keys(shards)),tile:store.tile,inside:()=>true});
+  assert(r.points.some(p=>p[1]===-123.5));assert.equal(new Set(calls).size,2);
+});

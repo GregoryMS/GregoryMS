@@ -109,7 +109,7 @@
     const providers = [...new Set(legs.map(leg => leg.provider))], traffic = legs.every(leg => leg.traffic);
     return {points, cumulative, timings, steps, laneGuidance, speedLimits, length, duration: elapsed,
       distance: legs.reduce((sum, leg) => sum + leg.distance, 0), stops: markers, providers,
-      provider: providers.length === 1 ? providers[0] : 'mixed', traffic,
+      provider: providers.length === 1 ? providers[0] : 'mixed', traffic, endSnap: legs.at(-1)?.endSnap,
       trafficPartial: !traffic && legs.some(leg => leg.traffic), trafficReason: legs.find(leg => !leg.traffic)?.trafficReason,
       trafficDelay: legs.reduce((sum, leg) => sum + (leg.trafficDelay || 0), 0), fetchedAt: Math.min(...legs.map(leg => leg.fetchedAt))};
   }
@@ -183,7 +183,7 @@
     } };
   }
   function note(route, mode = 'driving') {
-    if (route?.provider === 'offline') return 'Offline route · estimated time excludes traffic, closures and ferry waits. Follow local signs.';
+    if (route?.provider === 'offline') return 'Offline route · estimated time excludes traffic, closures and ferry waits.' + (route.endSnap > 50 ? ` Route ends ${core.distance(route.endSnap)} from the selected point.` : '') + ' Follow local signs.';
     if (mode === 'walking') return 'Estimated walking time. Routes follow mapped pedestrian access.';
     if (route?.trafficPartial) return 'Live traffic is unavailable for part of this route. Ferry waits may vary.';
     if (route?.provider === 'mapbox') return route.traffic ? 'Mapbox traffic included where available. Ferry waits may vary.' : 'Mapbox route · Live traffic off. Ferry waits may vary.';
