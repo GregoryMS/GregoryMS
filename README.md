@@ -1030,8 +1030,11 @@ static previews can use local package fixtures.
 
 Package members are quarter-degree cells, individually gzip-compressed and
 SHA-256 indexed inside each region/component archive. IndexedDB stores the
-compressed archive as a Blob; the renderer and routing worker read only needed
-members. Routing uses a 12-shard LRU and a 500,000-state search limit, so an
+compressed archive in 4 MiB records, downloaded with validated byte ranges.
+Interrupted downloads resume from saved records; existing Blob downloads remain
+readable. A separate worker streams map features, filters to the viewport and
+bounds retained geometry before sending it to Leaflet. Routing reads only needed
+members with a 6-shard LRU and a 500,000-state search limit, so an
 exceptionally long/complex route can ask for a closer stop rather than exhaust
 memory. Storage estimates, persistent-storage requests, cancellable downloads,
 complete-file and member-hash checks, atomic replacement and per-component
