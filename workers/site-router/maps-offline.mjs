@@ -7,11 +7,14 @@ export async function mapsOffline(request) {
   if(url.search||!catalog&&!match)return new Response('Unknown offline package',{status:404,headers:{'Cache-Control':'no-store'}});
   const tag=catalog?'offline-current':match[1],file=catalog?'catalog.json':match[2];
   try{
-    const response=await fetch(`https://github.com/GregoryMS/GregoryMS/releases/download/${tag}/${file}`,{
-      method:request.method,credentials:'omit',redirect:'follow',signal:AbortSignal.timeout(120000),
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+    let response;
+    try { response=await fetch(`https://github.com/GregoryMS/GregoryMS/releases/download/${tag}/${file}`,{
+      method:request.method,credentials:'omit',redirect:'follow',signal:controller.signal,
       headers:{'User-Agent':'Gregle-Offline-Maps','Accept':'application/octet-stream'},
       cf:{cacheEverything:true,cacheTtlByStatus:{'200-299':catalog?120:86400,'300-599':-1}}
-    });
+    }); } finally { clearTimeout(timer); }
+    // Only headers have a deadline; a large saved region may stream for many minutes.
     if(!response.ok)return new Response('Offline packages are not available yet. Try again shortly.',{status:response.status===404?404:502,headers:{'Cache-Control':'no-store'}});
     const headers=new Headers(response.headers);headers.delete('Set-Cookie');headers.delete('Content-Disposition');
     headers.set('Content-Type',catalog?'application/json; charset=utf-8':'application/octet-stream');
