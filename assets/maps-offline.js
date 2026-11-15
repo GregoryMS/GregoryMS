@@ -44,7 +44,7 @@
     const $=id=>document.getElementById(id),panel=$('map-offline-panel'),button=$('map-offline-toggle'),status=$('offline-status');
     const credit='Offline data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · <a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL</a>';
     let catalog,download,drawVersion=0,vector=L.layerGroup(),footprint=L.layerGroup(),lastMode=false;
-    map.createPane('offlineBackground').style.zIndex='210';
+    map.createPane('offlineBackground',map.getPane('overlayPane').parentNode).style.zIndex='210';
     const renderer=L.canvas({padding:.2});
     const cache=new Map();
     const message=text=>{status.textContent=text;};
