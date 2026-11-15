@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-15T14:58:55+00:00",
-  "fetchedAt": "2026-11-15T14:59:04.351808+00:00",
+  "feedUpdatedAt": "2026-11-15T20:16:09+00:00",
+  "fetchedAt": "2026-11-15T20:16:24.310295+00:00",
   "items": [
     {
       "title": "Staggered age of consent to be discussed after Brand case, minister says",
@@ -12,6 +12,10 @@
       "link": "https://www.bbc.co.uk/news/articles/cm3eg8x9zkvno?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Zelensky urges US and Musk to lift Starlink restrictions and be on 'right side of history'",
+      "link": "https://www.bbc.co.uk/news/articles/c6m25zg88k45o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Ex-Met Police inspector lied about wife's death in Barbados hotel room, BBC learns",
       "link": "https://www.bbc.co.uk/news/articles/c6jd7k7g57x5o?at_medium=RSS&at_campaign=rss"
     },
@@ -20,28 +24,24 @@
       "link": "https://www.bbc.co.uk/news/articles/cqr7gn1zmlj1o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Pope Leo rides in helicopter cockpit during Peru trip",
+      "link": "https://www.bbc.co.uk/news/videos/c6pw4rl00lrjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Thousands of US flights still cancelled or delayed two days after grounding of planes nationwide",
+      "link": "https://www.bbc.co.uk/news/articles/cw1mdlv0k2r4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Trident submarine returns home after record-breaking undersea patrol",
+      "link": "https://www.bbc.co.uk/news/articles/c32l5ny1r7x9o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Tearful McIlroy dedicates record-equalling win to ill dad",
+      "link": "https://www.bbc.co.uk/sport/golf/articles/c6kg7rwmz1g8o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Iran targets US military base in Bahrain with drone attack",
       "link": "https://www.bbc.co.uk/news/articles/cqn4e2py48kwo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Hannah Fry feels 'unbelievably lucky' after cervical cancer treatment",
-      "link": "https://www.bbc.co.uk/news/articles/cw62p4n3n1xyo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: SpaceX catches part of its Starship rocket on return to Earth",
-      "link": "https://www.bbc.co.uk/news/videos/cwlym2gy3y3eo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Judo champion shakes up French  presidential race with surprise candidacy",
-      "link": "https://www.bbc.co.uk/news/articles/c6dj1e8wyykmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Beauty advent calendars can cost hundreds but are they value for money?",
-      "link": "https://www.bbc.co.uk/news/articles/cqn83l442724o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Holly Humberstone: People can't connect to a pop star who's 'too polished'",
-      "link": "https://www.bbc.co.uk/news/articles/cw77p7yj42k5o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
