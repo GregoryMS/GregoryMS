@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261115-shared-maps1';
+const VERSION='20261115-nspire2';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -11,7 +11,7 @@ const ASSETS=[
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',
   '/assets/calc.css?v=20261102-heading1',
   '/assets/calc-graph.css?v=20261101-dpad-restored1',
-  '/assets/calc-emulator.css?v=20261102-ti89-6',
+  '/assets/calc-emulator.css?v=20261115-nspire2',
   '/assets/site-menu.css?v=20261103-pointer-cursor2',
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
@@ -20,9 +20,17 @@ const ASSETS=[
   '/assets/calc.js?v=20261102-ti89-6',
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
-  '/assets/calc-emulator.js?v=20261102-ti89-6',
-  '/assets/calc-offline.js?v=20261102-ti89-6',
+  '/assets/calc-emulator.js?v=20261115-nspire2',
+  '/assets/calc-offline.js?v=20261115-nspire2',
   '/assets/calc-ti89.js?v=20261102-ti89-6',
+  '/assets/calc-tinspire.js?v=20261115-nspire2',
+  '/assets/tinspire/worker.mjs',
+  '/assets/tinspire/firebird.mjs',
+  '/assets/tinspire/firebird.wasm',
+  '/assets/tinspire/firmware.mjs',
+  '/assets/tinspire/rom-source.mjs',
+  '/assets/tinspire/README.md',
+  '/assets/tinspire/COPYING.txt',
   '/assets/ti89/worker.js',
   '/assets/ti89/ti68k.js',
   '/assets/ti89/rom-source.mjs?v=20261102-ti89-6',

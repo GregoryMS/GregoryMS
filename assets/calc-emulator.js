@@ -2,14 +2,14 @@
 function createGregleEmulator(options) {
   'use strict';
   options ||= {};
-  const engine=options.engine || 'ti84', is89=engine==='ti89';
-  const model=is89 ? 'TI-89' : 'TI-84 Plus CE', prefix=is89 ? 'ti89' : 'emulator';
+  const engine=options.engine || 'ti84', is89=engine==='ti89', isNspire=engine==='tinspire';
+  const model=isNspire ? 'TI-Nspire CX CAS' : is89 ? 'TI-89' : 'TI-84 Plus CE', prefix=isNspire ? 'tinspire' : is89 ? 'ti89' : 'emulator';
   const width=is89 ? 160 : 320, height=is89 ? 100 : 240;
-  const magic=is89 ? 'GREGLE89' : 'GREGLE84', extension=is89 ? 'gregle89' : 'gregle84';
+  const magic=isNspire ? 'GREGNSPB' : is89 ? 'GREGLE89' : 'GREGLE84', extension=isNspire ? 'greglensp' : is89 ? 'gregle89' : 'gregle84';
   const $ = id => document.getElementById(id.replace(/^emulator/,prefix));
-  const modeButtons=() => document.querySelectorAll('#emulatorOpen,#ti89Open');
+  const modeButtons=() => document.querySelectorAll('#emulatorOpen,#ti89Open,#tinspireOpen');
   const setBusy=value => {busy=value; modeButtons().forEach(button => {button.disabled=value;});};
-  const CORE_VERSION = is89 ? 'ti68k-babdb7de-gregle-1' : 'e5ffbb2c-gregle-1', STORAGE_KEY = 'session';
+  const CORE_VERSION = isNspire ? 'firebird-f75e590f-gregle-1' : is89 ? 'ti68k-babdb7de-gregle-1' : 'e5ffbb2c-gregle-1', STORAGE_KEY = 'session';
   const scriptURL = new URL(document.currentScript.src);
   const workerURL = new URL(`${engine}/worker.${is89 ? 'js' : 'mjs'}`,scriptURL);
   const shell = $('graphCalculator'), page = $('calcPage');
@@ -20,6 +20,7 @@ function createGregleEmulator(options) {
   let worker, database, record, savePromise, saveTimer, romDownload, sequence=0;
   const downloadListeners = new Set();
   const pending = new Map(), pointers = new Map(), hardware = new Map();
+  let releaseTouchpad=()=>{};
   const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(`gregle-${engine}-session`) : null;
 
   // Primary hardware keys, followed by their 2nd and ALPHA legends.
@@ -41,12 +42,14 @@ function createGregleEmulator(options) {
     ['on','ON',2,0,'OFF'],['0','0',3,0,'CATALOG','␣','emu-number'],['decimal','.',4,0,'i',':','emu-number'],['negative','(−)',5,0,'ANS','?'],['enter','ENTER',6,0,'ENTRY','SOLVE','emu-enter']
   ];
   const arrows = options.arrows || [['up','▲',7,3],['left','◀',7,1],['right','▶',7,2],['down','▼',7,0]];
-  const allKeys = [...menus,...controls,...keys,...arrows];
+  const alphaKeys=options.alphaKeys || [];
+  const allKeys = [...menus,...controls,...keys,...arrows,...alphaKeys];
+  if (isNspire) allKeys.push(['padclick','●',8,4]);
   const byName = new Map(allKeys.map(key => [key[0],key]));
   function keyHTML([name,label,row,col,second='',alpha='',style='']) {
     const diamond=options.diamond?.[name] || '';
     const aria = ({shift:'Shift',diamond:'Diamond modifier',del:'Backspace',up:'Navigate up',down:'Navigate down',left:'Navigate left',right:'Navigate right',negative:'Negative sign'})[name] || label;
-    const title=(second ? `2nd: ${second}` : label)+(diamond ? ` · Diamond: ${diamond}` : '')+(alpha ? ` · ALPHA: ${alpha}` : '');
+    const title=(second ? `${isNspire ? 'Ctrl' : '2nd'}: ${second}` : label)+(diamond ? ` · Diamond: ${diamond}` : '')+(alpha ? ` · ALPHA: ${alpha}` : '');
     return `<button type="button" class="hardware-key ${style}" data-emu-key="${name}" data-emu-row="${row}" data-emu-col="${col}" aria-label="${aria}" title="${title.replaceAll('"','&quot;')}"><span class="emu-legend"><span>${second}</span>${diamond ? `<span class="emu-diamond-legend">◆ ${diamond}</span>` : ''}<b>${alpha}</b></span>${label}</button>`;
   }
   const view = document.createElement('section');
@@ -81,15 +84,18 @@ function createGregleEmulator(options) {
       </section>
     </div></div>
     <div class="emu-toolbar"><span id="emulatorStatus" role="status" aria-live="polite">One-time ROM setup</span><button type="button" id="emulatorSessionButton">Session</button></div>
+    ${options.renderLayout ? options.renderLayout(keyHTML) : `
     <div class="graph-menu-keys emu-menu-keys" role="group" aria-label="TI-84 graph menus">${menus.map(keyHTML).join('')}</div>
     <div class="emu-control-grid" role="group" aria-label="TI-84 controls">
       ${controls.slice(0,3).map(keyHTML).join('')}
       <div class="graph-dpad emu-pad" role="group" aria-label="TI-84 directional pad">
-        ${arrows.map(key => keyHTML([...key,'','','pad-'+key[0]])).join('')}<span class="pad-center" aria-hidden="true"></span>
+        ${arrows.map(key => keyHTML([...key,'','','pad-'+key[0]])).join('')}${isNspire ? keyHTML(['padclick','●',8,4,'','','pad-enter']) : '<span class="pad-center" aria-hidden="true"></span>'}
       </div>${controls.slice(3).map(keyHTML).join('')}
     </div>
     <div class="emu-keypad" role="group" aria-label="TI-84 keypad">${keys.map(keyHTML).join('')}</div>
-    <div class="emu-credits"><span>${is89 ? 'TI-89 · TI-68K' : 'TI-84 PLUS CE · CEMU'}</span><span>LOCAL ROM · AUTO SAVE</span></div>
+    ${alphaKeys.length ? `<div class="nspire-alpha-keys" role="group" aria-label="TI-Nspire alphabet keypad">${alphaKeys.map(keyHTML).join('')}</div>` : ''}
+    `}
+    <div class="emu-credits"><span>${isNspire ? 'CX CAS · FIREBIRD' : is89 ? 'TI-89 · TI-68K' : 'TI-84 PLUS CE · CEMU'}</span><span>LOCAL ROM · AUTO SAVE</span></div>
     <input type="file" id="emulatorRomFile" accept=".rom,application/octet-stream" hidden>
     <input type="file" id="emulatorBackupFile" accept=".gregle84,application/octet-stream" hidden>
     <input type="file" id="emulatorProgramFile" accept=".8xp,.8xv,.8xg,.8xk,.8xl,.8xm,.8xn,.8xs,.8xi,.8xc,.8ca,.8cl,.8ef" hidden>`.replaceAll('emulator',prefix).replaceAll('TI-84 Plus CE',model).replaceAll('TI-84',is89 ? 'TI-89' : 'TI-84').replaceAll('assets/ti84/',`assets/${engine}/`).replaceAll('.gregle84',`.${extension}`);
@@ -97,6 +103,20 @@ function createGregleEmulator(options) {
   view.dataset.engine=engine;
   if (is89) {view.classList.add('ti89-view'); $('emulatorProgramFile').accept='.89p,.89f,.89e,.89l,.89m,.89s,.89t,.89z'; $('emulatorProgram').hidden=true;}
   view.querySelectorAll('[data-emu-key]').forEach(button => {button.disabled=true;});
+  if (isNspire) {
+    view.classList.add('tinspire-view');
+    $('emulatorProgram').hidden=true;
+    $('emulatorDownload').textContent='Load calculator';
+    $('emulatorImport').textContent='Load Boot1 & flash';
+    $('emulatorSetupText').textContent='Your CX CAS downloads once (133 MiB), then its firmware and session stay saved on this device for offline use. You can also choose matching Boot1 and flash files below.';
+    const fine=$('emulatorSetup').querySelector('.emu-fine-print');
+    fine.textContent='An OS update (.tcc) alone is not a flash image. Use Firebird on your computer to prepare an image if needed. Firmware files are never uploaded.';
+    const files=document.createElement('div'); files.className='nspire-firmware-files';
+    files.innerHTML='<label>Boot1<input type="file" id="tinspireBootFile" accept=".img,.bin,.rom,.tns"></label><label>Flash image<input type="file" id="tinspireFlashFile" accept=".img,.bin,.rom,.tns"></label>';
+    $('emulatorSetup').insertBefore(files,$('emulatorImport'));
+    for (const node of view.querySelectorAll('[aria-label]')) {node.setAttribute('aria-label',node.getAttribute('aria-label').replaceAll('TI-84','TI-Nspire CX CAS'));}
+    const sourceLink=$('emulatorSession').querySelector('a[href$="README.md"]'); sourceLink.textContent='Firebird source and licence';
+  }
   const canvas=$('emulatorCanvas'), context=canvas.getContext('2d',{alpha:false});
   let lastFrame;
   function status(message,error=false) {
@@ -105,7 +125,7 @@ function createGregleEmulator(options) {
   }
   function preference(value) {try {localStorage.setItem('gregle-calc-engine',value);} catch (_) {}}
   function show(activeValue) {
-    active=activeValue; page.classList.toggle(is89 ? 'ti89-active' : 'emulator-active',active); view.hidden=!active;
+    active=activeValue; page.classList.toggle(isNspire ? 'tinspire-active' : is89 ? 'ti89-active' : 'emulator-active',active); view.hidden=!active;
     modeButton.setAttribute('aria-checked',String(active));
     if (!active) releaseAll();
     window.dispatchEvent(new Event('resize'));
@@ -171,12 +191,12 @@ function createGregleEmulator(options) {
   function request(type,data={}) {
     return new Promise((resolve,reject) => {
       const instance=getWorker(), id=++sequence;
-      const timer=setTimeout(() => {pending.delete(id); reject(new Error('The emulator did not respond. Open Session to restart it.'));},30000);
+      const timer=setTimeout(() => {pending.delete(id); reject(new Error('The emulator did not respond. Open Session to restart it.'));},isNspire ? 90000 : 30000);
       pending.set(id,{resolve,reject,timer}); instance.postMessage({type,id,...data});
     });
   }
   function releaseAll() {
-    pointers.clear(); hardware.clear();
+    pointers.clear(); hardware.clear(); releaseTouchpad();
     view.querySelectorAll('.is-down').forEach(button => button.classList.remove('is-down'));
     if (loaded) worker?.postMessage({type:'release'});
   }
@@ -267,7 +287,7 @@ function createGregleEmulator(options) {
     if (onProgress) downloadListeners.add(onProgress);
     try {
       if (!romDownload) romDownload=(async () => {
-        const {downloadRom}=await import(new URL(is89 ? 'ti89/rom-source.mjs?v=20261102-ti89-6' : 'ti84/rom-source.mjs?v=20261031-hosted1',scriptURL));
+        const {downloadRom}=await import(new URL(isNspire ? 'tinspire/rom-source.mjs' : is89 ? 'ti89/rom-source.mjs?v=20261102-ti89-6' : 'ti84/rom-source.mjs?v=20261031-hosted1',scriptURL));
         return downloadRom({onProgress:value => {for (const listener of downloadListeners) listener(value);}});
       })().finally(() => {romDownload=null;});
       return await romDownload;
@@ -343,7 +363,21 @@ function createGregleEmulator(options) {
     if (remote) {await open(); return;}
     await pause(!paused); await save();
   });
-  const chooseRom=() => {if (!busy) $('emulatorRomFile').click();};
+  const chooseRom=async () => {
+    if (busy) return;
+    if (!isNspire) {$('emulatorRomFile').click(); return;}
+    $('emulatorSession').hidden=true; $('emulatorSetup').hidden=false;
+    const bootFile=$('emulatorBootFile').files[0], flashFile=$('emulatorFlashFile').files[0];
+    if (!bootFile || !flashFile) {status('Select both a Boot1 dump and a CX CAS flash image.'); return;}
+    try {
+      if (bootFile.size!==0x80000 || ![33*1024*1024,132*1024*1024].includes(flashFile.size)) throw new Error('Boot1 must be 512 KiB; the flash image must be 33 or 132 MiB.');
+      setBusy(true);
+      const {packFirmware}=await import(new URL('tinspire/firmware.mjs',scriptURL));
+      const rom=packFirmware(new Uint8Array(await bootFile.arrayBuffer()),new Uint8Array(await flashFile.arrayBuffer()));
+      await takeOver(); await boot({rom,name:model,updatedAt:Date.now()},{fresh:true});
+      if (loaded) {$('emulatorBootFile').value=''; $('emulatorFlashFile').value='';}
+    } catch (error) {status(error.message,true);} finally {setBusy(false);}
+  };
   $('emulatorImport').addEventListener('click',chooseRom); $('emulatorReplace').addEventListener('click',chooseRom);
   $('emulatorRomFile').addEventListener('change',async event => {
     const file=event.target.files[0]; event.target.value=''; if (!file || busy) return;
@@ -389,13 +423,13 @@ function createGregleEmulator(options) {
   $('emulatorBackupFile').addEventListener('change',async event => {
     const file=event.target.files[0]; event.target.value=''; if (!file || busy) return;
     try {
-      if (file.size>70*1024*1024 || file.size<12) throw new Error(`Choose a Gregle ${model} backup (.${extension}).`);
+      if (file.size>(isNspire ? 350 : 70)*1024*1024 || file.size<12) throw new Error(`Choose a Gregle ${model} backup (.${extension}).`);
       const bytes=await file.arrayBuffer(), header=new Uint8Array(bytes,0,8);
       if (new TextDecoder().decode(header)!==magic) throw new Error('This is not a Gregle calculator backup.');
       const length=new DataView(bytes).getUint32(8,true);
       if (length>2048 || 12+length>bytes.byteLength) throw new Error('This backup is damaged.');
       const meta=JSON.parse(new TextDecoder().decode(new Uint8Array(bytes,12,length)));
-      if (meta.version!==1 || !Number.isInteger(meta.romLength) || !Number.isInteger(meta.stateLength) || meta.romLength<0x40000 || meta.romLength>8*1024*1024 || meta.stateLength<4 || meta.stateLength>12*1024*1024 || bytes.byteLength!==12+length+meta.romLength+meta.stateLength) throw new Error('This backup is damaged or unsupported.');
+      if (meta.version!==1 || !Number.isInteger(meta.romLength) || !Number.isInteger(meta.stateLength) || meta.romLength<0x40000 || meta.romLength>(isNspire ? 134 : 8)*1024*1024 || meta.stateLength<4 || meta.stateLength>(isNspire ? 210 : 12)*1024*1024 || bytes.byteLength!==12+length+meta.romLength+meta.stateLength) throw new Error('This backup is damaged or unsupported.');
       if (loaded && !confirm('Replace the current calculator with this backup?')) return;
       const start=12+length; await takeOver();
       await boot({name:typeof meta.name==='string' ? meta.name.slice(0,160) : model,coreVersion:meta.coreVersion,bootFrames:meta.bootFrames,rom:bytes.slice(start,start+meta.romLength),state:bytes.slice(start+meta.romLength)});
@@ -437,9 +471,9 @@ function createGregleEmulator(options) {
       if (event.key==='Escape' && !$('emulatorSession').hidden) {event.preventDefault(); event.stopImmediatePropagation(); $('emulatorCloseSession').click();}
       return;
     }
-    if (event.ctrlKey || event.metaKey || (event.altKey && event.key!=='Alt') || event.key==='Tab') return;
+    if ((event.ctrlKey && !isNspire) || event.metaKey || (event.altKey && event.key!=='Alt') || (event.key==='Tab' && (!isNspire || event.target!==canvas))) return;
     if ((event.key==='Enter' || event.key===' ') && event.target.tagName==='BUTTON') return;
-    const name=keyMap[event.key]; if (!name) return;
+    const name=keyMap[event.key] || (isNspire ? keyMap[event.key.toLowerCase()] : null); if (!name) return;
     event.preventDefault(); event.stopImmediatePropagation();
     if (!event.repeat) {hardware.set(event.code,name); sendKey(name,true);}
   },true);
@@ -447,6 +481,11 @@ function createGregleEmulator(options) {
     const name=hardware.get(event.code); if (!name) return;
     event.preventDefault(); event.stopImmediatePropagation(); sendKey(name,false); hardware.delete(event.code);
   },true);
+  if (options.bindTouchpad) releaseTouchpad=options.bindTouchpad(view.querySelector('.nspire-touchpad'),data=>{
+    if (!loaded || paused || remote || !active || busy || starting) return;
+    worker.postMessage({type:'touch',...data});
+    if (!data.contact) scheduleSave();
+  });
   window.addEventListener('blur',releaseAll);
   document.addEventListener('visibilitychange',() => {
     if (document.hidden) {releaseAll(); if (loaded && !remote) {visibilityPaused=!paused; void pause(true); void save();}}

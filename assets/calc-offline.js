@@ -1,7 +1,7 @@
 /* Prepare and report offline calculator availability without changing modes. */
 (() => {
   'use strict';
-  let registration, running, scheduled=false, appReady=false, romReady=false, romRemoved=false, ti89Ready=false, ti89Removed=false, setupError='';
+  let registration, running, scheduled=false, appReady=false, romReady=false, romRemoved=false, ti89Ready=false, ti89Removed=false, nspireReady=false, nspireRemoved=false, setupError='';
   const installed=() => document.documentElement.classList.contains('calculator-standalone');
   function render() {
     let message;
@@ -9,12 +9,14 @@
       const ready=['scientific','graphing'];
       if (romReady) ready.push('TI-84 CE');
       if (ti89Ready) ready.push('TI-89');
+      if (nspireReady) ready.push('CX CAS');
       message='Ready offline · '+ready.join(', ')+'.';
       const missing=[];
       if (!romReady && !romRemoved) missing.push('TI-84 CE');
       if (!ti89Ready && !ti89Removed) missing.push('TI-89');
       if (setupError) message+=' '+setupError;
       else if (missing.length) message+=' Open '+missing.join(' or ')+' once online to save it too.';
+      if (!nspireReady && !nspireRemoved) message+=' Open CX CAS once online to save it offline (133 MiB).';
     } else message=setupError || 'Preparing offline use…';
     if (registration?.waiting) message+=' Update ready · close all calculator windows to apply.';
     document.querySelectorAll('[data-offline-status]').forEach(node => {node.textContent=message;});
@@ -34,11 +36,13 @@
       setupError='';
       try {
         appReady=Boolean(registration?.active) && await cached(registration.active);
-        const results=await Promise.allSettled(['ti84','ti89'].map(engine => window.GregleEmulators[engine].prepareOffline({download:appReady && installed() && navigator.onLine})));
+        const results=await Promise.allSettled(['ti84','ti89','tinspire'].map(engine => window.GregleEmulators[engine].prepareOffline({download:appReady && installed() && navigator.onLine})));
         romReady=results[0].status==='fulfilled' && results[0].value.ready;
         romRemoved=results[0].status==='fulfilled' && Boolean(results[0].value.removed);
         ti89Ready=results[1].status==='fulfilled' && results[1].value.ready;
         ti89Removed=results[1].status==='fulfilled' && Boolean(results[1].value.removed);
+        nspireReady=results[2].status==='fulfilled' && results[2].value.ready;
+        nspireRemoved=results[2].status==='fulfilled' && Boolean(results[2].value.removed);
         if (!appReady) setupError=navigator.onLine ? 'Finishing offline setup. Keep this calculator open online.' : 'Offline setup incomplete. Reopen online to finish.';
         else if (results.some(result => result.status==='rejected')) setupError='An emulator ROM could not be saved. Retry online.';
         if (appReady && installed() && navigator.storage?.persist) void navigator.storage.persist().catch(() => {});
@@ -70,7 +74,7 @@
     try {await registration.update();} catch (_) {}
     await check();
   }));
-  for (const engine of ['ti84','ti89']) window.addEventListener(`gregle-${engine}-storage`,() => {void check();});
+  for (const engine of ['ti84','ti89','tinspire']) window.addEventListener(`gregle-${engine}-storage`,() => {void check();});
   window.addEventListener('online',() => {if (registration?.active) {void registration.update().catch(() => {}); void check();} else void start();});
   window.addEventListener('offline',() => {void check();});
   window.addEventListener('appinstalled',() => {void check();});

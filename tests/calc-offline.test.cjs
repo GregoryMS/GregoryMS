@@ -21,7 +21,7 @@ function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,st
     if (url.pathname===fail) throw Error('Interrupted connection');
     const file=path.join(root,url.pathname==='/' ? 'calc.html' : url.pathname);
     let content=fs.readFileSync(file);
-    if (staleHTML && file.endsWith('calc.html')) content=content.toString().replace('calc-offline.js?v=20261102-ti89-6','calc-offline.js?v=another-release');
+    if (staleHTML && file.endsWith('calc.html')) content=content.toString().replace(/calc-offline\.js\?v=[^"']+/, 'calc-offline.js?v=another-release');
     const type=/\.wasm$/.test(file) ? 'application/wasm' : /\.(?:m?js)$/.test(file) ? 'text/javascript' : /\.html$/.test(file) ? 'text/html' : 'application/octet-stream';
     const response=new Response(content,{headers:{'content-type':type}});
     Object.defineProperty(response,'url',{value:url.href});
@@ -42,9 +42,10 @@ test('offline install saves the complete calculator including a never-opened emu
   assert.equal((await app.status()).ready,true);
   for (const file of ['worker.mjs','cemu.mjs','cemu.wasm']) assert(app.requests.some(url => url.endsWith('/assets/ti84/'+file)));
   for (const file of ['worker.js','ti68k.js','rom-source.mjs?v=20261102-ti89-6']) assert(app.requests.some(url => url.endsWith('/assets/ti89/'+file)));
+  for (const file of ['worker.mjs','firebird.mjs','firebird.wasm','firmware.mjs']) assert(app.requests.some(url=>url.endsWith('/assets/tinspire/'+file)));
   assert(app.requests.every(url => url.startsWith('https://calc.gregle.uk/')),'no ROM or other third-party resource in the service-worker cache');
   const count=app.requests.length;
-  for (const url of ['/?engine=ti89','/calc.html?engine=ti89','/?engine=ti84','/?popout=1','/calc.html?engine=ti84','/calc.html?popout=1']) assert.match(await (await app.request(url)).text(),/Calculator · Gregle/);
+  for (const url of ['/?engine=tinspire','/calc.html?engine=tinspire','/?engine=ti89','/calc.html?engine=ti89','/?engine=ti84','/?popout=1','/calc.html?engine=ti84','/calc.html?popout=1']) assert.match(await (await app.request(url)).text(),/Calculator · Gregle/);
   assert.equal(app.requests.length,count,'all launch URLs work without network');
 });
 test('calculator caching leaves other Gregle apps and unknown asset versions alone',async () => {
@@ -82,5 +83,14 @@ test('partial deployments cannot activate HTML referring to another release’s 
   const update=environment({storage:app.storage,version:'partial',staleHTML:true});
   await assert.rejects(update.lifecycle('install'),/could not finish/);
   assert(app.storage.has(current)); assert(!app.storage.has('gregle-calculator-partial'));
+  assert.equal((await app.status()).ready,true);
+});
+
+test('an interrupted Nspire download cannot claim offline readiness or replace a complete cache',async()=>{
+  const app=environment(); await app.lifecycle('install');
+  const previous=[...app.storage.keys()][0];
+  const update=environment({storage:app.storage,version:'nspire-interrupted',fail:'/assets/tinspire/firebird.wasm'});
+  await assert.rejects(update.lifecycle('install'),/could not finish/);
+  assert(app.storage.has(previous)); assert(!app.storage.has('gregle-calculator-nspire-interrupted'));
   assert.equal((await app.status()).ready,true);
 });

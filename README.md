@@ -951,6 +951,31 @@ Run `node --test tests/calc-ti89.test.cjs tests/calc-rom-proxy.test.cjs tests/ca
 for CPU/snapshot restoration, all hardware key mappings, ROM validation and
 complete offline caching.
 
+### TI-Nspire CX CAS emulator
+
+**CX CAS** adds a local Firebird WebAssembly emulator with the handheld's
+key arrangement, split function keys, alphabet rows and an interactive
+touchpad. Drag to move the pointer, tap to click, use the edges for direction
+clicks, or hold to drag with the button down. Hardware keyboard controls and
+the existing calculator resize/pop-out features are supported.
+
+The user-supplied Boot1 and flash images download once (132.5 MiB) through
+`workers/nspire-firmware/worker.mjs`, a streaming relay restricted to two fixed
+files. The browser checks exact lengths, model metadata and SHA-256 fingerprints.
+Firmware is never committed to GitHub. Manual file selection remains available.
+The PWA caches every runtime dependency and saves firmware plus CPU, RAM,
+peripheral and modified-flash snapshots in independent `gregle-tinspire`
+IndexedDB storage. Offline readiness includes CX CAS only after its firmware
+is saved. Auto-save, pause/resume, multi-window handoff and `.greglensp`
+backup export/restore use the shared emulator controller.
+
+The corresponding GPL source archive and rebuild instructions are in
+`assets/tinspire/README.md`. The ARM interpreter runs in bounded worker slices,
+paced against the native 100 Hz throttle so idle time cannot cause fast key
+repeat. Tests execute an original, ROM-free ARM diagnostic, verify full snapshot
+restoration, validate firmware/download failures, exercise touchpad interactions
+and verify complete offline caching. Run `node --test tests/calc-tinspire*.test.cjs tests/calc-offline.test.cjs`.
+
 ### Offline calculator / iOS home-screen app
 
 Open the installed calculator online once and wait for **Ready offline** in
