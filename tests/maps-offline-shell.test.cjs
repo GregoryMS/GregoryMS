@@ -36,6 +36,6 @@ test('package relay allows only known public assets and streams without forwardi
   try{
     for(const pathname of ['/api/maps/offline/https://example.com','/api/maps/offline/offline-20261115/unknown.bin','/api/maps/offline/catalog.json?url=evil'])assert.equal((await mapsOffline(new Request('https://maps.gregle.uk'+pathname))).status,404);
     assert.equal((await mapsOffline(new Request('https://maps.gregle.uk/api/maps/offline/catalog.json',{method:'POST'}))).status,405);
-    const response=await mapsOffline(new Request('https://maps.gregle.uk/api/maps/offline/offline-20261115000000/victoria-routing.bin',{headers:{Cookie:'private',Authorization:'private'}}));assert.equal(await response.text(),'bytes');assert.equal(calls.length,1);assert(!calls[0].options.headers.Cookie);assert(calls[0].url.startsWith('https://github.com/GregoryMS/GregoryMS/releases/download/offline-'));
+    const response=await mapsOffline(new Request('https://maps.gregle.uk/api/maps/offline/offline-20261115000000/victoria-routing.bin',{headers:{Cookie:'private',Authorization:'private'}}));assert.equal(response.headers.get('Access-Control-Allow-Origin'),'*');assert.equal(await response.text(),'bytes');assert.equal(calls.length,1);assert(!calls[0].options.headers.Cookie);assert(calls[0].url.startsWith('https://github.com/GregoryMS/GregoryMS/releases/download/offline-'));
   }finally{global.fetch=original;}
 });

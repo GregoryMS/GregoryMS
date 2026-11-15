@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const store=window.GregleOfflineStore;
+  const api=['localhost','127.0.0.1'].includes(location.hostname)?'/api/maps/offline/':'https://maps.gregle.uk/api/maps/offline/';
   let forced=false,worker,requestId=0,pending=new Map(),installed=[],registration;
   try{forced=localStorage.getItem('gregle-maps-use-offline')==='on';}catch{}
   const active=()=>forced||navigator.onLine===false;
@@ -64,7 +65,7 @@
       loading=(async()=>{try{
         if(!navigator.onLine){message('Offline. Saved regions are available below.');return;}
         message('Checking downloadable regions…');
-        const response=await fetch('/api/maps/offline/catalog.json',{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000)});
+        const response=await fetch(api+'catalog.json',{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000)});
         if(!response.ok)throw Error('Regional downloads are being prepared. Try Check for updates shortly.');
         catalog=store.catalog(await response.json());message('Choose maps, routing, or both. Downloads stay on this device.');
       }catch(e){message(e.message||'Could not check downloads. Your saved regions are still available.');}finally{loading=null;render();}})();
@@ -99,7 +100,7 @@
         if(estimate?.quota&&estimate.quota-estimate.usage<index.bytes*1.15)throw Error('Not enough free browser storage. Remove a saved region or free some space first.');
         const persistent=await navigator.storage?.persist?.();
         message(`Downloading ${region.name} ${component}… Keep Maps open.`);
-        const response=await fetch(`/api/maps/offline/${version}/${index.file}`,{signal:controller.signal,cache:'no-store',credentials:'omit'});
+        const response=await fetch(`${api}${version}/${index.file}`,{signal:controller.signal,cache:'no-store',credentials:'omit'});
         if(!response.ok||!response.body)throw Error('Download unavailable. Your previous download is unchanged.');
         let received=0;const reader=response.body.getReader();
         const stream=new ReadableStream({async pull(target){try{const {done,value}=await reader.read();if(done){target.close();return;}received+=value.byteLength;if(received>index.bytes){await reader.cancel();throw Error('Unexpected download size.');}$('offline-progress').value=received/index.bytes*.8;target.enqueue(value);}catch(e){target.error(e);}},cancel:()=>reader.cancel()});
