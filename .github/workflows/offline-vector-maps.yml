@@ -1,0 +1,49 @@
+name: Build offline vector maps
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 10 3 * *'
+  workflow_run:
+    workflows: [Build offline map regions]
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_offline_vector_maps.py
+      - .github/workflows/offline-vector-maps.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: offline-vector-packages
+  cancel-in-progress: false
+
+jobs:
+  packages:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install verified VersaTiles 5.13.0
+        run: |
+          mkdir -p work/versatiles
+          base=https://github.com/versatiles-org/versatiles-rs/releases/download/v5.13.0
+          curl -fL --retry 3 "$base/versatiles-linux-gnu-x86_64.tar.gz" -o work/versatiles/versatiles-linux-gnu-x86_64.tar.gz
+          curl -fL --retry 3 "$base/versatiles-linux-gnu-x86_64.tar.gz.sha256" -o work/versatiles/checksum
+          (cd work/versatiles && sha256sum -c checksum)
+          tar -xzf work/versatiles/versatiles-linux-gnu-x86_64.tar.gz -C work/versatiles
+      - name: Extract preset regions and index resumable blocks
+        run: python3 scripts/build_offline_vector_maps.py --versatiles work/versatiles/versatiles
+      - name: Publish versioned files, then the complete catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c 'import json; print(json.load(open("work/offline-vector-packages/catalog-v2.json"))["version"])')
+          gh release create "$version" work/offline-vector-packages/* --title "Offline vector maps $version" --notes 'Shortbread PMTiles extracted from VersaTiles. © OpenStreetMap contributors, ODbL 1.0. Routing is downloaded separately.' --target "$GITHUB_SHA" --latest=false
+          gh release upload offline-current work/offline-vector-packages/catalog-v2.json --clobber
