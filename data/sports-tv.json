@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
+      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -142,6 +142,7 @@
           "channels": [
             "NOW",
             "Sky Sports+ app",
+            "WSL YouTube",
             "YouTube UK"
           ]
         },
@@ -174,7 +175,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
+      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -297,7 +298,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
+      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -450,7 +451,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
+      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -577,7 +578,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
+      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
       "listings": [
         {
           "home": "Switzerland",
