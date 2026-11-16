@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css" integrity="sha256-M3v8pcq9A7OYFbJwD+vis7ft9VkhxZzUn4jssyghIwM=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
   <link rel="stylesheet" href="assets/vendor/maplibre/maplibre-gl.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261115-car-offline4">
+  <link rel="stylesheet" href="assets/maps.css?v=20261116-weather1">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261103-pointer-cursor2">
   <script src="assets/theme.js?v=20261113-shared-device1" defer></script>
   <script src="assets/vendor/leaflet/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -77,16 +77,19 @@
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-navigation.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261113-native-3d" defer></script>
-  <script src="assets/maps-drawer.js?v=20261115-offline1" defer></script>
+  <script src="assets/maps-drawer.js?v=20261116-weather1" defer></script>
   <script src="assets/maps-qr.js?v=20261113-native-3d" defer></script>
-  <script src="assets/maps-context-menu.js?v=20261113-native-3d" defer></script>
+  <script src="assets/weather-core.js?v=20261021-station-coverage" defer></script>
+  <script src="assets/maps-weather-core.js?v=20261116-weather1" defer></script>
+  <script src="assets/maps-weather.js?v=20261116-weather1" defer></script>
+  <script src="assets/maps-context-menu.js?v=20261116-weather1" defer></script>
   <script src="assets/maps-saved-places.js?v=20261112-car-home" defer></script>
   <script src="assets/maps-offline-store.js?v=20261116-offline-vector1" defer></script>
   <script src="assets/vendor/pmtiles/pmtiles.js" defer></script>
   <script src="assets/maps-offline-pmtiles.js?v=20261116-offline-vector1" defer></script>
   <script src="assets/maps-offline-vector.js?v=20261116-offline-vector1" defer></script>
   <script src="assets/maps-offline.js?v=20261116-offline-vector1" defer></script>
-  <script src="assets/maps.js?v=20261115-offline1" defer></script>
+  <script src="assets/maps.js?v=20261116-weather1" defer></script>
   <script src="assets/maps-gps-test.js?v=20261112-settings-icon" defer></script>
   <script src="assets/site-menu.js?v=20261113-shared-device1" defer></script>
   <link rel="canonical" href="https://maps.gregle.uk/">
@@ -130,12 +133,26 @@
         <button type="button" role="menuitem" id="map-context-pin">Drop pin</button>
         <button type="button" role="menuitem" id="map-context-navigate">Navigate here</button>
         <button type="button" role="menuitem" id="map-context-start">Start here</button>
+        <button type="button" role="menuitem" id="map-context-weather">Weather</button>
         <button type="button" role="menuitem" id="map-context-measure">Measure distance</button>
         <button type="button" role="menuitem" id="map-context-share">Share location</button>
         <button type="button" role="menuitem" id="map-context-qrcode">QR code</button>
         <a role="menuitem" id="map-context-what3words" href="https://what3words.com/" target="_blank" rel="noopener noreferrer">Open in what3words ↗</a>
       </div>
       <div class="map-context-coordinates"><span id="map-context-lat"></span><span id="map-context-lng"></span><span id="map-context-pluscode"></span></div>
+    </section>
+    <section class="map-weather-card map-glass" id="map-weather-card" aria-labelledby="map-weather-location" hidden>
+      <div class="map-weather-heading"><div><span class="map-weather-kicker">Weather</span><h2 id="map-weather-location" tabindex="-1">Weather</h2></div><button type="button" class="map-dismiss" id="close-map-weather" aria-label="Close weather">×</button></div>
+      <p id="map-weather-nearby" class="map-weather-note"></p>
+      <p id="map-weather-status" class="map-weather-note" role="status" aria-live="polite"></p>
+      <div id="map-weather-body" hidden>
+        <div class="map-weather-now"><div id="map-weather-current-icon" class="map-weather-icon"></div><div><span class="map-weather-label">Current conditions</span><strong id="map-weather-temperature"></strong><p id="map-weather-condition"></p></div></div>
+        <p id="map-weather-facts" class="map-weather-note"></p><p id="map-weather-observed" class="map-weather-note"></p>
+        <div class="map-weather-tomorrow"><div class="map-weather-next-heading"><h3>Tomorrow</h3><span id="map-weather-next-date" class="map-weather-note"></span></div><div class="map-weather-next-summary"><div id="map-weather-next-icon" class="map-weather-icon"></div><p id="map-weather-next-condition"></p></div><dl><div><dt>High</dt><dd id="map-weather-high"></dd></div><div><dt>Low</dt><dd id="map-weather-low"></dd></div></dl><p id="map-weather-rain" class="map-weather-note"></p></div>
+      </div>
+      <p class="map-weather-credit"><span id="map-weather-provider" hidden>Weather: <a id="map-weather-source" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · </span>Cities: <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a></p>
+      <button type="button" id="map-weather-retry" hidden>Try again</button>
+      <a id="map-weather-link" href="https://weather.gregle.uk/" target="_blank" rel="noopener noreferrer" hidden>Open in Gregle Weather ↗</a>
     </section>
     <section class="map-measure map-glass" id="map-measure" aria-label="Measure distance" hidden>
       <div><strong id="map-measure-total" role="status" aria-live="polite">0 m</strong><button type="button" id="map-measure-clear" aria-label="Clear measurement">×</button></div>

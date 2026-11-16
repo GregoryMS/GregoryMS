@@ -187,7 +187,27 @@ The shared nine-dot app launcher includes Radio, Dictionary and Cloud (https://c
 
 ## Maps
 
-Right-click the map for **Drop pin**, **Navigate here**, **Start here**, **Measure distance**, and the clicked latitude/longitude. Navigate here uses the chosen starting point or requests device location, then previews the route for starting navigation. Measure distance adds straight-line segments with each map click; use Undo point, Finish or × to clear. Escape dismisses the menu first, then cancels an active measurement.
+Right-click the map for **Drop pin**, **Navigate here**, **Start here**, **Weather**, **Measure distance**, and the clicked latitude/longitude. Navigate here uses the chosen starting point or requests device location, then previews the route for starting navigation. Measure distance adds straight-line segments with each map click; use Undo point, Finish or × to clear. Escape dismisses the menu first, then cancels an active measurement.
+
+Right-click a map point and choose **Weather** for the nearest indexed city or
+town's current conditions and tomorrow's forecast. The card includes temperature,
+conditions, wind/humidity when available, next-day high/low, and an **Open in
+Gregle Weather** link carrying that city's coordinates, country and time zone.
+Canadian cards prefer Environment Canada (matching Gregle Weather's default
+Victoria Harbour observation); other locations and Canadian-provider failures use
+Open-Meteo. Tomorrow is calculated in the forecast city's local calendar, including
+after midnight. The card supports the mobile drawer, Car Mode, dark mode, Escape,
+retry, cancellation and five-minute in-memory forecast caching. Fresh weather
+requires internet; opening it does not request GPS permission or change the pin.
+
+City matching streams a locally hosted, compressed GeoNames cities1000 derivative
+in a worker, retaining only the closest valid city/town or administrative seat.
+No clicked coordinates are sent to a geocoding service. Source, licence and rebuild
+instructions are in `data/map-weather-cities-SOURCES.md`. The index is loaded on
+demand and is not added to every offline map download. Forecast requests use the
+chosen city's coordinates. Run `node --test tests/maps-weather.test.cjs
+tests/maps-context-menu.test.cjs tests/maps-drawer.test.cjs` for normalization,
+city/link/date contracts and menu integration.
 
 Maps also offers Google **Popular times** on demand, using the standard Places
 UI Kit alongside the existing OSM map. See [setup and quota handling](docs/maps-busyness.md)

@@ -18,7 +18,7 @@ for tag, reference in re.findall(r'(<(?:script|link)\b[^>]*\b(?:src|href)="([^"]
         raise ValueError('External required dependency: ' + reference)
     assets.add('/' + reference.lstrip('/'))
 assets.update('/'+p for p in ['assets/maps-config.json?v=20261112-search-proxy',
-    'assets/maps-offline-worker.js', 'assets/maps-offline-routing.js', 'assets/maps-offline-data-worker.js',
+    'assets/maps-weather-worker.js', 'assets/maps-offline-worker.js', 'assets/maps-offline-routing.js', 'assets/maps-offline-data-worker.js',
     'assets/maps-offline-store.js', 'assets/maps-navigation-core.js',
     'assets/vendor/leaflet/images/marker-icon.png', 'assets/vendor/leaflet/images/marker-icon-2x.png',
     'assets/vendor/leaflet/images/marker-shadow.png', 'assets/vendor/leaflet/images/layers.png',

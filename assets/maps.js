@@ -312,9 +312,10 @@
     onPin: touch => dropPin({ latlng: map.mouseEventToLatLng(touch), originalEvent: { target: touch.target } }),
   });
   map.on('dblclick', event => { if (!pinGestures.ignoreDoubleClick(event.originalEvent)) dropPin(event); });
+  const weatherCard = window.GregleMapWeather?.({map,drawer});
   const showQR = window.GregleMapQR?.({map});
   contextTools = window.GregleMapContextMenu?.({
-    onQR: point => showQR?.(point),
+    onQR: point => showQR?.(point), onWeather: point => weatherCard?.open(point),
     map, navigation, enabled: () => !usingEmbed, onShare: shareLocation,
     ignore: event => pinGestures.ignoreDoubleClick(event),
     onAction: () => { intent++; cancelSearch(); hideSearch(); },
