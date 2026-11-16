@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-16T02:08:17.310225+00:00",
+      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -127,7 +127,12 @@
           "away": "Tottenham Hotspur (W)",
           "start": "2026-11-22T12:00:00+00:00",
           "channels": [
-            "Sky Mix"
+            "NOW",
+            "Sky Mix",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports Mix",
+            "Sky Sports+ app"
           ]
         },
         {
@@ -136,7 +141,8 @@
           "start": "2026-11-22T14:00:00+00:00",
           "channels": [
             "NOW",
-            "Sky Sports+ app"
+            "Sky Sports+ app",
+            "YouTube UK"
           ]
         },
         {
@@ -168,7 +174,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-16T02:08:17.310225+00:00",
+      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -291,7 +297,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-16T02:08:17.310225+00:00",
+      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -444,7 +450,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-16T02:08:17.310225+00:00",
+      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
       "listings": [
         {
           "home": "Switzerland",
@@ -571,7 +577,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-16T02:08:17.310225+00:00",
+      "checkedAt": "2026-11-16T09:44:45.569569+00:00",
       "listings": [
         {
           "home": "Switzerland",
