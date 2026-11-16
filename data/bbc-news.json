@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-16T15:29:58+00:00",
-  "fetchedAt": "2026-11-16T15:30:08.603911+00:00",
+  "feedUpdatedAt": "2026-11-16T23:49:00+00:00",
+  "fetchedAt": "2026-11-16T23:49:04.486814+00:00",
   "items": [
+    {
+      "title": "'Complete system reset' needed to get 440,000 young people into work, says major review",
+      "link": "https://www.bbc.co.uk/news/articles/c38xzy980924o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Robert Pattinson to replace Daniel Craig as James Bond",
+      "link": "https://www.bbc.co.uk/news/articles/cwx2ev0pxmvjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Cass report author says she does not support draft conversion practices bill",
+      "link": "https://www.bbc.co.uk/news/articles/c6m25vd2yxgdo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Russell Brand prison message 'appalling' and being investigated, No 10 says",
       "link": "https://www.bbc.co.uk/news/articles/cm9d7pe8y559o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Create more jobs for under-25s by cutting National Insurance, key report urges",
-      "link": "https://www.bbc.co.uk/news/articles/c6p9dzmj514ko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'I'd throw up in the car park': How school anxiety is harming children's futures",
-      "link": "https://www.bbc.co.uk/news/articles/cm62pl6lglvwo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Lindsay Clancy to face retrial next year for deaths of her three children",
       "link": "https://www.bbc.co.uk/news/articles/cw5y1v8de35go?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "UK lost more than it gained from Brexit, Burnham to say ahead of EU summit",
-      "link": "https://www.bbc.co.uk/news/articles/crp3e1n5kezpo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Street cricket and metro ride as Prince and Princess of Wales visit India",
-      "link": "https://www.bbc.co.uk/news/videos/crkgvnl51w1vo?at_medium=RSS&at_campaign=rss"
+      "title": "Forensic expert says his analysis of autopsy photos suggests Epstein was killed",
+      "link": "https://www.bbc.co.uk/news/articles/c5n4exg1kkmyo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Landmark Crimea bridge hit as Russia reports biggest Ukrainian drone attack of war",
       "link": "https://www.bbc.co.uk/news/articles/ckx27v6dpjz0o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Yellow weather warnings issued for snow as temperatures plummet",
-      "link": "https://www.bbc.co.uk/weather/articles/c6y97j2xq531o?at_medium=RSS&at_campaign=rss"
+      "title": "UK lost more than it gained from Brexit, Burnham says ahead of EU summit",
+      "link": "https://www.bbc.co.uk/news/articles/crp3e1n5kezpo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Barristers must stop using rape myths in trials, justice secretary says",
-      "link": "https://www.bbc.co.uk/news/articles/cj04w7n74gqno?at_medium=RSS&at_campaign=rss"
+      "title": "Emma Barnett to leave Radio 4's Today for new BBC show",
+      "link": "https://www.bbc.co.uk/news/articles/c6rrgw2p52l5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Raye, Rosalia and Dolly Parton recognised in Grammy nominations",
-      "link": "https://www.bbc.co.uk/news/articles/cq9vwkggpx73o?at_medium=RSS&at_campaign=rss"
+      "title": "Five EU countries announce migrant deportation centre in Rwanda",
+      "link": "https://www.bbc.co.uk/news/articles/cw987343352go?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
