@@ -30,6 +30,9 @@
   })()));
   self.addEventListener('activate',event=>event.waitUntil((async()=>{
     for(const key of await caches.keys())if(key.startsWith(prefix)&&key!==name)await caches.delete(key);
+    // A first install must also cover workers created later in the current tab.
+    // Updates still wait for existing controlled tabs because we do not skipWaiting.
+    await self.clients?.claim?.();
   })()));
   self.addEventListener('fetch',event=>{
     const request=event.request,url=new URL(request.url);

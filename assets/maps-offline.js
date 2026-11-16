@@ -59,7 +59,8 @@
       loading=(async()=>{try{
         if(!navigator.onLine){message('Offline. Saved regions are available below.');return;}
         message('Checking downloadable regions…');
-        const response=await fetch(api+'catalog.json',{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000)});
+        let response=await fetch(api+'catalog-v2.json',{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000)});
+        if(response.status===404&&!installed.some(p=>p.index?.format==='pmtiles'))response=await fetch(api+'catalog.json',{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000)});
         if(!response.ok)throw Error('Regional downloads are being prepared. Try Check for updates shortly.');
         catalog=store.catalog(await response.json());message('Choose maps, routing, or both. Downloads stay on this device.');
       }catch(e){message(e.message||'Could not check downloads. Your saved regions are still available.');}finally{loading=null;render();}})();
@@ -73,8 +74,8 @@
         for(const component of ['maps','routing']){
           const saved=installed.find(p=>p.region===id&&p.component===component),paused=partial.find(p=>p.region===id&&p.component===component),region=catalog?.regions.find(r=>r.id===id),part=region?.components[component];
           const row=document.createElement('div'),label=document.createElement('span'),action=document.createElement('button');row.className='offline-package';
-          label.textContent=`${component==='maps'?'Street map':'Route navigation'}${part?' · '+size(part.bytes):''}${saved?' · Saved '+size(store.size(saved)):''}`;
-          action.type='button';action.textContent=paused&&paused.version===catalog?.version?'Resume':saved?(catalog&&saved.version!==catalog.version?'Update':'Downloaded'):'Download';action.disabled=!!download||!part||!!saved&&saved.version===catalog?.version||!supported();
+          label.textContent=`${component==='maps'?(part?.format==='pmtiles'?'Detailed street map':'Street map'):'Route navigation'}${part?' · '+size(part.bytes):''}${saved?' · Saved '+size(store.size(saved)):''}`;
+          action.type='button';action.textContent=paused&&paused.version===(part?.version||catalog?.version)?'Resume':saved?(catalog&&saved.version!==(part?.version||catalog.version)?'Update':'Downloaded'):'Download';action.disabled=!!download||!part||!!saved&&saved.version===(part?.version||catalog?.version)||!supported();
           action.setAttribute('aria-label',`${action.textContent} ${name} ${component}`);action.addEventListener('click',()=>install(region,component));row.append(label,action);
           if(saved&&component==='maps'){const view=document.createElement('button');view.type='button';view.textContent='View';view.setAttribute('aria-label',`View downloaded ${name} map`);view.addEventListener('click',()=>{window.GregleOfflineMaps.setEnabled(true);map.fitBounds([[saved.bounds[1],saved.bounds[0]],[saved.bounds[3],saved.bounds[2]]]);close();});row.append(view);}
           if(saved||paused){const remove=document.createElement('button');remove.type='button';remove.textContent='Remove';remove.disabled=!!download;remove.setAttribute('aria-label',`Remove ${name} ${component}`);remove.addEventListener('click',async()=>{try{await store.remove(saved?.key||paused.key);await reload();message(`${name} ${component} removed.`);}catch(e){message(e.message);}});row.append(remove);}
@@ -87,7 +88,7 @@
       if(navigator.storage?.estimate)navigator.storage.estimate().then(value=>{$('offline-storage').textContent=value.quota?`${size(value.usage||0)} used of approximately ${size(value.quota)} browser storage.`:'Storage availability depends on your browser.';}).catch(()=>{});
     }
     async function install(region,component){
-      if(download)return;download=new AbortController();const controller=download,version=catalog.version,index=region.components[component];
+      if(download)return;download=new AbortController();const controller=download,index=region.components[component],version=index.version||catalog.version;
       $('offline-progress').hidden=false;$('offline-progress').value=0;render();
       try{
         const persistent=await (navigator.storage?.persist?.()||Promise.resolve(false)).catch(()=>false);
@@ -105,10 +106,12 @@
       const token=++drawVersion;vector.clearLayers();footprint.clearLayers();
       const packs=installed.filter(p=>p.component==='maps'),bounds=map.getBounds(),center=map.getCenter();
       const selected=packs.filter(p=>store.inside(center,p.bounds)).sort((a,b)=>store.size(a)-store.size(b))[0]||packs.find(p=>bounds.intersects([[p.bounds[1],p.bounds[0]],[p.bounds[3],p.bounds[2]]]));
-      if(!active())return;
+      if(!active()){window.GregleOfflineVector?.clear(map);return;}
       $('offline-connection').textContent=selected?`Offline maps · ${selected.name} · live layers unavailable`:'No downloaded map here · choose Offline maps to view or save a region';
-      if(!selected)return;
+      if(!selected){window.GregleOfflineVector?.clear(map);return;}
       try{
+        if(selected.index.format==='pmtiles'){await window.GregleOfflineVector.show(map,selected,document.documentElement.classList.contains('dark-mode'));return;}
+        window.GregleOfflineVector?.clear(map);
         const b=selected.bounds;
         L.rectangle([[b[1],b[0]],[b[3],b[2]]],{pane:'offlineBackground',color:'#7637cc',weight:1,fillColor:'#f1f0e9',fillOpacity:1,interactive:false}).addTo(footprint);
         const keys=['overview'],x1=Math.max(Math.floor(bounds.getWest()*4),Math.floor(b[0]*4)),x2=Math.min(Math.floor(bounds.getEast()*4),Math.floor(b[2]*4)),y1=Math.max(Math.floor(bounds.getSouth()*4),Math.floor(b[1]*4)),y2=Math.min(Math.floor(bounds.getNorth()*4),Math.floor(b[3]*4));
@@ -140,7 +143,7 @@
           const el=document.createElement('span');el.textContent=name;
           L.marker(p,{icon:L.divIcon({className:place?'offline-place-label':'offline-road-label',html:el}),interactive:false}).addTo(vector);
         }
-      }catch(e){if(token===drawVersion)notify('The downloaded map could not be read. Remove and download this region again.');}
+      }catch(e){if(token===drawVersion)notify(e.message||'The downloaded map could not be read. Reopen Maps and try again.');}
     }
     function sync(){
       const offline=active();document.querySelector('.map-stage').classList.toggle('offline-maps-active',offline);
@@ -152,11 +155,12 @@
       draw();render();
     }
     window.addEventListener('gregle-offline-change',sync);map.on('moveend',draw);
+    new MutationObserver(()=>{if(active())draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
     if(!supported()){message('Offline downloads need a secure browser with IndexedDB, service workers and gzip support.');render();return;}
     try{
       await store.cleanup();
       await reload();
-      registration=await navigator.serviceWorker.register('/gregle-sw.js?v=20261115-offline-memory2',{scope:'/',updateViaCache:'none'});
+      registration=await navigator.serviceWorker.register('/gregle-sw.js?v=20261116-offline-vector1',{scope:'/',updateViaCache:'none'});
       const ready=await navigator.serviceWorker.ready;
       const channel=new MessageChannel();
       channel.port1.onmessage=event=>{if(event.data.ready)$('offline-shell-status').textContent='Maps is saved for offline opening. Close and reopen Maps after an app update.';};

@@ -23,6 +23,11 @@ assets.update('/'+p for p in ['assets/maps-config.json?v=20261112-search-proxy',
     'assets/vendor/leaflet/images/marker-icon.png', 'assets/vendor/leaflet/images/marker-icon-2x.png',
     'assets/vendor/leaflet/images/marker-shadow.png', 'assets/vendor/leaflet/images/layers.png',
     'assets/vendor/leaflet/images/layers-2x.png', 'assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1'])
+# Lazy renderer, worker imports, styles, fonts and sprites must be available offline.
+assets.update('/'+p for p in ['assets/vendor/maplibre/maplibre-gl.js', 'assets/leaflet-maplibre-gl.js',
+    'assets/vendor/pmtiles/tile-search.js'])
+assets.update('/'+str(p.relative_to(root)) for p in (root/'assets/maps-offline-style').rglob('*')
+              if p.is_file() and p.suffix in {'.json', '.png', '.pbf'})
 # Include local CSS url dependencies as well.
 for ref in list(assets):
     path=root/ref.lstrip('/').split('?')[0]

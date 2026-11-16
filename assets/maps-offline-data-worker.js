@@ -1,6 +1,6 @@
 /* Bounded map decoding, rendering preparation and name search, away from UI. */
 'use strict';
-importScripts('maps-offline-store.js');
+importScripts('maps-offline-store.js','vendor/pmtiles/pmtiles.js','maps-offline-pmtiles.js','vendor/pmtiles/tile-search.js');
 const store=self.GregleOfflineStore,queue=new Map(),latest=new Map();
 let busy=false;
 self.onmessage=event=>{const job=event.data;latest.set(job.type,job.id);queue.set(job.type,job);pump();};
@@ -44,6 +44,7 @@ async function render(pack,job,check){
   return {features,truncated};
 }
 async function search(pack,job,check){
+  if(pack.index.format==='pmtiles')return searchTiles(pack,job,check);
   const matches=[],seen=new Set(),query=job.term.trim().toLocaleLowerCase(),center=job.center;
   const x=Math.floor(center.lng*4),y=Math.floor(center.lat*4),keys=['overview',...Object.keys(pack.index.entries).filter(k=>k!=='overview'&&Math.abs(Number(k.split('_')[0])-x)<=1&&Math.abs(Number(k.split('_')[1])-y)<=1)];
   keys.sort((a,b)=>Number(b===store.tile(center.lat,center.lng))-Number(a===store.tile(center.lat,center.lng)));
@@ -55,4 +56,22 @@ async function search(pack,job,check){
   },check);if(matches.length>=30)break;}
   const distance=p=>Math.hypot((p.lng-center.lng)*Math.cos(center.lat*Math.PI/180),p.lat-center.lat);
   return matches.sort((a,b)=>distance(a)-distance(b)).slice(0,8);
+}
+async function searchTiles(pack,job,check){
+  const archive=GregleOfflineArchive(pack),term=job.term.trim().toLocaleLowerCase(),center=job.center,matches=[],seen=new Set();
+  const position=z=>[Math.floor((center.lng+180)/360*2**z),Math.floor((1-Math.asinh(Math.tan(center.lat*Math.PI/180))/Math.PI)/2*2**z)];
+  const tiles=[];
+  for(const [z,radius] of [[9,1],[14,3]]){const [x,y]=position(z);for(let dx=-radius;dx<=radius;dx++)for(let dy=-radius;dy<=radius;dy++)tiles.push({x:x+dx,y:y+dy,z,d:dx*dx+dy*dy});}
+  tiles.sort((a,b)=>a.z-b.z||a.d-b.d);
+  for(const {x,y,z} of tiles){check();const tile=await archive.getZxy(z,x,y);check();if(!tile)continue;
+    for(const p of GregleOfflineTileSearch.matches(tile.data,x,y,z,term,z<14)){
+      if(seen.has(p.name)||!store.inside(p,pack.bounds))continue;seen.add(p.name);
+      matches.push({...p,detail:`Downloaded ${pack.name} · ${p.kind}`,zoom:p.kind==='place'?13:16});
+    }
+    if(matches.length>=30)break;
+    await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  const distance=p=>Math.hypot((p.lng-center.lng)*Math.cos(center.lat*Math.PI/180),p.lat-center.lat);
+  const priority={road:0,place:1,'place of interest':2,'transit stop':3};
+  return matches.sort((a,b)=>Number(b.name.toLocaleLowerCase()===term)-Number(a.name.toLocaleLowerCase()===term)||priority[a.kind]-priority[b.kind]||distance(a)-distance(b)).slice(0,8);
 }

@@ -1043,29 +1043,47 @@ versioned dependencies or any cached file. Commit the resulting
 `assets/maps-offline-shell.js` with the changes. Partial installs retain the old
 complete cache; only app-owned shell caches are retired.
 
-The monthly/manual **Build offline map regions** action reads the public
-Geofabrik BC PBF once and publishes ODbL-derived vector maps and road graphs as
-versioned GitHub release assets. The `offline-current` release contains only a
-catalog; it is updated after all versioned packages finish uploading. Old
-releases remain available to clients that already fetched their catalogs.
-No third-party raster tiles, API keys or visitors' routes enter the packages.
-The fixed `/api/maps/offline/` relay in the existing app router streams only
-these public assets. Deploy the app router when changing that relay; plain
-static previews can use local package fixtures.
+The **Build offline vector maps** action extracts the five presets from a dated
+VersaTiles OpenStreetMap Shortbread snapshot and publishes versioned PMTiles as
+GitHub Release attachments. It runs monthly, after a successful routing-data
+build, or manually. It discovers the newest dated snapshot, with a pinned
+fallback if the listing is unavailable. `catalog-v2.json` is updated only after
+all new packages upload. Each component carries its own version, so unchanged
+routing does not need to be downloaded again. The original `catalog.json` and
+legacy packages remain available to older app versions.
 
-Package members are quarter-degree cells, individually gzip-compressed and
-SHA-256 indexed inside each region/component archive. IndexedDB stores the
-compressed archive in 4 MiB records, downloaded with validated byte ranges.
-Interrupted downloads resume from saved records; existing Blob downloads remain
-readable. A separate worker streams map features, filters to the viewport and
-bounds retained geometry before sending it to Leaflet. Routing reads only needed
-members with a 6-shard LRU and a 500,000-state search limit, so an
-exceptionally long/complex route can ask for a closer stop rather than exhaust
-memory. Storage estimates, persistent-storage requests, cancellable downloads,
-complete-file and member-hash checks, atomic replacement and per-component
-removal retain a working previous download on interruption or quota failure.
-Browser/OS storage eviction can still remove downloaded data; check the saved
-regions before a trip. Downloads are specific to the browser/device/origin.
+The offline basemap uses MapLibre GL JS 5.6.2 with compatible VersaTiles Style
+9.1.0 light/dark styles: buildings, POIs, roads, land use and water. Styles,
+icons and Noto Sans glyphs for Latin, Greek, Cyrillic and Canadian syllabics are
+local shell assets. MapLibre uses device fonts for CJK. PMTiles contains source
+tiles through zoom 14; closer views overzoom those tiles. Terrain, satellite,
+live traffic and a full address-search index are not included. Local search
+reads nearby street/place/POI features from the downloaded tiles.
+
+The fixed `/api/maps/offline/` relay streams only known public release assets.
+Deploy the app router when changing the relay. It supports validated 4 MiB
+byte-range downloads, and IndexedDB saves the compressed archive in small
+records. SHA-256 block checks, resumable staging and atomic replacement retain
+a working previous download after interruption, corruption or quota failure.
+Existing legacy Blob/chunk downloads remain readable. Each PMTiles reader
+serializes local range reads and retains at most two 4 MiB blocks; MapLibre uses
+one worker and a bounded tile cache. No public map server is contacted for
+saved map tiles, styles, fonts or icons while offline.
+
+The separate **Build offline map regions** action continues generating directed
+road graphs from the Geofabrik BC PBF. Routing uses a 6-shard LRU and a
+500,000-state search limit, so an exceptionally long/complex route can ask for
+a closer stop rather than exhaust memory. Browser/OS storage eviction can still
+remove downloads; check saved regions before travelling. Downloads are specific
+to the browser/device/origin. Replacing an old street map with PMTiles requires
+one new map download; routing downloads are retained.
+
+Rebuild PMTiles with `python3 scripts/build_offline_vector_maps.py --versatiles
+/path/to/versatiles`. VersaTiles 5.13.0 is pinned and checksum-verified in CI.
+The source tiles remain subject to ODbL 1.0; source and attribution accompany
+each release. Vendored browser-library and font licences are included beside
+the assets. Run `python3 scripts/update_maps_offline_shell.py` after editing any
+of these dependencies.
 
 The local engine uses driving/walking access, directed edges, speed estimates,
 roundabout direction, node-via no/only-turn and U-turn restrictions, barriers,

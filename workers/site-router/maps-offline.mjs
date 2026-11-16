@@ -1,16 +1,16 @@
 /* Fixed public ODbL release assets; small byte ranges for mobile-safe downloads. */
 const region='(?:victoria|greater-victoria|vancouver-island|greater-vancouver|british-columbia)';
-const asset=new RegExp(`^/api/maps/offline/(offline-\\d{8,14})/(${region}-(?:maps|routing)\\.bin)$`);
+const asset=new RegExp(`^/api/maps/offline/(offline-\\d{8,14})/(${region}-(?:(?:maps|routing)\\.bin|maps\\.pmtiles))$`);
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'Content-Range, Content-Length, Accept-Ranges'};
 const error=(text,status,extra={})=>new Response(text,{status,headers:{...cors,'Cache-Control':'no-store',...extra}});
 export async function mapsOffline(request){
-  const url=new URL(request.url),catalog=url.pathname==='/api/maps/offline/catalog.json',match=asset.exec(url.pathname);
+  const url=new URL(request.url),catalog=['/api/maps/offline/catalog.json','/api/maps/offline/catalog-v2.json'].includes(url.pathname),match=asset.exec(url.pathname);
   if(url.search||!catalog&&!match)return error('Unknown offline package',404);
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...cors,'Access-Control-Allow-Methods':'GET, HEAD, OPTIONS','Access-Control-Allow-Headers':'Range','Access-Control-Max-Age':'86400'}});
   if(!['GET','HEAD'].includes(request.method))return error('Method not allowed',405,{Allow:'GET, HEAD, OPTIONS'});
   const range=request.headers.get('Range'),parts=range&&/^bytes=(\d+)-(\d+)$/.exec(range);
   if(range&&(catalog||!parts||!Number.isSafeInteger(Number(parts[1]))||!Number.isSafeInteger(Number(parts[2]))||Number(parts[2])<Number(parts[1])||Number(parts[2])-Number(parts[1])>=8*1024*1024))return error('Invalid download range',416);
-  const tag=catalog?'offline-current':match[1],file=catalog?'catalog.json':match[2];
+  const tag=catalog?'offline-current':match[1],file=catalog?url.pathname.split('/').at(-1):match[2];
   // Stop old cached clients from allocating the entire 731 MB BC map.
   if(file==='british-columbia-maps.bin'&&!range&&request.method==='GET')return error('Refresh Maps to use the updated resumable BC download.',409);
   try{

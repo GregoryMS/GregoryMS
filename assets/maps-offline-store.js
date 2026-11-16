@@ -16,16 +16,18 @@
   const inside = (p, b) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng) && p.lng >= b[0] && p.lat >= b[1] && p.lng <= b[2] && p.lat <= b[3];
   const tile = (lat, lng) => `${Math.floor(lng * 4)}_${Math.floor(lat * 4)}`;
   function catalog(data) {
-    if (data?.schema !== 1 || !/^offline-\d{8,14}$/.test(data.version) || !Array.isArray(data.regions) || data.regions.length !== presets.length) throw Error('Invalid offline catalog.');
+    if (![1, 2].includes(data?.schema) || !/^offline-\d{8,14}$/.test(data.version) || !Array.isArray(data.regions) || data.regions.length !== presets.length) throw Error('Invalid offline catalog.');
     for (const [id, name] of presets) {
       const region = data.regions.find(r => r.id === id);
       if (!region || region.name !== name || !Array.isArray(region.bounds) || region.bounds.length !== 4 || !region.bounds.every(Number.isFinite) || region.bounds[0] >= region.bounds[2] || region.bounds[1] >= region.bounds[3] || Math.abs(region.bounds[0]) > 180 || Math.abs(region.bounds[2]) > 180 || Math.abs(region.bounds[1]) > 90 || Math.abs(region.bounds[3]) > 90) throw Error('Invalid offline region.');
       for (const component of ['maps', 'routing']) {
         const part = region.components?.[component];
-        if (part?.file !== `${id}-${component}.bin` || !Number.isSafeInteger(part.bytes) || part.bytes < 1 || part.bytes > 2000000000 || !part.entries || Object.keys(part.entries).length > 40000) throw Error('Invalid offline package.');
+        const vector = component === 'maps' && data.schema === 2 && part?.format === 'pmtiles';
+        if (part?.file !== `${id}-${component}.${vector ? 'pmtiles' : 'bin'}` || !Number.isSafeInteger(part.bytes) || part.bytes < 1 || part.bytes >= 2147483648 || !part.entries || Object.keys(part.entries).length > 40000 || part.version && !/^offline-\d{8,14}$/.test(part.version)) throw Error('Invalid offline package.');
+        if (vector && (part.schema !== 'shortbread' || part.minZoom !== 0 || part.maxZoom !== 14)) throw Error('Unsupported offline map.');
         let cursor = 0;
         for (const [key, entry] of Object.entries(part.entries)) {
-          if ((key !== 'overview' && !/^-?\d+_-?\d+$/.test(key)) || !Array.isArray(entry) || entry.length !== 3 || entry[0] !== cursor || !Number.isSafeInteger(entry[1]) || entry[1] < 1 || entry[1] > 64000000 || !/^[a-f0-9]{64}$/.test(entry[2])) throw Error('Invalid offline index.');
+          if ((vector ? key !== 'chunk-' + Math.floor(cursor / CHUNK_SIZE) || entry?.[1] !== Math.min(CHUNK_SIZE, part.bytes - cursor) : key !== 'overview' && !/^-?\d+_-?\d+$/.test(key)) || !Array.isArray(entry) || entry.length !== 3 || entry[0] !== cursor || !Number.isSafeInteger(entry[1]) || entry[1] < 1 || entry[1] > 64000000 || !/^[a-f0-9]{64}$/.test(entry[2])) throw Error('Invalid offline index.');
           cursor += entry[1];
         }
         if (cursor !== part.bytes) throw Error('Incomplete offline index.');
@@ -94,11 +96,18 @@
     const pieces = [], end = offset + length;
     for (let i = Math.floor(offset / pack.chunkSize); i <= Math.floor((end - 1) / pack.chunkSize); i++) {
       let buffer = cache.get(i);
-      if (!buffer) {buffer = await get(pack.generation + '/' + i, 'chunks'); if (!buffer) throw Error('Offline download is incomplete.'); cache.set(i, buffer); while (cache.size > 2) cache.delete(cache.keys().next().value);}
+      if (!buffer) {buffer = get(pack.generation + '/' + i, 'chunks'); cache.set(i, buffer); while (cache.size > 2) cache.delete(cache.keys().next().value);}
+      buffer = await buffer; if (!buffer) throw Error('Offline download is incomplete.');
       const start = i * pack.chunkSize;
       pieces.push(new Uint8Array(buffer, Math.max(0, offset - start), Math.min(buffer.byteLength, end - start) - Math.max(0, offset - start)));
     }
     return new Blob(pieces);
+  }
+  async function range(pack, offset, length, signal, cache) {
+    signal?.throwIfAborted();
+    if (!Number.isSafeInteger(offset) || !Number.isSafeInteger(length) || offset < 0 || length < 1 || length > 16 * 1024 * 1024 || offset + length > size(pack)) throw Error('Invalid offline map range.');
+    const data = await (await rangeBlob(pack, offset, length, cache)).arrayBuffer();
+    signal?.throwIfAborted(); return data;
   }
   async function read(pack, key) {
     const entry = pack?.index?.entries[key];
@@ -220,5 +229,5 @@
     });
     return stage;
   }
-  return {DB, CHUNK_SIZE, presets, inside, tile, catalog, get, put, remove, list, pending, cleanup, read, eachFeature, scanFeatures, verify, install, size};
+  return {DB, CHUNK_SIZE, presets, inside, tile, catalog, get, put, remove, list, pending, cleanup, range, read, eachFeature, scanFeatures, verify, install, size};
 });

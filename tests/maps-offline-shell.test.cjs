@@ -4,7 +4,8 @@ function environment(host='maps.gregle.uk',{storage=new Map(),fail='',version=''
   const origin='https://'+host,listeners={},requests=[];
   const key=x=>new URL(typeof x==='string'?x:x.url||x.href,origin).href;
   const caches={async open(name){if(!storage.has(name))storage.set(name,new Map());const files=storage.get(name);return{async put(k,r){files.set(key(k),r.clone());},async match(k,{ignoreSearch=false}={}){const target=key(k);if(!ignoreSearch)return files.get(target)?.clone();for(const [url,response] of files)if(url.split('?')[0]===target.split('?')[0])return response.clone();},async keys(){return[...files.keys()];}};},async keys(){return[...storage.keys()];},async delete(k){return storage.delete(k);}};
-  const self={location:new URL(origin+'/gregle-sw.js'),addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
+  let claims=0;
+  const self={clients:{async claim(){claims++;}},location:new URL(origin+'/gregle-sw.js'),addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
   const context=vm.createContext({self,caches,URL,Request,Response,Set,Promise,Error,fetch:async input=>{
     const url=new URL(key(input));requests.push(url.href);if(url.pathname===fail)throw Error('Interrupted connection');
     const file=path.join(root,url.pathname==='/'?(host==='maps.gregle.uk'?'maps.html':'calc.html'):url.pathname);
@@ -13,10 +14,10 @@ function environment(host='maps.gregle.uk',{storage=new Map(),fail='',version=''
   }});
   context.importScripts=(...files)=>files.forEach(file=>{let source=fs.readFileSync(path.join(root,file),'utf8');if(version&&file.endsWith('maps-offline-shell.js'))source=source.replace(/"version":"[^"]+"/,`"version":"${version}"`);vm.runInContext(source,context);});
   vm.runInContext(fs.readFileSync(path.join(root,'gregle-sw.js'),'utf8'),context);
-  return {storage,requests,async lifecycle(type){const work=[];for(const fn of listeners[type]||[])fn({waitUntil:p=>work.push(p)});await Promise.all(work);},async request(url,{mode='navigate',method='GET'}={}){let response,count=0;for(const fn of listeners.fetch||[])fn({request:{url:new URL(url,origin).href,mode,method},respondWith(p){if(++count>1)throw Error('Duplicate respondWith');response=p;}});return response&&await response;},async status(type='maps-offline-status'){const work=[];let data;for(const fn of listeners.message||[])fn({data:{type},ports:[{postMessage:p=>data=p}],waitUntil:p=>work.push(p)});await Promise.all(work);return data;}};
+  return {storage,requests,get claims(){return claims;},async lifecycle(type){const work=[];for(const fn of listeners[type]||[])fn({waitUntil:p=>work.push(p)});await Promise.all(work);},async request(url,{mode='navigate',method='GET'}={}){let response,count=0;for(const fn of listeners.fetch||[])fn({request:{url:new URL(url,origin).href,mode,method},respondWith(p){if(++count>1)throw Error('Duplicate respondWith');response=p;}});return response&&await response;},async status(type='maps-offline-status'){const work=[];let data;for(const fn of listeners.message||[])fn({data:{type},ports:[{postMessage:p=>data=p}],waitUntil:p=>work.push(p)});await Promise.all(work);return data;}};
 }
 test('maps shell installs locally and opens all Maps launch paths without a network request',async()=>{
-  const app=environment();await app.lifecycle('install');await app.lifecycle('activate');assert.equal((await app.status()).ready,true);
+  const app=environment();await app.lifecycle('install');await app.lifecycle('activate');assert.equal((await app.status()).ready,true);assert.equal(app.claims,1);
   const count=app.requests.length;for(const url of ['/','/maps.html?offline=1','/maps#pin=48,-123'])assert.match(await(await app.request(url)).text(),/Maps · Gregle/);
   for(const url of ['/assets/maps-offline-worker.js','/assets/maps-navigation-core.js','/assets/maps-offline-store.js'])assert(await app.request(url,{mode:'cors'}));assert.equal(app.requests.length,count);
   assert.equal(await app.request('/weather.html'),undefined);assert.equal(await app.request('https://tile.openstreetmap.org/13/1/1.png'),undefined);
