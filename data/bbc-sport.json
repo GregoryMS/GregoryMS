@@ -1,8 +1,16 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-15T22:05:13+00:00",
-  "fetchedAt": "2026-11-15T22:05:15.906702+00:00",
+  "feedUpdatedAt": "2026-11-16T02:00:04+00:00",
+  "fetchedAt": "2026-11-16T02:00:20.510801+00:00",
   "items": [
+    {
+      "title": "60 minutes of perfection, 30 minutes of chaos - an England win for the ages",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c933ge310n33o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "How did England cling on against Spain and what did Tuchel do differently?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c6742l4z91lwo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Tearful McIlroy dedicates record-equalling win to ill dad",
       "link": "https://www.bbc.co.uk/sport/golf/articles/c6kg7rwmz1g8o?at_medium=RSS&at_campaign=rss"
@@ -10,6 +18,10 @@
     {
       "title": "Townsend hails Scotland's defence in Australia 'arm wrestle'",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6vg25x1zqrro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Teenager Andreeva caps stunning week with WTA Finals title",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/c61740145y7wo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Ronaldinho, 46, makes comeback for Ravenna",
@@ -24,24 +36,12 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/c6y49gzjgew5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Chapecoense air crash survivor wins promotion in final game",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ckp8017p1e3go?at_medium=RSS&at_campaign=rss"
+      "title": "Much still to do on F1 diversity - Hamilton",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c52e8kpnje42o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Aberdeen appoint Liechtenstein's Frick as head coach",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqrmgz9ypvwko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Banton pushes case and bowlers sparkle for inconsistent England",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c8n50wgr6vd4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Australia's Sayers 'took sandpaper from field' & rejects Cummins' claims",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c9ly4jm8djy7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Zverev 'felt a lot of joy' in first win as world number one",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/cm5y1grdy3w2o?at_medium=RSS&at_campaign=rss"
+      "title": "Greaves out of Grand Slam despite win over Zonneveld",
+      "link": "https://www.bbc.co.uk/sport/darts/articles/cxlylvy2m5lqo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
