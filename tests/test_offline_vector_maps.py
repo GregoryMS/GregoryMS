@@ -42,6 +42,12 @@ class VectorPackages(unittest.TestCase):
                 self.assertEqual(region['components']['maps']['format'], 'pmtiles')
                 self.assertEqual(region['components']['routing']['version'], routing['version'])
             self.assertEqual(json.loads((root / 'output/catalog-v2.json').read_text()), catalog)
+            routing['version'] = 'offline-20261116000000'
+            updated = maps.build(root / 'unchanged', routing, 'must-not-run', previous=catalog)
+            self.assertFalse(list((root / 'unchanged').glob('*.pmtiles')))
+            for region in updated['regions']:
+                self.assertEqual(region['components']['maps']['version'], catalog['version'])
+                self.assertEqual(region['components']['routing']['version'], routing['version'])
 
 
 if __name__ == '__main__':

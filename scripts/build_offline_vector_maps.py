@@ -29,7 +29,7 @@ def index_file(path):
             'bytes': offset, 'minZoom': 0, 'maxZoom': 14, 'entries': entries}
 
 
-def build(output, routing_catalog, executable, source=SOURCE, reuse=None):
+def build(output, routing_catalog, executable, source=SOURCE, reuse=None, previous=None):
     output.mkdir(parents=True, exist_ok=True)
     version = 'offline-' + datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')
     catalog = {'schema': 2, 'version': version, 'source': source,
@@ -37,18 +37,25 @@ def build(output, routing_catalog, executable, source=SOURCE, reuse=None):
                'builtAt': datetime.now(timezone.utc).isoformat(), 'regions': []}
     for ident, name, bounds in REGIONS:
         path = output / f'{ident}-maps.pmtiles'
-        if reuse and (reuse / path.name).is_file():
-            shutil.copyfile(reuse / path.name, path)
+        old = next((r for r in (previous or {}).get('regions', []) if r['id'] == ident), None)
+        old_maps = old and old.get('components', {}).get('maps')
+        if previous and previous.get('source') == source and old and old.get('bounds') == bounds and old_maps and old_maps.get('format') == 'pmtiles':
+            part = dict(old_maps)
+            part['version'] = part.get('version', previous['version'])
         else:
-            subprocess.run([executable, 'convert', '--bbox', ','.join(map(str, bounds)),
-                            '--bbox-border', '1', '--min-zoom', '0', '--max-zoom', '14', '--compress', 'gzip',
-                            source, str(path)], check=True)
+            if reuse and (reuse / path.name).is_file():
+                shutil.copyfile(reuse / path.name, path)
+            else:
+                subprocess.run([executable, 'convert', '--bbox', ','.join(map(str, bounds)),
+                                '--bbox-border', '1', '--min-zoom', '0', '--max-zoom', '14', '--compress', 'gzip',
+                                source, str(path)], check=True)
+            part = index_file(path)
         routing_region = next(r for r in routing_catalog['regions'] if r['id'] == ident)
         routing = dict(routing_region['components']['routing'])
         routing['version'] = routing.get('version', routing_catalog['version'])
         catalog['regions'].append({'id': ident, 'name': name, 'bounds': bounds,
-                                  'components': {'maps': index_file(path), 'routing': routing}})
-        print(f'{name}: {path.stat().st_size / 1048576:.1f} MiB', flush=True)
+                                  'components': {'maps': part, 'routing': routing}})
+        print(f'{name}: {part["bytes"] / 1048576:.1f} MiB' + (' (unchanged)' if 'version' in part else ''), flush=True)
     (output / 'catalog-v2.json').write_text(json.dumps(catalog, separators=(',', ':')) + '\n')
     (output / 'SOURCE-LICENSE.txt').write_text(
         'Map tiles: VersaTiles, Shortbread schema. Source: ' + source + '\n'
@@ -66,6 +73,7 @@ def main():
     parser.add_argument('--versatiles', default='versatiles')
     parser.add_argument('--source', default='latest')
     parser.add_argument('--reuse', type=Path)
+    parser.add_argument('--force', action='store_true', help='Re-extract unchanged upstream data')
     args = parser.parse_args()
     if args.routing_catalog.startswith('https://'):
         with urllib.request.urlopen(args.routing_catalog, timeout=60) as response:
@@ -85,7 +93,14 @@ def main():
         if not snapshots:
             raise ValueError('No dated VersaTiles snapshot is available.')
         source = 'https://download.versatiles.org/osm-vector/osm-vector.' + max(snapshots) + '.versatiles'
-    build(args.output, routing, args.versatiles, source, args.reuse)
+    previous = None
+    if not args.force:
+        try:
+            with urllib.request.urlopen('https://github.com/GregoryMS/GregoryMS/releases/download/offline-current/catalog-v2.json', timeout=60) as response:
+                previous = json.load(response)
+        except (OSError, ValueError):
+            pass  # A first build or unavailable catalog requires fresh packages.
+    build(args.output, routing, args.versatiles, source, args.reuse, previous)
 
 
 if __name__ == '__main__':

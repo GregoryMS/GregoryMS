@@ -1049,7 +1049,8 @@ GitHub Release attachments. It runs monthly, after a successful routing-data
 build, or manually. It discovers the newest dated snapshot, with a pinned
 fallback if the listing is unavailable. `catalog-v2.json` is updated only after
 all new packages upload. Each component carries its own version, so unchanged
-routing does not need to be downloaded again. The original `catalog.json` and
+routing does not need to be downloaded again. Unchanged upstream map snapshots
+keep their existing map-package versions too. The original `catalog.json` and
 legacy packages remain available to older app versions.
 
 The offline basemap uses MapLibre GL JS 5.6.2 with compatible VersaTiles Style
