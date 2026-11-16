@@ -75,8 +75,12 @@ def main():
     source = args.source
     if source == 'latest':
         import re
-        with urllib.request.urlopen('https://download.versatiles.org/', timeout=60) as response:
-            page = response.read().decode()
+        try:
+            page = subprocess.check_output(['curl', '-fsSL', '--retry', '2', '--max-time', '60', '-A',
+                                            'GregleMaps-offline-builder/1.0', 'https://download.versatiles.org/']).decode()
+        except subprocess.CalledProcessError:
+            page = SOURCE
+            print('Snapshot listing unavailable; using the pinned source snapshot.', flush=True)
         snapshots = re.findall(r'osm-vector\.(\d{8})\.versatiles', page)
         if not snapshots:
             raise ValueError('No dated VersaTiles snapshot is available.')
