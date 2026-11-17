@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
+      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -129,8 +129,7 @@
           "channels": [
             "NOW",
             "Sky Sports+ app",
-            "WSL YouTube",
-            "YouTube UK"
+            "WSL YouTube"
           ]
         },
         {
@@ -178,7 +177,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
+      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -321,7 +320,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
+      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -390,6 +389,7 @@
           "start": "2026-11-20T19:30:00+00:00",
           "channels": [
             "TV 2 Play (NO)",
+            "V sport 1 NO",
             "Viaplay NO"
           ]
         },
@@ -474,7 +474,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
+      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -618,7 +618,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
+      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -687,7 +687,6 @@
           "away": "Fulham",
           "start": "2026-11-21T12:30:00+00:00",
           "channels": [
-            "RTL+",
             "Sky Sport Premier League",
             "WOW"
           ]
