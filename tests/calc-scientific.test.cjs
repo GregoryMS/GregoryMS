@@ -13,7 +13,7 @@ function setup({vibration = 'supported'} = {}) {
   const nodes = {scientificControls:controls,graphAngle:select,copyResult:{click() {calls.push(['copy']);}},clearHistory:{click() {calls.push(['history']);}}};
   const navigator = {};
   if (vibration !== 'absent') navigator.vibrate = duration => {calls.push(['vibrate',duration]);if (vibration === 'throws') throw Error('Unavailable');};
-  const scientific = {getState:() => ({angle}),insert:(...args) => calls.push(['insert',...args]),calculate:() => calls.push(['calculate']),navigate:direction => calls.push(['navigate',direction]),recallEntry:() => calls.push(['recall'])};
+  const scientific = {getState:() => ({angle}),insert:(...args) => calls.push(['insert',...args]),calculate:() => calls.push(['calculate']),reset:(all=false) => calls.push(['reset',all]),navigate:direction => calls.push(['navigate',direction]),recallEntry:() => calls.push(['recall'])};
   vm.runInNewContext(source,{document:{getElementById:id => nodes[id]},navigator,Event:class {},window:{GregleScientific:scientific,GregleCalculator:{openScreen:(...args) => calls.push(['open',...args])}}});
   const click = (dataset,extra = {}) => events.click({target:{closest:() => ({dataset})},isTrusted:true,detail:1,...extra});
   return {calls,angles,click,events};
@@ -31,7 +31,7 @@ test('tap controls route entry, calculate, editing, cursor, recall and history t
   app.click({scientificInsert:'asin('});app.click({scientificInsert:'neg'});
   for (const action of ['calculate','clear','backspace','left','right','recall','copy','history']) app.click({scientificAction:action});
   assert.deepEqual(app.calls.filter(call => !['vibrate','open'].includes(call[0])),[
-    ['insert','asin('],['insert','neg'],['calculate'],['insert','','clear'],['insert','','backspace'],['navigate','left'],['navigate','right'],['recall'],['copy'],['history']
+    ['insert','asin('],['insert','neg'],['calculate'],['reset',false],['insert','','backspace'],['navigate','left'],['navigate','right'],['recall'],['copy'],['reset',true]
   ]);
   let prevented=false;app.events.pointerdown({target:{closest:() => ({})},preventDefault() {prevented=true;}});assert(prevented);
 });

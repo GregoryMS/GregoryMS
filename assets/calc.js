@@ -166,8 +166,19 @@
     history = []; homeHistory = []; historySelection = null; entryRecall = -1; lastEntry = '';
     try {localStorage.removeItem('gregle-calc-history');} catch (_) {} renderHistory();
   });
+  function reset(clearSavedHistory = false) {
+    ans = 0; completed = false; lastEntry = ''; historySelection = null; entryRecall = -1;
+    errorState = null; errorChoice = 0; input.value = ''; input.setSelectionRange(0,0);
+    $('calcError').hidden = true; message.textContent = ''; $('homeStatus').textContent = ''; $('copyStatus').textContent = 'Copy';
+    homeHistory = [];
+    if (clearSavedHistory) {
+      history = [];
+      try {localStorage.removeItem('gregle-calc-history');} catch (_) {}
+    }
+    renderHistory(); update(); focus();
+  }
   const getState = () => ({expression:input.value,ans,angle,completed,lastEntry,homeCleared:homeHistory.length === 0,screen:window.GregleCalculator?.getScreen() || 'calculate'});
-  window.GregleScientific = {insert,calculate,navigate,setAngle,getState,prepareInput,handleReadonlyKey,recallEntry,setKeyMode,hasError:() => Boolean(errorState),initialScreen:restored?.screen,restoredAngle:restored?.angle};
+  window.GregleScientific = {insert,calculate,reset,navigate,setAngle,getState,prepareInput,handleReadonlyKey,recallEntry,setKeyMode,hasError:() => Boolean(errorState),initialScreen:restored?.screen,restoredAngle:restored?.angle};
   $('popoutCalculator').addEventListener('click',async () => {
     document.dispatchEvent(new Event('gregle-calc-save-graph'));
     const state = getState(), url = new URL(window.location.href); url.searchParams.set('popout','1');

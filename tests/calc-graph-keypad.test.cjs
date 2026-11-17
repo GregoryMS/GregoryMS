@@ -352,3 +352,30 @@ test('physical cursor keys move through read-only touch entries', () => {
   input.dispatch('keydown',{key:'End',preventDefault() {}}); assert.equal(input.selectionStart,5);
   input.dispatch('keydown',{key:'ArrowLeft',preventDefault() {}}); assert.equal(input.selectionStart,4);
 });
+
+
+test('scientific Clear resets the answer, current input, errors and saved history to zero', () => {
+  const app = setup(undefined,true,true);
+  app.scientific.setAngle('rad');
+  app.type(app.get('expression'),'6*7'); app.scientific.calculate();
+  app.type(app.get('expression'),'1/0'); app.scientific.calculate();
+  assert.equal(app.scientific.hasError(),true);
+  app.scientific.reset(true);
+  assert.equal(app.get('result').textContent,'0'); assert.equal(app.get('expression').value,'');
+  assert.equal(app.scientific.getState().ans,0); assert.equal(app.scientific.getState().angle,'rad');
+  assert.equal(app.scientific.hasError(),false); assert.equal(app.get('calcError').hidden,true);
+  assert.equal(app.get('historyList').children.length,0);
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'0');
+  app.scientific.recallEntry(); assert.equal(app.get('expression').value,'');
+  app.type(app.get('expression'),'123'); app.scientific.reset(true);
+  assert.equal(app.get('expression').value,''); assert.equal(app.get('result').textContent,'0');
+});
+
+test('scientific AC resets the display and repeat calculation while preserving entry recall', () => {
+  const app = setup(undefined,true,true);
+  app.type(app.get('expression'),'8*9'); app.scientific.calculate();
+  app.scientific.reset();
+  assert.equal(app.get('result').textContent,'0'); assert.equal(app.get('expression').value,'');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'0');
+  app.scientific.recallEntry(); assert.equal(app.get('expression').value,'8*9');
+});

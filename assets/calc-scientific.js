@@ -26,10 +26,11 @@
     } else if (button.dataset.scientificInsert !== undefined) {
       scientific.insert(button.dataset.scientificInsert);
     } else if (button.dataset.scientificAction === 'calculate') scientific.calculate();
-    else if (button.dataset.scientificAction === 'clear' || button.dataset.scientificAction === 'backspace') scientific.insert('',button.dataset.scientificAction);
+    else if (button.dataset.scientificAction === 'clear') scientific.reset();
+    else if (button.dataset.scientificAction === 'backspace') scientific.insert('','backspace');
     else if (button.dataset.scientificAction === 'left' || button.dataset.scientificAction === 'right') scientific.navigate(button.dataset.scientificAction);
     else if (button.dataset.scientificAction === 'recall') scientific.recallEntry();
     else if (button.dataset.scientificAction === 'copy') $('copyResult').click();
-    else if (button.dataset.scientificAction === 'history') $('clearHistory').click();
+    else if (button.dataset.scientificAction === 'history') scientific.reset(true);
   });
 })();
