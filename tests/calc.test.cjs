@@ -31,3 +31,14 @@ test('calculator page has the canonical host, app icons and shared launcher', ()
   for (const file of ['assets/calc-core.js','assets/calc.js','assets/calc.css','assets/calc-app/icon.svg','assets/calc-app/apple-touch-icon.png','calc.webmanifest']) assert(fs.existsSync(path.join(root,file)),file);
   assert(!/\beval\s*\(|new Function/.test(fs.readFileSync(path.join(root,'assets/calc-core.js'),'utf8')));
 });
+
+
+test('fraction answers reduce signs, decimals and arithmetic without approximating common irrationals', () => {
+  const {toFraction,evaluate} = require('../assets/calc-core.js');
+  for(const [expression,numerator,denominator] of [['1/2+1/3',5,6],['3/9',1,3],['-1/2',-1,2],['0.125',1,8],['2/7+1/3',13,21],['1/1000000000',1,1000000000]]) {
+    assert.deepEqual(toFraction(evaluate(expression),{maxDenominator:1000000000}),{numerator,denominator});
+  }
+  for(const value of [Math.PI,Math.SQRT2,Math.E,Infinity,NaN])assert.equal(toFraction(value),null);
+  assert.deepEqual(toFraction(0),{numerator:0,denominator:1});
+  assert.equal(evaluate('cbrt(-8)'),-2);
+});

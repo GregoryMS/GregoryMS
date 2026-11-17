@@ -1,9 +1,9 @@
 (() => {
   'use strict';
-  const $ = id => document.getElementById(id), {evaluate, format} = window.GregleCalc;
+  const $ = id => document.getElementById(id), {evaluate, format, toFraction} = window.GregleCalc;
   const input = $('expression'), output = $('result'), message = $('calcMessage');
   const popout = new URLSearchParams(window.location.search).get('popout') === '1';
-  let ans = 0, completed = false, history = [], angle = 'deg', restored = null;
+  let ans = 0, completed = false, history = [], angle = 'deg', restored = null, fractionMode = false;
   let homeHistory = [], historySelection = null, entryRecall = -1, lastEntry = '', errorState = null, errorChoice = 0, keyMode = 'normal';
   if (popout) {
     document.documentElement.classList.add('calculator-popout');
@@ -11,7 +11,7 @@
       const state = JSON.parse(sessionStorage.getItem('gregle-calc-popout') || 'null');
       sessionStorage.removeItem('gregle-calc-popout');
       if (state && typeof state.expression === 'string' && state.expression.length <= 300) {
-        restored = state; input.value = state.completed ? '' : state.expression;
+        restored = state; fractionMode = state.fractionMode === true; input.value = state.completed ? '' : state.expression;
         ans = Number.isFinite(state.ans) ? state.ans : 0; angle = state.angle === 'rad' ? 'rad' : 'deg'; completed = state.completed === true;
         lastEntry = typeof state.lastEntry === 'string' ? state.lastEntry.slice(0,300) : completed ? state.expression : '';
       }
@@ -50,7 +50,29 @@
     cursor.style.setProperty('--cursor-scroll',`${input.scrollLeft || 0}px`);
   }
   function setKeyMode(mode) {keyMode = mode; $('homeCursor').textContent = mode === 'alpha' ? 'A' : mode === 'second' ? '↑' : '';}
-  function update() {input.removeAttribute('aria-invalid'); output.textContent = format(ans); output.dataset.valid = errorState ? 'false' : 'true'; updateCursor();}
+  function fractionAnswer() {
+    const scientificExpression = /[a-zπ√]/i.test(lastEntry.replace(/ans/gi,'').replace(/(?:[0-9]|\.)[eE][+-]?[0-9]+/g,''));
+    return toFraction(ans,{maxDenominator:scientificExpression ? 10000 : 1000000000});
+  }
+  function resultText() {
+    const value = fractionMode && fractionAnswer();
+    return value && value.denominator !== 1 ? `${value.numerator}/${value.denominator}` : format(ans);
+  }
+  function renderAnswer() {
+    const value = fractionMode && fractionAnswer();
+    if (!value || value.denominator === 1) {output.textContent = format(ans); return;}
+    const fraction = document.createElement('span'); fraction.className = 'fraction-value';
+    const top = document.createElement('span'), slash = document.createElement('span'), bottom = document.createElement('span');
+    top.className = 'fraction-numerator'; bottom.className = 'fraction-denominator'; slash.className = 'sr-only';
+    top.textContent = String(value.numerator); slash.textContent = '/'; bottom.textContent = String(value.denominator);
+    fraction.append(top,slash,bottom); output.replaceChildren(fraction);
+  }
+  function toggleFraction() {
+    if (errorState) return;
+    if (!fractionMode && !fractionAnswer()) {$('homeStatus').textContent = 'This answer cannot be shown as a simple fraction.'; return;}
+    fractionMode = !fractionMode; update();
+  }
+  function update() {input.removeAttribute('aria-invalid'); renderAnswer(); output.dataset.valid = errorState ? 'false' : 'true'; updateCursor();}
   function selectedHistory() {return historySelection === null ? null : {item:history[Math.floor(historySelection/2)],part:historySelection%2 ? 'expression' : 'answer'};}
   function renderHistory() {
     const list = $('historyList'), selected = selectedHistory(); list.replaceChildren();
@@ -106,6 +128,49 @@
     if (input.value.length - (end-start) + value.length > 300) return;
     input.setRangeText(value,start,end,'end'); completed = false; update(); focus();
   }
+  function insertFraction() {
+    if (errorState) return;
+    let start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? start;
+    if (start === end && start > 0) {
+      if (input.value[start-1] === ')') {
+        let depth = 0;
+        for (let i = start-1; i >= 0; i--) {if (input.value[i] === ')') depth++; else if (input.value[i] === '(' && --depth === 0) {start = i; break;}}
+      } else {
+        const atom = input.value.slice(0,start).match(/(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+|Ans|π|e)$/);
+        if (atom) start -= atom[0].length;
+      }
+    }
+    if (start < end && input.value[start] === '(') {const name = input.value.slice(0,start).match(/[a-z]+$/i); if (name) start -= name[0].length;}
+    const numerator = input.value.slice(start,end), template = `(${numerator})/()`;
+    if (input.value.length-(end-start)+template.length > 300) return;
+    input.setSelectionRange(start,end); insert(template); fractionMode = true;
+    const position = start + (numerator ? numerator.length+4 : 1);
+    input.setSelectionRange(position,position); update(); focus();
+    $('homeStatus').textContent = numerator ? 'Enter the denominator. Right exits the fraction.' : 'Enter the numerator. Down moves to the denominator.';
+  }
+  function navigateFraction(direction) {
+    if (!input.value || input.selectionStart !== input.selectionEnd) return false;
+    const position = input.selectionStart, fields = [];
+    function closing(open) {let depth = 0; for (let i = open; i < input.value.length; i++) {if (input.value[i] === '(') depth++; else if (input.value[i] === ')' && --depth === 0) return i;} return -1;}
+    for (let i = 0; i < input.value.length; i++) {
+      if (input.value[i] !== '(') continue;
+      const numeratorEnd = closing(i);
+      if (numeratorEnd < 0 || input.value.slice(numeratorEnd+1,numeratorEnd+3) !== '/(') continue;
+      const denominatorEnd = closing(numeratorEnd+2);
+      if (denominatorEnd >= 0) fields.push({start:i,numeratorStart:i+1,numeratorEnd,denominatorStart:numeratorEnd+3,denominatorEnd});
+    }
+    fields.sort((a,b) => (a.denominatorEnd-a.start)-(b.denominatorEnd-b.start));
+    for (const field of fields) {
+      const inNumerator = position >= field.numeratorStart && position <= field.numeratorEnd;
+      const inDenominator = position >= field.denominatorStart && position <= field.denominatorEnd;
+      let next;
+      if ((direction === 'down' && inNumerator) || (direction === 'right' && position === field.numeratorEnd)) next = field.denominatorStart;
+      else if ((direction === 'up' && inDenominator) || (direction === 'left' && position === field.denominatorStart)) next = field.numeratorStart;
+      else if (direction === 'right' && position === field.denominatorEnd) next = field.denominatorEnd+1;
+      if (next !== undefined) {input.setSelectionRange(next,next); focus(); return true;}
+    }
+    return false;
+  }
   function calculate() {
     if (errorState) {dismissError(errorChoice === 1); return;}
     const selected = selectedHistory(); if (selected) {recall(selected.item,selected.part); return;}
@@ -124,6 +189,7 @@
       chooseError(errorChoice === 0 ? 1 : 0); [$('errorQuit'),$('errorGoto')][errorChoice].focus({preventScroll:true}); return;
     }
     if (direction === 'enter') {calculate(); return;}
+    if (navigateFraction(direction)) return;
     if (direction === 'up' || direction === 'down') {
       if (!history.length || (direction === 'down' && historySelection === null)) return;
       const next = (historySelection ?? -1) + (direction === 'up' ? 1 : -1);
@@ -149,6 +215,7 @@
     else if (handleReadonlyKey(event,insert)) return;
     else if (event.key.length === 1 && !input.value && /^[+*/^%!−×÷-]$/.test(event.key)) {event.preventDefault(); insert(event.key);}
     else if (['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) {
+      if (navigateFraction(event.key === 'ArrowLeft' ? 'left' : event.key === 'ArrowRight' ? 'right' : '')) {event.preventDefault(); return;}
       leaveHistory();
       if (input.readOnly) {
         event.preventDefault();
@@ -159,7 +226,7 @@
   });
   $('errorQuit').addEventListener('click',() => dismissError(false)); $('errorGoto').addEventListener('click',() => dismissError(true));
   $('copyResult').addEventListener('click',async () => {
-    try {await navigator.clipboard.writeText(format(ans)); $('copyStatus').textContent = 'Copied';}
+    try {await navigator.clipboard.writeText(resultText()); $('copyStatus').textContent = 'Copied';}
     catch (_) {$('copyStatus').textContent = 'Unavailable';}
   });
   $('clearHistory').addEventListener('click',() => {
@@ -167,7 +234,7 @@
     try {localStorage.removeItem('gregle-calc-history');} catch (_) {} renderHistory();
   });
   function reset(clearSavedHistory = false) {
-    ans = 0; completed = false; lastEntry = ''; historySelection = null; entryRecall = -1;
+    ans = 0; fractionMode = false; completed = false; lastEntry = ''; historySelection = null; entryRecall = -1;
     errorState = null; errorChoice = 0; input.value = ''; input.setSelectionRange(0,0);
     $('calcError').hidden = true; message.textContent = ''; $('homeStatus').textContent = ''; $('copyStatus').textContent = 'Copy';
     homeHistory = [];
@@ -177,8 +244,8 @@
     }
     renderHistory(); update(); focus();
   }
-  const getState = () => ({expression:input.value,ans,angle,completed,lastEntry,homeCleared:homeHistory.length === 0,screen:window.GregleCalculator?.getScreen() || 'calculate'});
-  window.GregleScientific = {insert,calculate,reset,navigate,setAngle,getState,prepareInput,handleReadonlyKey,recallEntry,setKeyMode,hasError:() => Boolean(errorState),initialScreen:restored?.screen,restoredAngle:restored?.angle};
+  const getState = () => ({expression:input.value,ans,angle,completed,lastEntry,fractionMode,homeCleared:homeHistory.length === 0,screen:window.GregleCalculator?.getScreen() || 'calculate'});
+  window.GregleScientific = {insert,insertFraction,toggleFraction,calculate,reset,navigate,setAngle,getState,prepareInput,handleReadonlyKey,recallEntry,setKeyMode,hasError:() => Boolean(errorState),initialScreen:restored?.screen,restoredAngle:restored?.angle};
   $('popoutCalculator').addEventListener('click',async () => {
     document.dispatchEvent(new Event('gregle-calc-save-graph'));
     const state = getState(), url = new URL(window.location.href); url.searchParams.set('popout','1');

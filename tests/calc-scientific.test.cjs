@@ -8,12 +8,12 @@ const source = fs.readFileSync(path.join(__dirname,'../assets/calc-scientific.js
 function setup({vibration = 'supported'} = {}) {
   const calls = [], events = {}, angles = ['deg','rad'].map(value => ({dataset:{scientificAngle:value},setAttribute(name,value) {this[name]=value;}}));
   let angle = 'rad';
-  const controls = {querySelectorAll:() => angles,addEventListener(type,callback) {events[type]=callback;}};
+  const controls = {querySelectorAll:selector => selector === '[data-scientific-angle]' ? angles : [],addEventListener(type,callback) {events[type]=callback;}};
   const select = {value:'rad',dispatchEvent() {angle=this.value;calls.push(['angle',angle]);}};
   const nodes = {scientificControls:controls,graphAngle:select,copyResult:{click() {calls.push(['copy']);}},clearHistory:{click() {calls.push(['history']);}}};
   const navigator = {};
   if (vibration !== 'absent') navigator.vibrate = duration => {calls.push(['vibrate',duration]);if (vibration === 'throws') throw Error('Unavailable');};
-  const scientific = {getState:() => ({angle}),insert:(...args) => calls.push(['insert',...args]),calculate:() => calls.push(['calculate']),reset:(all=false) => calls.push(['reset',all]),navigate:direction => calls.push(['navigate',direction]),recallEntry:() => calls.push(['recall'])};
+  const scientific = {getState:() => ({angle}),insert:(...args) => calls.push(['insert',...args]),calculate:() => calls.push(['calculate']),reset:(all=false) => calls.push(['reset',all]),navigate:direction => calls.push(['navigate',direction]),recallEntry:() => calls.push(['recall']),insertFraction:() => calls.push(['fraction']),toggleFraction:() => calls.push(['format'])};
   vm.runInNewContext(source,{document:{getElementById:id => nodes[id]},navigator,Event:class {},window:{GregleScientific:scientific,GregleCalculator:{openScreen:(...args) => calls.push(['open',...args])}}});
   const click = (dataset,extra = {}) => events.click({target:{closest:() => ({dataset})},isTrusted:true,detail:1,...extra});
   return {calls,angles,click,events};

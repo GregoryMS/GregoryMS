@@ -18,6 +18,8 @@ function setup(initialState, calculation = false, touch = false) {
       this.attributes = {}; this.dataset = {}; this.value = ''; this.textContent = ''; this.innerHTML = ''; this.selectionStart = this.selectionEnd = 0;
       this.classList = {add() {},toggle() {}, contains() {return false;}}; this.style = {setProperty() {}};
     }
+    get textContent() {return this.children.length ? this.children.map(child => child.textContent).join('') : this._text || '';}
+    set textContent(value) {this._text = String(value); this.children = [];}
     set id(value) {this._id = value; elements.set(value, this);}
     get id() {return this._id;}
     setAttribute(name, value) {this.attributes[name] = value;}
@@ -378,4 +380,40 @@ test('scientific AC resets the display and repeat calculation while preserving e
   assert.equal(app.get('result').textContent,'0'); assert.equal(app.get('expression').value,'');
   app.scientific.calculate(); assert.equal(app.get('result').textContent,'0');
   app.scientific.recallEntry(); assert.equal(app.get('expression').value,'8*9');
+});
+
+
+test('fraction entry supports numerator and denominator navigation, arithmetic and decimal switching', () => {
+  const app = setup(undefined,true,true);
+  app.scientific.insertFraction(); app.key('1'); app.scientific.navigate('down'); app.key('2'); app.scientific.navigate('right');
+  app.key('+'); app.scientific.insertFraction(); app.key('1'); app.scientific.navigate('down'); app.key('3');
+  assert.equal(app.get('expression').value,'(1)/(2)+(1)/(3)');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'5/6');
+  assert.equal(app.get('result').children[0].className,'fraction-value');
+  app.scientific.toggleFraction(); assert.equal(app.get('result').textContent,'0.83333333333333');
+  app.scientific.toggleFraction(); assert.equal(app.get('result').textContent,'5/6');
+  app.scientific.reset(true); assert.equal(app.get('result').textContent,'0');
+});
+
+test('fraction key wraps an entered numerator and supports negative and nested fractions', () => {
+  const app = setup(undefined,true,true);
+  app.key('3'); app.scientific.insertFraction(); app.key('4');
+  assert.equal(app.get('expression').value,'(3)/(4)');
+  app.scientific.navigate('up'); assert.equal(app.get('expression').selectionStart,1);
+  app.scientific.navigate('down'); assert.equal(app.get('expression').selectionStart,5);
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'3/4');
+  app.scientific.reset(); app.scientific.insertFraction(); app.scientific.insert('neg'); app.key('1');
+  app.scientific.navigate('down'); app.key('2'); app.scientific.calculate(); assert.equal(app.get('result').textContent,'-1/2');
+  app.scientific.reset(); app.scientific.insertFraction(); app.key('1'); app.scientific.navigate('down');
+  app.scientific.insertFraction(); app.key('2'); app.scientific.navigate('down'); app.key('3');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'3/2');
+});
+
+test('non-rational scientific answers stay decimal and zero denominators keep normal error handling', () => {
+  const app = setup(undefined,true,true);
+  app.type(app.get('expression'),'sqrt(2)'); app.scientific.calculate(); app.scientific.toggleFraction();
+  assert.equal(app.scientific.getState().fractionMode,false); assert.equal(app.get('result').textContent,'1.4142135623731');
+  app.scientific.reset(); app.scientific.insertFraction(); app.key('1'); app.scientific.navigate('down'); app.key('0');
+  app.scientific.calculate(); assert.equal(app.scientific.hasError(),true);
+  app.scientific.reset(true); assert.equal(app.get('result').textContent,'0');
 });

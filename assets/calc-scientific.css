@@ -1,43 +1,61 @@
-/* Only the native calculator uses this layout. TI shells keep their original sizing. */
+/* Native scientific calculator; TI hardware keeps its existing layout. */
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calculator-resizer {width:min(100%,520px)!important;height:auto!important;aspect-ratio:auto!important;overflow:visible;border-radius:24px}
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calculator-fit {position:static;width:100%;transform:none!important}
-.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) #graphCalculator {width:100%;padding:18px 14px;border-radius:24px}
-.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) :is(.graph-menu-keys,.graph-navigation,#graphKeyboard,.calculator-resize-handle,.calculator-resize-note,.trace-form,#graphScreenFooter,#graphReadout,.graph-screen-status) {display:none!important}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) #graphCalculator {width:100%;padding:16px 14px;border-radius:24px;display:grid;grid-template-rows:44px 210px auto;gap:12px}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) :is(.graph-menu-keys,.graph-navigation,#graphKeyboard,.calculator-resize-handle,.calculator-resize-note,.trace-form,#graphScreenFooter,#graphReadout) {display:none!important}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-brand {margin:0 3px;min-width:0}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-display {display:grid;grid-template-rows:17px minmax(0,1fr);padding:5px;min-height:0}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-screen-status {padding:0 6px;font-size:9px;line-height:17px;border-bottom:0}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-stage {height:100%;min-height:0;border-radius:0 0 4px 4px}
 .scientific-only .trace-form {display:none}
-.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-brand {margin-bottom:18px}
-.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-stage {height:190px;border-radius:6px}
-.scientific-only #scientificScreen {padding:12px!important;justify-content:flex-end;font-size:18px}
-.scientific-only #historyList {flex:1;max-height:none;margin-bottom:8px}
-.scientific-only #historyList button {min-height:44px;line-height:1.4;padding:8px 2px}
-.scientific-only #expression {height:34px;line-height:34px;caret-color:var(--ink)}
+.scientific-only #scientificScreen {padding:8px 10px!important;justify-content:flex-end;font-size:18px}
+.scientific-only #historyList {flex:1;max-height:none;margin-bottom:4px}
+.scientific-only #historyList button {min-height:32px;line-height:1.4;padding:4px 2px}
+.scientific-only #expression {height:32px;line-height:32px;caret-color:var(--ink)}
 .scientific-only #homeCursor {display:none}
-.scientific-only #result {position:static;width:auto;height:auto;clip:auto;clip-path:none;overflow:visible;white-space:normal;text-align:right;font-size:28px;line-height:1.3;overflow-wrap:anywhere}
+.scientific-only #result {position:static;width:auto;height:auto;clip:auto;clip-path:none;overflow:visible;white-space:normal;text-align:right;font-size:28px;line-height:1.3;overflow-wrap:anywhere;flex-shrink:0}
+.fraction-value {display:inline-flex;vertical-align:middle;flex-direction:column;text-align:center;line-height:1.15;font-size:.86em}
+.fraction-numerator {padding:0 .18em .08em;border-bottom:1.5px solid currentColor}
+.fraction-denominator {padding:.08em .18em 0}
 .scientific-only .home-error-options {grid-template-columns:1fr 1fr;gap:8px}
 .scientific-only .home-error-options button {min-height:44px;font-size:16px}
-.scientific-controls {margin-top:14px}
-.scientific-toolbar {display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:12px}
-.scientific-toolbar button,.scientific-keypad button {min-width:0;min-height:48px;padding:8px;border:1px solid #575562;border-radius:12px;background:#41424e;color:#f7f5fb;font:500 16px/1.2 system-ui,sans-serif;touch-action:manipulation;-webkit-user-select:none;user-select:none}
-.scientific-toolbar button {font-size:13px;min-height:44px}
-.scientific-angle {display:flex;gap:5px}
-.scientific-angle button {min-width:54px}
-.scientific-angle button[aria-pressed="true"] {background:#b998ed;border-color:#b998ed;color:#221831}
-.scientific-keypad {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-.scientific-keypad .science {background:#35333f;color:#e6d7fa;font-size:15px}
-.scientific-keypad .number {background:#51535f;font-size:24px;min-height:58px}
-.scientific-keypad .operator {background:#61516f;font-size:24px}
-.scientific-keypad .clear {background:#6b4449;color:#ffe5e6}
-.scientific-keypad .equals {grid-column:5;grid-row:6 / span 2;background:#b998ed;color:#221831;font-size:30px}
-.scientific-keypad button:focus-visible,.scientific-toolbar button:focus-visible {outline:3px solid #deb6ff;outline-offset:2px}
-.scientific-keypad button:active,.scientific-toolbar button:active {background:#77618e;transform:scale(.96)}
+.scientific-controls {display:grid;grid-template-rows:84px auto auto;gap:10px;min-height:0}
+.scientific-controls button {position:relative;min-width:0;min-height:0;padding:4px;border:1px solid #575562;border-radius:10px;background:#41424e;color:#f7f5fb;font:500 15px/1.15 system-ui,sans-serif;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.scientific-controls button:focus-visible {outline:3px solid #deb6ff;outline-offset:2px}
+.scientific-controls button:active {background:#77618e;transform:scale(.96)}
+.scientific-navigation {display:grid;grid-template-columns:minmax(0,1fr) 108px minmax(0,1fr);gap:12px;min-height:0}
+.scientific-mode-keys {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:6px;min-height:0}
+.scientific-mode-keys button,.scientific-utility-keys button {font-size:12px}
+.scientific-utility-keys {display:grid;grid-template-rows:repeat(2,minmax(0,1fr));gap:6px;min-height:0}
+.scientific-controls .scientific-shift {background:#61516f;color:#f0e3ff}
+.scientific-controls [aria-pressed="true"] {background:#b998ed;border-color:#b998ed;color:#221831}
+.scientific-dpad {display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:3px;background:#16181e;border:1px solid #575964;border-radius:42%;min-height:0}
+.scientific-dpad button {padding:0;border:0;border-radius:0;background:#4d4f5b;font-size:16px}
+.scientific-dpad .pad-up {grid-column:2;border-radius:9px 9px 0 0}
+.scientific-dpad .pad-left {grid-column:1;grid-row:2;border-radius:9px 0 0 9px}
+.scientific-dpad .pad-enter {grid-column:2;grid-row:2;background:#33353e;color:#b998ed;border-radius:50%;font-size:14px}
+.scientific-dpad .pad-right {grid-column:3;grid-row:2;border-radius:0 9px 9px 0}
+.scientific-dpad .pad-down {grid-column:2;grid-row:3;border-radius:0 0 9px 9px}
+.scientific-dpad .pad-up::before,.scientific-dpad .pad-left::before,.scientific-dpad .pad-right::before,.scientific-dpad .pad-down::before {content:"";position:absolute;inset:var(--pad-area);clip-path:var(--pad-shape)}
+.scientific-dpad .pad-up {--pad-area:-3px calc(-100% - 3px) -35%;--pad-shape:polygon(0 0,100% 0,50% 100%)}
+.scientific-dpad .pad-left {--pad-area:calc(-100% - 3px) -35% calc(-100% - 3px) -3px;--pad-shape:polygon(0 0,100% 50%,0 100%)}
+.scientific-dpad .pad-right {--pad-area:calc(-100% - 3px) -3px calc(-100% - 3px) -35%;--pad-shape:polygon(100% 0,100% 100%,0 50%)}
+.scientific-dpad .pad-down {--pad-area:-35% calc(-100% - 3px) -3px;--pad-shape:polygon(50% 0,100% 100%,0 100%)}
+.scientific-function-keys {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(3,minmax(40px,1fr));gap:7px;min-height:0}
+.scientific-function-keys button {display:flex;flex-direction:column;justify-content:center;align-items:center;background:#35333f;color:#e6d7fa;font-size:16px}
+.shift-hint {font-size:8px;line-height:1.1;color:#b998ed;margin-bottom:2px;pointer-events:none}
+.scientific-number-keys {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(4,minmax(54px,1fr));gap:8px;min-height:0}
+.scientific-number-keys .number {background:#51535f;font-size:25px}
+.scientific-number-keys .operator {background:#61516f;font-size:28px}
+.scientific-number-keys .edit {background:#41424e;font-size:25px}
+.scientific-number-keys .clear {background:#6b4449;color:#ffe5e6;font-size:20px}
+.scientific-number-keys .equals {background:#b998ed;color:#221831;font-size:30px}
+.scientific-number-keys [data-scientific-action="exponent"],.scientific-number-keys [data-scientific-insert="ans"] {font-size:21px}
 .scientific-only .graph-help {max-width:520px}
 .scientific-only .calc-offline-status {color:var(--muted)}
 .calculator-popout:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)),.calculator-popout:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) body {height:auto;min-height:100%;overflow:auto}
 .calculator-popout .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) {height:auto;min-height:100dvh}
 .calculator-popout .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calculator-resizer {max-width:520px;margin:auto}
-@media(max-width:600px) {.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active).calc-page {padding-left:10px;padding-right:10px}.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calc-heading {margin-bottom:16px}.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calc-heading .eyebrow {display:none}.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calc-heading h1 {font-size:36px}}
-@media(prefers-reduced-motion:reduce) {.scientific-keypad button:active,.scientific-toolbar button:active {transform:none}}
-
-/* Phone layout: distribute the available height instead of growing the page. */
 @media (max-width:700px), (pointer:coarse) and (max-height:600px) {
   html:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {height:100%;overflow:hidden}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {height:100dvh!important;min-height:0!important;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
@@ -47,26 +65,19 @@
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphPanel {height:100%;min-height:0}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-resizer {height:100%!important;min-height:0;overflow:hidden}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-fit {height:100%;min-height:0}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {height:100%;min-height:0;display:grid;grid-template-rows:40px minmax(64px,1fr) minmax(0,9fr);gap:6px;padding:8px;border-radius:18px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .graph-brand {min-width:0;min-height:0;margin:0 3px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {height:100%;min-height:0;grid-template-rows:40px minmax(100px,3fr) minmax(0,7fr);gap:6px;padding:8px;border-radius:18px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-engine-select {min-height:40px;height:40px;padding-top:4px;padding-bottom:4px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .graph-display {min-height:0;padding:4px;border-width:1px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .graph-stage {height:100%;min-height:0}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #scientificScreen {padding:4px 8px!important;font-size:16px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #historyList {margin-bottom:0}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .home-entry {min-height:24px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #expression {height:24px;line-height:24px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #result {font-size:24px;line-height:28px;flex-shrink:0}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {min-height:0;margin:0;display:grid;grid-template-rows:40px minmax(0,1fr);gap:4px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-toolbar {min-height:0;margin:0;flex-wrap:nowrap;gap:4px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-toolbar button {height:100%;min-height:0;padding:4px 8px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-angle {gap:4px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-angle button {min-width:44px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad {min-height:0;grid-template-rows:repeat(9,minmax(0,1fr));gap:4px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad button {height:100%;min-height:0;padding:0 2px;border-radius:9px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad .number {min-height:0;font-size:clamp(18px,3dvh,26px)}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad .science {font-size:clamp(12px,2dvh,15px)}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad .operator {font-size:clamp(20px,3dvh,26px)}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #result {font-size:26px;line-height:1.15}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {grid-template-rows:72px minmax(0,3fr) minmax(0,5fr);gap:6px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-navigation {grid-template-columns:minmax(0,1fr) 94px minmax(0,1fr);gap:8px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-mode-keys,body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-utility-keys {gap:4px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-function-keys {grid-template-rows:repeat(3,minmax(0,1fr));gap:4px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-function-keys button {font-size:clamp(12px,2.2dvh,17px);padding:1px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-number-keys {grid-template-rows:repeat(4,minmax(0,1fr));gap:5px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-number-keys button {padding:1px;border-radius:9px}
   html.calculator-popout body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {grid-template-rows:minmax(0,1fr)}
   html.calculator-popout body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calc-page {grid-row:1;padding:4px!important}
 }
@@ -74,17 +85,23 @@
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {grid-template-rows:minmax(0,1fr)}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .topbar {display:none}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calc-page {grid-row:1;padding:2px!important}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {grid-template-rows:36px minmax(60px,1fr) minmax(0,9fr);padding:4px;gap:4px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {grid-template-rows:36px minmax(90px,2fr) minmax(0,8fr);padding:4px;gap:4px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-engine-select {min-height:36px;height:36px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {grid-template-rows:32px minmax(0,1fr);gap:2px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad {gap:2px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {grid-template-rows:62px minmax(0,3fr) minmax(0,5fr);gap:4px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-navigation {grid-template-columns:minmax(0,1fr) 86px minmax(0,1fr);gap:6px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-number-keys {gap:4px}
 }
 @media (orientation:landscape) and (max-height:600px) and (pointer:coarse) {
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {grid-template-rows:36px minmax(0,1fr);grid-template-columns:minmax(130px,1fr) minmax(0,3fr);column-gap:8px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-resizer {width:min(100%,900px)!important;max-width:900px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {grid-template-rows:36px minmax(0,1fr);grid-template-columns:minmax(130px,1fr) minmax(0,2.4fr);column-gap:8px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .graph-brand {grid-column:1 / -1}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .graph-display {grid-column:1;grid-row:2}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {grid-column:2;grid-row:2}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad {grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(6,minmax(0,1fr))}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-keypad .equals {grid-column:8;grid-row:5 / span 2}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-engine-controls {max-width:65%}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {grid-column:2;grid-row:2;grid-template-rows:52px minmax(0,3fr) minmax(0,5fr);gap:4px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-navigation {grid-template-columns:minmax(0,1fr) 90px minmax(0,1fr)}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-mode-keys {grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:1fr}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-utility-keys {grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:1fr}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-function-keys {gap:3px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-number-keys {gap:3px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-number-keys button {font-size:21px}
 }
+@media(prefers-reduced-motion:reduce) {.scientific-controls button:active {transform:none}}

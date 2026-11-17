@@ -1,6 +1,6 @@
 (function (root) {
   'use strict';
-  const functions = new Set(['sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'abs', 'exp', 'floor', 'ceil', 'round', 'sign']);
+  const functions = new Set(['sqrt', 'cbrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'abs', 'exp', 'floor', 'ceil', 'round', 'sign']);
   function compile(expression, {variables = [], relativePercent = true} = {}) {
     const text = String(expression).replace(/×/g, '*').replace(/÷/g, '/').replace(/[−–]/g, '-').replace(/π/g, 'pi').replace(/√/g, 'sqrt');
     if (!text.trim()) return () => 0;
@@ -100,7 +100,7 @@
         const argument = sum();
         if (!take(')')) throw Error('Add a closing bracket.');
         const operations = {
-          sqrt: Math.sqrt, ln: Math.log, log: Math.log10, abs: Math.abs, exp: Math.exp,
+          sqrt: Math.sqrt, cbrt: Math.cbrt, ln: Math.log, log: Math.log10, abs: Math.abs, exp: Math.exp,
           floor: Math.floor, ceil: Math.ceil, round: Math.round, sign: Math.sign,
         };
         return node(c => {
@@ -128,7 +128,24 @@
   }
   const evaluate = (expression, options = {}) => compile(expression)(options);
   const format = value => Object.is(value, -0) || value === 0 ? '0' : Number(value.toPrecision(14)).toString();
-  const api = {evaluate, compile, format};
+  // Continued fractions recover simple rational answers without rounding irrationals into short fractions.
+  function toFraction(value, {maxDenominator = 1000000} = {}) {
+    if (!Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER) return null;
+    if (Number.isInteger(value)) return {numerator:value,denominator:1};
+    const sign = value < 0 ? -1 : 1, target = Math.abs(value);
+    const tolerance = 8 * Number.EPSILON * Math.max(target,Number.MIN_VALUE);
+    let x = target, h0 = 0, h1 = 1, k0 = 1, k1 = 0;
+    for (let i = 0; i < 64; i++) {
+      const whole = Math.floor(x), numerator = whole*h1+h0, denominator = whole*k1+k0;
+      if (!Number.isSafeInteger(numerator) || !Number.isSafeInteger(denominator) || denominator > maxDenominator) return null;
+      if (denominator && Math.abs(numerator/denominator-target) <= tolerance) return {numerator:sign*numerator,denominator};
+      const remainder = x-whole;
+      if (!remainder) return null;
+      [h0,h1,k0,k1] = [h1,numerator,k1,denominator]; x = 1/remainder;
+    }
+    return null;
+  }
+  const api = {evaluate, compile, format, toFraction};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.GregleCalc = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
