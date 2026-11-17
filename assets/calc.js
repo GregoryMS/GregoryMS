@@ -37,7 +37,7 @@
     return false;
   }
   const options = () => ({angle,ans});
-  const focus = () => {input.focus({preventScroll:true}); updateCursor();};
+  const focus = () => {if (!touchInput) input.focus({preventScroll:true}); updateCursor();};
   function updateCursor() {
     const cursor = $('homeCursor'), position = input.selectionStart ?? input.value.length;
     cursor.style.setProperty('--cursor-column',String(position));
@@ -268,6 +268,11 @@
   let resizeFrame = 0;
   function fitCalculator() {
     resizeFrame = 0;
+    // The native calculator uses a responsive grid, so it must never enter the TI scale/resize path.
+    if ($('calcPage').classList.contains('scientific-only') && !window.GregleEmulator?.isActive()) {
+      fit.style.top = ''; fit.style.transform = ''; sizer.style.aspectRatio = '';
+      sizer.style.setProperty('--calculator-scale','1'); return;
+    }
     const baseWidth = calculator.offsetWidth, baseHeight = calculator.offsetHeight;
     if (!baseWidth || !baseHeight || !sizer.clientWidth || !sizer.clientHeight) return;
     // Reserve an unscaled strip for the drag tab, including at small sizes.
