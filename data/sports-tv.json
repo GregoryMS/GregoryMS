@@ -3,21 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
+      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
       "listings": [
-        {
-          "home": "Switzerland",
-          "away": "Scotland",
-          "start": "2026-11-16T19:45:00+00:00",
-          "channels": [
-            "BBC Scotland",
-            "BBC Sport online",
-            "BBC Two",
-            "BBC Two Northern Ireland",
-            "BBC Two Wales",
-            "BBC iPlayer"
-          ]
-        },
         {
           "home": "Denmark",
           "away": "Norway",
@@ -170,34 +157,29 @@
             "BBC Two Wales",
             "BBC iPlayer"
           ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "Seattle Sounders FC/Real Salt Lake",
+          "start": "2026-11-23T01:30:00+00:00",
+          "channels": [
+            "Apple TV (UK)"
+          ]
+        },
+        {
+          "home": "Bayern München (W)",
+          "away": "TSG 1899 Hoffenheim (W)",
+          "start": "2026-11-23T17:00:00+00:00",
+          "channels": [
+            "DAZN UK"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
+      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
       "listings": [
-        {
-          "home": "Switzerland",
-          "away": "Scotland",
-          "start": "2026-11-16T19:45:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
-        {
-          "home": "Canada",
-          "away": "Guatemala",
-          "start": "2026-11-17T01:00:00+00:00",
-          "channels": [
-            "OneSoccer",
-            "RDS",
-            "RDS 2",
-            "TSN",
-            "TSN+",
-            "TSN5"
-          ]
-        },
         {
           "home": "Denmark",
           "away": "Norway",
@@ -215,11 +197,44 @@
           ]
         },
         {
+          "home": "BK Häcken (W)",
+          "away": "Manchester City (W)",
+          "start": "2026-11-18T17:45:00+00:00",
+          "channels": [
+            "OneSoccer"
+          ]
+        },
+        {
+          "home": "Chelsea (W)",
+          "away": "Paris Saint Germain (W)",
+          "start": "2026-11-18T20:00:00+00:00",
+          "channels": [
+            "OneSoccer"
+          ]
+        },
+        {
+          "home": "Austria Wien W (W)",
+          "away": "Bayern München (W)",
+          "start": "2026-11-19T17:45:00+00:00",
+          "channels": [
+            "OneSoccer"
+          ]
+        },
+        {
+          "home": "Arsenal (W)",
+          "away": "OL Lyonnes (W)",
+          "start": "2026-11-19T20:00:00+00:00",
+          "channels": [
+            "OneSoccer"
+          ]
+        },
+        {
           "home": "Bayern München",
           "away": "1. FC Köln",
           "start": "2026-11-20T19:30:00+00:00",
           "channels": [
-            "DAZN Canada"
+            "DAZN Canada",
+            "OneSoccer"
           ]
         },
         {
@@ -293,22 +308,21 @@
             "Sportsnet NOW",
             "Sportsnet One"
           ]
+        },
+        {
+          "home": "Bayern München (W)",
+          "away": "TSG 1899 Hoffenheim (W)",
+          "start": "2026-11-23T17:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
+      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
       "listings": [
-        {
-          "home": "Switzerland",
-          "away": "Scotland",
-          "start": "2026-11-16T19:45:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Denmark",
           "away": "Norway",
@@ -446,21 +460,22 @@
           "channels": [
             "VG TV"
           ]
+        },
+        {
+          "home": "Bayern München (W)",
+          "away": "TSG 1899 Hoffenheim (W)",
+          "start": "2026-11-23T17:00:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)",
+            "Viaplay NO"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
+      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
       "listings": [
-        {
-          "home": "Switzerland",
-          "away": "Scotland",
-          "start": "2026-11-16T19:45:00+00:00",
-          "channels": [
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Denmark",
           "away": "Norway",
@@ -562,7 +577,16 @@
           "away": "Tottenham Hotspur (W)",
           "start": "2026-11-22T12:00:00+00:00",
           "channels": [
-            "SVT Play"
+            "SVT Play",
+            "TV4 Play Sport"
+          ]
+        },
+        {
+          "home": "Everton (W)",
+          "away": "Brighton (W)",
+          "start": "2026-11-22T14:00:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
           ]
         },
         {
@@ -573,21 +597,29 @@
             "V Sport Football",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Arsenal (W)",
+          "away": "West Ham United (W)",
+          "start": "2026-11-22T14:30:00+00:00",
+          "channels": [
+            "TV4 Play Sport"
+          ]
+        },
+        {
+          "home": "Bayern München (W)",
+          "away": "TSG 1899 Hoffenheim (W)",
+          "start": "2026-11-23T17:00:00+00:00",
+          "channels": [
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-16T19:52:59.942593+00:00",
+      "checkedAt": "2026-11-17T02:55:47.530183+00:00",
       "listings": [
-        {
-          "home": "Switzerland",
-          "away": "Scotland",
-          "start": "2026-11-16T19:45:00+00:00",
-          "channels": [
-            "DAZN Deutschland"
-          ]
-        },
         {
           "home": "Denmark",
           "away": "Norway",
@@ -713,6 +745,17 @@
           "channels": [
             "Sportdigital+",
             "Sportdigital1+"
+          ]
+        },
+        {
+          "home": "Bayern München (W)",
+          "away": "TSG 1899 Hoffenheim (W)",
+          "start": "2026-11-23T17:00:00+00:00",
+          "channels": [
+            "DAZN Deutschland",
+            "Magenta Sport",
+            "OneFootball Deutschland",
+            "Sport1"
           ]
         }
       ],
