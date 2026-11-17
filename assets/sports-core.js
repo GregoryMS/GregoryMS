@@ -6,6 +6,7 @@
     { id: 'usa.1', name: 'MLS' },
     { id: 'eng.w.1', name: 'Women’s Super League' },
     { id: 'uefa.champions', name: 'UEFA Champions League' },
+    { id: 'uefa.wchampions', name: 'UEFA Women’s Champions League' },
     { id: 'uefa.europa.conf', name: 'UEFA Conference League' }
   ];
   const teams = [
