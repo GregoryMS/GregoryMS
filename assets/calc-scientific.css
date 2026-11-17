@@ -108,10 +108,16 @@
 
 /* Standalone iOS uses the stable full-screen viewport and freezes safe-area values after launch. */
 @media (max-width:700px), (pointer:coarse) and (max-height:600px) {
-  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {height:var(--scientific-app-height,100lvh)!important;padding:var(--scientific-safe-top,env(safe-area-inset-top,0px)) var(--scientific-safe-right,env(safe-area-inset-right,0px)) var(--scientific-safe-bottom,env(safe-area-inset-bottom,0px)) var(--scientific-safe-left,env(safe-area-inset-left,0px))}
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {height:var(--scientific-app-height,100svh)!important;padding:var(--scientific-safe-top,env(safe-area-inset-top,0px)) var(--scientific-safe-right,env(safe-area-inset-right,0px)) var(--scientific-safe-bottom,env(safe-area-inset-bottom,0px)) var(--scientific-safe-left,env(safe-area-inset-left,0px))}
   html.calculator-standalone:not(.scientific-viewport-ready) .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) #graphCalculator {visibility:hidden}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) :is(#historyList,.home-error,.graph-screen-panel) {overscroll-behavior:contain}
 }
 
 .scientific-only #expression[readonly] {caret-color:transparent}
 .scientific-only #expression[readonly]+.home-cursor {display:block}
+
+/* Offline recovery uses the same pill treatment as the other Gregle tools. */
+[data-offline-retry].pill {min-height:44px;padding:9px 18px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--calc-accent);font:500 14px/1.4 system-ui,sans-serif;gap:8px;box-shadow:var(--shadow);touch-action:manipulation}
+[data-offline-retry].pill:hover {background:var(--soft);border-color:var(--calc-accent)}
+[data-offline-retry].pill:focus-visible {outline:2px solid var(--calc-accent);outline-offset:3px}
+[data-offline-retry][hidden] {display:none!important}

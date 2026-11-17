@@ -5,12 +5,12 @@ const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname,'../assets/calc-viewport.js'),'utf8');
 function setup() {
-  const classes = new Set(['calculator-standalone']), styles = new Map(), events = {}, windowEvents = {}, frames = new Map();
+  const classes = new Set(['calculator-standalone']), styles = new Map(), events = {}, windowEvents = {}, viewportEvents = {}, frames = new Map();
   let tick=0,nextFrame=0,observer,native=true,height=874;
   const root = {classList:{contains:name=>classes.has(name),add:name=>classes.add(name),remove:name=>classes.delete(name)},style:{setProperty:(k,v)=>styles.set(k,v),removeProperty:k=>styles.delete(k)}};
   const page={matches:()=>native},body={getBoundingClientRect:()=>({height})};
   const document={documentElement:root,body,readyState:'complete',getElementById:()=>page,addEventListener:(k,fn)=>events[k]=fn};
-  const window={innerWidth:402,visualViewport:{scale:1},matchMedia:()=>({matches:true,addEventListener(){}}),addEventListener:(k,fn)=>windowEvents[k]=fn};
+  const window={innerWidth:402,innerHeight:874,visualViewport:{scale:1,height:874,offsetTop:0,addEventListener:(k,fn)=>viewportEvents[k]=fn},matchMedia:()=>({matches:true,addEventListener(){}}),addEventListener:(k,fn)=>windowEvents[k]=fn};
   vm.runInNewContext(source,{document,window,MutationObserver:class {constructor(fn){observer=fn;}observe(){}},getComputedStyle:()=>({paddingTop:'59px',paddingRight:'0px',paddingBottom:'34px',paddingLeft:'0px'}),requestAnimationFrame:fn=>{frames.set(++nextFrame,fn);return nextFrame;},cancelAnimationFrame:id=>frames.delete(id)});
   function settle(){for(let i=0;i<12;i++){tick+=16;const work=[...frames.values()];frames.clear();work.forEach(fn=>fn(tick));}}
   function move({scrollHeight=0,clientHeight=0,scrollTop=0,delta=-10,pinch=false,zoom=1}={}) {
@@ -20,7 +20,7 @@ function setup() {
     events.touchmove({touches:pinch?[{},{}]:[{clientY:100+delta}],target:{closest:()=>scroller},cancelable:true,preventDefault(){prevented=true;}});
     return prevented;
   }
-  return {classes,styles,window,windowEvents,settle,move,setHeight:value=>height=value,setNative(value){native=value;observer();}};
+  return {classes,styles,window,windowEvents,viewportEvents,settle,move,setHeight:value=>height=value,setNative(value){native=value;observer();}};
 }
 test('Home Screen calculator appears after stable layout and ignores height-only launch changes',()=>{
   const app=setup();assert(!app.classes.has('scientific-viewport-ready'));app.settle();
@@ -45,4 +45,16 @@ test('the viewport and installed-app mode are established before stylesheet load
   const html=fs.readFileSync(path.join(__dirname,'../calc.html'),'utf8');
   assert(html.indexOf('name="viewport"')<html.indexOf('assets/preferences.js'));
   assert(html.indexOf("classList.toggle('calculator-standalone'")<html.indexOf('<link rel="stylesheet"'));
+});
+
+
+test('visible viewport caps the body height and later reductions preserve every bottom-row key',()=>{
+  const app=setup();app.setHeight(940);app.window.visualViewport.height=810;app.settle();
+  assert.equal(app.styles.get('--scientific-app-height'),'810px');
+  app.window.visualViewport.height=780;app.viewportEvents.resize();
+  assert.equal(app.styles.get('--scientific-app-height'),'780px');
+  app.window.visualViewport.height=850;app.viewportEvents.resize();
+  assert.equal(app.styles.get('--scientific-app-height'),'780px');
+  app.window.visualViewport.scale=2;app.window.visualViewport.height=390;app.viewportEvents.resize();
+  assert.equal(app.styles.get('--scientific-app-height'),'780px');
 });

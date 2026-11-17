@@ -122,6 +122,10 @@
 /* Keep the selected calculator name beside the Gregle wordmark. */
 .graph-brand {flex-wrap:nowrap}
 .calculator-engine-controls {flex-wrap:nowrap;min-width:0;margin-left:auto}
-.calculator-engine-select {width:180px;max-width:100%;min-width:0;min-height:44px;padding:8px 24px 8px 10px;border:0;border-radius:9px;background:#35333f;color:#f5f0fc;font:16px/1.25 system-ui,sans-serif;touch-action:manipulation;color-scheme:dark;cursor:pointer}
+.calculator-engine-select {width:180px;max-width:100%;min-width:0;min-height:44px;padding:8px 24px 8px 10px;border:0;border-radius:0;background:transparent;color:#f5f0fc;font:16px/1.25 system-ui,sans-serif;touch-action:manipulation;color-scheme:dark;cursor:pointer}
 .calculator-engine-select:focus-visible {outline:2px solid #deb6ff;outline-offset:2px}
 .calculator-engine-select:disabled {opacity:.6;cursor:wait}
+
+/* Keep the shell visible behind the model name, with one downward indicator. */
+.calculator-engine-select {-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f5f0fc' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:16px 16px}
+.calculator-engine-select option {background:#35333f;color:#f5f0fc}

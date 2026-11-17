@@ -72,7 +72,7 @@ function createGregleEmulator(options) {
         <h2 id="emulatorSessionTitle">Your calculator</h2>
         <p id="emulatorSessionInfo">ROM and session are saved on this device.</p>
         <p class="calc-offline-status" data-offline-status role="status">Preparing offline use…</p>
-        <button type="button" data-offline-retry hidden>Retry offline setup</button>
+        <button type="button" class="pill" data-offline-retry hidden>Retry offline setup</button>
         <div class="emu-session-actions">
           <button type="button" id="emulatorSave">Save now</button><button type="button" id="emulatorPause">Pause</button>
           <button type="button" id="emulatorExport">Export backup</button><button type="button" id="emulatorRestore">Restore backup</button>
