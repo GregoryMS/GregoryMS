@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-16T19:51:11+00:00",
-  "fetchedAt": "2026-11-16T19:51:18.326557+00:00",
+  "feedUpdatedAt": "2026-11-17T02:44:52+00:00",
+  "fetchedAt": "2026-11-17T02:44:54.918834+00:00",
   "items": [
+    {
+      "title": "What's the story with Scotland boss Pocognoli - is it time to go?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/crgqx1zz94d4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Pocognoli wants patience but Scotland 'don't have time' says Robertson",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cwnv432qy0l1o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "How Frank can restore reputation and save Crystal Palace",
       "link": "https://www.bbc.co.uk/sport/football/articles/cmge3y2qjlyro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Littler hits triple-bull, but Price checkout doesn't add up",
+      "link": "https://www.bbc.co.uk/sport/darts/articles/cwkgr9m0d0e5o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Has Trafford replaced Pickford as England No 1?",
       "link": "https://www.bbc.co.uk/sport/football/articles/cmvg2r752ykzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Robertson eclipses Dalglish to become Scotland's most capped man",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cjp3v5r9enp1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Five-try Joseph set to start for England against All Blacks",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmx20pnd853po?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Klopp says Infantino worse than Blatter",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cjr4gr2k41dxo?at_medium=RSS&at_campaign=rss"
+      "title": "Portugal boss responds to criticism from Ronaldo's mum",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ck87984g3x1po?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Ratcliffe's Ineos settles £180m boat claim with Ainslie",
-      "link": "https://www.bbc.co.uk/sport/sailing/articles/cwg5r2q5dz3zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Alcaraz 'best I've felt' in statement start at ATP Finals",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/ckvg294x5yzqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "New Zealand let country down in loss to Wales - Rennie",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6q8lq7kqn5vo?at_medium=RSS&at_campaign=rss"
+      "title": "'Is that not match-fixing?' - Erasmus questions officiating",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/ck0jx1dnd38go?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "The Botham hiding in plain sight - Wales' unlikely hero",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cm9q87xdxyz2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Prendergast cited and could miss South Africa game",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c3pw42zrp4peo?at_medium=RSS&at_campaign=rss"
+      "title": "Ratcliffe's Ineos settles £180m boat claim with Ainslie",
+      "link": "https://www.bbc.co.uk/sport/sailing/articles/cwg5r2q5dz3zo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
