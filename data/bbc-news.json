@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-17T14:29:54+00:00",
-  "fetchedAt": "2026-11-17T14:30:01.583431+00:00",
+  "feedUpdatedAt": "2026-11-17T22:35:27+00:00",
+  "fetchedAt": "2026-11-17T22:35:36.120664+00:00",
   "items": [
     {
-      "title": "Watch: What's in the Milburn review?",
-      "link": "https://www.bbc.co.uk/news/videos/c3j4r9jgkynzo?at_medium=RSS&at_campaign=rss"
+      "title": "Government backs welfare shake-up to prevent 'lost generation'",
+      "link": "https://www.bbc.co.uk/news/articles/ck79210y125xo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "At a glance: Key proposals from Milburn's Neets report",
-      "link": "https://www.bbc.co.uk/news/articles/cq074grvdpz2o?at_medium=RSS&at_campaign=rss"
+      "title": "'Can I really do this?': Neets speak to BBC about struggling to get a job",
+      "link": "https://www.bbc.co.uk/news/videos/cm0l3z8gn67eo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Why Milburn's Neets reforms will only save £200m a year by 2036",
-      "link": "https://www.bbc.co.uk/news/articles/c6205wlz8vn0o?at_medium=RSS&at_campaign=rss"
+      "title": "Jensen Huang says he would be 'honoured' to return as Nvidia CEO if board asked him",
+      "link": "https://www.bbc.co.uk/news/articles/cwx2en2vrxmdo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Where are the most jobs for 18-24 year-olds?",
-      "link": "https://www.bbc.co.uk/news/articles/cw3djdjk5d7ko?at_medium=RSS&at_campaign=rss"
+      "title": "American soldier arrested by UK police on suspicion of spying taken into US military custody",
+      "link": "https://www.bbc.co.uk/news/articles/c6x284ez38vdo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Putin's Crimea bridge partly collapses as Zelensky hails 'unprecedented' attack by Ukraine",
+      "title": "Putin's Crimean Bridge partly collapses as Zelensky hails 'unprecedented' attack by Ukraine",
       "link": "https://www.bbc.co.uk/news/articles/cw772jk4rvmxo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "BBC reports from Kyiv bridge hit by Russian attack",
+      "link": "https://www.bbc.co.uk/news/videos/cmlywvww3pzlo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Rooney says he considered taking his own life at Man Utd",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cx1l0n3v003eo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "William and Kate celebrate Earthshot Prize winners in Mumbai",
+      "link": "https://www.bbc.co.uk/news/articles/cqlykve012d1o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Russian military plane crashes killing all 19 on board",
+      "link": "https://www.bbc.co.uk/news/articles/cw8085rykkmgo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "How Met failed to stop rape-unit detective who abused women",
       "link": "https://www.bbc.co.uk/news/articles/c6kgq8d779lro?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Predatory Met detective's behaviour became increasingly extreme",
-      "link": "https://www.bbc.co.uk/news/videos/cqlymxe49g30o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Woman who accuses Russell Brand of rape says prison message 'upsetting'",
-      "link": "https://www.bbc.co.uk/news/articles/cqvg27zyrd99o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Cass report author tells BBC draft conversion practices bill is not workable",
-      "link": "https://www.bbc.co.uk/news/articles/c6m25vd2yxgdo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "UK sanctions firms over Israeli West Bank settlements",
-      "link": "https://www.bbc.co.uk/news/articles/cvglr977x3z0o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
