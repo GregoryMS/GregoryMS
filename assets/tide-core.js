@@ -79,6 +79,24 @@
     if(!Number.isFinite(a.height)||!Number.isFinite(b.height)||b.time-a.time>3600000) return null;
     return {height:a.height+(b.height-a.height)*(now-a.time)/(b.time-a.time),trend:b.height>a.height?'Rising':b.height<a.height?'Falling':'Turning'};
   }
-  const api={timezone,locationFromURL,locationURL,dayKey,dayKeys,nearestStation,predictions,extremes,marine,marineURL,current};
+  function daySummary(data,day) {
+    const events=data.events.filter(e=>dayKey(e.time,data.timezone)===day && Number.isFinite(e.height));
+    const highs=events.filter(e=>e.type==='High'),lows=events.filter(e=>e.type==='Low');
+    const high=highs.length?highs.reduce((a,b)=>a.height>b.height?a:b):null;
+    const low=lows.length?lows.reduce((a,b)=>a.height<b.height?a:b):null;
+    return {events,high,low,range:high && low?high.height-low.height:null};
+  }
+  function countdown(time,now) {
+    if(!Number.isFinite(time)||!Number.isFinite(now)||time<now)return null;
+    const minutes=Math.ceil((time-now)/60000);
+    return minutes>=60?Math.floor(minutes/60)+' h '+minutes%60+' min':minutes+' min';
+  }
+  function rate(points,now) {
+    const i=points.findIndex(p=>p.time>=now);
+    if(i<1)return null;
+    const a=points[i-1],b=points[i],gap=b.time-a.time;
+    return Number.isFinite(a.height)&&Number.isFinite(b.height)&&gap>0&&gap<=3600000?(b.height-a.height)*3600000/gap:null;
+  }
+  const api={timezone,locationFromURL,locationURL,dayKey,dayKeys,nearestStation,predictions,extremes,marine,marineURL,current,daySummary,countdown,rate};
   if(typeof module!=='undefined' && module.exports) module.exports=api; else root.GregleTides=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

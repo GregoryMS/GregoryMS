@@ -135,3 +135,38 @@ test('tide search ignores responses cancelled by a newer search',async()=>{
  a.get('tideQuery').value='Victoria';const old=a.get('tideSearch').listeners.submit({preventDefault(){}});a.get('tideQuery').value='Other';await a.get('tideSearch').listeners.submit({preventDefault(){}});
  pending.resolve(response({results:[{name:'Old result',latitude:1,longitude:1,country_code:'GB'}]}));await old;assert.equal(a.get('tideResults').children.length,0);assert.match(a.get('tideLocationStatus').textContent,/No locations found/);
 });
+
+test('daily summaries use destination dates and preserve missing extrema and zero heights',()=>{
+ const data={timezone:'America/Vancouver',events:[
+  {time:Date.parse('2026-09-30T01:00:00Z'),height:0,type:'Low'},
+  {time:Date.parse('2026-09-29T21:00:00Z'),height:3,type:'High'},
+  {time:Date.parse('2026-09-29T17:00:00Z'),height:2,type:'High'},
+  {time:Date.parse('2026-09-30T10:00:00Z'),height:4,type:'High'}]};
+ const today=core.daySummary(data,'2026-09-29');
+ assert.equal(today.high.height,3);assert.equal(today.low.height,0);assert.equal(today.range,3);
+ assert.equal(core.daySummary(data,'2026-09-30').range,null);
+ assert.equal(core.daySummary(data,'2026-10-01').high,null);
+});
+test('countdowns and level-change rates reject gaps and unavailable values',()=>{
+ assert.equal(core.countdown(now+3660000,now),'1 h 1 min');
+ assert.equal(core.countdown(now+1,now),'1 min');assert.equal(core.countdown(now-1,now),null);
+ assert.equal(core.rate([{time:0,height:0},{time:3600000,height:2}],1800000),2);
+ assert.equal(core.rate([{time:0,height:2},{time:3600000,height:0}],1800000),-2);
+ assert.equal(core.rate([{time:0,height:0},{time:7200000,height:2}],1800000),null);
+ assert.equal(core.rate([{time:0,height:null},{time:3600000,height:2}],1800000),null);
+});
+test('richer tide details follow day selection and the curve inspector exposes units',async()=>{
+ const a=app();await flush();
+ assert.equal(a.get('tideTodayMetrics').children.length,4);
+ assert.equal(a.get('tideWeek').children.length,7);
+ assert.match(a.get('tideCountdown').textContent,/In .*min/);
+ assert.match(a.get('tideAbout').textContent,/not a live gauge/);
+ const first=a.get('tideTimeReading').textContent;
+ a.get('tideTimeSlider').value='0';a.get('tideTimeSlider').oninput();
+ assert.match(a.get('tideTimeReading').textContent,/m/);
+ assert.notEqual(a.get('tideTimeReading').textContent,first);
+ a.get('tideWeek').children[1].listeners.click();
+ assert.match(a.get('tideDayTitle').textContent,/Sep 30/);
+ assert.equal(a.get('tideSelectedSummary').children.length,3);
+ assert.equal(a.get('tideInspector').hidden,false);
+});

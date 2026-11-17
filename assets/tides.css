@@ -40,3 +40,65 @@
 .surf-note { margin:8px 0 0; }
 .surf-note a { color:inherit; text-underline-offset:3px; }
 @media(max-width:600px) { .surf-cards { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } .surf-card { padding:15px 12px; } .surf-card .range-label { font-size:10px; } .surf-value { font-size:22px; } }
+
+/* Weather's quiet panels, violet accents and compact forecast cards. */
+.tide-page { --rain:var(--weather-accent-text); }
+.tide-page .tide-status-row { margin-bottom:20px; }
+.tide-page .tide-panel { padding:32px; }
+.tide-page .tide-panel-head { align-items:flex-start; }
+.tide-page .tide-badge { background:var(--weather-accent-soft); color:var(--weather-accent-text); }
+.tide-reading { display:flex; align-items:center; gap:22px; margin:12px 0; }
+.tide-water-icon { display:grid; place-items:center; flex:0 0 84px; height:84px; border-radius:50%; color:var(--weather-accent-text); background:var(--weather-accent-soft); }
+.tide-water-icon svg { width:52px; height:52px; }
+.tide-countdown { margin:10px 0 0; color:var(--weather-accent-text); font-size:22px; font-weight:400; font-variant-numeric:tabular-nums; }
+.tide-metrics,.tide-day-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:22px; margin:24px 0 20px; padding-top:24px; border-top:1px solid var(--line); }
+.tide-metric { min-width:0; }
+.tide-metric dd { margin:6px 0 0; }
+.tide-metric .range-value { font-size:26px; letter-spacing:-.8px; font-variant-numeric:tabular-nums; }
+.tide-metric-detail { font-size:12px; line-height:1.6; color:var(--muted); }
+.tide-day-summary { grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:12px; padding-top:18px; }
+.tide-cycle { margin:24px 0; }
+.tide-cycle-labels { display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:12px; margin-bottom:10px; }
+.tide-cycle-track { height:5px; background:var(--soft); border-radius:99px; overflow:hidden; }
+.tide-cycle-track span { display:block; height:100%; background:var(--weather-accent-text); border-radius:inherit; }
+.tide-day[aria-pressed="true"] { border-color:var(--weather-accent-line); background:var(--weather-accent-soft); }
+.tide-day[aria-pressed="true"] strong { color:var(--weather-accent-text); }
+.tide-chart .tide-area { fill:var(--weather-accent-text); opacity:.08; }
+.tide-chart .tide-extreme { fill:var(--panel); stroke:var(--rain); stroke-width:2; }
+.tide-chart .tide-cursor { stroke:var(--muted); stroke-dasharray:2 4; opacity:.6; }
+.tide-chart .tide-cursor-dot { fill:var(--rain); stroke:var(--panel); stroke-width:2; }
+.tide-inspector { padding:16px 18px; background:var(--soft); border-radius:17px; margin:0 0 24px; }
+.tide-inspector > div { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.tide-inspector label { font-size:13px; color:var(--muted); }
+.tide-inspector output { font-size:14px; font-weight:500; font-variant-numeric:tabular-nums; }
+.tide-inspector input { display:block; width:100%; min-height:32px; margin:0 0 10px; accent-color:var(--weather-accent); cursor:pointer; }
+.tide-week { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:10px; }
+.tide-week-card { text-align:left; font:inherit; color:var(--text); cursor:pointer; }
+.tide-week-card.forecast-card:first-child { border-color:var(--line); }
+.tide-week-card[aria-pressed="true"],.tide-week-card.forecast-card:first-child[aria-pressed="true"] { border-color:var(--weather-accent-text); background:color-mix(in srgb,var(--weather-accent-soft) 35%,var(--panel)); }
+.tide-week-card:hover { border-color:var(--weather-accent-text); }
+.tide-week-card .period { display:block; margin-bottom:20px; }
+.tide-week-row { display:block; margin-bottom:16px; }
+.tide-week-row strong { display:block; font-size:20px; font-weight:400; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.tide-week-row small { display:block; font-size:11px; color:var(--muted); margin-top:4px; }
+.tide-week-range { display:block; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; }
+.tide-about summary { color:var(--text); font-size:15px; font-weight:500; }
+.tide-page .surf-card dd { margin-left:0; }
+@media(max-width:1000px) { .tide-week { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media(max-width:600px) {
+ .tide-page .tide-panel { padding:22px; }
+ .tide-overview { grid-template-columns:1fr; gap:22px; }
+ .tide-next { padding:20px 0 0; border-left:0; border-top:1px solid var(--line); }
+ .tide-reading { gap:18px; }
+ .tide-level { font-size:54px; }
+ .tide-water-icon { flex-basis:68px; height:68px; }
+ .tide-water-icon svg { width:42px; height:42px; }
+ .tide-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px 14px; }
+ .tide-day-summary { gap:12px; }
+ .tide-day-summary .range-value { font-size:21px; }
+ .tide-day-summary .range-label { font-size:10px; letter-spacing:.04em; }
+ .tide-week { display:flex; overflow-x:auto; scroll-snap-type:x proximity; padding:3px 3px 14px; margin:0 -3px; }
+ .tide-week-card { flex:0 0 145px; scroll-snap-align:start; }
+ .tide-inspector > div { flex-direction:column; align-items:flex-start; gap:6px; }
+ .tide-inspector .details { font-size:11px; }
+}

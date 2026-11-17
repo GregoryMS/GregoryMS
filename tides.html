@@ -19,8 +19,8 @@
   <link rel="manifest" href="/tides.webmanifest?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/tides-app/favicon-32.png?v=20261002-radio">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/tides-app/icon-192.png?v=20261002-radio">
-  <link rel="stylesheet" href="assets/weather.css?v=20261023-tides-search">
-  <link rel="stylesheet" href="assets/tides.css?v=20260930-surf">
+  <link rel="stylesheet" href="assets/weather.css?v=20261106-alert-placement">
+  <link rel="stylesheet" href="assets/tides.css?v=20261117-detail1">
   <link rel="stylesheet" href="assets/weather-radar.css?v=20261006-fog-waves">
   <script src="assets/theme.js?v=20261113-shared-device1" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
@@ -59,7 +59,7 @@
   </header>
   <main class="page tide-page">
     <div class="page-heading">
-      <div class="weather-location-title"><p class="eyebrow">By the water</p><h1 id="tideCity">Vancouver</h1><p class="location-meta" id="tideRegion">Your tide tracker</p></div>
+      <div class="weather-location-title"><p class="eyebrow">By the water</p><h1 id="tideCity">Victoria</h1><p class="location-meta" id="tideRegion">Your tide tracker</p></div>
       <div class="location-picker">
         <div class="location-picker-body">
           <section class="location-controls" aria-label="Find tides for a location">
@@ -86,10 +86,13 @@
       <section class="tide-panel" aria-labelledby="tideOverviewHeading">
         <div class="tide-panel-head"><div><p class="eyebrow" id="tideProvider">Tide forecast</p><h2 id="tideOverviewHeading">The water today</h2></div><span class="tide-badge" id="tideModelLabel">Predictions</span></div>
         <p class="location-note" id="tideStation">Finding nearby tide data…</p>
-        <div class="tide-overview"><div><p class="range-label">Predicted level now</p><div class="tide-level" id="tideLevel">—</div><p class="location-note" id="tideTrend">Waiting for the tide forecast</p></div><div class="tide-next"><p class="range-label">Next tide</p><h3 id="tideNext">—</h3><p class="location-note" id="tideNextHeight"></p></div></div>
-        <p class="details" id="tideDatum"></p>
+        <div class="tide-overview"><div><p class="range-label">Predicted level now</p><div class="tide-reading"><span class="tide-water-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 24c6-9 12 9 19 0s13 9 19 0M5 34c6-9 12 9 19 0s13 9 19 0M24 7v9m-5-4 5-5 5 5"/></svg></span><div class="tide-level" id="tideLevel">—</div></div><p class="location-note" id="tideTrend">Waiting for the tide forecast</p></div><div class="tide-next"><p class="range-label">Next tide</p><h3 id="tideNext">—</h3><p class="tide-countdown" id="tideCountdown"></p><p class="location-note" id="tideNextHeight"></p></div></div>
+        <div id="tideCycle" class="tide-cycle" hidden><div class="tide-cycle-labels"><span id="tidePrevious"></span><span id="tideCycleNext"></span></div><div id="tideCycleBar" class="tide-cycle-track" role="progressbar" aria-label="Time between the previous and next tide" aria-valuemin="0" aria-valuemax="100"><span id="tideCycleFill"></span></div></div>
+        <dl class="tide-metrics" id="tideTodayMetrics"></dl><p class="details" id="tideDatum"></p>
       </section>
-      <section class="tide-panel tide-chart-panel" aria-labelledby="curveHeading"><div class="tide-panel-head"><h2 id="curveHeading">Tide curve</h2><span class="updated" id="tideZone"></span></div><div class="tide-days" id="tideDays" role="group" aria-label="Choose a forecast day"></div><div id="tideChart" class="tide-chart"></div><h3 class="tide-day-title" id="tideDayTitle">Today’s tides</h3><div id="tideDayEvents"></div></section>
+      <section class="tide-panel tide-chart-panel" aria-labelledby="curveHeading"><div class="tide-panel-head"><h2 id="curveHeading">Tide curve</h2><span class="updated" id="tideZone"></span></div><div class="tide-days" id="tideDays" role="group" aria-label="Choose a forecast day"></div><dl class="tide-day-summary" id="tideSelectedSummary"></dl><div id="tideChart" class="tide-chart"></div><div class="tide-inspector" id="tideInspector" hidden><div><label for="tideTimeSlider">Explore the tide curve</label><output id="tideTimeReading" for="tideTimeSlider" aria-live="polite"></output></div><input id="tideTimeSlider" type="range" min="0" max="1" step="1" aria-label="Forecast time on the tide curve"><p class="details">Drag or use the arrow keys to inspect forecast samples. Heights use the datum shown above.</p></div><h3 class="tide-day-title" id="tideDayTitle">Today’s tides</h3><div id="tideDayEvents"></div></section>
+      <section aria-labelledby="tideWeekHeading"><div class="forecast-head"><div><p class="eyebrow">Plan by the water</p><h2 id="tideWeekHeading">The week ahead</h2></div><p class="updated">Select a day to explore its tides and surf</p></div><div class="tide-week" id="tideWeek"></div></section>
+      <details class="tide-panel tide-about"><summary>About these predictions</summary><div id="tideAbout"></div><p class="location-note">Tide height is a water level, not water depth. Wind and pressure can change actual levels. A rising or falling tide does not describe the speed or direction of tidal currents.</p></details>
     </div>
     <section class="tide-panel surf-panel" id="surfPanel" aria-labelledby="surfHeading" aria-busy="true">
       <div class="tide-panel-head"><div><p class="eyebrow">Before you paddle out</p><h2 id="surfHeading">Surf conditions</h2></div><span class="tide-badge">Hourly forecast</span></div>
@@ -109,7 +112,7 @@
     <p class="location-note" id="tideNote"></p>
     <footer><div><p>Tides from the <a href="https://www.tides.gc.ca/">Canadian Hydrographic Service</a>. Worldwide estimates from <a href="https://open-meteo.com/en/docs/marine-weather-api">Open-Meteo / Meteo-France (CC BY 4.0)</a>.</p><p class="location-privacy">Search: Open-Meteo / GeoNames. Coordinates are sent to tide, marine and weather providers and included in weather/tide links. My location uses approximate coordinates and BigDataCloud to find your city.</p></div><a class="source-link" id="tideSource" href="https://www.tides.gc.ca/">Tide source ↗</a></footer>
   </main>
-  <script src="assets/weather-core.js"></script><script src="assets/tide-core.js"></script><script src="assets/tide-data.js"></script><script src="assets/tide-ui.js?v=20261021-subdomains"></script><script src="assets/surf-core.js?v=20260930-surf"></script><script src="assets/surf.js?v=20260930-surf"></script><script src="assets/surf-waves.js?v=20261006-fog-waves"></script><script src="assets/tides.js?v=20261023-tides-search"></script>
+  <script src="assets/weather-core.js"></script><script src="assets/tide-core.js?v=20261117-detail1"></script><script src="assets/tide-data.js"></script><script src="assets/tide-ui.js?v=20261021-subdomains"></script><script src="assets/surf-core.js?v=20260930-surf"></script><script src="assets/surf.js?v=20260930-surf"></script><script src="assets/surf-waves.js?v=20261006-fog-waves"></script><script src="assets/tides.js?v=20261117-detail1"></script>
 </body>
 </html>
 
