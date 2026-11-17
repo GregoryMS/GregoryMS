@@ -161,12 +161,38 @@ test('richer tide details follow day selection and the curve inspector exposes u
  assert.equal(a.get('tideWeek').children.length,7);
  assert.match(a.get('tideCountdown').textContent,/In .*min/);
  assert.match(a.get('tideAbout').textContent,/not a live gauge/);
- const first=a.get('tideTimeReading').textContent;
- a.get('tideTimeSlider').value='0';a.get('tideTimeSlider').oninput();
- assert.match(a.get('tideTimeReading').textContent,/m/);
- assert.notEqual(a.get('tideTimeReading').textContent,first);
+ const svg=a.get('tideChart').children[0];
+ const first=svg.attributes['aria-valuenow'];
+ svg.listeners.keydown({key:'Home',preventDefault(){}});
+ assert.match(svg.attributes['aria-valuetext'],/m/);
+ assert.notEqual(svg.attributes['aria-valuenow'],first);
  a.get('tideWeek').children[1].listeners.click();
  assert.match(a.get('tideDayTitle').textContent,/Sep 30/);
  assert.equal(a.get('tideSelectedSummary').children.length,3);
- assert.equal(a.get('tideInspector').hidden,false);
+ assert.equal(a.get('tideChart').children[0].attributes.role,'slider');
+});
+
+test('tide curve taps and captured drags map scaled screen coordinates to time and clamp to the plot',async()=>{
+ const a=app();await flush();const svg=a.get('tideChart').children[0];
+ svg.getBoundingClientRect=()=>({left:20,width:450});
+ let captured=null;svg.setPointerCapture=id=>{captured=id;};svg.hasPointerCapture=id=>captured===id;svg.releasePointerCapture=()=>{captured=null;};
+ const first=Number(svg.attributes['aria-valuemin']),last=Number(svg.attributes['aria-valuemax']);
+ const pointer=(fraction,extra={})=>({pointerId:7,button:0,clientX:20+(58+fraction*(868-58))/2,preventDefault(){},...extra});
+ svg.listeners.pointerdown(pointer(.25));assert.equal(captured,7);
+ assert.equal(Number(svg.attributes['aria-valuenow']),Math.round((first+(last-first)*.25)/60000)*60000);
+ svg.listeners.pointermove(pointer(.75,{pointerId:8}));assert.equal(Number(svg.attributes['aria-valuenow']),Math.round((first+(last-first)*.25)/60000)*60000);
+ svg.listeners.pointermove(pointer(.75));assert.equal(Number(svg.attributes['aria-valuenow']),Math.round((first+(last-first)*.75)/60000)*60000);
+ svg.listeners.pointerup(pointer(2));assert.equal(Number(svg.attributes['aria-valuenow']),last);assert.equal(captured,null);
+ svg.listeners.pointermove(pointer(0));assert.equal(Number(svg.attributes['aria-valuenow']),last);
+ svg.listeners.pointerdown(pointer(-1));assert.equal(Number(svg.attributes['aria-valuenow']),first);
+ svg.listeners.pointercancel();svg.listeners.pointermove(pointer(.5));assert.equal(Number(svg.attributes['aria-valuenow']),first);
+ svg.listeners.keydown({key:'ArrowRight',preventDefault(){}});assert.equal(Number(svg.attributes['aria-valuenow']),first+60000);
+ assert.match(svg.children.at(-1).textContent,/m/);
+});
+test('curve inspection leaves missing forecast levels unavailable rather than bridging a gap',async()=>{
+ const value=dataset();value.points=value.points.map(p=>({...p,height:p.time===now?null:p.height}));
+ const a=app({load:async()=>value});await flush();const svg=a.get('tideChart').children[0];
+ assert.match(svg.attributes['aria-valuetext'],/Level unavailable/);
+ assert.equal(svg.children.at(-2).attributes.visibility,'hidden');
+ assert(!fs.readFileSync(require.resolve('../tides.html'),'utf8').includes('tideTimeSlider'));
 });

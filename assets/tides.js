@@ -1,7 +1,7 @@
 (function() {
   'use strict';
   const core=globalThis.GregleTides, ui=globalThis.GregleTideUI, weather=globalThis.GregleWeather, $=id=>document.getElementById(id);
-  let location=null,data=null,selectedDay=null,controller=null,version=0,lookupVersion=0,lookupController=null,loadedAt=0,chartSelection=null;
+  let location=null,data=null,selectedDay=null,controller=null,version=0,lookupVersion=0,lookupController=null,loadedAt=0,chartSelection=null,chartDragging=false;
   function cancelLookup() { lookupVersion++;lookupController?.abort();$('tideSearchButton').disabled=false;$('locateTides').disabled=false; }
   function dayLabel(day) { return new Date(day+'T12:00:00Z').toLocaleDateString('en-CA',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}); }
   function svgNode(tag,attributes,text) { const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value] of Object.entries(attributes))n.setAttribute(key,value);if(text!==undefined)n.textContent=text;return n; }
@@ -44,15 +44,15 @@
     }));
   }
   function renderChart(day) {
-    const host=$('tideChart');host.replaceChildren();$('tideInspector').hidden=true;
+    const host=$('tideChart');host.replaceChildren();chartDragging=false;
     const points=data.points.filter(p=>core.dayKey(p.time,data.timezone)===day),valid=points.filter(p=>Number.isFinite(p.height));
     if(valid.length<2) {host.append(ui.node('p','location-note','The tide curve is unavailable for this day.'));return;}
     const first=points[0].time,last=points.at(-1).time;
     const min=Math.floor((Math.min(...valid.map(p=>p.height))-.15)*2)/2,max=Math.ceil((Math.max(...valid.map(p=>p.height))+.15)*2)/2;
     const width=Math.max(320,host.clientWidth || 900),right=width-32;
     const x=t=>58+(t-first)/(last-first)*(right-58),y=h=>220-(h-min)/(max-min)*180;
-    const svg=svgNode('svg',{viewBox:`0 0 ${width} 268`,role:'img','aria-labelledby':'chartTitle chartDescription'});
-    svg.append(svgNode('title',{id:'chartTitle'},'Tide curve for '+dayLabel(day)),svgNode('desc',{id:'chartDescription'},`${data.datum}. ${data.model?'Hourly model estimates.':'Station predictions.'} High and low tide times are listed below.`));
+    const svg=svgNode('svg',{viewBox:`0 0 ${width} 268`,role:'slider',tabindex:'0','aria-labelledby':'chartTitle','aria-describedby':'chartDescription','aria-orientation':'horizontal','aria-valuemin':first,'aria-valuemax':last});
+    svg.append(svgNode('title',{id:'chartTitle'},'Tide curve for '+dayLabel(day)),svgNode('desc',{id:'chartDescription'},`${data.datum}. ${data.model?'Hourly model estimates.':'Station predictions.'} Tap or drag to explore the curve. Use arrow keys to move one minute, Page Up or Page Down for one hour, and Home or End for the start or end. High and low tide times are listed below.`));
     for(let i=0;i<=3;i++) {const h=min+(max-min)*i/3;svg.append(svgNode('line',{x1:58,x2:right,y1:y(h),y2:y(h),class:'chart-grid'}),svgNode('text',{x:46,y:y(h)+4,'text-anchor':'end'},h.toFixed(1)+' m'));}
     let segments=[],segment=[];
     for(const p of points) {if(!Number.isFinite(p.height) || (segment.length && p.time-segment.at(-1).time>3600000)) {if(segment.length)segments.push(segment);segment=[];}if(Number.isFinite(p.height))segment.push(p);}
@@ -67,19 +67,48 @@
     }
     for(const p of points) {const clock=new Date(p.time).toLocaleTimeString('en-GB',{timeZone:data.timezone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'});if(/^(00|06|12|18):00$/.test(clock))svg.append(svgNode('text',{x:x(p.time),y:251,'text-anchor':'middle'},ui.time(p.time,data.timezone)));}
     const now=Date.now();if(now>=first && now<=last)svg.append(svgNode('line',{x1:x(now),x2:x(now),y1:28,y2:220,class:'chart-now'}),svgNode('text',{x:x(now),y:18,'text-anchor':'middle'},'Now'));
-    const cursor=svgNode('line',{y1:28,y2:220,class:'tide-cursor'}),dot=svgNode('circle',{r:5,class:'tide-cursor-dot'});svg.append(cursor,dot);host.append(svg);
-    const slider=$('tideTimeSlider');slider.max=String(points.length-1);
-    let index=chartSelection===null?-1:points.findIndex(p=>p.time===chartSelection);
-    if(index<0)index=points.reduce((best,p,i)=>Math.abs(p.time-(now>=first&&now<=last?now:(first+last)/2))<Math.abs(points[best].time-(now>=first&&now<=last?now:(first+last)/2))?i:best,0);
-    slider.value=String(index);
-    const inspect=()=>{
-      const p=points[Number(slider.value)];if(!p)return;chartSelection=p.time;
-      const label=ui.time(p.time,data.timezone)+' · '+(data.model?'≈ ':'')+ui.height(p.height);
-      $('tideTimeReading').textContent=label;slider.setAttribute('aria-valuetext',label);
-      cursor.setAttribute('x1',x(p.time));cursor.setAttribute('x2',x(p.time));
-      dot.setAttribute('cx',x(p.time));dot.setAttribute('cy',Number.isFinite(p.height)?y(p.height):220);dot.setAttribute('visibility',Number.isFinite(p.height)?'visible':'hidden');
+    const cursor=svgNode('line',{y1:28,y2:220,class:'tide-cursor'}),dot=svgNode('circle',{r:5,class:'tide-cursor-dot'});
+    const label=svgNode('g',{class:'tide-chart-reading','aria-hidden':'true'}),boxWidth=Math.min(164,right-58);
+    const clock=svgNode('text',{x:12,y:18,class:'tide-chart-time'}),level=svgNode('text',{x:12,y:35,class:'tide-chart-height'});
+    label.append(svgNode('rect',{width:boxWidth,height:46,rx:10}),clock,level);svg.append(cursor,dot,label);host.append(svg);
+    const inspect=time=>{
+      chartSelection=Math.max(first,Math.min(last,time));
+      const exact=points.find(p=>p.time===chartSelection);
+      const height=exact?exact.height:core.current(points,chartSelection)?.height;
+      const valid=Number.isFinite(height),cx=x(chartSelection),cy=valid?y(height):220;
+      const timeText=ui.time(chartSelection,data.timezone),heightText=valid?(data.model?'≈ ':'')+ui.height(height):'Level unavailable';
+      clock.textContent=timeText;level.textContent=heightText;
+      svg.setAttribute('aria-valuenow',String(chartSelection));svg.setAttribute('aria-valuetext',timeText+' · '+heightText);
+      cursor.setAttribute('x1',cx);cursor.setAttribute('x2',cx);
+      dot.setAttribute('cx',cx);dot.setAttribute('cy',cy);dot.setAttribute('visibility',valid?'visible':'hidden');
+      label.setAttribute('transform',`translate(${Math.max(58,Math.min(right-boxWidth,cx-boxWidth/2))},${cy<84?cy+14:cy-60})`);
     };
-    slider.oninput=inspect;inspect();$('tideInspector').hidden=false;
+    inspect(chartSelection!==null&&chartSelection>=first&&chartSelection<=last?chartSelection:now>=first&&now<=last?now:(first+last)/2);
+    const atPointer=event=>{
+      const rect=svg.getBoundingClientRect();if(!rect.width)return;
+      const position=Math.max(0,Math.min(1,((event.clientX-rect.left)/rect.width*width-58)/(right-58)));
+      inspect(Math.round((first+position*(last-first))/60000)*60000);
+    };
+    let pointer=null;
+    svg.addEventListener('pointerdown',event=>{
+      if(event.isPrimary===false || (event.button!==undefined && event.button!==0))return;
+      event.preventDefault();pointer=event.pointerId;chartDragging=true;
+      svg.focus?.({preventScroll:true});svg.setPointerCapture?.(pointer);atPointer(event);
+    });
+    svg.addEventListener('pointermove',event=>{if(pointer===event.pointerId){event.preventDefault();atPointer(event);}});
+    svg.addEventListener('pointerup',event=>{
+      if(pointer!==event.pointerId)return;
+      atPointer(event);pointer=null;chartDragging=false;
+      if(svg.hasPointerCapture?.(event.pointerId))svg.releasePointerCapture(event.pointerId);
+    });
+    const cancel=()=>{pointer=null;chartDragging=false;};
+    svg.addEventListener('pointercancel',cancel);svg.addEventListener('lostpointercapture',cancel);
+    svg.addEventListener('click',atPointer);
+    svg.addEventListener('keydown',event=>{
+      const steps={ArrowLeft:-60000,ArrowDown:-60000,ArrowRight:60000,ArrowUp:60000,PageDown:-3600000,PageUp:3600000};
+      if(event.key!=='Home'&&event.key!=='End'&&!Object.hasOwn(steps,event.key))return;
+      event.preventDefault();inspect(event.key==='Home'?first:event.key==='End'?last:chartSelection+steps[event.key]);
+    });
   }
   function renderDay(day) {
     if(selectedDay!==day)chartSelection=null;
@@ -159,8 +188,8 @@
   }
   $('tideSearch').addEventListener('submit',search);$('locateTides').addEventListener('click',locate);$('refreshTides').addEventListener('click',refresh);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden && Date.now()-loadedAt>900000)refresh();});
-  setInterval(()=>{if(!document.hidden && data){if(Date.now()-loadedAt>900000)refresh();else render();}},60000);
-  window.addEventListener?.('resize',()=>{if(data && selectedDay)renderChart(selectedDay);});
+  setInterval(()=>{if(!document.hidden && data){if(Date.now()-loadedAt>900000)refresh();else if(!chartDragging)render();}},60000);
+  window.addEventListener?.('resize',()=>{if(data && selectedDay && !chartDragging)renderChart(selectedDay);});
   const linked=core.locationFromURL(window.location?.href);
   select(linked || {name:'Victoria',latitude:48.43,longitude:-123.36,country:'CA',region:'British Columbia, Canada',timezone:'America/Vancouver'});
 })();
