@@ -5,6 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const S = require('../assets/sports-core.js');
 const L = require('../assets/sports-live-core.js');
+const FEED_COUNT = S.teams.length * 2 + S.leagues.length;
 const NOW = Date.parse('2026-10-12T13:15:00Z');
 function event(id = 'match', state = 'pre', ids = ['359', '382']) {
   return { id, date: '2026-10-13T19:00:00Z', league: { name: 'Premier League' }, links: [{ href: 'https://www.espn.com/soccer/match/_/gameId/1', rel: ['summary'] }], competitions: [{ dateValid: true, status: { displayClock: '42′', type: { state, name: state === 'post' ? 'STATUS_FULL_TIME' : 'STATUS_SCHEDULED', completed: state === 'post', description: state === 'post' ? 'Full Time' : 'Scheduled', shortDetail: state === 'post' ? 'FT' : '' } }, competitors: ids.map((id, i) => ({ homeAway: i ? 'away' : 'home', team: { id, displayName: i ? 'Manchester City' : 'Arsenal', abbreviation: i ? 'MCI' : 'ARS' }, score: { value: i ? 2 : 0, displayValue: String(i ? 2 : 0) } })) }] };
@@ -99,7 +100,7 @@ async function settled(h) {
 }
 test('controller loads all feeds with bounded concurrency and renders distinct fixtures and table', async () => {
   const h = harness(); await settled(h);
-  assert.equal(h.requests.length, 50); assert(h.maxActive() <= 6);
+  assert.equal(h.requests.length, FEED_COUNT); assert(h.maxActive() <= 6);
   for (const id of ['306', '361', '20103', '19976']) assert.equal(h.requests.filter(url => url.includes('/teams/' + id + '/')).length, 2);
   for (const name of ['Hull City', 'Newcastle United']) assert(h.get('team-filter').innerHTML.includes(name));
   assert.match(h.get('next-match').innerHTML, /Arsenal/);
@@ -154,11 +155,11 @@ test('refresh failure retains older data with warnings and retries successfully'
 });
 test('failed empty feeds and blocked browser storage are handled explicitly', async () => {
   const h = harness({ fail: () => true, storageThrows: true }); await settled(h);
-  assert.match(h.get('feed-status').textContent, /50 unavailable/);
+  assert.match(h.get('feed-status').textContent, new RegExp(FEED_COUNT + ' unavailable'));
   assert.match(h.get('match-list').innerHTML, /Match feeds are unavailable/);
   assert.match(h.get('team-cards').innerHTML, /Fixture feed unavailable/);
   assert.match(h.get('league-tables').innerHTML, /Open the ESPN table/);
-  h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, 50);
+  h.document.hidden = true; h.intervals[0](); assert.equal(h.requests.length, FEED_COUNT);
 });
 test('sports page is linked from Tools and uses the shared theme and local scripts', () => {
   const root = path.join(__dirname, '..');
@@ -299,7 +300,7 @@ test('a fully failed refresh is dated as an attempt rather than fresh data', asy
   await h.get('refresh').listeners.click(); await settled(h);
   assert.match(h.get('dashboard-date').textContent, /^Last attempt: /);
   assert.match(h.get('dashboard-date').textContent, /2026.*\d{2}:\d{2}:\d{2}/);
-  assert.match(h.get('feed-status').textContent, /50 unavailable/);
+  assert.match(h.get('feed-status').textContent, new RegExp(FEED_COUNT + ' unavailable'));
 });
 
 const chooseTeamsGender = (h, gender) => h.get('teams-tabs').listeners.click({target:{closest:()=>({dataset:{teamsGender:gender}})}});

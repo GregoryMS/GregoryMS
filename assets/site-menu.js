@@ -2,6 +2,19 @@
   'use strict';
   const menu = document.getElementById('gregleAppMenu');
   if (!menu?.hasAttribute?.('data-gregle-menu')) return;
+  // iOS Home Screen apps also expose navigator.standalone.
+  const appDisplay = window.matchMedia?.('(display-mode: standalone), (display-mode: minimal-ui)');
+  const syncAppDisplay = () => {
+    menu.hidden = Boolean(window.navigator?.standalone || appDisplay?.matches);
+    if (menu.hidden) {
+      menu.open = false;
+      menu.querySelector('summary')?.setAttribute('aria-expanded', 'false');
+    }
+  };
+  syncAppDisplay();
+  if (appDisplay?.addEventListener) appDisplay.addEventListener('change', syncAppDisplay);
+  else appDisplay?.addListener?.(syncAppDisplay);
+  window.addEventListener('pageshow', syncAppDisplay);
   const toggle = menu.querySelector('summary');
   const panel = menu.querySelector('nav');
   const grid = menu.querySelector('.gregle-app-grid');

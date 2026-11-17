@@ -104,3 +104,10 @@
 @media (max-width: 480px) {
   .gregle-app-menu .gregle-menu-panel { position: fixed; top: var(--gregle-menu-top, 76px); right: 12px; max-height: calc(100dvh - var(--gregle-menu-top, 76px) - 12px); }
 }
+
+/* Hide the cross-site launcher before scripts run in installed apps.
+   The hidden attribute also covers iOS navigator.standalone. */
+#gregleAppMenu[hidden] { display: none !important; }
+@media (display-mode: standalone), (display-mode: minimal-ui) {
+  #gregleAppMenu { display: none !important; }
+}

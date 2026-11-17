@@ -49,7 +49,7 @@ test('generated menu markup stays in sync with the shared configuration', () => 
   execFileSync('python3', ['scripts/update_site_menu.py','--check'], {cwd:root});
 });
 
-function launcher(saved = null, sharedDestination = false) {
+function launcher(saved = null, sharedDestination = false, display = {}) {
   let focused;
   const node = () => ({listeners:{},attrs:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(k,v){this.attrs[k]=v;},getAttribute(k){return this.attrs[k];},focus(){focused=this;},scrollIntoView(){}});
   const summary=node(),panel=node(),grid=node(),status=node(),apps=Array.from({length:11},node),menu=node(),document=node(),window=node();
@@ -71,8 +71,11 @@ function launcher(saved = null, sharedDestination = false) {
   menu.contains=n=>[menu,summary,panel,...apps].includes(n);
   summary.getBoundingClientRect=()=>({bottom:60});
   document.getElementById=()=>menu; window.innerHeight=700;
+  const media = {matches: Boolean(display.installed), addEventListener(type, callback){this.change=callback;}};
+  window.navigator = {standalone: Boolean(display.ios)};
+  window.matchMedia = () => media;
   vm.runInNewContext(fs.readFileSync(path.join(root,'assets/site-menu.js'),'utf8'),{document,window,localStorage,clearTimeout,cancelAnimationFrame(){}});
-  return {summary,panel,grid,status,apps,menu,document,window,focused:()=>focused,stored:()=>stored};
+  return {summary,panel,grid,status,apps,menu,document,window,media,focused:()=>focused,stored:()=>stored};
 }
 const key=(key,target,extra={})=>({key,target,...extra,preventDefault(){this.prevented=true;}});
 
@@ -141,4 +144,23 @@ test('More stays last when restoring an old order or adding a missing app', () =
   env.panel.listeners.keydown(key('ArrowLeft', env.apps[10], {altKey:true}));
   assert.equal(env.grid.children.at(-1), env.apps[10]);
   assert.equal(JSON.parse(env.stored()).at(-1), '/links.html');
+});
+
+test('installed apps hide the shared launcher, including iOS and display-mode changes', () => {
+  assert.equal(launcher().menu.hidden, false);
+  assert.equal(launcher(null, false, {installed:true}).menu.hidden, true);
+  assert.equal(launcher(null, false, {ios:true}).menu.hidden, true);
+  const env = launcher();
+  env.menu.open = true;
+  env.media.matches = true;
+  env.media.change();
+  assert.equal(env.menu.hidden, true);
+  assert.equal(env.menu.open, false);
+  assert.equal(env.summary.attrs['aria-expanded'], 'false');
+  env.media.matches = false;
+  env.media.change();
+  assert.equal(env.menu.hidden, false);
+  env.window.navigator.standalone = true;
+  env.window.listeners.pageshow();
+  assert.equal(env.menu.hidden, true);
 });
