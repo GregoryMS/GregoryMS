@@ -68,9 +68,10 @@
     for(const p of points) {const clock=new Date(p.time).toLocaleTimeString('en-GB',{timeZone:data.timezone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'});if(/^(00|06|12|18):00$/.test(clock))svg.append(svgNode('text',{x:x(p.time),y:251,'text-anchor':'middle'},ui.time(p.time,data.timezone)));}
     const now=Date.now();if(now>=first && now<=last)svg.append(svgNode('line',{x1:x(now),x2:x(now),y1:28,y2:220,class:'chart-now'}),svgNode('text',{x:x(now),y:18,'text-anchor':'middle'},'Now'));
     const cursor=svgNode('line',{y1:28,y2:220,class:'tide-cursor'}),dot=svgNode('circle',{r:5,class:'tide-cursor-dot'});
-    const label=svgNode('g',{class:'tide-chart-reading','aria-hidden':'true'}),boxWidth=Math.min(164,right-58);
-    const clock=svgNode('text',{x:12,y:18,class:'tide-chart-time'}),level=svgNode('text',{x:12,y:35,class:'tide-chart-height'});
-    label.append(svgNode('rect',{width:boxWidth,height:46,rx:10}),clock,level);svg.append(cursor,dot,label);host.append(svg);
+    const label=svgNode('g',{class:'tide-chart-reading','aria-hidden':'true'});
+    const box=svgNode('rect',{height:40,rx:8});
+    const clock=svgNode('text',{x:9,y:16,class:'tide-chart-time'}),level=svgNode('text',{x:9,y:31,class:'tide-chart-height'});
+    label.append(box,clock,level);svg.append(cursor,dot,label);host.append(svg);
     const inspect=time=>{
       chartSelection=Math.max(first,Math.min(last,time));
       const exact=points.find(p=>p.time===chartSelection);
@@ -78,10 +79,12 @@
       const valid=Number.isFinite(height),cx=x(chartSelection),cy=valid?y(height):220;
       const timeText=ui.time(chartSelection,data.timezone),heightText=valid?(data.model?'≈ ':'')+ui.height(height):'Level unavailable';
       clock.textContent=timeText;level.textContent=heightText;
+      const textWidth=Math.max(clock.getComputedTextLength?.() || timeText.length*7,level.getComputedTextLength?.() || heightText.length*6);
+      const boxWidth=Math.min(right-58,Math.ceil(textWidth)+18);box.setAttribute('width',boxWidth);
       svg.setAttribute('aria-valuenow',String(chartSelection));svg.setAttribute('aria-valuetext',timeText+' · '+heightText);
       cursor.setAttribute('x1',cx);cursor.setAttribute('x2',cx);
       dot.setAttribute('cx',cx);dot.setAttribute('cy',cy);dot.setAttribute('visibility',valid?'visible':'hidden');
-      label.setAttribute('transform',`translate(${Math.max(58,Math.min(right-boxWidth,cx-boxWidth/2))},${cy<84?cy+14:cy-60})`);
+      label.setAttribute('transform',`translate(${Math.max(58,Math.min(right-boxWidth,cx-boxWidth/2))},${cy<76?cy+12:cy-52})`);
     };
     inspect(chartSelection!==null&&chartSelection>=first&&chartSelection<=last?chartSelection:now>=first&&now<=last?now:(first+last)/2);
     const atPointer=event=>{
