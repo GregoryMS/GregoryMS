@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
+      "checkedAt": "2026-11-17T20:55:52.108232+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -177,7 +177,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
+      "checkedAt": "2026-11-17T20:55:52.108232+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -320,7 +320,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
+      "checkedAt": "2026-11-17T20:55:52.108232+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -474,7 +474,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
+      "checkedAt": "2026-11-17T20:55:52.108232+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -618,7 +618,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-17T11:52:11.794349+00:00",
+      "checkedAt": "2026-11-17T20:55:52.108232+00:00",
       "listings": [
         {
           "home": "Denmark",
@@ -687,6 +687,7 @@
           "away": "Fulham",
           "start": "2026-11-21T12:30:00+00:00",
           "channels": [
+            "RTL+",
             "Sky Sport Premier League",
             "WOW"
           ]
