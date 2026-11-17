@@ -129,3 +129,6 @@
 /* Keep the shell visible behind the model name, with one downward indicator. */
 .calculator-engine-select {-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f5f0fc' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:16px 16px}
 .calculator-engine-select option {background:#35333f;color:#f5f0fc}
+
+.calculator-engine-select {-webkit-tap-highlight-color:transparent}
+.calculator-engine-select.pointer-focused:focus {outline:none;box-shadow:none}

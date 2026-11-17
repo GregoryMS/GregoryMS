@@ -7,7 +7,7 @@ const source = fs.readFileSync(path.join(__dirname,'../assets/calc-picker.js'),'
 function setup(initial = 'scientific') {
   let listener,notify;
   const clicks = [];
-  const picker = {value:'scientific',disabled:false,addEventListener(type,fn) {assert.equal(type,'change');listener=fn;}};
+  const picker = {value:'scientific',disabled:false,addEventListener(type,fn) {if (type === 'change') listener=fn;}};
   const buttons = Object.fromEntries(['ti84','ti89','tinspire'].map(engine => [engine,{
     checked:engine===initial,disabled:false,getAttribute() {return String(this.checked);},click() {clicks.push(engine);}
   }]));

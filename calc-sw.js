@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261117-visible1';
+const VERSION='20261117-pointer1';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -11,7 +11,7 @@ const ASSETS=[
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',
   '/assets/calc.css?v=20261102-heading1',
   '/assets/calc-graph.css?v=20261101-dpad-restored1',
-  '/assets/calc-emulator.css?v=20261117-visible1',
+  '/assets/calc-emulator.css?v=20261117-pointer1',
   '/assets/site-menu.css?v=20261117-app-theme2',
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
@@ -19,7 +19,7 @@ const ASSETS=[
   '/assets/calc-scientific.css?v=20261117-visible1',
   '/assets/calc-viewport.js?v=20261117-visible1',
   '/assets/calc-haptics.js?v=20261117-haptics1',
-  '/assets/calc-picker.js?v=20261117-picker1',
+  '/assets/calc-picker.js?v=20261117-pointer1',
   '/assets/calc-scientific.js?v=20261117-fractions1',
   '/assets/calc-core.js?v=20261117-fractions1',
   '/assets/calc.js?v=20261117-stable1',

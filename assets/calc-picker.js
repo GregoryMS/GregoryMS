@@ -7,6 +7,10 @@
     ti89:document.getElementById('ti89Open'),
     tinspire:document.getElementById('tinspireOpen')
   };
+  // Select controls can match :focus-visible after touch on iOS; track the actual input method.
+  picker.addEventListener('pointerdown',() => picker.classList.add('pointer-focused'));
+  picker.addEventListener('keydown',() => picker.classList.remove('pointer-focused'));
+  picker.addEventListener('blur',() => picker.classList.remove('pointer-focused'));
   let requested = null;
   const selected = () => Object.keys(buttons).find(engine => buttons[engine].getAttribute('aria-checked') === 'true') || 'scientific';
   function sync() {
