@@ -417,3 +417,12 @@ test('non-rational scientific answers stay decimal and zero denominators keep no
   app.scientific.calculate(); assert.equal(app.scientific.hasError(),true);
   app.scientific.reset(true); assert.equal(app.get('result').textContent,'0');
 });
+
+
+test('recalling a fractional answer preserves full precision for subsequent fraction calculations', () => {
+  const app = setup(undefined,true,true);
+  app.type(app.get('expression'),'1/2+1/3'); app.scientific.calculate(); app.scientific.toggleFraction();
+  assert.equal(app.get('result').textContent,'5/6');
+  app.scientific.navigate('up'); app.scientific.navigate('enter'); app.key('+'); app.key('0'); app.scientific.calculate();
+  assert.equal(app.get('result').textContent,'5/6');
+});

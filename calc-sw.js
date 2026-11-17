@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261117-fractions1';
+const VERSION='20261117-fractions2';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -21,7 +21,7 @@ const ASSETS=[
   '/assets/calc-picker.js?v=20261117-picker1',
   '/assets/calc-scientific.js?v=20261117-fractions1',
   '/assets/calc-core.js?v=20261117-fractions1',
-  '/assets/calc.js?v=20261117-fractions1',
+  '/assets/calc.js?v=20261117-fractions2',
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
   '/assets/calc-emulator.js?v=20261115-nspire2',

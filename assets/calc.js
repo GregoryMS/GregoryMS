@@ -93,7 +93,7 @@
   }
   function leaveHistory() {if (historySelection !== null) {historySelection = null; renderHistory();}}
   function recall(item,part) {
-    completed = false; leaveHistory(); insert(part === 'expression' ? item.expression : format(item.value),'',{literal:true});
+    completed = false; leaveHistory(); insert(part === 'expression' ? item.expression : fractionMode ? String(item.value) : format(item.value),'',{literal:true});
   }
   function recallEntry() {
     if (!history.length) return;
