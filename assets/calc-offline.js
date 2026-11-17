@@ -6,7 +6,7 @@
   function render() {
     let message;
     if (appReady) {
-      const ready=['scientific','graphing'];
+      const ready=['scientific'];
       if (romReady) ready.push('TI-84 CE');
       if (ti89Ready) ready.push('TI-89');
       if (nspireReady) ready.push('CX CAS');

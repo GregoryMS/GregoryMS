@@ -1,0 +1,38 @@
+/* Only the native calculator uses this layout. TI shells keep their original sizing. */
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calculator-resizer {width:min(100%,520px)!important;height:auto!important;aspect-ratio:auto!important;overflow:visible;border-radius:24px}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calculator-fit {position:static;width:100%;transform:none!important}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) #graphCalculator {width:100%;padding:18px 14px;border-radius:24px}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) :is(.graph-menu-keys,.graph-navigation,#graphKeyboard,.calculator-resize-handle,.calculator-resize-note,.trace-form,#graphScreenFooter,#graphReadout,.graph-screen-status) {display:none!important}
+.scientific-only .trace-form {display:none}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-brand {margin-bottom:18px}
+.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-stage {height:190px;border-radius:6px}
+.scientific-only #scientificScreen {padding:12px!important;justify-content:flex-end;font-size:18px}
+.scientific-only #historyList {flex:1;max-height:none;margin-bottom:8px}
+.scientific-only #historyList button {min-height:44px;line-height:1.4;padding:8px 2px}
+.scientific-only #expression {height:34px;line-height:34px;caret-color:var(--ink)}
+.scientific-only #homeCursor {display:none}
+.scientific-only #result {position:static;width:auto;height:auto;clip:auto;clip-path:none;overflow:visible;white-space:normal;text-align:right;font-size:28px;line-height:1.3;overflow-wrap:anywhere}
+.scientific-only .home-error-options {grid-template-columns:1fr 1fr;gap:8px}
+.scientific-only .home-error-options button {min-height:44px;font-size:16px}
+.scientific-controls {margin-top:14px}
+.scientific-toolbar {display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:12px}
+.scientific-toolbar button,.scientific-keypad button {min-width:0;min-height:48px;padding:8px;border:1px solid #575562;border-radius:12px;background:#41424e;color:#f7f5fb;font:500 16px/1.2 system-ui,sans-serif;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.scientific-toolbar button {font-size:13px;min-height:44px}
+.scientific-angle {display:flex;gap:5px}
+.scientific-angle button {min-width:54px}
+.scientific-angle button[aria-pressed="true"] {background:#b998ed;border-color:#b998ed;color:#221831}
+.scientific-keypad {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.scientific-keypad .science {background:#35333f;color:#e6d7fa;font-size:15px}
+.scientific-keypad .number {background:#51535f;font-size:24px;min-height:58px}
+.scientific-keypad .operator {background:#61516f;font-size:24px}
+.scientific-keypad .clear {background:#6b4449;color:#ffe5e6}
+.scientific-keypad .equals {grid-column:5;grid-row:6 / span 2;background:#b998ed;color:#221831;font-size:30px}
+.scientific-keypad button:focus-visible,.scientific-toolbar button:focus-visible {outline:3px solid #deb6ff;outline-offset:2px}
+.scientific-keypad button:active,.scientific-toolbar button:active {background:#77618e;transform:scale(.96)}
+.scientific-only .graph-help {max-width:520px}
+.scientific-only .calc-offline-status {color:var(--muted)}
+.calculator-popout:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)),.calculator-popout:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) body {height:auto;min-height:100%;overflow:auto}
+.calculator-popout .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) {height:auto;min-height:100dvh}
+.calculator-popout .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calculator-resizer {max-width:520px;margin:auto}
+@media(max-width:600px) {.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active).calc-page {padding-left:10px;padding-right:10px}.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calc-heading {margin-bottom:16px}.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calc-heading .eyebrow {display:none}.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .calc-heading h1 {font-size:36px}}
+@media(prefers-reduced-motion:reduce) {.scientific-keypad button:active,.scientific-toolbar button:active {transform:none}}
