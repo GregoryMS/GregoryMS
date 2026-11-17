@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261117-scientific2';
+const VERSION='20261117-picker1';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -11,12 +11,13 @@ const ASSETS=[
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',
   '/assets/calc.css?v=20261102-heading1',
   '/assets/calc-graph.css?v=20261101-dpad-restored1',
-  '/assets/calc-emulator.css?v=20261115-nspire3',
+  '/assets/calc-emulator.css?v=20261117-picker1',
   '/assets/site-menu.css?v=20261117-app-theme2',
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
   '/assets/site-menu.js?v=20261117-app-theme2',
   '/assets/calc-scientific.css?v=20261117-scientific2',
+  '/assets/calc-picker.js?v=20261117-picker1',
   '/assets/calc-scientific.js?v=20261117-scientific2',
   '/assets/calc-core.js?v=20261029-graph',
   '/assets/calc.js?v=20261102-ti89-6',

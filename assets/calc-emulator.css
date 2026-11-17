@@ -118,3 +118,10 @@
 .nspire-firmware-files {display:grid;gap:8px;margin:12px 0}
 .nspire-firmware-files label {display:grid;gap:4px;font:11px/1.4 ui-monospace,monospace}
 .nspire-firmware-files input {width:100%;min-width:0;font:10px ui-monospace,monospace;color:#23392f}
+
+/* Keep the selected calculator name beside the Gregle wordmark. */
+.graph-brand {flex-wrap:nowrap}
+.calculator-engine-controls {flex-wrap:nowrap;min-width:0;margin-left:auto}
+.calculator-engine-select {width:180px;max-width:100%;min-width:0;min-height:44px;padding:8px 24px 8px 10px;border:1px solid #77707d;border-radius:9px;background:#35333f;color:#f5f0fc;font:16px/1.25 system-ui,sans-serif;touch-action:manipulation;color-scheme:dark;cursor:pointer}
+.calculator-engine-select:focus-visible {outline:2px solid #deb6ff;outline-offset:2px}
+.calculator-engine-select:disabled {opacity:.6;cursor:wait}
