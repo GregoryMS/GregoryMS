@@ -53,6 +53,17 @@ function launcher(saved = null, sharedDestination = false, display = {}) {
   let focused;
   const node = () => ({listeners:{},attrs:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(k,v){this.attrs[k]=v;},getAttribute(k){return this.attrs[k];},focus(){focused=this;},scrollIntoView(){}});
   const summary=node(),panel=node(),grid=node(),status=node(),apps=Array.from({length:11},node),menu=node(),document=node(),window=node();
+  const themeSwitch=node(),themeHome=node(),header=node();
+  const domNode=()=>Object.assign(node(),{children:[],append(child){
+    if(child.parentElement?.children)child.parentElement.children.splice(child.parentElement.children.indexOf(child),1);
+    this.children.push(child);child.parentElement=this;
+  },remove(){if(this.parentElement)this.parentElement.children.splice(this.parentElement.children.indexOf(this),1);this.parentElement=null;}});
+  Object.assign(themeHome,domNode());Object.assign(header,domNode());
+  themeHome.append(themeSwitch);header.append(menu);
+  menu.before=child=>{header.children.splice(header.children.indexOf(menu),0,child);child.parentElement=header;};
+  document.createElement=domNode;
+  themeSwitch.attrs['aria-checked']='true';
+  themeSwitch.addEventListener('click',()=>themeSwitch.setAttribute('aria-checked',String(themeSwitch.attrs['aria-checked']!=='true')));
   grid.children=[...apps];
   grid.querySelectorAll=()=>grid.children;
   grid.append=app=>{grid.children.splice(grid.children.indexOf(app),1);grid.children.push(app);};
@@ -66,7 +77,7 @@ function launcher(saved = null, sharedDestination = false, display = {}) {
   let stored=saved;
   const localStorage={getItem(){return stored;},setItem(k,v){assert.equal(k,'gregle-app-order');stored=v;}};
   menu.open=false; menu.hasAttribute=()=>true;
-  menu.querySelector=s=>({'summary':summary,'nav':panel,'.gregle-app-grid':grid,'[data-gregle-app-status]':status})[s];
+  menu.querySelector=s=>({'#themeToggle':themeSwitch,'summary':summary,'nav':panel,'.gregle-app-grid':grid,'[data-gregle-app-status]':status})[s];
   menu.style={setProperty(){}};
   menu.contains=n=>[menu,summary,panel,...apps].includes(n);
   summary.getBoundingClientRect=()=>({bottom:60});
@@ -75,7 +86,7 @@ function launcher(saved = null, sharedDestination = false, display = {}) {
   window.navigator = {standalone: Boolean(display.ios)};
   window.matchMedia = () => media;
   vm.runInNewContext(fs.readFileSync(path.join(root,'assets/site-menu.js'),'utf8'),{document,window,localStorage,clearTimeout,cancelAnimationFrame(){}});
-  return {summary,panel,grid,status,apps,menu,document,window,media,focused:()=>focused,stored:()=>stored};
+  return {summary,panel,grid,status,apps,menu,document,window,media,themeSwitch,themeHome,header,focused:()=>focused,stored:()=>stored};
 }
 const key=(key,target,extra={})=>({key,target,...extra,preventDefault(){this.prevented=true;}});
 
@@ -163,4 +174,21 @@ test('installed apps hide the shared launcher, including iOS and display-mode ch
   env.window.navigator.standalone = true;
   env.window.listeners.pageshow();
   assert.equal(env.menu.hidden, true);
+});
+
+test('installed apps expose the original working theme switch and restore it in browser mode',()=>{
+  const env=launcher(null,false,{installed:true});
+  const {themeSwitch,themeHome,header,menu,media}=env;
+  const control=header.children[0];
+  assert.equal(control.className,'gregle-installed-theme-control');
+  assert.equal(control.children[0],themeSwitch);assert.equal(header.children[1],menu);
+  assert.equal(themeSwitch.attrs['aria-checked'],'true');
+  themeSwitch.listeners.click();assert.equal(themeSwitch.attrs['aria-checked'],'false');
+  env.window.listeners.pageshow();assert.equal(header.children.length,2);
+  media.matches=false;media.change();
+  assert.equal(themeSwitch.parentElement,themeHome);assert.equal(header.children.length,1);
+  assert.equal(menu.hidden,false);
+  media.matches=true;media.change();
+  assert.equal(themeSwitch.parentElement,header.children[0]);assert.equal(themeSwitch.attrs['aria-checked'],'false');
+  assert.equal(launcher(null,false,{ios:true}).header.children[0].className,'gregle-installed-theme-control');
 });

@@ -3,12 +3,30 @@
   const menu = document.getElementById('gregleAppMenu');
   if (!menu?.hasAttribute?.('data-gregle-menu')) return;
   // iOS Home Screen apps also expose navigator.standalone.
+  const themeSwitch = menu.querySelector('#themeToggle');
+  const themeHome = themeSwitch?.parentElement;
+  let installedThemeControl = null;
   const appDisplay = window.matchMedia?.('(display-mode: standalone), (display-mode: minimal-ui)');
   const syncAppDisplay = () => {
     menu.hidden = Boolean(window.navigator?.standalone || appDisplay?.matches);
     if (menu.hidden) {
       menu.open = false;
       menu.querySelector('summary')?.setAttribute('aria-expanded', 'false');
+    }
+    if (themeSwitch && themeHome) {
+      if (menu.hidden) {
+        if (!installedThemeControl) {
+          installedThemeControl = document.createElement('div');
+          installedThemeControl.className = 'gregle-installed-theme-control';
+          menu.before(installedThemeControl);
+        }
+        // Move the existing control so its theme handlers and saved state survive.
+        if (themeSwitch.parentElement !== installedThemeControl) installedThemeControl.append(themeSwitch);
+      } else if (installedThemeControl) {
+        themeHome.append(themeSwitch);
+        installedThemeControl.remove();
+        installedThemeControl = null;
+      }
     }
   };
   syncAppDisplay();

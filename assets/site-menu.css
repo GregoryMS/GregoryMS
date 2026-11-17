@@ -3,14 +3,14 @@
 .gregle-menu-actions { display: flex; align-items: center; gap: 10px; }
 .gregle-legacy-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .gregle-legacy-header > a { color: inherit; text-decoration: none; font-size: 24px; font-weight: 700; }
-.gregle-app-menu {
+.gregle-app-menu, .gregle-installed-theme-control {
   --gm-bg: #faf9f6; --gm-ink: #252525; --gm-muted: #65616d; --gm-line: #e6e2eb;
   --gm-hover: #eeebf5; --gm-active: #ece0ff; --gm-accent: #7637cc;
   position: relative; flex: 0 0 auto; width: auto; margin: 0; padding: 0;
   border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--gm-ink);
   font: 14px/1.4 Arial, Helvetica, sans-serif; text-align: left;
 }
-.dark-mode .gregle-app-menu {
+.dark-mode .gregle-app-menu, .dark-mode .gregle-installed-theme-control {
   --gm-bg: #29272e; --gm-ink: #faf9f6; --gm-muted: #bdb7c9; --gm-line: #45404d;
   --gm-hover: #3a3443; --gm-active: #49345f; --gm-accent: #c698ff;
 }
@@ -45,7 +45,7 @@
 .gregle-app-menu:not([open]) > .gregle-menu-panel { display: none; }
 .gregle-app-menu .gregle-menu-heading { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 16px; margin: 0 10px 12px; }
 .gregle-app-menu h2 { margin: 0; color: var(--gm-muted); font: 600 13px/1.4 Arial, sans-serif; letter-spacing: .02em; }
-:is(.gregle-app-menu, .map-live-toggles) .gregle-theme-switch {
+:is(.gregle-app-menu, .map-live-toggles, .gregle-installed-theme-control) .gregle-theme-switch {
   position: relative; flex: 0 0 var(--gregle-switch-width, 34px); width: var(--gregle-switch-width, 34px); height: var(--gregle-switch-height, 1.4em); box-sizing: border-box;
   margin: 0; padding: 0; border: 1px solid var(--gm-muted); border-radius: 999px;
   background: var(--gm-line) var(--gregle-switch-off-icon, url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2365616d%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223.5%22%2F%3E%3Cpath%20d%3D%22M12%202v2m0%2016v2M2%2012h2m16%200h2M4.93%204.93l1.42%201.42m11.3%2011.3%201.42%201.42M4.93%2019.07l1.42-1.42m11.3-11.3%201.42-1.42%22%2F%3E%3C%2Fsvg%3E")) right 3px center / 10px 10px no-repeat;
@@ -59,14 +59,14 @@
   border-radius: 50%; background: var(--gm-muted); transform: translateY(-50%);
   transition: transform .2s, background .2s;
 }
-:is(.gregle-app-menu, .map-live-toggles) .gregle-theme-switch[aria-checked="true"] {
+:is(.gregle-app-menu, .map-live-toggles, .gregle-installed-theme-control) .gregle-theme-switch[aria-checked="true"] {
   background: var(--gm-accent) var(--gregle-switch-on-icon, url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%2329272e%22%3E%3Cpath%20d%3D%22M20.9%2013A9%209%200%200%201%2011%203.1%209%209%200%201%200%2020.9%2013Z%22%2F%3E%3C%2Fsvg%3E")) left 3px center / 10px 10px no-repeat;
   border-color: var(--gm-accent);
 }
 .gregle-theme-switch[aria-checked="true"]::after { background: #fff; transform: translate(var(--gregle-switch-travel, 14px), -50%); }
-:is(.gregle-app-menu, .map-live-toggles) .gregle-theme-switch:focus-visible { outline: 3px solid var(--gm-accent); outline-offset: 4px; }
+:is(.gregle-app-menu, .map-live-toggles, .gregle-installed-theme-control) .gregle-theme-switch:focus-visible { outline: 3px solid var(--gm-accent); outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) {
-  :is(.gregle-app-menu, .map-live-toggles) .gregle-theme-switch, .gregle-theme-switch::after { transition: none; }
+  :is(.gregle-app-menu, .map-live-toggles, .gregle-installed-theme-control) .gregle-theme-switch, .gregle-theme-switch::after { transition: none; }
 }
 .gregle-app-menu .gregle-app-grid {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 97px;
@@ -110,4 +110,10 @@
 #gregleAppMenu[hidden] { display: none !important; }
 @media (display-mode: standalone), (display-mode: minimal-ui) {
   #gregleAppMenu { display: none !important; }
+}
+
+/* Keep the existing theme control available when the app launcher is hidden. */
+.gregle-installed-theme-control {
+  display:grid; place-items:center; flex:0 0 44px; width:44px; height:44px;
+  --gregle-switch-height:20px;
 }
