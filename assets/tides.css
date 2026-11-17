@@ -102,3 +102,7 @@
 .tide-chart-reading rect { fill:var(--panel); fill-opacity:.88; stroke:var(--weather-accent-line); stroke-width:1; }
 .tide-chart-reading .tide-chart-time { fill:var(--weather-accent-text); font-size:13px; font-weight:600; }
 .tide-chart-reading .tide-chart-height { fill:var(--muted); font-size:11px; }
+
+@media (max-width:600px) {
+  .tide-chart .tide-axis-time { font-size:11px; }
+}

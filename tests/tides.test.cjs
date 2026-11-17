@@ -77,8 +77,8 @@ class Element {
  append(...v){this.children.push(...v);} appendChild(v){this.append(v);} replaceChildren(...v){this._text='';this.children=v;}
  setAttribute(k,v){this.attributes[k]=String(v);} addEventListener(k,v){this.listeners[k]=v;}
 }
-function app({page='tides',load=async()=>dataset(),fetch=async()=>response({}),href='https://gregle.uk/tides.html',geolocation={getCurrentPosition(){} }}={}) {
- const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};
+function app({page='tides',load=async()=>dataset(),fetch=async()=>response({}),href='https://gregle.uk/tides.html',geolocation={getCurrentPosition(){} },chartWidth=0}={}) {
+ const nodes=new Map(),get=id=>{if(!nodes.has(id)){const node=new Element();if(id==='tideChart')node.clientWidth=chartWidth;nodes.set(id,node);}return nodes.get(id);};
  let geolocationCalls=0;
  const document={getElementById:get,createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag),querySelectorAll:()=>[],addEventListener(){},documentElement:new Element()};
  const c={GregleTides:core,GregleWeather:weather,GregleTideData:{load},document,fetch,URL,AbortController,Intl,console,
@@ -195,4 +195,21 @@ test('curve inspection leaves missing forecast levels unavailable rather than br
  assert.match(svg.attributes['aria-valuetext'],/Level unavailable/);
  assert.equal(svg.children.at(-2).attributes.visibility,'hidden');
  assert(!fs.readFileSync(require.resolve('../tides.html'),'utf8').includes('tideTimeSlider'));
+});
+
+test('tide times use 24-hour clocks including midnight, cards and the selected chart reading',async()=>{
+ const a=app();await flush();const time=a.c.GregleTideUI.time;
+ assert.equal(time(Date.parse('2026-11-17T00:00:00Z'),'UTC'),'00:00');
+ assert.equal(time(Date.parse('2026-11-17T19:21:00Z'),'UTC'),'19:21');
+ assert.match(a.get('tideChart').children[0].attributes['aria-valuetext'],/^09:00 · /);
+ for(const id of ['tideNext','tidePrevious','tideCycleNext','tideTodayMetrics','tideDayEvents','tideWeek'])assert.doesNotMatch(a.get(id).textContent,/\b(?:am|pm)\b/i);
+});
+test('mobile curve axis uses short, separated time labels',async()=>{
+ for(const chartWidth of [220,320,390]) {
+  const a=app({chartWidth});await flush();
+  const svg=a.get('tideChart').children[0],ticks=svg.children.filter(n=>n.attributes.class==='tide-axis-time');
+  assert.equal(ticks.length,4);
+  assert.deepEqual(ticks.map(n=>n.textContent),['00:00','06:00','12:00','18:00']);
+  for(let i=1;i<ticks.length;i++)assert(Number(ticks[i].attributes.x)-Number(ticks[i-1].attributes.x)>=56);
+ }
 });

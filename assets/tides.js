@@ -65,7 +65,15 @@
       const marker=svgNode('circle',{cx:x(event.time),cy:y(event.height),r:5,class:'tide-extreme'});
       marker.append(svgNode('title',{},event.type+' · '+ui.time(event.time,data.timezone)+' · '+ui.height(event.height)));svg.append(marker);
     }
-    for(const p of points) {const clock=new Date(p.time).toLocaleTimeString('en-GB',{timeZone:data.timezone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'});if(/^(00|06|12|18):00$/.test(clock))svg.append(svgNode('text',{x:x(p.time),y:251,'text-anchor':'middle'},ui.time(p.time,data.timezone)));}
+    // Short 24-hour ticks with enough separation at narrow chart widths.
+    let previousTick=-Infinity;
+    for(const p of points) {
+      const clock=ui.time(p.time,data.timezone,'h23'),tickX=x(p.time);
+      if(/^(00|06|12|18):00$/.test(clock) && tickX-previousTick>=56) {
+        svg.append(svgNode('text',{x:tickX,y:251,'text-anchor':'middle',class:'tide-axis-time'},clock));
+        previousTick=tickX;
+      }
+    }
     const now=Date.now();if(now>=first && now<=last)svg.append(svgNode('line',{x1:x(now),x2:x(now),y1:28,y2:220,class:'chart-now'}),svgNode('text',{x:x(now),y:18,'text-anchor':'middle'},'Now'));
     const cursor=svgNode('line',{y1:28,y2:220,class:'tide-cursor'}),dot=svgNode('circle',{r:5,class:'tide-cursor-dot'});
     const label=svgNode('g',{class:'tide-chart-reading','aria-hidden':'true'});

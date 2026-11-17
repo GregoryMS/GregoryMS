@@ -2,7 +2,7 @@
   'use strict';
   const core=root.GregleTides;
   function node(tag,className,text) { const n=document.createElement(tag); if(className)n.className=className; if(text!==undefined)n.textContent=text; return n; }
-  const time=(value,zone,hourCycle)=>new Date(value).toLocaleTimeString('en-CA',{timeZone:zone,hour:hourCycle?'2-digit':'numeric',minute:'2-digit',...(hourCycle?{hourCycle}:{})});
+  const time=(value,zone,hourCycle='h23')=>new Date(value).toLocaleTimeString('en-CA',{timeZone:zone,hour:hourCycle?'2-digit':'numeric',minute:'2-digit',...(hourCycle?{hourCycle}:{})});
   const height=value=>Number.isFinite(value)?value.toFixed(2)+' m':'—';
   function eventsList(events,data,hourCycle) {
     const list=node('div','tide-events');

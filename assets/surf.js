@@ -10,7 +10,7 @@
   function render() {
     const rows=S.hours(marine,wind,day,zone),select=$('surfHour');
     if(!rows.some(r=>r.time===chosen))chosen=S.defaultTime(rows,day,zone);
-    select.replaceChildren(...rows.map(row=>{const option=U.node('option','',new Date(row.time).toLocaleTimeString('en-CA',{timeZone:zone,hour:'numeric',minute:'2-digit',timeZoneName:'short'}));option.value=String(row.time);return option;}));
+    select.replaceChildren(...rows.map(row=>{const option=U.node('option','',new Date(row.time).toLocaleTimeString('en-CA',{timeZone:zone,hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZoneName:'short'}));option.value=String(row.time);return option;}));
     select.disabled=!rows.length;select.value=chosen===null?'':String(chosen);
     const row=rows.find(r=>r.time===chosen)||{};
     $('surfDate').textContent=day?new Date(day+'T12:00:00Z').toLocaleDateString('en-CA',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'})+' · '+zone.replaceAll('_',' '):'';
