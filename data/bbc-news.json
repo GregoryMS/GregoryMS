@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-18T12:19:45+00:00",
-  "fetchedAt": "2026-11-18T12:19:55.574972+00:00",
+  "feedUpdatedAt": "2026-11-18T20:41:27+00:00",
+  "fetchedAt": "2026-11-18T20:41:36.314854+00:00",
   "items": [
     {
-      "title": "Energy bills forecast to go up by £443 a year from January as UK inflation rises again",
+      "title": "Inside the old gas pipeline where Ukraine is fighting an underground war with Russia",
+      "link": "https://www.bbc.co.uk/news/videos/c8p3vw4q6nzzo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'The drones don't fly here' - BBC reports from Ukraine's new front line",
+      "link": "https://www.bbc.co.uk/news/articles/c32l507ev4v4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Steve Rosenberg: Historic talks with Xi and Trump are a coup for Putin",
+      "link": "https://www.bbc.co.uk/news/articles/c9n70gd320mpo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Typical energy bill forecast to go up by £443 a year from January as inflation rate rises again",
       "link": "https://www.bbc.co.uk/news/articles/cmy498kdkx3xo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Watch: Why historic US, China and Russia meeting matters",
-      "link": "https://www.bbc.co.uk/news/videos/cqp86k23d84ro?at_medium=RSS&at_campaign=rss"
+      "title": "Heating bills, chocolate and cat food: What the inflation figures mean for you",
+      "link": "https://www.bbc.co.uk/news/articles/ckq6eg55n221o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "What's gone wrong at Britain's worst bathing site?",
-      "link": "https://www.bbc.co.uk/news/articles/cm752w35lkz3o?at_medium=RSS&at_campaign=rss"
+      "title": "Council wins legal fight against flags on lamp-posts",
+      "link": "https://www.bbc.co.uk/news/articles/ckq5vg81805qo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Banned player says whole Australia team knew about sandpaper cheating plot",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/cmqlqdevgl9ro?at_medium=RSS&at_campaign=rss"
+      "title": "Police investigate death of boy, 3, after nursery incident",
+      "link": "https://www.bbc.co.uk/news/articles/cm8x0q1p2q8jo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Lammy urges Burnham to take UK back into the EU",
-      "link": "https://www.bbc.co.uk/news/articles/cm9q8jx05q3go?at_medium=RSS&at_campaign=rss"
+      "title": "Gamers react as New Zealand first to see Grand Theft Auto 6",
+      "link": "https://www.bbc.co.uk/news/videos/cmg4652xzexvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Joanna Page says male actor made 'awful' and 'inappropriate' comments to her on set",
-      "link": "https://www.bbc.co.uk/news/articles/cqj3kelenm0do?at_medium=RSS&at_campaign=rss"
+      "title": "William and Kate meet PM Modi as they wrap up India tour",
+      "link": "https://www.bbc.co.uk/news/articles/cq62ped2ypy4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Largest British study to check social media ban's effect on youth mental health",
-      "link": "https://www.bbc.co.uk/news/articles/cm0evw0d2wq4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Harry Styles, Billie Eilish and Sam Fender to be youngest set of Glastonbury headliners for 30 years",
-      "link": "https://www.bbc.co.uk/news/articles/crwy4w381nlpo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: Emma Barnett pays tribute to 'decent journalism' in final Today episode",
-      "link": "https://www.bbc.co.uk/news/videos/c6wy0j1xeypqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "The EU that Burnham is eyeing up is very different to the one Britain left",
-      "link": "https://www.bbc.co.uk/news/articles/cq4gn3109pzgo?at_medium=RSS&at_campaign=rss"
+      "title": "Regulator mistakenly sent complaints about doctors to newspaper",
+      "link": "https://www.bbc.co.uk/news/articles/c8wy5erexq0ko?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
