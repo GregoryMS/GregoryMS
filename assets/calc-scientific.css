@@ -313,7 +313,7 @@
   text-align: left;
 }
 .formula-launch span {font-size: 22px;line-height: 1}
-.scientific-menu.formulas-open {
+.scientific-menu.formulas-open,.scientific-menu.converter-open {
   width: min(580px,calc(100% - 24px));
   max-height: min(720px,calc(100dvh - max(16px,env(safe-area-inset-top,0px)) - max(16px,env(safe-area-inset-bottom,0px))));
 }
@@ -340,7 +340,7 @@
   background: var(--sci-accent,#b998ed);
   color: var(--sci-accent-ink,#221831);
 }
-#formulaSearch {
+#formulaSearch,#unitCategorySearch {
   width: 100%;
   min-height: 44px;
   padding: 8px 10px;
@@ -394,3 +394,58 @@
 .scientific-offline-update:disabled {opacity:.65;cursor:wait}
 .scientific-offline-update-status {margin:8px 0 0;font-size:13px}
 .scientific-offline-update-status:empty {display:none}
+
+/* Unit converter within the scientific calculator menu. */
+.unit-launch {margin-top:8px}
+.unit-categories {display:grid;gap:14px;margin-top:12px}
+.unit-category-group {display:grid;gap:5px;min-width:0}
+.unit-category-group h3 {margin:0 0 2px;font:600 14px/1.3 system-ui,sans-serif}
+.unit-category-link {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:48px;
+  padding:6px 10px;
+  border:1px solid var(--sci-key-border,#575562);
+  border-radius:9px;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  font:inherit;
+}
+.unit-category-link strong,.unit-category-link small {display:block}
+.unit-category-link small {margin-top:2px;font-size:12px}
+.unit-category-arrow {font-size:22px;line-height:1}
+.unit-converter-detail h3 {margin:0 0 4px;font:600 18px/1.3 system-ui,sans-serif}
+.unit-converter-detail label {font-size:13px;font-weight:600}
+.unit-amount-row {display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;margin:4px 0 12px}
+.unit-picker-row {display:grid;grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr);align-items:end;gap:6px}
+.unit-picker-row label {min-width:0}
+.unit-picker-row select,#unitAmount,.unit-small-action {
+  min-height:44px;
+  min-width:0;
+  padding:6px 8px;
+  border:1px solid var(--sci-key-border,#575562);
+  border-radius:9px;
+  background:transparent;
+  color:inherit;
+  font:16px/1.25 system-ui,sans-serif;
+}
+.unit-picker-row select {display:block;width:100%;margin-top:4px;text-overflow:ellipsis}
+.unit-picker-row select option {background:var(--sci-shell,#282730);color:var(--sci-shell-ink,#f7f5fb)}
+.unit-small-action {font-size:14px}
+.unit-small-action:disabled {opacity:.65;cursor:default}
+.unit-swap,#unitSign {font-size:20px}
+.unit-result {
+  display:block;
+  margin-top:12px;
+  padding:12px;
+  border-radius:9px;
+  background:var(--sci-screen,#dce7df);
+  color:var(--sci-screen-ink,#23392f);
+  font:600 clamp(19px,5vw,26px)/1.3 system-ui,sans-serif;
+  overflow-wrap:anywhere;
+}
+.unit-conversion-status {margin:8px 0;font-size:13px}
+.unit-conversion-status:empty {display:none}
