@@ -22,7 +22,17 @@ function setup({vibration = 'supported', savedTheme = null} = {}) {
     querySelectorAll(selector) {return selector === '[data-scientific-angle]' ? angles : [clearKey];},
     addEventListener(type,callback) {events[type] = callback;}
   };
-  const menuEvents = {};
+  const menuEvents = {}, themesButtonEvents = {};
+  const themesButton = {
+    'aria-expanded':'false',
+    setAttribute(name,value) {this[name] = value;},
+    addEventListener(type,callback) {themesButtonEvents[type] = callback;}
+  };
+  const themesPanel = {
+    inert:true,
+    hasAttribute(name) {return this[name];},
+    toggleAttribute(name,value) {this[name] = value;}
+  };
   const themes = ['gregle','graphite','chalk','silver'].map(value => ({value,checked:value === 'gregle'}));
   const menu = {
     querySelectorAll() {return themes;},
@@ -39,7 +49,7 @@ function setup({vibration = 'supported', savedTheme = null} = {}) {
   const select = {value:'rad',dispatchEvent() {angle=this.value;calls.push(['angle',angle]);}};
   const nodes = {
     scientificControls:controls, graphAngle:select, scientificShift:shift, scientificMenu:menu,
-    calcPage:page, scientificMenuOpen:menuButton, copyResult:{click() {calls.push(['copy']);}}
+    calcPage:page, scientificMenuOpen:menuButton, scientificThemeToggle:themesButton, scientificThemePanel:themesPanel, copyResult:{click() {calls.push(['copy']);}}
   };
   const navigator = {};
   if (vibration !== 'absent') navigator.vibrate = duration => {calls.push(['vibrate',duration]);if (vibration === 'throws') throw Error('Unavailable');};
@@ -47,7 +57,7 @@ function setup({vibration = 'supported', savedTheme = null} = {}) {
   const document = {getElementById:id => nodes[id],createElement:() => ({setAttribute() {}})};
   vm.runInNewContext(source,{document,localStorage,navigator,Event:class {},window:{GregleScientific:scientific,GregleCalculator:{openScreen:(...args) => calls.push(['open',...args])}}});
   const click = (dataset,extra = {}) => events.click({target:{closest:() => ({dataset})},isTrusted:true,detail:1,...extra});
-  return {calls,angles,click,events,shift,clearKey,clearLabel,menu,menuEvents,page,themes,storage,document,menuButton};
+  return {calls,angles,click,events,shift,clearKey,clearLabel,menu,menuEvents,page,themes,storage,document,menuButton,themesButton,themesButtonEvents,themesPanel};
 }
 
 test('old graph bookmarks open scientific mode and the saved angle is shown and changed',() => {
@@ -108,4 +118,19 @@ test('closing a keyboard-opened menu returns focus to its button', () => {
   app.click({scientificAction:'menu'},{detail:0});
   app.menuEvents.close();
   assert(app.calls.some(call => call[0] === 'menu focus'));
+});
+
+test('the Themes dropdown expands, collapses and resets when the menu closes', () => {
+  const app = setup();
+  assert.equal(app.themesPanel.inert,true);
+  app.themesButtonEvents.click();
+  assert.equal(app.themesButton['aria-expanded'],'true');
+  assert.equal(app.themesPanel.inert,false);
+  app.themesButtonEvents.click();
+  assert.equal(app.themesButton['aria-expanded'],'false');
+  assert.equal(app.themesPanel.inert,true);
+  app.themesButtonEvents.click();
+  app.menuEvents.close();
+  assert.equal(app.themesButton['aria-expanded'],'false');
+  assert.equal(app.themesPanel.inert,true);
 });

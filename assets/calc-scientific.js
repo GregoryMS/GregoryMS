@@ -3,6 +3,12 @@
   const $ = id => document.getElementById(id), scientific = window.GregleScientific;
   const controls = $('scientificControls');
   const page = $('calcPage'), menu = $('scientificMenu'), menuButton = $('scientificMenuOpen');
+  const themesButton = $('scientificThemeToggle'), themesPanel = $('scientificThemePanel');
+  function setThemesExpanded(expanded) {
+    themesPanel.toggleAttribute('inert',!expanded);
+    themesButton.setAttribute('aria-expanded',String(expanded));
+  }
+  themesButton.addEventListener('click',() => setThemesExpanded(themesPanel.hasAttribute('inert')));
   const themeKey = 'gregle-calc-scientific-theme';
   const themeOptions = Array.from(menu.querySelectorAll('input[name="scientific-theme"]'));
 
@@ -23,6 +29,7 @@
   menu.addEventListener('keydown', event => event.stopPropagation());
   let menuOpenedWithPointer = false;
   menu.addEventListener('close', () => {
+    setThemesExpanded(false);
     if (!menuOpenedWithPointer) menuButton.focus({preventScroll:true});
     else if (document.activeElement === menuButton) menuButton.blur();
   });
