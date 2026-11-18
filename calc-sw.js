@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-scientific-themes1';
+const VERSION='20261118-scientific-update1';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -26,7 +26,7 @@ const ASSETS=[
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
   '/assets/calc-emulator.js?v=20261117-visible1',
-  '/assets/calc-offline.js?v=20261117-scientific2',
+  '/assets/calc-offline.js?v=20261118-scientific-update1',
   '/assets/calc-ti89.js?v=20261102-ti89-6',
   '/assets/calc-tinspire.js?v=20261115-nspire2',
   '/assets/tinspire/worker.mjs',
@@ -87,7 +87,9 @@ self.addEventListener('install',event => {
       await caches.delete(CACHE);
       throw new Error('Calculator offline setup could not finish.');
     }
-    // No skipWaiting: never replace a running calculator's files mid-session.
+    // A fully cached release can serve the next launch even if iOS kept an old
+    // calculator window alive. Leave the shared Gregle worker's lifecycle alone.
+    if (self.location.hostname==='calc.gregle.uk') await self.skipWaiting();
   })());
 });
 self.addEventListener('activate',event => {

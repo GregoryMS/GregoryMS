@@ -27,9 +27,14 @@ function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,st
     Object.defineProperty(response,'url',{value:url.href});
     return response;
   };
-  const self={location:new URL(origin+'/calc-sw.js'),addEventListener(type,fn) {listeners[type]=fn;}};
+  let activationRequested=false;
+  const self={
+    location:new URL(origin+'/calc-sw.js'),
+    addEventListener(type,fn) {listeners[type]=fn;},
+    async skipWaiting() {activationRequested=true;}
+  };
   vm.runInNewContext(version ? source.replace(/const VERSION='[^']+'/,`const VERSION='${version}'`) : source,{self,caches,fetch,URL,Request,Response,Set,Promise,Error});
-  return {storage,requests,async lifecycle(type) {let work; listeners[type]({waitUntil(value) {work=value;}}); await work;},async request(url,{mode='navigate',method='GET'}={}) {
+  return {storage,requests,get activationRequested() {return activationRequested;},async lifecycle(type) {let work; listeners[type]({waitUntil(value) {work=value;}}); await work;},async request(url,{mode='navigate',method='GET'}={}) {
     let response;
     listeners.fetch({request:{url:new URL(url,origin).href,mode,method},respondWith(value) {response=value;}});
     return response && await response;
@@ -53,6 +58,7 @@ test('calculator caching leaves other Gregle apps and unknown asset versions alo
   for (const url of ['/weather.html','/assets/weather.js','https://files.catbox.moe/5cc8ln.rom','/assets/calc.js?v=future']) assert.equal(await app.request(url),undefined);
   assert.equal(await app.request('/calc.html',{method:'POST'}),undefined);
   const apex=environment({host:'gregle.uk'}); await apex.lifecycle('install');
+  assert.equal(apex.activationRequested,false,'the shared worker keeps its normal activation policy');
   assert.equal(await apex.request('/'),undefined,'Gregle homepage is never replaced by the calculator');
   assert.match(await (await apex.request('/calc.html?popout=1')).text(),/Calculator · Gregle/);
 });
@@ -63,6 +69,7 @@ test('an interrupted update keeps the previous offline calculator and other apps
   await assert.rejects(update.lifecycle('install'),/could not finish/);
   assert(app.storage.has(cache)); assert(app.storage.has('another-app'));
   assert(!app.storage.has('gregle-calculator-next'));
+  assert.equal(update.activationRequested,false,'an incomplete cache never requests activation');
   assert.equal((await app.status()).ready,true);
   assert.match(await (await app.request('/?engine=ti84')).text(),/Calculator · Gregle/);
 });
@@ -70,7 +77,8 @@ test('a complete update retires old calculator files only on activation',async (
   const app=environment(); await app.lifecycle('install'); app.storage.set('another-app',new Map());
   const previous=[...app.storage.keys()][0];
   const update=environment({storage:app.storage,version:'next'}); await update.lifecycle('install');
-  assert(app.storage.has(previous),'running calculators retain their complete version');
+  assert.equal(update.activationRequested,true,'a complete calculator release does not wait for old windows to close');
+  assert(app.storage.has(previous),'the old cache remains until activation');
   assert.equal((await app.status()).ready,true);
   await update.lifecycle('activate');
   assert(!app.storage.has(previous)); assert(app.storage.has('another-app'));

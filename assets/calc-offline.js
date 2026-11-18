@@ -64,6 +64,9 @@
       registration=await navigator.serviceWorker.register('/gregle-sw.js?v=20261115-offline1',{scope:'/',updateViaCache:'none'});
       watchWorker(registration.installing);
       registration.addEventListener('updatefound',() => {watchWorker(registration.installing);});
+      if (window.location.hostname==='calc.gregle.uk' && navigator.onLine) {
+        void registration.update().catch(() => {});
+      }
       await check();
     } catch (_) {setupError='Offline setup incomplete. Retry online.'; render();}
   }
