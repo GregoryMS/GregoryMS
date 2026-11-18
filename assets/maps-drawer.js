@@ -186,7 +186,11 @@ window.GregleMapDrawer = ({ map }) => {
     const p = event.layer.getPopup?.();
     if (popupOptions.has(p)) { p.options.autoPan = popupOptions.get(p); popupOptions.delete(p); }
   });
-  map.on('popupopen', event => { if(event.popup.options.className==='aircraft-map-popup')return; currentPopup = event.popup; showPopup(event.popup); });
+  map.on('popupopen', event => {
+    if (['aircraft-map-popup', 'vessels-map-popup'].includes(event.popup.options.className)) return;
+    currentPopup = event.popup;
+    showPopup(event.popup);
+  });
   map.on('popupclose', event => {
     if (currentPopup === event.popup) currentPopup = null;
     if (popupState?.popup === event.popup) { restorePopup(); refresh(); }

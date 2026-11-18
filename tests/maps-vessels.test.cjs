@@ -7,17 +7,18 @@ const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
 function setup(){
  let now=start,box=[-123.5,48.3,-123.2,48.5],zoom=13,nextTimer=0,impl=async()=>({ok:true,json:async()=>packet(now)});
  const calls=[],timers=new Map(),events={},groups=[],credits=new Set(),nodes={};
+ let card, selected, closeCard;
  const element=()=>({style:{},children:[],events:{},dataset:{},attributes:{},textContent:'',hidden:true,append(...items){this.children.push(...items);},addEventListener(k,f){this.events[k]=f;},setAttribute(k,v){this.attributes[k]=v;},contains(node){return this===node||this.children.some(child=>child.contains(node));},focus(){c.document.activeElement=this;}});
  const output=nodes['vessels-layer-status']=element(),refresh=nodes['vessels-refresh']=element();
  for(const id of ['vessels-legend-toggle','vessels-legend','vessels-legend-list','close-vessels-legend','map-vessels'])nodes[id]=element();
  nodes['vessels-legend'].append(nodes['vessels-legend-list'],nodes['close-vessels-legend']);
- const map={getBounds:()=>({getWest:()=>box[0],getSouth:()=>box[1],getEast:()=>box[2],getNorth:()=>box[3]}),getCenter:()=>({lng:(box[0]+box[2])/2}),getZoom:()=>zoom,getSize:()=>({x:390,y:700}),on:(k,f)=>events[k]=f,removeLayer(){},attributionControl:{addAttribution:c=>credits.add(c),removeAttribution:c=>credits.delete(c)}};
- const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);},clearLayers(){this.children.clear();},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,pop:{options:{}},bindPopup(fn){this.popup=fn;return this;},getPopup(){return this.pop;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},setPopupContent(fn){this.popup=fn;return this;},addTo(g){g.children.add(this);return this;}})};
+ const map={closePopup(){selected?.events.popupclose();selected=null;},getBounds:()=>({getWest:()=>box[0],getSouth:()=>box[1],getEast:()=>box[2],getNorth:()=>box[3]}),getCenter:()=>({lng:(box[0]+box[2])/2}),getZoom:()=>zoom,getSize:()=>({x:390,y:700}),on:(k,f)=>events[k]=f,removeLayer(){},attributionControl:{addAttribution:c=>credits.add(c),removeAttribution:c=>credits.delete(c)}};
+ const L={layerGroup(){const g={children:new Set(),removeLayer(m){this.children.delete(m);if(selected===m)map.closePopup();},clearLayers(){for(const m of this.children)this.removeLayer(m);},addTo(){return this;}};groups.push(g);return g;},divIcon:o=>o,marker:(point,options)=>({point,options,events:{},on(type,handler){this.events[type]=handler;},bindPopup(content,options){this.popup=options;return this;},setLatLng(p){this.point=p;return this;},setIcon(icon){this.options.icon=icon;return this;},addTo(g){g.children.add(this);return this;}})};
  class Clock extends Date{static now(){return now;}}
- const c={L,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleVesselsCore:core,document:{hidden:false,getElementById:id=>nodes[id],createElement:element,addEventListener:(k,f)=>events[k]=f},addEventListener:(k,f)=>events[k]=f,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout:id=>timers.delete(id),fetch(url,opts){calls.push({url,...opts,time:now});return impl(url,opts);}};
+ const c={L,Date:Clock,URL,URLSearchParams,AbortController,Map,Set,Math,Number,JSON,GregleMaps:maps,GregleVesselsCore:core,GregleMapInfoCard({onClose}){closeCard=onClose;return {show(node){card=node;},hide(){card=null;}};},document:{hidden:false,getElementById:id=>nodes[id],createElement:element,addEventListener:(k,f)=>events[k]=f},addEventListener:(k,f)=>events[k]=f,setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,due:now+ms});return id;},clearTimeout:id=>timers.delete(id),fetch(url,opts){calls.push({url,...opts,time:now});return impl(url,opts);}};
  c.window=c;vm.runInNewContext(fs.readFileSync(require.resolve('../assets/maps-vessels.js'),'utf8'),c);const api=c.GregleVessels({map,notify(){}});
  async function advance(ms){const end=now+ms;for(let i=0;i<1000;i++){const due=[...timers].filter(([,t])=>t.due<=end).sort((a,b)=>a[1].due-b[1].due)[0];if(!due){now=end;await flush();return;}now=due[1].due;timers.delete(due[0]);due[1].fn();await flush();}throw Error('Timer loop');}
- return {api,calls,output,refresh,events,credits,nodes,document:c.document,setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
+ return {api,calls,output,refresh,events,credits,nodes,document:c.document,card:()=>card,closeCard,open(marker){map.closePopup();selected=marker;marker.events.popupopen();},setFetch:fn=>impl=fn,advance,markers:()=>[...groups[0].children],async move(b,z=zoom){box=b;zoom=z;events.moveend();await advance(650);}};
 }
 
 test('vessel validation handles AIS sentinels, timestamps, duplicate MMSIs and wrapped views',()=>{
@@ -45,7 +46,7 @@ test('hidden, disabled and bfcache pages cancel pending vessel pages and ignore 
  h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000)}));h.document.hidden=false;h.events.visibilitychange();await flush();assert.equal(h.calls.length,2);h.events.pagehide();await h.advance(60000);assert.equal(h.calls.length,2);h.events.pageshow({persisted:true});await flush();assert.equal(h.calls.length,3);
 });
 test('invalid pagination preserves previous snapshot and vessel popups treat names as text',async()=>{
- const h=setup();h.setFetch(async()=>({ok:true,json:async()=>packet(start,[ship({name:'<img src=x onerror=alert(1)>'})])}));h.api.setEnabled(true);await flush();const marker=h.markers()[0],box=marker.popup(),text=e=>e.textContent+' '+e.children.map(text).join(' ');assert(text(box).includes('<img src=x onerror=alert(1)>'));assert(text(box).includes('0.0 kn'));assert(text(box).includes('0°'));assert.equal(marker.options.bubblingMouseEvents,false);
+ const h=setup();h.setFetch(async()=>({ok:true,json:async()=>packet(start,[ship({name:'<img src=x onerror=alert(1)>'})])}));h.api.setEnabled(true);await flush();const marker=h.markers()[0];h.open(marker);const box=h.card(),text=e=>e.textContent+' '+e.children.map(text).join(' ');assert(text(box).includes('<img src=x onerror=alert(1)>'));assert(text(box).includes('0.0 kn'));assert(text(box).includes('0°'));assert.equal(marker.options.bubblingMouseEvents,false);
  h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000,undefined,{cursor:'5000',snapshotId:'bad'})}));await h.advance(60000);assert.equal(h.markers()[0],marker);assert.match(h.output.textContent,/Updates delayed/);
 });
 
@@ -94,9 +95,13 @@ test('vessel markers use reported types, retain colours without headings and rec
  assert(tanker.options.icon.html.includes(core.vesselStyle('Tanker').color));assert(tanker.options.icon.html.includes('<circle'));
  assert(unknown.options.icon.html.includes(core.vesselStyle('').color));assert(!unknown.options.icon.html.includes('<script>'));
  assert.match(cargo.options.title,/Cargo/);
+ assert.equal(cargo.popup.className,'vessels-map-popup');assert.equal(cargo.popup.autoPan,false);
+ h.open(cargo);assert.equal(h.card().children[0].textContent,'TEST VESSEL');
  h.setFetch(async()=>({ok:true,json:async()=>packet(start+60000,[ship({type:'Passenger',observed:new Date(start+60000).toISOString()})])}));
  await h.advance(60000);assert.equal(h.markers()[0],cargo);assert(cargo.options.icon.html.includes(core.vesselStyle('Passenger').color));assert.match(cargo.options.title,/Passenger/);
- const box=cargo.popup(),typeLine=box.children.find(child=>child.className==='vessels-popup-type');assert.equal(typeLine.children[0].style.backgroundColor,core.vesselStyle('Passenger').color);
+ const typeLine=h.card().children.find(child=>child.className==='vessels-popup-type');assert.equal(typeLine.children[0].style.backgroundColor,core.vesselStyle('Passenger').color);
+ h.closeCard();assert.equal(h.card(),null);
+ h.open(cargo);h.api.setEnabled(false);assert.equal(h.card(),null);
 });
 
 test('vessel key appears only when enabled and closes with Escape, outside clicks and disabling',async()=>{

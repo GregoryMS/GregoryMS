@@ -2,6 +2,8 @@
   'use strict';
   window.GregleVessels = ({ map, notify }) => {
     const core = window.GregleVesselsCore;
+    const infoCard = window.GregleMapInfoCard({ feature: 'vessels', onClose: () => map.closePopup() });
+    let pinnedMarker = null;
     const output = document.getElementById('vessels-layer-status'), refresh = document.getElementById('vessels-refresh');
     const group = L.layerGroup(), displayed = new Map();
     const credit = 'Vessels: <a href="https://openwaters.io/ais/" target="_blank" rel="noopener">Open Waters AIS</a> / <a href="https://www.aishub.net/" target="_blank" rel="noopener">AISHub</a> / <a href="https://aisstream.io/" target="_blank" rel="noopener">AISStream</a> / <a href="https://www.kystverket.no/en/sea-transport-and-ports/ais/access-to-ais-data/" target="_blank" rel="noopener">Kystverket</a> / <a href="https://www.digitraffic.fi/en/marine-traffic/" target="_blank" rel="noopener">Fintraffic</a>';
@@ -35,11 +37,8 @@
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !legend.hidden) { event.preventDefault(); closeLegend(true); }
     });
-    function popup(vessel, marker) {
+    function popup(vessel) {
       const box = make('div', null, 'vessels-popup'), facts = make('dl');
-      const width = Math.max(140, Math.min(270, map.getSize().x - 120));
-      box.style.width = `${width}px`;
-      Object.assign(marker.getPopup().options, { minWidth: width, maxWidth: width, maxHeight: Math.max(100, map.getSize().y - 220) });
       box.append(make('strong', vessel.name || `MMSI ${vessel.id}`, 'vessels-title'));
       const type = core.vesselStyle(vessel.type), typeLine = make('p', null, 'vessels-popup-type');
       const swatch = make('span', null, 'vessels-type-swatch');
@@ -62,7 +61,12 @@
       const circle = vessel.heading === null || (vessel.speed !== null && vessel.speed.toFixed(1) === '0.0');
       return L.divIcon({ className: `vessels-marker${circle ? ' vessels-no-heading' : ''}`, iconSize: [26, 32], iconAnchor: [13, 16], html: `<svg viewBox="0 0 26 32" style="--vessel-color:${type.color};transform:rotate(${vessel.heading ?? 0}deg)" aria-hidden="true">${circle ? '<circle cx="13" cy="16" r="7"/>' : '<path d="M13 2 22 15v14H4V15Z"/><path d="M13 11v12" class="vessels-deck"/>'}</svg>` });
     }
-    function clear() { group.clearLayers(); displayed.clear(); }
+    function clear() {
+      pinnedMarker = null;
+      infoCard.hide();
+      group.clearLayers();
+      displayed.clear();
+    }
     function mergeReports(previous, incoming, area) {
       const records = new Map(), now = Date.now();
       for (const vessel of [...previous, ...incoming]) {
@@ -85,17 +89,25 @@
         if (previous) {
           if (previous.vessel === vessel && previous.worldLng === point[1]) continue;
           previous.vessel = vessel; previous.worldLng = point[1];
-          // Updating a live vessel must not repeatedly pan the map after its popup opens.
-          const card = previous.marker.getPopup(), autoPan = card.options.autoPan;
-          card.options.autoPan = false;
           previous.marker.setLatLng(point);
           previous.marker.options.title = title; previous.marker.options.alt = title; previous.marker.setIcon(icon(vessel));
-          previous.marker.setPopupContent(() => popup(vessel, previous.marker));
-          card.options.autoPan = autoPan;
+          if (pinnedMarker === previous.marker) infoCard.show(popup(vessel));
         } else {
           const marker = L.marker(point, { rotateWithView:true, title, alt: title, icon: icon(vessel), keyboard: true, riseOnHover: true, bubblingMouseEvents: false, zIndexOffset: 100 });
-          marker.bindPopup(() => popup(vessel, marker), { minWidth: 140, maxWidth: 290, autoPanPaddingTopLeft: [12, 90], autoPanPaddingBottomRight: [68, 35] }).addTo(group);
-          displayed.set(vessel.id, { marker, vessel, worldLng: point[1] });
+          const entry = { marker, vessel, worldLng: point[1] };
+          // Keep Leaflet's exclusive selection and dismissal while the card floats above the map.
+          marker.bindPopup('', { className: 'vessels-map-popup', autoPan: false });
+          marker.on('popupopen', () => {
+            pinnedMarker = marker;
+            infoCard.show(popup(entry.vessel));
+          });
+          marker.on('popupclose', () => {
+            if (pinnedMarker !== marker) return;
+            pinnedMarker = null;
+            infoCard.hide();
+          });
+          marker.addTo(group);
+          displayed.set(vessel.id, entry);
         }
       }
       const count = records.size, message = `${count} vessels in this view.`;

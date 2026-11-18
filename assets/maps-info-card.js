@@ -1,7 +1,7 @@
 'use strict';
-window.GregleAircraftCard = ({onClose}) => {
+window.GregleMapInfoCard = ({feature, onClose}) => {
   const $ = id => document.getElementById(id), stage = document.querySelector('.map-stage');
-  const card = $('aircraft-info-card'), content = $('aircraft-info-content'), handle = $('aircraft-info-drag');
+  const card = $(`${feature}-info-card`), content = $(`${feature}-info-content`), handle = $(`${feature}-info-drag`);
   let position = null, gesture;
   function layout() {
     if (card.hidden) return;
@@ -15,7 +15,7 @@ window.GregleAircraftCard = ({onClose}) => {
   }
   function hide() { card.hidden=true; gesture=null; }
   function close() { hide(); onClose(); }
-  $('aircraft-info-close').addEventListener('click',close);
+  $(`${feature}-info-close`).addEventListener('click',close);
   handle.addEventListener('pointerdown',event=>{
     if (!event.isPrimary || event.button!==0) return;
     const area=stage.getBoundingClientRect(), box=card.getBoundingClientRect();

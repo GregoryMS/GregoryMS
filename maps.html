@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css" integrity="sha256-M3v8pcq9A7OYFbJwD+vis7ft9VkhxZzUn4jssyghIwM=" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/tools.css">
   <link rel="stylesheet" href="assets/vendor/maplibre/maplibre-gl.css">
-  <link rel="stylesheet" href="assets/maps.css?v=20261116-weather1">
+  <link rel="stylesheet" href="assets/maps.css?v=20261117-vessel-card">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
   <script src="assets/theme.js?v=20261113-shared-device1" defer></script>
   <script src="assets/vendor/leaflet/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
@@ -50,10 +50,10 @@
   <script src="assets/maps-3d-layers.js?v=20261113-aircraft-card" defer></script>
   <script src="assets/maps-embed.js?v=20261114-coastal-transit2" defer></script>
   <script src="assets/maps-aircraft-core.js?v=20261103-wide-view2" defer></script>
-  <script src="assets/maps-aircraft-card.js?v=20261113" defer></script>
-  <script src="assets/maps-aircraft.js?v=20261113-card" defer></script>
+  <script src="assets/maps-info-card.js?v=20261117-vessel-card" defer></script>
+  <script src="assets/maps-aircraft.js?v=20261117-vessel-card" defer></script>
   <script src="assets/maps-vessels-core.js?v=20261018-vessel-types" defer></script>
-  <script src="assets/maps-vessels.js?v=20261113-rotation" defer></script>
+  <script src="assets/maps-vessels.js?v=20261117-vessel-card" defer></script>
   <script src="assets/maps-fuel-core.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-fuel.js?v=20261018-fuel-pins" defer></script>
   <script src="assets/maps-transit-basemap.js?v=20261114" defer></script>
@@ -77,7 +77,7 @@
   <script src="assets/maps-transit-journey-live.js?v=20261109-transit-guidance" defer></script>
   <script src="assets/maps-navigation.js?v=20261115-offline1" defer></script>
   <script src="assets/maps-pin-gestures.js?v=20261113-native-3d" defer></script>
-  <script src="assets/maps-drawer.js?v=20261116-weather1" defer></script>
+  <script src="assets/maps-drawer.js?v=20261117-vessel-card" defer></script>
   <script src="assets/maps-qr.js?v=20261113-native-3d" defer></script>
   <script src="assets/weather-core.js?v=20261021-station-coverage" defer></script>
   <script src="assets/maps-weather-core.js?v=20261116-weather1" defer></script>
@@ -465,6 +465,11 @@
       <div class="aircraft-info-heading"><button id="aircraft-info-drag" type="button" aria-label="Move aircraft details" aria-describedby="aircraft-info-help"><span aria-hidden="true">⠿</span> Aircraft details</button><button id="aircraft-info-close" class="map-dismiss" type="button" aria-label="Close aircraft details">×</button></div>
       <span id="aircraft-info-help" class="sr-only">Drag to move this card. When focused, use arrow keys to move it or Home to reset its position.</span>
       <div id="aircraft-info-content"></div>
+    </section>
+    <section id="vessels-info-card" class="vessels-info-card map-glass" aria-label="Vessel details" hidden>
+      <div class="vessels-info-heading"><button id="vessels-info-drag" type="button" aria-label="Move vessel details" aria-describedby="vessels-info-help"><span aria-hidden="true">⠿</span> Vessel details</button><button id="vessels-info-close" class="map-dismiss" type="button" aria-label="Close vessel details">×</button></div>
+      <span id="vessels-info-help" class="sr-only">Drag to move this card. When focused, use arrow keys to move it or Home to reset its position.</span>
+      <div id="vessels-info-content"></div>
     </section>
     <dialog id="map-qr-dialog" class="saved-place-dialog map-qr-dialog" aria-labelledby="map-qr-heading" aria-describedby="map-qr-status">
       <div class="layers-heading"><h2 id="map-qr-heading" tabindex="-1">Location QR code</h2><button id="map-qr-close" class="map-dismiss" type="button" aria-label="Close location QR code">×</button></div>

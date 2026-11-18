@@ -2,7 +2,7 @@
   'use strict';
   window.GregleAircraft = ({ map, notify }) => {
     const core = window.GregleAircraftCore;
-    const infoCard = window.GregleAircraftCard?.({onClose:()=>map.closePopup()});
+    const infoCard = window.GregleMapInfoCard?.({feature:'aircraft',onClose:()=>map.closePopup()});
     const output = document.getElementById('aircraft-layer-status'), refresh = document.getElementById('aircraft-refresh');
     document.getElementById('aircraft-altitude-gradient').style.background = core.altitudeGradient;
     document.getElementById('aircraft-altitude-neutral').style.background = core.neutralColour;

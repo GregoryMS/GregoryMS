@@ -71,6 +71,14 @@ test('mobile marker details retain their live DOM and return to the popup on des
   h.mapEvents.layerremove({layer});assert.equal(popup.options.autoPan,true,'removing a mobile layer restores its original option');
 });
 
+test('floating vessel and aircraft details stay outside the mobile drawer',()=>{
+  const h=setup();
+  for(const className of ['vessels-map-popup','aircraft-map-popup']){
+    h.popup({options:{className},getElement(){throw Error('Floating card must not be moved into the drawer');}});
+    assert(h.get('map-feature-details').hidden);
+  }
+});
+
 test('the drawer stays above an on-screen keyboard and clamps to the remaining height',()=>{
   const events={},viewport={height:844,offsetTop:0,addEventListener:(name,fn)=>events[name]=fn};
   const h=setup(viewport);h.open('map-directions');h.fire('keydown',{key:'End'});
