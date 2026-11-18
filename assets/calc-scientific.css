@@ -22,6 +22,7 @@
 .scientific-controls {display:grid;grid-template-rows:84px auto auto;gap:10px;min-height:0}
 .scientific-controls button {position:relative;min-width:0;min-height:0;padding:4px;border:1px solid var(--sci-key-border,#575562);border-radius:10px;background:var(--sci-key,#41424e);color:var(--sci-key-ink,#f7f5fb);font:500 15px/1.15 system-ui,sans-serif;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .scientific-controls button:focus-visible {outline:3px solid var(--sci-focus,#deb6ff);outline-offset:2px}
+#scientificMenuOpen:focus-visible {outline:2px solid currentColor;outline-offset:-4px}
 .scientific-controls button:active {transform:scale(.96)}
 :where(.scientific-only:not([data-scientific-theme]),.scientific-only[data-scientific-theme="gregle"]) .scientific-controls button:active {background:#77618e}
 .scientific-navigation {display:grid;grid-template-columns:minmax(0,1fr) 108px minmax(0,1fr);gap:12px;min-height:0}

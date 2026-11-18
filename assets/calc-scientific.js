@@ -21,7 +21,11 @@
     try {localStorage.setItem(themeKey,value);} catch (_) {}
   });
   menu.addEventListener('keydown', event => event.stopPropagation());
-  menu.addEventListener('close', () => menuButton.focus({preventScroll:true}));
+  let menuOpenedWithPointer = false;
+  menu.addEventListener('close', () => {
+    if (!menuOpenedWithPointer) menuButton.focus({preventScroll:true});
+    else if (document.activeElement === menuButton) menuButton.blur();
+  });
   // The native calculator always opens on calculation, including old graph bookmarks.
   window.GregleCalculator.openScreen('calculate',false);
   const angleButtons = controls.querySelectorAll('[data-scientific-angle]');
@@ -72,7 +76,10 @@
     else if (['left','right','up','down','enter'].includes(button.dataset.scientificAction)) scientific.navigate(button.dataset.scientificAction);
     else if (button.dataset.scientificAction === 'recall') scientific.recallEntry();
     else if (button.dataset.scientificAction === 'copy') $('copyResult').click();
-    else if (button.dataset.scientificAction === 'menu') menu.showModal();
+    else if (button.dataset.scientificAction === 'menu') {
+      menuOpenedWithPointer = event.detail > 0;
+      menu.showModal();
+    }
     else if (button.dataset.scientificAction === 'fraction') scientific.insertFraction();
     else if (button.dataset.scientificAction === 'format') scientific.toggleFraction();
     else if (button.dataset.scientificAction === 'exponent') scientific.insert(scientific.getState().expression ? '×10^(' : '10^(');

@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-scientific-update1';
+const VERSION='20261118-menu-focus1';
 const PREFIX='gregle-calculator-';
 const CACHE=PREFIX+VERSION;
 const DOCUMENT='/calc.html';
@@ -16,11 +16,11 @@ const ASSETS=[
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
   '/assets/site-menu.js?v=20261117-app-theme2',
-  '/assets/calc-scientific.css?v=20261118-scientific-themes1',
+  '/assets/calc-scientific.css?v=20261118-menu-focus1',
   '/assets/calc-viewport.js?v=20261118-scientific-themes1',
   '/assets/calc-haptics.js?v=20261117-haptics1',
   '/assets/calc-picker.js?v=20261117-pointer1',
-  '/assets/calc-scientific.js?v=20261118-scientific-themes1',
+  '/assets/calc-scientific.js?v=20261118-menu-focus1',
   '/assets/calc-core.js?v=20261117-fractions1',
   '/assets/calc.js?v=20261117-stable1',
   '/assets/calc-graph-core.js?v=20261029-graph',

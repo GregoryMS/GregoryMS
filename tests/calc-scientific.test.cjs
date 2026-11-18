@@ -29,7 +29,11 @@ function setup({vibration = 'supported', savedTheme = null} = {}) {
     addEventListener(type,callback) {menuEvents[type] = callback;},
     showModal() {this.open = true;}
   };
-  const page = {dataset:{}}, menuButton = {focus() {calls.push(['menu focus']);}};
+  const page = {dataset:{}};
+  const menuButton = {
+    focus() {calls.push(['menu focus']);},
+    blur() {calls.push(['menu blur']);}
+  };
   const storage = new Map([['gregle-calc-scientific-theme',savedTheme]]);
   const localStorage = {getItem:key => storage.get(key),setItem:(key,value) => storage.set(key,value)};
   const select = {value:'rad',dispatchEvent() {angle=this.value;calls.push(['angle',angle]);}};
@@ -43,7 +47,7 @@ function setup({vibration = 'supported', savedTheme = null} = {}) {
   const document = {getElementById:id => nodes[id],createElement:() => ({setAttribute() {}})};
   vm.runInNewContext(source,{document,localStorage,navigator,Event:class {},window:{GregleScientific:scientific,GregleCalculator:{openScreen:(...args) => calls.push(['open',...args])}}});
   const click = (dataset,extra = {}) => events.click({target:{closest:() => ({dataset})},isTrusted:true,detail:1,...extra});
-  return {calls,angles,click,events,shift,clearKey,clearLabel,menu,menuEvents,page,themes,storage};
+  return {calls,angles,click,events,shift,clearKey,clearLabel,menu,menuEvents,page,themes,storage,document,menuButton};
 }
 
 test('old graph bookmarks open scientific mode and the saved angle is shown and changed',() => {
@@ -91,8 +95,17 @@ test('Menu restores a saved theme and applies and stores a new selection without
   app.menuEvents.change({target:app.themes[3]});
   assert.equal(app.page.dataset.scientificTheme,'silver');
   assert.equal(app.storage.get('gregle-calc-scientific-theme'),'silver');
+  app.document.activeElement = app.menuButton;
   app.menuEvents.close();
-  assert(app.calls.some(call => call[0] === 'menu focus'));
+  assert(app.calls.some(call => call[0] === 'menu blur'));
+  assert(!app.calls.some(call => call[0] === 'menu focus'));
   assert(!app.calls.some(call => call[0] === 'reset'));
   assert.equal(setup({savedTheme:'unknown'}).page.dataset.scientificTheme,undefined);
+});
+
+test('closing a keyboard-opened menu returns focus to its button', () => {
+  const app = setup();
+  app.click({scientificAction:'menu'},{detail:0});
+  app.menuEvents.close();
+  assert(app.calls.some(call => call[0] === 'menu focus'));
 });
