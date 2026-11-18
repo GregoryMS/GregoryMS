@@ -27,7 +27,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/calc-app/favicon-32.png">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
 <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
-<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-menu-focus1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-formulas1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
 <script src="assets/theme.js?v=20261113-shared-device1" defer></script><script src="assets/site-menu.js?v=20261117-app-theme2" defer></script>
 <script src="assets/calc-core.js?v=20261117-fractions1" defer></script><script src="assets/calc.js?v=20261117-stable1" defer></script>
 <script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261031-clean-labels" defer></script>
@@ -36,6 +36,7 @@
 <script src="assets/calc-tinspire.js?v=20261115-nspire2" defer></script>
 <script src="assets/calc-picker.js?v=20261117-pointer1" defer></script>
 <script src="assets/calc-scientific.js?v=20261118-menu-focus1" defer></script>
+<script src="assets/calc-formulas.js?v=20261118-formulas1" defer></script>
 <script src="assets/calc-haptics.js?v=20261117-haptics1" defer></script>
 <script src="assets/calc-viewport.js?v=20261118-scientific-themes1" defer></script>
 <script src="assets/calc-offline.js?v=20261118-scientific-update1" defer></script>
@@ -103,14 +104,33 @@
 </section>
 <dialog id="scientificMenu" class="scientific-menu" aria-labelledby="scientificMenuTitle">
 <form method="dialog">
-  <div class="scientific-menu-heading"><h2 id="scientificMenuTitle">Calculator menu</h2><button type="submit" autofocus>Done</button></div>
-  <fieldset>
-    <legend>Theme</legend>
-    <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="gregle" checked><span class="scientific-theme-swatch" data-swatch="gregle" aria-hidden="true"></span><span>Gregle</span></label>
-    <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="graphite"><span class="scientific-theme-swatch" data-swatch="graphite" aria-hidden="true"></span><span>Graphite</span></label>
-    <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="chalk"><span class="scientific-theme-swatch" data-swatch="chalk" aria-hidden="true"></span><span>Chalk</span></label>
-    <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="silver"><span class="scientific-theme-swatch" data-swatch="silver" aria-hidden="true"></span><span>Silver</span></label>
-  </fieldset>
+  <div id="scientificMenuSettings">
+    <div class="scientific-menu-heading"><h2 id="scientificMenuTitle">Calculator menu</h2><button type="submit" autofocus>Done</button></div>
+    <fieldset>
+      <legend>Theme</legend>
+      <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="gregle" checked><span class="scientific-theme-swatch" data-swatch="gregle" aria-hidden="true"></span><span>Gregle</span></label>
+      <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="graphite"><span class="scientific-theme-swatch" data-swatch="graphite" aria-hidden="true"></span><span>Graphite</span></label>
+      <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="chalk"><span class="scientific-theme-swatch" data-swatch="chalk" aria-hidden="true"></span><span>Chalk</span></label>
+      <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="silver"><span class="scientific-theme-swatch" data-swatch="silver" aria-hidden="true"></span><span>Silver</span></label>
+    </fieldset>
+    <button type="button" class="formula-launch" id="openFormulaReference">Maths &amp; physics formulas <span aria-hidden="true">›</span></button>
+  </div>
+  <section id="formulaReference" aria-labelledby="formulaReferenceTitle" hidden>
+    <div class="scientific-menu-heading formula-heading">
+      <button type="button" id="backFromFormulaReference">Back</button>
+      <h2 id="formulaReferenceTitle">Formulas</h2>
+      <button type="submit">Done</button>
+    </div>
+    <div class="formula-subjects" role="group" aria-label="Formula collection">
+      <button type="button" data-formula-subject="maths" aria-pressed="true">Maths</button>
+      <button type="button" data-formula-subject="physics" aria-pressed="false">Physics</button>
+      <button type="button" data-formula-subject="favourites" aria-pressed="false">Favourites</button>
+    </div>
+    <label for="formulaSearch" class="sr-only">Search formulas</label>
+    <input type="search" id="formulaSearch" placeholder="Search formulas" enterkeyhint="search" autocomplete="off">
+    <p id="formulaStatus" class="formula-status" role="status"></p>
+    <div id="formulaTopics" class="formula-topics"></div>
+  </section>
 </form>
 </dialog>
 <div class="graph-menu-keys" role="group" aria-label="Graphing menus"><button type="button" data-graph-menu="equations" aria-controls="graphEquations" aria-expanded="false">Y=</button><button type="button" data-graph-menu="window" aria-controls="graphWindowMenu" aria-expanded="false">WINDOW</button><button type="button" data-graph-menu="zoom" aria-controls="graphZoomMenu" aria-expanded="false">ZOOM</button><button type="button" data-graph-menu="trace" aria-pressed="false">TRACE</button><button type="button" data-graph-menu="graph" aria-label="Graph; 2nd function: Table"><small>TABLE</small>GRAPH</button></div>
@@ -127,7 +147,7 @@
 </div></div><button type="button" id="calculatorResize" class="calculator-resize-handle" aria-label="Resize calculator. Drag, or use arrow keys when focused." title="Drag to resize · Arrow keys adjust size · Home resets"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M12 17l5-5M2 17 17 2"/></svg></button></div>
 <p class="calculator-resize-note">Drag the corner to resize · Pop out for a calculator-only window</p>
 <form class="trace-form" id="traceForm"><label for="traceInput">Evaluate at x =</label><input id="traceInput" type="text" inputmode="none" data-keypad-number maxlength="32" autocomplete="off" spellcheck="false" value="0" required><button type="submit">Find values</button><span id="traceMessage" role="status" aria-live="polite"></span></form>
-<details class="graph-help"><summary>Calculator help &amp; keyboard shortcuts</summary><p id="graphInstructions">Tap the keys to enter a calculation, then = to calculate. Use DEG or RAD for trigonometry, and Ans to reuse the last answer. SHIFT shows inverse trigonometry, cube roots, factorials and other alternate functions. Tap a⁄b to create a fraction; use Down to move from numerator to denominator, and Right to leave it. S↔D switches an answer between fraction and decimal. Tap an expression or answer in the display to recall it. An operator after a calculation continues with Ans; (−) enters a negative number.</p><p>On a keyboard, Enter calculates, Backspace deletes and Escape clears the entry. Arrow keys move through the entry or calculation history. Copy copies the latest result. AC resets the current calculation, and SHIFT then AC also clears saved history. Use Menu to choose a theme. Calculations and angle mode are saved in this browser. Use Pop out for a separate calculator window. Choose a calculator from the menu beside the Gregle logo.</p><p>Touch keys provide a light vibration when supported by your phone and browser.</p></details><p class="calc-offline-status" data-offline-status role="status">Preparing offline use…</p><button type="button" class="pill" data-offline-retry hidden>Retry offline setup</button>
+<details class="graph-help"><summary>Calculator help &amp; keyboard shortcuts</summary><p id="graphInstructions">Tap the keys to enter a calculation, then = to calculate. Use DEG or RAD for trigonometry, and Ans to reuse the last answer. SHIFT shows inverse trigonometry, cube roots, factorials and other alternate functions. Tap a⁄b to create a fraction; use Down to move from numerator to denominator, and Right to leave it. S↔D switches an answer between fraction and decimal. Tap an expression or answer in the display to recall it. An operator after a calculation continues with Ans; (−) enters a negative number.</p><p>On a keyboard, Enter calculates, Backspace deletes and Escape clears the entry. Arrow keys move through the entry or calculation history. Copy copies the latest result. AC resets the current calculation, and SHIFT then AC also clears saved history. Use Menu to choose a theme or look up maths and physics formulas. Calculations and angle mode are saved in this browser. Use Pop out for a separate calculator window. Choose a calculator from the menu beside the Gregle logo.</p><p>Touch keys provide a light vibration when supported by your phone and browser.</p></details><p class="calc-offline-status" data-offline-status role="status">Preparing offline use…</p><button type="button" class="pill" data-offline-retry hidden>Retry offline setup</button>
 </section>
 <noscript><p>Please enable JavaScript to use this calculator.</p></noscript>
 <footer><p>Calculator · Gregle</p><a href="https://links.gregle.uk/">More useful things ↗</a></footer>

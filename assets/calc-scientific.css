@@ -294,3 +294,95 @@
 .scientific-theme-swatch[data-swatch="graphite"] {--swatch-shell:#21282a;--swatch-screen:#bccdb9;--swatch-accent:#b9dc9a}
 .scientific-theme-swatch[data-swatch="chalk"] {--swatch-shell:#eae6e0;--swatch-screen:#fbf6ee;--swatch-accent:#a84425}
 .scientific-theme-swatch[data-swatch="silver"] {--swatch-shell:#cbd0dd;--swatch-screen:#bdd8ce;--swatch-accent:#5d4d8b}
+
+/* Formula reference inside the scientific calculator menu. */
+.formula-launch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--sci-key-border,#575562);
+  border-radius: 9px;
+  background: var(--sci-key,#41424e);
+  color: var(--sci-key-ink,#f7f5fb);
+  font: inherit;
+  text-align: left;
+}
+.formula-launch span {font-size: 22px;line-height: 1}
+.scientific-menu.formulas-open {
+  width: min(580px,calc(100% - 24px));
+  max-height: min(720px,calc(100dvh - max(16px,env(safe-area-inset-top,0px)) - max(16px,env(safe-area-inset-bottom,0px))));
+}
+.formula-heading {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 4px 0;
+  background: var(--sci-shell,#282730);
+}
+.formula-subjects {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.formula-subjects button {
+  min-height: 44px;
+  padding: 5px 2px;
+  border: 1px solid var(--sci-key-border,#575562);
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+}
+.formula-subjects button[aria-pressed="true"] {
+  border-color: var(--sci-accent,#b998ed);
+  background: var(--sci-accent,#b998ed);
+  color: var(--sci-accent-ink,#221831);
+}
+#formulaSearch {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--sci-key-border,#575562);
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  font: 16px/1.2 system-ui,sans-serif;
+}
+.formula-status {margin:12px 0 0}
+.formula-status:empty {display:none}
+.formula-topics {display:grid;gap:8px;margin-top:12px}
+.formula-topic {min-width:0;border:1px solid var(--sci-key-border,#575562);border-radius:11px}
+.formula-topic summary {min-height:44px;padding:11px 12px;font-weight:600;cursor:pointer}
+.formula-count {float:right;margin-inline-start:8px;font-size:13px;font-weight:400}
+.formula-card {
+  min-width: 0;
+  margin: 0 8px 8px;
+  padding: 8px 12px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb,currentColor 7%,transparent);
+}
+.formula-card-heading {display:flex;justify-content:space-between;align-items:center;gap:8px}
+.formula-card-heading h3 {margin:0;font:600 15px/1.25 system-ui,sans-serif}
+.formula-star {flex:0 0 44px;width:44px;height:44px;border:0;background:transparent;color:inherit;font:24px/1 system-ui,sans-serif}
+.formula-equations {
+  display: grid;
+  gap: 5px;
+  margin: 5px 0 10px;
+  padding: 0;
+  list-style: none;
+  overflow-wrap: anywhere;
+  font: 18px/1.4 Georgia,'Cambria Math',serif;
+}
+.formula-note {margin:0;font-size:13px}
+.formula-diagram {
+  display: block;
+  width: min(100%,300px);
+  height: auto;
+  margin: 4px auto 10px;
+  border-radius: 8px;
+  background-color: #e9eee9;
+  background-image: linear-gradient(#59728220 1px,transparent 1px),linear-gradient(90deg,#59728220 1px,transparent 1px);
+  background-size: 14px 14px;
+}
