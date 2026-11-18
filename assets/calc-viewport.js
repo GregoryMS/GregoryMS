@@ -1,52 +1,11 @@
-/* Keep the Home Screen scientific calculator steady while iOS settles its viewport. */
+/* Keep touches in the Home Screen scientific calculator from scrolling the page. */
 (() => {
   'use strict';
   const root = document.documentElement, page = document.getElementById('calcPage');
   const mobile = window.matchMedia('(max-width:700px), (pointer:coarse) and (max-height:600px)');
   const native = () => page.matches('.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)');
   const enabled = () => root.classList.contains('calculator-standalone') && mobile.matches && native();
-  const properties = ['--scientific-app-height','--scientific-safe-top','--scientific-safe-right','--scientific-safe-bottom','--scientific-safe-left'];
-  let frame = 0, width = window.innerWidth, started = 0, signature = '', stable = 0, touchY = 0, lockedHeight = 0;
-  function availableHeight() {
-    const viewport = window.visualViewport;
-    const visualBottom = viewport?.height > 0 && (viewport.scale || 1) <= 1.01 ? viewport.height+Math.max(0,viewport.offsetTop || 0) : 0;
-    return Math.min(...[document.body.getBoundingClientRect().height,window.innerHeight,root.clientHeight,visualBottom].filter(value => Number.isFinite(value) && value > 0));
-  }
-  function clearSize() {lockedHeight = 0; properties.forEach(name => root.style.removeProperty(name));}
-  function settle(now) {
-    frame = 0;
-    if (!enabled()) {root.classList.add('scientific-viewport-ready'); return;}
-    if (!started) started = now;
-    const style = getComputedStyle(document.body), height = availableHeight();
-    const padding = [style.paddingTop,style.paddingRight,style.paddingBottom,style.paddingLeft];
-    const next = [window.innerWidth,height,...padding].join(':');
-    stable = next === signature ? stable+1 : 0; signature = next;
-    if (stable >= 8 || now-started >= 600) {
-      lockedHeight = height; root.style.setProperty(properties[0],`${height}px`);
-      padding.forEach((value,index) => root.style.setProperty(properties[index+1],value));
-      width = window.innerWidth; root.classList.add('scientific-viewport-ready'); return;
-    }
-    frame = requestAnimationFrame(settle);
-  }
-  function start() {
-    if (frame) cancelAnimationFrame(frame);
-    clearSize(); started = 0; signature = ''; stable = 0;
-    if (!enabled()) {root.classList.add('scientific-viewport-ready'); return;}
-    root.classList.remove('scientific-viewport-ready'); frame = requestAnimationFrame(settle);
-  }
-  if (document.readyState === 'complete') start();
-  else window.addEventListener('load',start,{once:true});
-  // Never grow during launch, but shrink when iOS reports a smaller visible area.
-  function shrinkToFit() {
-    if (!enabled() || frame || !lockedHeight || (window.visualViewport?.scale || 1) > 1.01) return;
-    const height = availableHeight();
-    if (height < lockedHeight-1) {lockedHeight = height; root.style.setProperty(properties[0],`${height}px`);}
-  }
-  window.addEventListener('resize',() => {if (window.innerWidth !== width) start(); else shrinkToFit();});
-  window.visualViewport?.addEventListener?.('resize',shrinkToFit);
-  window.addEventListener('pageshow',event => {if (event.persisted && window.innerWidth !== width) start();});
-  mobile.addEventListener?.('change',start);
-  new MutationObserver(start).observe(page,{attributes:true,attributeFilter:['class']});
+  let touchY = 0;
 
   // Position the cursor directly instead of invoking iOS input-focus scrolling.
   document.addEventListener('pointerdown',event => {
