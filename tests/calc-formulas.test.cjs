@@ -28,7 +28,9 @@ function setup(saved) {
   const storage = new Map([['gregle-calc-formula-favourites',JSON.stringify(saved ?? [])]]);
   const document = {getElementById:id => nodes[id],createElement:node,createDocumentFragment:() => node()};
   const localStorage = {getItem:key => storage.get(key),setItem:(key,value) => storage.set(key,value)};
-  vm.runInNewContext(source,{document,localStorage});
+  const window = {};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/calc-formula-math.js'),'utf8'),{window});
+  vm.runInNewContext(source,{document,localStorage,window});
   return {
     nodes, storage,
     open() {nodes.openFormulaReference.listeners.click();},
@@ -46,6 +48,9 @@ test('formula topics browse by subject and search by equation or description', (
   assert(app.headings().includes('Triangles'));
   app.search("heron's formula");
   assert.deepEqual(app.headings(),['Triangles']);
+  const equations = app.nodes.formulaTopics.querySelector('.formula-equations');
+  assert.match(equations.children[0].innerHTML,/<mfrac>/);
+  assert.match(equations.children[3].innerHTML,/<msqrt>/);
   app.tab(1);
   app.search('suvat');
   assert.deepEqual(app.headings(),['Constant acceleration']);

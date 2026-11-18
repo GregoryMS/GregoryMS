@@ -166,7 +166,14 @@
     article.append(heading);
     if (id === 'triangle') article.append(triangle());
     const list = element('ul','formula-equations');
-    for (const equation of equations) list.append(element('li','',equation));
+    const rendered = window.GregleFormulaMath?.[id];
+    equations.forEach((equation,index) => {
+      const row = element('li');
+      // Markup is generated from the bundled LaTeX source at build time.
+      if (rendered?.[index]) row.innerHTML = rendered[index];
+      else row.textContent = equation;
+      list.append(row);
+    });
     article.append(list,element('p','formula-note',note));
     return article;
   }

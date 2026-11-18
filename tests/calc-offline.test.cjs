@@ -5,7 +5,7 @@ const path=require('node:path');
 const vm=require('node:vm');
 const root=path.join(__dirname,'..');
 const source=fs.readFileSync(path.join(root,'calc-sw.js'),'utf8');
-function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,staleHTML=false}={}) {
+function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,staleHTML=false,refresh}={}) {
   const origin='https://'+host, listeners={}, requests=[];
   const key=input => new URL(typeof input==='string' ? input : input.url || input.href,origin).href;
   const caches={
@@ -29,7 +29,7 @@ function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,st
   };
   let activationRequested=false;
   const self={
-    location:new URL(origin+'/calc-sw.js'),
+    location:{hostname:host,origin,href:origin+'/calc-sw.js'+(refresh ? '?calc-refresh='+refresh : '')},
     addEventListener(type,fn) {listeners[type]=fn;},
     async skipWaiting() {activationRequested=true;}
   };
@@ -101,4 +101,19 @@ test('an interrupted Nspire download cannot claim offline readiness or replace a
   await assert.rejects(update.lifecycle('install'),/could not finish/);
   assert(app.storage.has(previous)); assert(!app.storage.has('gregle-calculator-nspire-interrupted'));
   assert.equal((await app.status()).ready,true);
+});
+
+test('forcing a refresh of the same release stages a separate offline copy',async () => {
+  const app=environment(); await app.lifecycle('install');
+  const previous=[...app.storage.keys()][0];
+  const failed=environment({storage:app.storage,refresh:'failed',fail:'/assets/calc-formulas.js'});
+  await assert.rejects(failed.lifecycle('install'),/could not finish/);
+  assert.deepEqual([...app.storage.keys()],[previous]);
+  const update=environment({storage:app.storage,refresh:'retry'});
+  await update.lifecycle('install');
+  assert(app.storage.has(previous+'-refresh-retry'));
+  assert(app.storage.has(previous));
+  await update.lifecycle('activate');
+  assert.deepEqual([...app.storage.keys()],[previous+'-refresh-retry']);
+  assert.equal((await update.status()).ready,true);
 });

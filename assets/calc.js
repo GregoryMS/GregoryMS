@@ -5,18 +5,18 @@
   const popout = new URLSearchParams(window.location.search).get('popout') === '1';
   let ans = 0, completed = false, history = [], angle = 'deg', restored = null, fractionMode = false;
   let homeHistory = [], historySelection = null, entryRecall = -1, lastEntry = '', errorState = null, errorChoice = 0, keyMode = 'normal';
-  if (popout) {
-    document.documentElement.classList.add('calculator-popout');
-    try {
-      const state = JSON.parse(sessionStorage.getItem('gregle-calc-popout') || 'null');
-      sessionStorage.removeItem('gregle-calc-popout');
-      if (state && typeof state.expression === 'string' && state.expression.length <= 300) {
-        restored = state; fractionMode = state.fractionMode === true; input.value = state.completed ? '' : state.expression;
-        ans = Number.isFinite(state.ans) ? state.ans : 0; angle = state.angle === 'rad' ? 'rad' : 'deg'; completed = state.completed === true;
-        lastEntry = typeof state.lastEntry === 'string' ? state.lastEntry.slice(0,300) : completed ? state.expression : '';
-      }
-    } catch (_) {}
-  }
+  if (popout) document.documentElement.classList.add('calculator-popout');
+  try {
+    const state = JSON.parse(sessionStorage.getItem('gregle-calc-reload') ||
+      (popout ? sessionStorage.getItem('gregle-calc-popout') : null) || 'null');
+    sessionStorage.removeItem('gregle-calc-reload');
+    if (popout) sessionStorage.removeItem('gregle-calc-popout');
+    if (state && typeof state.expression === 'string' && state.expression.length <= 300) {
+      restored = state; fractionMode = state.fractionMode === true; input.value = state.completed ? '' : state.expression;
+      ans = Number.isFinite(state.ans) ? state.ans : 0; angle = state.angle === 'rad' ? 'rad' : 'deg'; completed = state.completed === true;
+      lastEntry = typeof state.lastEntry === 'string' ? state.lastEntry.slice(0,300) : completed ? state.expression : '';
+    }
+  } catch (_) {}
   try {
     const saved = JSON.parse(localStorage.getItem('gregle-calc-history') || '[]');
     if (Array.isArray(saved)) history = saved.filter(item => item && typeof item.expression === 'string' && item.expression.length <= 300 && Number.isFinite(item.value)).slice(0,50);

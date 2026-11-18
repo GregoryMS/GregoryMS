@@ -3,6 +3,9 @@
   'use strict';
   let registration, running, scheduled=false, appReady=false, romReady=false, romRemoved=false, ti89Ready=false, ti89Removed=false, nspireReady=false, nspireRemoved=false, setupError='';
   const installed=() => document.documentElement.classList.contains('calculator-standalone');
+  const dedicated=window.location.hostname==='calc.gregle.uk';
+  const workerPath='/gregle-sw.js?v=20261115-offline1';
+  const workerOptions={scope:'/',updateViaCache:'none'};
   function render() {
     let message;
     if (appReady) {
@@ -61,15 +64,74 @@
       setupError='Offline use needs a secure browser with service workers.'; render(); return;
     }
     try {
-      registration=await navigator.serviceWorker.register('/gregle-sw.js?v=20261115-offline1',{scope:'/',updateViaCache:'none'});
+      const existing=dedicated ? await navigator.serviceWorker.getRegistration('/') : null;
+      registration=existing || await navigator.serviceWorker.register(workerPath,workerOptions);
       watchWorker(registration.installing);
       registration.addEventListener('updatefound',() => {watchWorker(registration.installing);});
-      if (window.location.hostname==='calc.gregle.uk' && navigator.onLine) {
+      if (dedicated && navigator.onLine) {
         void registration.update().catch(() => {});
       }
       await check();
     } catch (_) {setupError='Offline setup incomplete. Retry online.'; render();}
   }
+  function waitForActivation(worker) {
+    return new Promise((resolve,reject) => {
+      const timer=setTimeout(() => finish(new Error('The update is taking longer than expected. Try again online.')),60000);
+      function finish(error,active) {
+        clearTimeout(timer);
+        worker.removeEventListener('statechange',onState);
+        if (error) reject(error);
+        else resolve(active);
+      }
+      function onState() {
+        if (worker.state==='activated') finish(null,true);
+        else if (worker.state==='redundant') finish(new Error('The download could not finish. Try again online.'));
+        else if (worker.state==='installed' && !dedicated && registration.active) finish(null,false);
+      }
+      worker.addEventListener('statechange',onState);
+      onState();
+    });
+  }
+
+  const updateButton=document.getElementById('updateCalculatorOffline');
+  const updateStatus=document.getElementById('calculatorOfflineUpdateStatus');
+  updateButton.addEventListener('click',async () => {
+    if (!navigator.onLine) {updateStatus.textContent='Connect to the internet to update the offline copy.'; return;}
+    updateButton.disabled=true;
+    updateStatus.textContent='Downloading the offline copy…';
+    try {
+      if (!registration) await start();
+      if (!registration) throw new Error('Offline setup is unavailable in this browser.');
+      if (dedicated) {
+        // A distinct script URL reinstalls the bundle even when the release
+        // number is unchanged. It uses a new cache until the download passes.
+        const url=new URL(workerPath,window.location.href);
+        url.searchParams.set('calc-refresh',crypto.randomUUID());
+        registration=await navigator.serviceWorker.register(url.href,workerOptions);
+        const worker=[registration.installing,registration.waiting,registration.active].find(item => item?.scriptURL===url.href);
+        if (!worker || !await waitForActivation(worker)) throw new Error('The offline copy could not be downloaded. Try again online.');
+      } else {
+        await registration.update();
+        const worker=registration.installing || registration.waiting || registration.active;
+        if (!worker) throw new Error('The calculator could not check for updates. Try again online.');
+        if (!await waitForActivation(worker)) {
+          updateStatus.textContent='Update downloaded. Close other Gregle windows to apply it.';
+          return;
+        }
+      }
+      if (!registration.active || !await cached(registration.active)) {
+        throw new Error('The offline copy is still being prepared. Try again online.');
+      }
+      try {sessionStorage.setItem('gregle-calc-reload',JSON.stringify(window.GregleScientific.getState()));} catch (_) {}
+      updateStatus.textContent='Offline copy ready. Reopening calculator…';
+      window.location.reload();
+    } catch (error) {
+      updateStatus.textContent=error instanceof Error && error.constructor===Error ? error.message : 'The update could not finish. Try again online.';
+    } finally {
+      updateButton.disabled=false;
+    }
+  });
+
   document.querySelectorAll('[data-offline-retry]').forEach(button => button.addEventListener('click',async () => {
     // A failed first install can remove its registration. Register again rather
     // than repeatedly updating a redundant worker that can no longer recover.

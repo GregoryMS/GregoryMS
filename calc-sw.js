@@ -1,8 +1,9 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-formulas1';
+const VERSION='20261118-offline-refresh1';
 const PREFIX='gregle-calculator-';
-const CACHE=PREFIX+VERSION;
+const refresh=self.location.hostname==='calc.gregle.uk' ? new URL(self.location.href).searchParams.get('calc-refresh') : '';
+const CACHE=PREFIX+VERSION+(/^[a-z0-9-]{1,40}$/.test(refresh || '') ? '-refresh-'+refresh : '');
 const DOCUMENT='/calc.html';
 const ASSETS=[
   '/calc.webmanifest',
@@ -16,18 +17,19 @@ const ASSETS=[
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
   '/assets/site-menu.js?v=20261117-app-theme2',
-  '/assets/calc-scientific.css?v=20261118-formulas1',
-  '/assets/calc-viewport.js?v=20261118-scientific-themes1',
+  '/assets/calc-scientific.css?v=20261118-offline-refresh1',
+  '/assets/calc-viewport.js?v=20261118-offline-refresh1',
   '/assets/calc-haptics.js?v=20261117-haptics1',
   '/assets/calc-picker.js?v=20261117-pointer1',
   '/assets/calc-scientific.js?v=20261118-menu-focus1',
-  '/assets/calc-formulas.js?v=20261118-formulas1',
+  '/assets/calc-formula-math.js?v=20261118-offline-refresh1',
+  '/assets/calc-formulas.js?v=20261118-offline-refresh1',
   '/assets/calc-core.js?v=20261117-fractions1',
-  '/assets/calc.js?v=20261117-stable1',
+  '/assets/calc.js?v=20261118-offline-refresh1',
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
   '/assets/calc-emulator.js?v=20261117-visible1',
-  '/assets/calc-offline.js?v=20261118-scientific-update1',
+  '/assets/calc-offline.js?v=20261118-offline-refresh1',
   '/assets/calc-ti89.js?v=20261102-ti89-6',
   '/assets/calc-tinspire.js?v=20261115-nspire2',
   '/assets/tinspire/worker.mjs',
@@ -95,7 +97,10 @@ self.addEventListener('install',event => {
 });
 self.addEventListener('activate',event => {
   event.waitUntil((async () => {
-    for (const name of await caches.keys()) if (name.startsWith(PREFIX) && name!==CACHE) await caches.delete(name);
+    const names=await caches.keys();
+    if (!self.registration?.installing && !self.registration?.waiting) {
+      for (const name of names) if (name.startsWith(PREFIX) && name!==CACHE) await caches.delete(name);
+    }
     // No clients.claim: unrelated Gregle pages keep their normal behaviour.
   })());
 });

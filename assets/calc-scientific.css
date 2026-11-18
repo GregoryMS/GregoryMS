@@ -296,7 +296,7 @@
 .scientific-theme-swatch[data-swatch="silver"] {--swatch-shell:#cbd0dd;--swatch-screen:#bdd8ce;--swatch-accent:#5d4d8b}
 
 /* Formula reference inside the scientific calculator menu. */
-.formula-launch {
+.formula-launch,.scientific-offline-update {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -368,6 +368,7 @@
 .formula-star {flex:0 0 44px;width:44px;height:44px;border:0;background:transparent;color:inherit;font:24px/1 system-ui,sans-serif}
 .formula-equations {
   display: grid;
+  grid-template-columns: minmax(0,1fr);
   gap: 5px;
   margin: 5px 0 10px;
   padding: 0;
@@ -375,6 +376,8 @@
   overflow-wrap: anywhere;
   font: 18px/1.4 Georgia,'Cambria Math',serif;
 }
+.formula-equations li {min-width:0;overflow-x:auto;overscroll-behavior-inline:contain}
+.formula-equations math {text-align:left;font-size:clamp(16px,4.4vw,19px)}
 .formula-note {margin:0;font-size:13px}
 .formula-diagram {
   display: block;
@@ -386,3 +389,8 @@
   background-image: linear-gradient(#59728220 1px,transparent 1px),linear-gradient(90deg,#59728220 1px,transparent 1px);
   background-size: 14px 14px;
 }
+
+.scientific-offline-update {margin-top:8px}
+.scientific-offline-update:disabled {opacity:.65;cursor:wait}
+.scientific-offline-update-status {margin:8px 0 0;font-size:13px}
+.scientific-offline-update-status:empty {display:none}
