@@ -139,6 +139,8 @@
 
 .scientific-only #expression[readonly] {caret-color:transparent}
 .scientific-only #expression[readonly]+.home-cursor {display:block}
+/* Keep the character-cell width for cursor placement, and paint only the bar. */
+.scientific-only #homeCursor:empty {background:linear-gradient(to right,var(--ink) 2px,transparent 2px)}
 
 /* Offline recovery uses the same pill treatment as the other Gregle tools. */
 [data-offline-retry].pill {min-height:44px;padding:9px 18px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--calc-accent);font:500 14px/1.4 system-ui,sans-serif;gap:8px;box-shadow:var(--shadow);touch-action:manipulation}
