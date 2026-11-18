@@ -21,7 +21,7 @@
   document.addEventListener('touchmove',event => {
     if (!enabled() || event.touches.length !== 1 || (window.visualViewport?.scale || 1) > 1.01) return;
     const y = event.touches[0].clientY, delta = y-touchY; touchY = y;
-    const scroller = event.target.closest('#historyList,.home-error,.gregle-menu-panel');
+    const scroller = event.target.closest('#historyList,.home-error,.gregle-menu-panel,.scientific-menu');
     const scrollable = scroller && scroller.scrollHeight > scroller.clientHeight+1;
     const withinBounds = scrollable && (delta < 0 ? scroller.scrollTop+scroller.clientHeight < scroller.scrollHeight-1 : scroller.scrollTop > 0);
     if (!withinBounds && event.cancelable) event.preventDefault();
