@@ -27,9 +27,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/calc-app/favicon-32.png">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
 <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
-<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-calculator-selector1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-calculator-history1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
 <script src="assets/theme.js?v=20261113-shared-device1" defer></script><script src="assets/site-menu.js?v=20261117-app-theme2" defer></script>
-<script src="assets/calc-core.js?v=20261117-fractions1" defer></script><script src="assets/calc.js?v=20261118-offline-refresh1" defer></script>
+<script src="assets/calc-core.js?v=20261117-fractions1" defer></script><script src="assets/calc.js?v=20261118-calculator-history1" defer></script>
 <script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261031-clean-labels" defer></script>
 <script src="assets/calc-emulator.js?v=20261117-visible1" defer></script>
 <script src="assets/calc-ti89.js?v=20261102-ti89-6" defer></script>
@@ -40,8 +40,8 @@
 <script src="assets/calc-formulas.js?v=20261118-offline-refresh1" defer></script>
 <script src="assets/calc-units.js?v=20261118-unit-converter1" defer></script>
 <script src="assets/calc-haptics.js?v=20261117-haptics1" defer></script>
-<script src="assets/calc-viewport.js?v=20261118-offline-refresh1" defer></script>
-<script src="assets/calc-offline.js?v=20261118-calculator-selector1" defer></script>
+<script src="assets/calc-viewport.js?v=20261118-calculator-history1" defer></script>
+<script src="assets/calc-offline.js?v=20261118-calculator-history1" defer></script>
 <link rel="canonical" href="https://calc.gregle.uk/">
 </head><body>
 
@@ -83,9 +83,11 @@
 <div class="graph-screen-status"><span id="graphScreenTitle" role="status" aria-live="polite">HOME</span><span><span id="graphAngleStatus">DEG</span> · <span id="graphFunctionStatus">REAL</span></span></div>
 <div class="graph-stage" id="graphStage">
 <section class="graph-screen-panel scientific-screen" id="scientificScreen" aria-label="Calculator home screen">
+<div id="homeTranscript" class="home-transcript">
 <ol class="screen-history" id="historyList" aria-label="Home screen entries and answers"></ol>
 <form id="calculatorForm" class="scientific-form" aria-label="Scientific calculation"><label class="sr-only" for="expression">Your calculation</label><div class="home-entry"><input id="expression" type="text" inputmode="none" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="300" aria-describedby="homeStatus graphInstructions"><span class="home-cursor" id="homeCursor" aria-hidden="true"></span></div></form>
-<output id="result" class="sr-only" for="expression" aria-label="Result" aria-live="polite">0</output><p id="homeStatus" class="sr-only" role="status" aria-live="polite"></p>
+</div>
+<output id="result" class="sr-only" for="expression" aria-label="Result" aria-live="polite"></output><p id="homeStatus" class="sr-only" role="status" aria-live="polite"></p>
 <div class="home-error" id="calcError" role="alertdialog" aria-labelledby="calcErrorTitle" aria-describedby="calcMessage" hidden><h2 id="calcErrorTitle">ERR:SYNTAX</h2><p id="calcMessage" class="calc-message" role="alert"></p><div class="home-error-options" role="group" aria-label="Error recovery"><button type="button" id="errorQuit">1:Quit</button><button type="button" id="errorGoto">2:Goto</button></div></div>
 </section>
 <canvas id="graphCanvas" hidden tabindex="0" aria-label="Function graph. Arrow keys pan; in Trace, left and right move along a curve and up and down switch curves. Plus and minus zoom." aria-describedby="graphInstructions">Your browser needs canvas support to draw graphs. Use TABLE to read function values.</canvas>
@@ -184,7 +186,7 @@
 </div></div><button type="button" id="calculatorResize" class="calculator-resize-handle" aria-label="Resize calculator. Drag, or use arrow keys when focused." title="Drag to resize · Arrow keys adjust size · Home resets"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M12 17l5-5M2 17 17 2"/></svg></button></div>
 <p class="calculator-resize-note">Drag the corner to resize · Pop out for a calculator-only window</p>
 <form class="trace-form" id="traceForm"><label for="traceInput">Evaluate at x =</label><input id="traceInput" type="text" inputmode="none" data-keypad-number maxlength="32" autocomplete="off" spellcheck="false" value="0" required><button type="submit">Find values</button><span id="traceMessage" role="status" aria-live="polite"></span></form>
-<details class="graph-help"><summary>Calculator help &amp; keyboard shortcuts</summary><p id="graphInstructions">Tap the keys to enter a calculation, then = to calculate. Use DEG or RAD for trigonometry, and Ans to reuse the last answer. SHIFT shows inverse trigonometry, cube roots, factorials and other alternate functions. Tap a⁄b to create a fraction; use Down to move from numerator to denominator, and Right to leave it. S↔D switches an answer between fraction and decimal. Tap an expression or answer in the display to recall it. An operator after a calculation continues with Ans; (−) enters a negative number.</p><p>On a keyboard, Enter calculates, Backspace deletes and Escape clears the entry. Arrow keys move through the entry or calculation history. Copy copies the latest result. AC resets the current calculation, and SHIFT then AC also clears saved history. Use Menu to choose a theme, browse formulas or convert units. Calculations and angle mode are saved in this browser. Use Pop out for a separate calculator window. Choose a calculator from the menu beside the Gregle logo.</p><p>Touch keys provide a light vibration when supported by your phone and browser.</p></details><p class="calc-offline-status" data-offline-status role="status">Preparing offline use…</p><button type="button" class="pill" data-offline-retry hidden>Retry offline setup</button>
+<details class="graph-help"><summary>Calculator help &amp; keyboard shortcuts</summary><p id="graphInstructions">Tap the keys to enter a calculation, then = to calculate. Use DEG or RAD for trigonometry, and Ans to reuse the last answer. SHIFT shows inverse trigonometry, cube roots, factorials and other alternate functions. Tap a⁄b to create a fraction; use Down to move from numerator to denominator, and Right to leave it. S↔D switches an answer between fraction and decimal. Tap an expression or answer in the display to recall it. An operator after a calculation continues with Ans; (−) enters a negative number.</p><p>On a keyboard, Enter calculates, Backspace deletes and Escape clears the entry. Use the up and down arrows to scroll and select items in calculation history. Copy copies the latest result. AC resets the current calculation, and SHIFT then AC also clears saved history. Use Menu to choose a theme, browse formulas or convert units. Calculations and angle mode are saved in this browser. Use Pop out for a separate calculator window. Choose a calculator from the menu beside the Gregle logo.</p><p>Touch keys provide a light vibration when supported by your phone and browser.</p></details><p class="calc-offline-status" data-offline-status role="status">Preparing offline use…</p><button type="button" class="pill" data-offline-retry hidden>Retry offline setup</button>
 </section>
 <noscript><p>Please enable JavaScript to use this calculator.</p></noscript>
 <footer><p>Calculator · Gregle</p><a href="https://links.gregle.uk/">More useful things ↗</a></footer>

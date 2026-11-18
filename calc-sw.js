@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-calculator-selector1';
+const VERSION='20261118-calculator-history1';
 const PREFIX='gregle-calculator-';
 const refresh=self.location.hostname==='calc.gregle.uk' ? new URL(self.location.href).searchParams.get('calc-refresh') : '';
 const CACHE=PREFIX+VERSION+(/^[a-z0-9-]{1,40}$/.test(refresh || '') ? '-refresh-'+refresh : '');
@@ -17,8 +17,8 @@ const ASSETS=[
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
   '/assets/site-menu.js?v=20261117-app-theme2',
-  '/assets/calc-scientific.css?v=20261118-calculator-selector1',
-  '/assets/calc-viewport.js?v=20261118-offline-refresh1',
+  '/assets/calc-scientific.css?v=20261118-calculator-history1',
+  '/assets/calc-viewport.js?v=20261118-calculator-history1',
   '/assets/calc-haptics.js?v=20261117-haptics1',
   '/assets/calc-picker.js?v=20261117-pointer1',
   '/assets/calc-scientific.js?v=20261118-theme-dropdown1',
@@ -26,11 +26,11 @@ const ASSETS=[
   '/assets/calc-formulas.js?v=20261118-offline-refresh1',
   '/assets/calc-units.js?v=20261118-unit-converter1',
   '/assets/calc-core.js?v=20261117-fractions1',
-  '/assets/calc.js?v=20261118-offline-refresh1',
+  '/assets/calc.js?v=20261118-calculator-history1',
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
   '/assets/calc-emulator.js?v=20261117-visible1',
-  '/assets/calc-offline.js?v=20261118-calculator-selector1',
+  '/assets/calc-offline.js?v=20261118-calculator-history1',
   '/assets/calc-ti89.js?v=20261102-ti89-6',
   '/assets/calc-tinspire.js?v=20261115-nspire2',
   '/assets/tinspire/worker.mjs',

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), {evaluate, format, toFraction} = window.GregleCalc;
-  const input = $('expression'), output = $('result'), message = $('calcMessage');
+  const input = $('expression'), output = $('result'), message = $('calcMessage'), transcript = $('homeTranscript');
   const popout = new URLSearchParams(window.location.search).get('popout') === '1';
   let ans = 0, completed = false, history = [], angle = 'deg', restored = null, fractionMode = false;
   let homeHistory = [], historySelection = null, entryRecall = -1, lastEntry = '', errorState = null, errorChoice = 0, keyMode = 'normal';
@@ -21,7 +21,12 @@
     const saved = JSON.parse(localStorage.getItem('gregle-calc-history') || '[]');
     if (Array.isArray(saved)) history = saved.filter(item => item && typeof item.expression === 'string' && item.expression.length <= 300 && Number.isFinite(item.value)).slice(0,50);
   } catch (_) {}
-  if (!restored && history.length) ans = history[0].value;
+  if (!restored && history.length) {
+    ans = history[0].value;
+    fractionMode = history[0].fractionMode === true;
+  }
+  const savedAnswer = !restored?.homeCleared && history.length > 0;
+  let hasAnswer = restored?.hasAnswer ?? Boolean(restored?.completed || savedAnswer);
   if (!lastEntry) lastEntry = history[0]?.expression || '';
   homeHistory = restored?.homeCleared ? [] : history.slice().reverse();
   const touchInput = window.matchMedia?.('(pointer: coarse)').matches === true;
@@ -37,7 +42,12 @@
     return false;
   }
   const options = () => ({angle,ans});
-  const focus = () => {if (!touchInput) input.focus({preventScroll:true}); updateCursor();};
+  const scrollToEntry = () => {transcript.scrollTop = transcript.scrollHeight;};
+  function focus() {
+    if (historySelection === null) scrollToEntry();
+    if (!touchInput) input.focus({preventScroll:true});
+    updateCursor();
+  }
   function updateCursor() {
     const cursor = $('homeCursor'), position = input.selectionStart ?? input.value.length;
     cursor.style.setProperty('--cursor-column',String(position));
@@ -50,50 +60,81 @@
     cursor.style.setProperty('--cursor-scroll',`${input.scrollLeft || 0}px`);
   }
   function setKeyMode(mode) {keyMode = mode; $('homeCursor').textContent = mode === 'alpha' ? 'A' : mode === 'second' ? '↑' : '';}
-  function fractionAnswer() {
-    const scientificExpression = /[a-zπ√]/i.test(lastEntry.replace(/ans/gi,'').replace(/(?:[0-9]|\.)[eE][+-]?[0-9]+/g,''));
-    return toFraction(ans,{maxDenominator:scientificExpression ? 10000 : 1000000000});
+  function fractionAnswer(value = ans, expression = lastEntry) {
+    const scientificExpression = /[a-zπ√]/i.test(expression.replace(/ans/gi,'').replace(/(?:[0-9]|\.)[eE][+-]?[0-9]+/g,''));
+    return toFraction(value,{maxDenominator:scientificExpression ? 10000 : 1000000000});
   }
+  function displayFraction(value,expression,asFraction) {
+    const fraction = asFraction ? fractionAnswer(value,expression) : null;
+    return fraction && fraction.denominator !== 1 ? fraction : null;
+  }
+  const fractionText = fraction => `${fraction.numerator}/${fraction.denominator}`;
   function resultText() {
-    const value = fractionMode && fractionAnswer();
-    return value && value.denominator !== 1 ? `${value.numerator}/${value.denominator}` : format(ans);
+    const latest = history[0];
+    const asFraction = latest?.value === ans && latest?.expression === lastEntry ? latest.fractionMode === true : fractionMode;
+    const fraction = displayFraction(ans,lastEntry,asFraction);
+    return fraction ? fractionText(fraction) : format(ans);
   }
-  function renderAnswer() {
-    const value = fractionMode && fractionAnswer();
-    if (!value || value.denominator === 1) {output.textContent = format(ans); return;}
-    const fraction = document.createElement('span'); fraction.className = 'fraction-value';
+  function renderFraction(fraction) {
+    const span = document.createElement('span'); span.className = 'fraction-value';
     const top = document.createElement('span'), slash = document.createElement('span'), bottom = document.createElement('span');
     top.className = 'fraction-numerator'; bottom.className = 'fraction-denominator'; slash.className = 'sr-only';
-    top.textContent = String(value.numerator); slash.textContent = '/'; bottom.textContent = String(value.denominator);
-    fraction.append(top,slash,bottom); output.replaceChildren(fraction);
+    top.textContent = String(fraction.numerator); slash.textContent = '/'; bottom.textContent = String(fraction.denominator);
+    span.append(top,slash,bottom);
+    return span;
+  }
+  function saveHistory() {
+    try {localStorage.setItem('gregle-calc-history',JSON.stringify(history));} catch (_) {}
   }
   function toggleFraction() {
-    if (errorState) return;
-    if (!fractionMode && !fractionAnswer()) {$('homeStatus').textContent = 'This answer cannot be shown as a simple fraction.'; return;}
-    fractionMode = !fractionMode; update();
+    if (errorState || !hasAnswer) return;
+    const latest = history[0], current = latest?.value === ans && latest?.expression === lastEntry;
+    const next = !(current ? latest.fractionMode === true : fractionMode);
+    if (next && !fractionAnswer()) {$('homeStatus').textContent = 'This answer cannot be shown as a simple fraction.'; return;}
+    fractionMode = next;
+    if (current) {
+      latest.fractionMode = next;
+      saveHistory();
+      renderHistory();
+    }
+    update();
   }
-  function update() {input.removeAttribute('aria-invalid'); renderAnswer(); output.dataset.valid = errorState ? 'false' : 'true'; updateCursor();}
+  function update() {
+    input.removeAttribute('aria-invalid');
+    output.textContent = hasAnswer ? resultText() : '';
+    output.dataset.valid = errorState ? 'false' : 'true';
+    updateCursor();
+  }
   function selectedHistory() {return historySelection === null ? null : {item:history[Math.floor(historySelection/2)],part:historySelection%2 ? 'expression' : 'answer'};}
   function renderHistory() {
-    const list = $('historyList'), selected = selectedHistory(); list.replaceChildren();
+    const list = $('historyList'), selected = selectedHistory(), scroll = transcript.scrollTop;
+    let activeButton;
+    list.replaceChildren();
     $('clearHistory').disabled = !history.length;
     for (const item of homeHistory) {
       const row = document.createElement('li');
       for (const part of ['expression','answer']) {
         const button = document.createElement('button'); button.type = 'button'; button.className = `home-history-${part}`;
-        button.textContent = part === 'expression' ? item.expression : format(item.value);
-        button.setAttribute('aria-label',`Recall ${part}: ${button.textContent}`);
+        const fraction = part === 'answer' ? displayFraction(item.value,item.expression,item.fractionMode) : null;
+        const text = part === 'expression' ? item.expression : fraction ? fractionText(fraction) : format(item.value);
+        if (fraction) button.append(renderFraction(fraction));
+        else button.textContent = text;
+        button.setAttribute('aria-label',`Recall ${part}: ${text}`);
         const active = selected?.item === item && selected.part === part; button.classList.toggle('is-selected',active); button.setAttribute('aria-pressed',String(active));
         button.addEventListener('click',() => recall(item,part)); row.append(button);
-        if (active) requestAnimationFrame(() => button.scrollIntoView?.({block:'nearest',inline:'nearest'}));
+        if (active) activeButton = button;
       }
       list.append(row);
     }
-    if (!selected) list.scrollTop = list.scrollHeight;
+    if (!activeButton) {scrollToEntry(); return;}
+    transcript.scrollTop = scroll;
+    const bounds = transcript.getBoundingClientRect(), row = activeButton.getBoundingClientRect();
+    if (row.top < bounds.top) transcript.scrollTop -= bounds.top-row.top;
+    else if (row.bottom > bounds.bottom) transcript.scrollTop += row.bottom-bounds.bottom;
   }
   function leaveHistory() {if (historySelection !== null) {historySelection = null; renderHistory();}}
   function recall(item,part) {
-    completed = false; leaveHistory(); insert(part === 'expression' ? item.expression : fractionMode ? String(item.value) : format(item.value),'',{literal:true});
+    completed = false; leaveHistory(); insert(part === 'expression' ? item.expression : (fractionMode || item.fractionMode) ? String(item.value) : format(item.value),'',{literal:true});
   }
   function recallEntry() {
     if (!history.length) return;
@@ -176,10 +217,10 @@
     const selected = selectedHistory(); if (selected) {recall(selected.item,selected.part); return;}
     const expression = input.value.trim() || lastEntry; if (!expression) return;
     try {
-      const value = evaluate(expression,options()), item = {expression,value,angle:/sin|cos|tan/.test(expression) ? angle : undefined};
+      const value = evaluate(expression,options()), item = {expression,value,fractionMode,angle:/sin|cos|tan/.test(expression) ? angle : undefined};
       history.unshift(item); history = history.slice(0,50); homeHistory.push(item); homeHistory = homeHistory.slice(-50);
-      try {localStorage.setItem('gregle-calc-history',JSON.stringify(history));} catch (_) {}
-      ans = value; lastEntry = expression; completed = true; entryRecall = -1; historySelection = null;
+      saveHistory();
+      ans = value; hasAnswer = true; lastEntry = expression; completed = true; entryRecall = -1; historySelection = null;
       input.value = ''; input.setSelectionRange(0,0); renderHistory(); update(); focus();
     } catch (error) {showError(error,expression);}
   }
@@ -189,12 +230,15 @@
       chooseError(errorChoice === 0 ? 1 : 0); [$('errorQuit'),$('errorGoto')][errorChoice].focus({preventScroll:true}); return;
     }
     if (direction === 'enter') {calculate(); return;}
-    if (navigateFraction(direction)) return;
+    if (historySelection === null && navigateFraction(direction)) return;
     if (direction === 'up' || direction === 'down') {
       if (!history.length || (direction === 'down' && historySelection === null)) return;
       const next = (historySelection ?? -1) + (direction === 'up' ? 1 : -1);
       historySelection = next < 0 ? null : Math.min(history.length*2-1,next); homeHistory = history.slice().reverse(); renderHistory();
-      const selected = selectedHistory(); $('homeStatus').textContent = selected ? `History ${selected.part}: ${selected.part === 'answer' ? format(selected.item.value) : selected.item.expression}. Press ENTER to copy.` : 'Entry line.';
+      const selected = selectedHistory();
+      const fraction = selected?.part === 'answer' && displayFraction(selected.item.value,selected.item.expression,selected.item.fractionMode);
+      const text = selected?.part === 'answer' ? (fraction ? fractionText(fraction) : format(selected.item.value)) : selected?.item.expression;
+      $('homeStatus').textContent = selected ? `History ${selected.part}: ${text}. Press ENTER to copy.` : 'Entry line.';
     } else {
       leaveHistory(); const position = Math.max(0,Math.min(input.value.length,(input.selectionStart ?? input.value.length)+(direction === 'left' ? -1 : 1)));
       input.setSelectionRange(position,position);
@@ -226,6 +270,7 @@
   });
   $('errorQuit').addEventListener('click',() => dismissError(false)); $('errorGoto').addEventListener('click',() => dismissError(true));
   $('copyResult').addEventListener('click',async () => {
+    if (!hasAnswer) return;
     try {await navigator.clipboard.writeText(resultText()); $('copyStatus').textContent = 'Copied';}
     catch (_) {$('copyStatus').textContent = 'Unavailable';}
   });
@@ -234,7 +279,7 @@
     try {localStorage.removeItem('gregle-calc-history');} catch (_) {} renderHistory();
   });
   function reset(clearSavedHistory = false) {
-    ans = 0; fractionMode = false; completed = false; lastEntry = ''; historySelection = null; entryRecall = -1;
+    ans = 0; hasAnswer = false; fractionMode = false; completed = false; lastEntry = ''; historySelection = null; entryRecall = -1;
     errorState = null; errorChoice = 0; input.value = ''; input.setSelectionRange(0,0);
     $('calcError').hidden = true; message.textContent = ''; $('homeStatus').textContent = ''; $('copyStatus').textContent = 'Copy';
     homeHistory = [];
@@ -244,7 +289,7 @@
     }
     renderHistory(); update(); focus();
   }
-  const getState = () => ({expression:input.value,ans,angle,completed,lastEntry,fractionMode,homeCleared:homeHistory.length === 0,screen:window.GregleCalculator?.getScreen() || 'calculate'});
+  const getState = () => ({expression:input.value,ans,angle,completed,lastEntry,fractionMode,hasAnswer,homeCleared:homeHistory.length === 0,screen:window.GregleCalculator?.getScreen() || 'calculate'});
   window.GregleScientific = {insert,insertFraction,toggleFraction,calculate,reset,navigate,setAngle,getState,prepareInput,handleReadonlyKey,recallEntry,setKeyMode,hasError:() => Boolean(errorState),initialScreen:restored?.screen,restoredAngle:restored?.angle};
   $('popoutCalculator').addEventListener('click',async () => {
     document.dispatchEvent(new Event('gregle-calc-save-graph'));

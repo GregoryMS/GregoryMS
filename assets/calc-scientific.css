@@ -14,12 +14,24 @@
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-screen-status {padding:0 6px;font-size:9px;line-height:17px;border-bottom:0}
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-stage {height:100%;min-height:0;border-radius:0 0 4px 4px}
 .scientific-only .trace-form {display:none}
-.scientific-only #scientificScreen {padding:8px 10px!important;justify-content:flex-end;font-size:18px}
-.scientific-only #historyList {flex:1;max-height:none;margin-bottom:4px}
-.scientific-only #historyList button {min-height:32px;line-height:1.4;padding:4px 2px}
+.scientific-only #scientificScreen {padding:0!important;justify-content:flex-start;overflow:hidden;font-size:18px}
+.scientific-only .home-transcript {
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  overflow-anchor:none;
+  scrollbar-width:thin;
+  padding:5px 9px;
+}
+.scientific-only #historyList {flex:none;max-height:none;margin:0;overflow:visible}
+.scientific-only #historyList li {padding:2px 0;border-bottom:1px solid var(--screen-line)}
+.scientific-only #historyList button {min-height:0;line-height:1.25;padding:3px 0}
+.scientific-only #historyList .home-history-answer {font-size:1.15em}
+.scientific-only .scientific-form {padding-top:3px}
 .scientific-only #expression {height:32px;line-height:32px;caret-color:var(--ink)}
 .scientific-only #homeCursor {display:none}
-.scientific-only #result {position:static;width:auto;height:auto;clip:auto;clip-path:none;overflow:visible;white-space:normal;text-align:right;font-size:28px;line-height:1.3;overflow-wrap:anywhere;flex-shrink:0}
 .fraction-value {display:inline-flex;vertical-align:middle;flex-direction:column;text-align:center;line-height:1.15;font-size:.86em}
 .fraction-numerator {padding:0 .18em .08em;border-bottom:1.5px solid currentColor}
 .fraction-denominator {padding:.08em .18em 0}
@@ -77,10 +89,9 @@
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-fit {height:100%;min-height:0}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {height:100%;min-height:0;grid-template-rows:40px minmax(100px,3fr) minmax(0,7fr);gap:6px;padding:8px;border-radius:18px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calculator-engine-select {min-height:40px;height:40px;padding-top:4px;padding-bottom:4px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #scientificScreen {padding:4px 8px!important;font-size:16px}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #scientificScreen {font-size:16px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .home-entry {min-height:24px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #expression {height:24px;line-height:24px}
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #result {font-size:26px;line-height:1.15}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {grid-template-rows:72px minmax(0,3fr) minmax(0,5fr);gap:6px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-navigation {grid-template-columns:minmax(0,1fr) 94px minmax(0,1fr);gap:8px}
   body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-mode-keys,body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-utility-keys {gap:4px}
@@ -123,7 +134,7 @@
     overflow:hidden;
     overscroll-behavior:none;
   }
-  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) :is(#historyList,.home-error,.graph-screen-panel) {overscroll-behavior:contain}
+  body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) :is(#homeTranscript,.home-error,.graph-screen-panel) {overscroll-behavior:contain}
 }
 
 .scientific-only #expression[readonly] {caret-color:transparent}

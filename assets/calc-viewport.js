@@ -30,7 +30,7 @@
     touchX = clientX;
     touchY = clientY;
     if (Math.abs(deltaX)>Math.abs(delta) && event.target.closest('.formula-equations li')) return;
-    const scroller = event.target.closest('#historyList,.home-error,.gregle-menu-panel,.scientific-menu');
+    const scroller = event.target.closest('#homeTranscript,.home-error,.gregle-menu-panel,.scientific-menu');
     const scrollable = scroller && scroller.scrollHeight > scroller.clientHeight+1;
     const withinBounds = scrollable && (delta < 0 ? scroller.scrollTop+scroller.clientHeight < scroller.scrollHeight-1 : scroller.scrollTop > 0);
     if (!withinBounds && event.cancelable) event.preventDefault();

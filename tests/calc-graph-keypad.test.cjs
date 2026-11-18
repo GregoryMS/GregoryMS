@@ -41,6 +41,15 @@ function setup(initialState, calculation = false, touch = false) {
       this.selectionStart = this.selectionEnd = start + text.length;
     }
     setSelectionRange(start, end) {this.selectionStart = start; this.selectionEnd = end;}
+    getBoundingClientRect() {
+      if (this.id === 'homeTranscript') return {top:0,bottom:112};
+      if (this.className?.startsWith('home-history-')) {
+        const list = this.parent.parent;
+        const top = list.children.indexOf(this.parent)*56 + (this.className.endsWith('answer') ? 28 : 0) - (elements.get('homeTranscript').scrollTop || 0);
+        return {top,bottom:top+28};
+      }
+      return {top:0,bottom:0};
+    }
     getContext() {return {};}
   }
   const document = new Element();
@@ -279,7 +288,7 @@ test('the exact-x inspector retains a coordinate entered with the touch keypad',
 test('the home screen waits for ENTER, writes left/right rows, and opens a fresh entry', () => {
   const app = setup(undefined,true,true);
   app.key('2'); app.key('+'); app.key('3');
-  assert.equal(app.get('result').textContent,'0'); assert.equal(app.get('historyList').children.length,0);
+  assert.equal(app.get('result').textContent,''); assert.equal(app.get('historyList').children.length,0);
   app.scientific.calculate();
   assert.equal(app.get('expression').value,''); assert.equal(app.get('result').textContent,'5');
   const row = app.get('historyList').children[0];
@@ -356,29 +365,29 @@ test('physical cursor keys move through read-only touch entries', () => {
 });
 
 
-test('scientific Clear resets the answer, current input, errors and saved history to zero', () => {
+test('scientific Clear leaves a blank display, resets the internal answer and clears saved history', () => {
   const app = setup(undefined,true,true);
   app.scientific.setAngle('rad');
   app.type(app.get('expression'),'6*7'); app.scientific.calculate();
   app.type(app.get('expression'),'1/0'); app.scientific.calculate();
   assert.equal(app.scientific.hasError(),true);
   app.scientific.reset(true);
-  assert.equal(app.get('result').textContent,'0'); assert.equal(app.get('expression').value,'');
+  assert.equal(app.get('result').textContent,''); assert.equal(app.get('expression').value,'');
   assert.equal(app.scientific.getState().ans,0); assert.equal(app.scientific.getState().angle,'rad');
   assert.equal(app.scientific.hasError(),false); assert.equal(app.get('calcError').hidden,true);
   assert.equal(app.get('historyList').children.length,0);
-  app.scientific.calculate(); assert.equal(app.get('result').textContent,'0');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'');
   app.scientific.recallEntry(); assert.equal(app.get('expression').value,'');
   app.type(app.get('expression'),'123'); app.scientific.reset(true);
-  assert.equal(app.get('expression').value,''); assert.equal(app.get('result').textContent,'0');
+  assert.equal(app.get('expression').value,''); assert.equal(app.get('result').textContent,'');
 });
 
 test('scientific AC resets the display and repeat calculation while preserving entry recall', () => {
   const app = setup(undefined,true,true);
   app.type(app.get('expression'),'8*9'); app.scientific.calculate();
   app.scientific.reset();
-  assert.equal(app.get('result').textContent,'0'); assert.equal(app.get('expression').value,'');
-  app.scientific.calculate(); assert.equal(app.get('result').textContent,'0');
+  assert.equal(app.get('result').textContent,''); assert.equal(app.get('expression').value,'');
+  app.scientific.calculate(); assert.equal(app.get('result').textContent,'');
   app.scientific.recallEntry(); assert.equal(app.get('expression').value,'8*9');
 });
 
@@ -389,10 +398,10 @@ test('fraction entry supports numerator and denominator navigation, arithmetic a
   app.key('+'); app.scientific.insertFraction(); app.key('1'); app.scientific.navigate('down'); app.key('3');
   assert.equal(app.get('expression').value,'(1)/(2)+(1)/(3)');
   app.scientific.calculate(); assert.equal(app.get('result').textContent,'5/6');
-  assert.equal(app.get('result').children[0].className,'fraction-value');
+  assert.equal(app.get('historyList').children[0].children[1].children[0].className,'fraction-value');
   app.scientific.toggleFraction(); assert.equal(app.get('result').textContent,'0.83333333333333');
   app.scientific.toggleFraction(); assert.equal(app.get('result').textContent,'5/6');
-  app.scientific.reset(true); assert.equal(app.get('result').textContent,'0');
+  app.scientific.reset(true); assert.equal(app.get('result').textContent,'');
 });
 
 test('fraction key wraps an entered numerator and supports negative and nested fractions', () => {
@@ -415,7 +424,7 @@ test('non-rational scientific answers stay decimal and zero denominators keep no
   assert.equal(app.scientific.getState().fractionMode,false); assert.equal(app.get('result').textContent,'1.4142135623731');
   app.scientific.reset(); app.scientific.insertFraction(); app.key('1'); app.scientific.navigate('down'); app.key('0');
   app.scientific.calculate(); assert.equal(app.scientific.hasError(),true);
-  app.scientific.reset(true); assert.equal(app.get('result').textContent,'0');
+  app.scientific.reset(true); assert.equal(app.get('result').textContent,'');
 });
 
 
@@ -425,4 +434,32 @@ test('recalling a fractional answer preserves full precision for subsequent frac
   assert.equal(app.get('result').textContent,'5/6');
   app.scientific.navigate('up'); app.scientific.navigate('enter'); app.key('+'); app.key('0'); app.scientific.calculate();
   assert.equal(app.get('result').textContent,'5/6');
+});
+
+test('the display shows zero only for an actual zero result', () => {
+  const app = setup(undefined,true,true);
+  assert.equal(app.get('result').textContent,'');
+  app.type(app.get('expression'),'6-6');
+  assert.equal(app.get('result').textContent,'');
+  app.scientific.calculate();
+  assert.equal(app.get('result').textContent,'0');
+  assert.equal(app.get('historyList').children[0].children[1].textContent,'0');
+  app.scientific.reset();
+  assert.equal(app.get('result').textContent,'');
+});
+
+test('the D-pad reveals older rows by scrolling only the transcript', () => {
+  const app = setup(undefined,true,true);
+  for (const expression of ['6*6','5*3','6*9','7*7','8*8']) {
+    app.type(app.get('expression'),expression); app.scientific.calculate();
+  }
+  const transcript = app.get('homeTranscript');
+  transcript.scrollTop = 160;
+  for (let i = 0; i < 10; i++) app.scientific.navigate('up');
+  assert.equal(transcript.scrollTop,0);
+  assert.match(app.get('homeStatus').textContent,/6\*6/);
+  assert.equal(app.get('expression').value,'');
+  assert.deepEqual(app.get('historyList').children.slice(0,3).map(row => row.children.map(cell => cell.textContent)),[
+    ['6*6','36'],['5*3','15'],['6*9','54']
+  ]);
 });
