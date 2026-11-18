@@ -4,6 +4,12 @@
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) #graphCalculator {width:100%;padding:16px 14px;border-radius:24px;display:grid;grid-template-rows:44px 210px auto;gap:12px}
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) :is(.graph-menu-keys,.graph-navigation,#graphKeyboard,.calculator-resize-handle,.calculator-resize-note,.trace-form,#graphScreenFooter,#graphReadout) {display:none!important}
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-brand {margin:0 3px;min-width:0}
+.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active) .calculator-engine-select {
+  padding-right:22px;
+  text-align:right;
+  text-align-last:right;
+}
+.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active) .calculator-engine-select option {text-align:left;text-align-last:left}
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-display {display:grid;grid-template-rows:17px minmax(0,1fr);padding:5px;min-height:0}
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-screen-status {padding:0 6px;font-size:9px;line-height:17px;border-bottom:0}
 .scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active) .graph-stage {height:100%;min-height:0;border-radius:0 0 4px 4px}
