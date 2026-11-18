@@ -121,3 +121,40 @@
 [data-offline-retry].pill:hover {background:var(--soft);border-color:var(--calc-accent)}
 [data-offline-retry].pill:focus-visible {outline:2px solid var(--calc-accent);outline-offset:3px}
 [data-offline-retry][hidden] {display:none!important}
+
+/* iOS installed app: fill the dynamic viewport rather than the short launch viewport.
+   The fixed body and minmax grid keep the keypad anchored without page scrolling. */
+@media (max-width:700px), (pointer:coarse) and (max-height:600px) {
+  html.calculator-standalone:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {
+    height:100%;
+    overflow:hidden;
+  }
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100dvh!important;
+    min-height:0!important;
+    margin:0;
+    overflow:hidden;
+    grid-template-rows:auto minmax(0,1fr);
+  }
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .calc-page {
+    min-height:0!important;
+    overflow:hidden;
+  }
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {
+    min-height:0;
+    grid-template-rows:40px minmax(100px,3fr) minmax(0,7fr);
+  }
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {
+    min-height:0;
+    grid-template-rows:72px minmax(0,3fr) minmax(0,5fr);
+  }
+}
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse) {
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .topbar {display:none}
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) {grid-template-rows:minmax(0,1fr)}
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) #graphCalculator {grid-template-rows:36px minmax(0,1fr)}
+  html.calculator-standalone body:has(.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)) .scientific-controls {grid-template-rows:52px minmax(0,3fr) minmax(0,5fr)}
+}
