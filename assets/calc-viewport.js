@@ -10,10 +10,7 @@
   function availableHeight() {
     const viewport = window.visualViewport;
     const visualBottom = viewport?.height > 0 && (viewport.scale || 1) <= 1.01 ? viewport.height+Math.max(0,viewport.offsetTop || 0) : 0;
-    const screenHeight = screen.height > 0 ? screen.height : 0;
-    // iOS installed web apps can report a shortened CSS viewport despite having
-    // the full physical display available. screen.height is in CSS pixels.
-    return Math.max(...[screenHeight,window.innerHeight,root.clientHeight,visualBottom].filter(value => Number.isFinite(value) && value > 0));
+    return Math.min(...[document.body.getBoundingClientRect().height,window.innerHeight,root.clientHeight,visualBottom].filter(value => Number.isFinite(value) && value > 0));
   }
   function clearSize() {lockedHeight = 0; properties.forEach(name => root.style.removeProperty(name));}
   function settle(now) {
