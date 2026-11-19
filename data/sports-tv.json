@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-19T09:30:19.806390+00:00",
+      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
       "listings": [
         {
           "home": "Austria Wien (W)",
@@ -76,6 +76,8 @@
           "channels": [
             "NOW",
             "Sky Mix",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
             "Sky Sports Mix",
             "Sky Sports+ app"
           ]
@@ -95,7 +97,12 @@
           "away": "Brighton & Hove Albion",
           "start": "2026-11-22T14:00:00+00:00",
           "channels": [
-            "Sky Sports UHD 1"
+            "NOW",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports Premier League",
+            "Sky Sports UHD 1",
+            "Sky Sports+ app"
           ]
         },
         {
@@ -157,7 +164,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-19T09:30:19.806390+00:00",
+      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
       "listings": [
         {
           "home": "Austria Wien (W)",
@@ -292,7 +299,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-19T09:30:19.806390+00:00",
+      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
       "listings": [
         {
           "home": "Austria Wien (W)",
@@ -427,7 +434,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-19T09:30:19.806390+00:00",
+      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
       "listings": [
         {
           "home": "Austria Wien (W)",
@@ -563,7 +570,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-19T09:30:19.806390+00:00",
+      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
       "listings": [
         {
           "home": "Austria Wien (W)",
