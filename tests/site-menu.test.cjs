@@ -15,7 +15,12 @@ test('every content page has the same valid app destinations and working icons',
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
     const menu = source.match(/<!-- Gregle app menu -->([\s\S]*?)<!-- \/Gregle app menu -->/)[1];
     assert.equal((source.match(/id="themeToggle"/g) || []).length, 1, file);
-    assert.match(menu, /<div class="gregle-menu-heading"><h2>Gregle apps<\/h2><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
+    if (file === 'weather.html') {
+      assert(!menu.includes('id="themeToggle"'), file);
+      assert.match(source, /class="weather-settings-head-actions"><div class="gregle-installed-theme-control"><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
+    } else {
+  assert.match(menu, /<div class="gregle-menu-heading"><h2>Gregle apps<\/h2><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
+    }
     assert(!source.includes('class="pill theme-toggle"'), file);
     assert(!source.includes('id="brandToggle"'), file);
     const apps = [...menu.matchAll(/<a class="gregle-app" href="([^"]+)"[^>]*><img src="([^"]+)"/g)];
@@ -192,3 +197,4 @@ test('installed apps expose the original working theme switch and restore it in 
   assert.equal(themeSwitch.parentElement,header.children[0]);assert.equal(themeSwitch.attrs['aria-checked'],'false');
   assert.equal(launcher(null,false,{ios:true}).header.children[0].className,'gregle-installed-theme-control');
 });
+
