@@ -1,1 +1,140 @@
-(()=>{'use strict';const key='gregle-weather-notification-preferences-v1';const ids=['weatherNotifyEnabled','weatherNotifyCity','weatherNotifySunrise','weatherSunriseLead','weatherNotifySunset','weatherSunsetLead','weatherNotifyRain','weatherNotifyWarnings'];function init(){const panel=document.getElementById('weatherSettingsPanel'),trigger=document.getElementById('weatherSettingsTrigger');if(!panel||!trigger)return;const close=()=>{panel.hidden=true;trigger.setAttribute('aria-expanded','false')};trigger.addEventListener('click',()=>{panel.hidden=!panel.hidden;trigger.setAttribute('aria-expanded',String(!panel.hidden))});document.getElementById('weatherSettingsClose').addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});document.addEventListener('pointerdown',e=>{if(!panel.hidden&&!panel.contains(e.target)&&!trigger.contains(e.target))close()});let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch{}const defaults={weatherNotifyEnabled:false,weatherNotifyCity:'selected',weatherNotifySunrise:true,weatherSunriseLead:'15',weatherNotifySunset:true,weatherSunsetLead:'15',weatherNotifyRain:true,weatherNotifyWarnings:true};for(const id of ids){const el=document.getElementById(id);if(!el)continue;const value=saved[id]??defaults[id];if(el.type==='checkbox')el.checked=!!value;else el.value=String(value);el.addEventListener('change',()=>{const next={};for(const k of ids){const node=document.getElementById(k);next[k]=node.type==='checkbox'?node.checked:node.value}try{localStorage.setItem(key,JSON.stringify(next))}catch{}})} }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()})();
+(() => {
+  'use strict';
+  const API = 'https://gregle-weather-notifications.square-rain-5ded.workers.dev';
+  const key = 'gregle-weather-notification-preferences-v1';
+  const defaults = {weatherNotifyEnabled:false, weatherNotifyCity:'selected', weatherNotifySunrise:true, weatherSunriseLead:'15', weatherNotifySunset:true, weatherSunsetLead:'15', weatherNotifyRain:true, weatherNotifyWarnings:true};
+  const cities = {
+    victoria:{name:'Victoria', latitude:48.421, longitude:-123.393, country:'CA', timezone:'America/Vancouver', id:'bc-75'},
+    vancouver:{name:'Vancouver', latitude:49.24, longitude:-123.12, country:'CA', timezone:'America/Vancouver', id:'bc-74'},
+    oslo:{name:'Oslo', latitude:59.9139, longitude:10.7522, country:'NO', timezone:'Europe/Oslo'},
+    london:{name:'London', latitude:51.5085, longitude:-0.1257, country:'GB', timezone:'Europe/London'},
+  };
+  const bytes = value => Uint8Array.from(atob(value.replace(/-/g,'+').replace(/_/g,'/') + '='.repeat((4-value.length%4)%4)), c => c.charCodeAt(0));
+  function init() {
+    const $ = id => document.getElementById(id), panel = $('weatherSettingsPanel'), trigger = $('weatherSettingsTrigger');
+    if (!panel || !trigger) return;
+    let saved;
+    try { saved = JSON.parse(localStorage.getItem(key) || '{}'); } catch (_) {}
+    const prefs = {...defaults, ...(saved && typeof saved === 'object' ? saved : {})};
+    let registration, publicKey, subscription, busy = false, connected = false;
+    let selected = globalThis.GregleWeatherSelectedLocation;
+    let queue = Promise.resolve();
+    const status = message => { $('weatherPushStatus').textContent = message; };
+    const persist = () => { try { localStorage.setItem(key, JSON.stringify(prefs)); } catch (_) {} };
+    const monitored = () => cities[prefs.weatherNotifyCity] || selected;
+    function describeLocation() {
+      const location = monitored();
+      $('weatherNotifyLocationStatus').textContent = location
+        ? `Notification location: ${location.name}.` + (!['CA','GB'].includes(location.country) ? ' Official warning alerts are not available here.' : '')
+        : 'Choose a location in Weather before enabling notifications.';
+    }
+    function position() { panel.style.setProperty('--weather-settings-top', Math.max(8, trigger.getBoundingClientRect().bottom + 10) + 'px'); }
+    function close(focus = false) { panel.hidden = true; trigger.setAttribute('aria-expanded','false'); if (focus) trigger.focus(); }
+    trigger.addEventListener('click', () => {
+      if (!panel.hidden) return close(true);
+      const menu = $('gregleAppMenu'); if (menu) menu.open = false;
+      position(); panel.hidden = false; trigger.setAttribute('aria-expanded','true'); $('weatherSettingsClose').focus();
+    });
+    $('weatherSettingsClose').addEventListener('click', () => close(true));
+    $('gregleAppMenu')?.addEventListener('toggle', event => { if (event.target.open) close(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); close(true); } });
+    document.addEventListener('pointerdown', event => { if (!panel.hidden && !panel.contains(event.target) && !trigger.contains(event.target)) close(); });
+    window.addEventListener('resize', position);
+    window.addEventListener('scroll', () => { if (!panel.hidden) position(); }, {passive:true});
+    for (const id of Object.keys(defaults)) {
+      const el = $(id);
+      if (el.type === 'checkbox') el.checked = Boolean(prefs[id]); else { el.value = String(prefs[id]); if (!el.value) el.value = defaults[id]; }
+      prefs[id] = el.type === 'checkbox' ? el.checked : el.value;
+      el.addEventListener('change', () => {
+        prefs[id] = el.type === 'checkbox' ? el.checked : el.value;
+        persist(); describeLocation();
+        // Request permission directly in this user gesture, before any network awaits (iOS).
+        let permission;
+        if (id === 'weatherNotifyEnabled' && prefs[id]) {
+          const reason = unsupported();
+          if (reason) { prefs[id] = el.checked = false; persist(); return status(reason); }
+          if (!registration || !publicKey) { prefs[id] = el.checked = false; persist(); return status('Notification service is connecting. Try Enable notifications again in a moment.'); }
+          permission = Notification.requestPermission();
+        }
+        enqueue(() => sync(permission));
+      });
+    }
+    function unsupported() {
+      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (ios && !navigator.standalone && !window.matchMedia('(display-mode: standalone)').matches) return 'On iPhone or iPad, add Weather to your Home Screen, open it from there, then enable notifications.';
+      if (!window.isSecureContext || !('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return 'This browser does not support Web Push. Open Weather in a supported browser or installed app.';
+      if (Notification.permission === 'denied') return 'Notifications are blocked. Allow them in your browser or device settings, then try again.';
+      return '';
+    }
+    async function request(path, data) {
+      const response = await fetch(API + path, {method:data ? 'POST' : 'GET', headers:data ? {'Content-Type':'application/json'} : {}, body:data ? JSON.stringify(data) : undefined, cache:'no-store', signal:AbortSignal.timeout(15000)});
+      let result; try { result = await response.json(); } catch (_) { throw Error('Notification service is temporarily unavailable.'); }
+      if (!response.ok) throw Error(result.error || 'Could not connect to the notification service.');
+      return result;
+    }
+    function enqueue(task) {
+      queue = queue.catch(() => {}).then(task).catch(error => { connected = false; status(error.message || 'Could not connect. Try again.'); $('weatherPushRetry').hidden = false; }).finally(() => { busy = false; $('weatherPushTest').disabled = !connected || !prefs.weatherNotifyEnabled; });
+      return queue;
+    }
+    async function sync(permission) {
+      busy = true; connected = false; $('weatherPushTest').disabled = true;
+      if (permission && await permission !== 'granted') {
+        prefs.weatherNotifyEnabled = $('weatherNotifyEnabled').checked = false; persist();
+        status('Notification permission was not granted. Enable notifications to try again.'); return;
+      }
+      if (!registration) return;
+      subscription = await registration.pushManager.getSubscription();
+      if (!prefs.weatherNotifyEnabled) {
+        if (subscription) {
+          // Remove server data first. Retain the subscription if offline so Retry can remove it.
+          await request('/unsubscribe', {subscription:subscription.toJSON()});
+          await subscription.unsubscribe(); subscription = null;
+        }
+        $('weatherPushRetry').hidden = true; status('Notifications are off. Preferences are saved on this device.'); return;
+      }
+      if (Notification.permission !== 'granted') {
+        prefs.weatherNotifyEnabled = $('weatherNotifyEnabled').checked = false; persist();
+        status('Enable notifications to grant permission on this device.'); return;
+      }
+      const location = monitored();
+      if (!location) throw Error('Choose a location in Weather, then retry the connection.');
+      status('Saving notification preferences…');
+      // A changed signing key requires replacing a subscription created by an older release.
+      const oldKey = subscription?.options?.applicationServerKey;
+      if (oldKey && Array.from(new Uint8Array(oldKey)).join() !== Array.from(bytes(publicKey)).join()) {
+        await subscription.unsubscribe(); subscription = null;
+      }
+      subscription ||= await registration.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:bytes(publicKey)});
+      await request('/subscribe', {subscription:subscription.toJSON(), preferences:{...prefs}, location});
+      connected = true; $('weatherPushRetry').hidden = true;
+      status(`Notifications are on for ${location.name}, including when Weather is closed.`);
+    }
+    async function prepare() {
+      const reason = unsupported();
+      if (reason) { status(reason); return; }
+      status('Connecting notification service…');
+      await navigator.serviceWorker.register('/gregle-sw.js', {scope:'/', updateViaCache:'none'});
+      let timeout;
+      try { registration = await Promise.race([navigator.serviceWorker.ready, new Promise((_, reject) => { timeout = setTimeout(() => reject(Error('Notification setup timed out. Retry connection.')), 15000); })]); }
+      finally { clearTimeout(timeout); }
+      const config = await request('/public-key');
+      if (!config.ready || !config.publicKey) throw Error('Notification service is temporarily unavailable. Retry connection.');
+      publicKey = config.publicKey;
+      await sync();
+    }
+    $('weatherPushRetry').addEventListener('click', () => { if (!busy) enqueue(() => publicKey && registration ? sync() : prepare()); });
+    $('weatherPushTest').addEventListener('click', () => enqueue(async () => {
+      if (!subscription || !connected) return;
+      $('weatherPushTest').disabled = true;
+      await request('/test', {subscription:subscription.toJSON()});
+      status('Test notification sent. Check this device’s notifications.');
+    }));
+    window.addEventListener('gregle-weather-location', event => {
+      selected = event.detail; describeLocation();
+      if (prefs.weatherNotifyEnabled && prefs.weatherNotifyCity === 'selected') enqueue(() => sync());
+    });
+    window.addEventListener('online', () => enqueue(() => publicKey && registration ? sync() : prepare()));
+    describeLocation(); enqueue(prepare);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
+})();

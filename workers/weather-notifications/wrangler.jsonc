@@ -1,0 +1,30 @@
+{
+  "name": "gregle-weather-notifications",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gregle-weather-notifications",
+      "database_id": "c3156d1b-c2f5-4bc7-9090-45f92916b64b"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "*/5 * * * *"
+    ]
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1,
+    "redact_query_string": true,
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    }
+  },
+  "vars": {
+    "VAPID_PUBLIC": "BEIlShTqyxOcVVeHn4bBWuRzrqh7ZuQw-KBFXh7R9T7iORGVaGr3Gg7ymp8Rm58Efe3kSIzUoANMoDiSuMTDAt4"
+  }
+}
