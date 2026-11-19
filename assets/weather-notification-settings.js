@@ -21,7 +21,10 @@
     let queue = Promise.resolve();
     const status = message => { $('weatherPushStatus').textContent = message; };
     const persist = () => { try { localStorage.setItem(key, JSON.stringify(prefs)); } catch (_) {} };
-    const monitored = () => cities[prefs.weatherNotifyCity] || selected;
+    const monitored = () => {
+      const loc = cities[prefs.weatherNotifyCity] || selected;
+      return loc ? {...loc, timezone:loc.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone} : null;
+    };
     function describeLocation() {
       const location = monitored();
       $('weatherNotifyLocationStatus').textContent = location
