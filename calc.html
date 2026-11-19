@@ -27,21 +27,23 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/calc-app/favicon-32.png">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
 <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
-<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-evo-themes1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-evo1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
 <script src="assets/theme.js?v=20261113-shared-device1" defer></script><script src="assets/site-menu.js?v=20261117-app-theme2" defer></script>
 <script src="assets/calc-core.js?v=20261117-fractions1" defer></script><script src="assets/calc.js?v=20261118-calculator-history1" defer></script>
 <script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261031-clean-labels" defer></script>
-<script src="assets/calc-emulator.js?v=20261117-visible1" defer></script>
+<script src="assets/calc-emulator.js?v=20261118-evo1" defer></script>
 <script src="assets/calc-ti89.js?v=20261102-ti89-6" defer></script>
 <script src="assets/calc-tinspire.js?v=20261115-nspire2" defer></script>
-<script src="assets/calc-picker.js?v=20261117-pointer1" defer></script>
+<script src="assets/calc-evo.js?v=20261118-evo1" defer></script>
+<script src="assets/calc-picker.js?v=20261118-evo1" defer></script>
 <script src="assets/calc-scientific.js?v=20261118-theme-dropdown1" defer></script>
 <script src="assets/calc-formula-math.js?v=20261118-offline-refresh1" defer></script>
 <script src="assets/calc-formulas.js?v=20261118-offline-refresh1" defer></script>
 <script src="assets/calc-units.js?v=20261118-unit-converter1" defer></script>
 <script src="assets/calc-haptics.js?v=20261117-haptics1" defer></script>
-<script src="assets/calc-viewport.js?v=20261118-calculator-history1" defer></script>
-<script src="assets/calc-offline.js?v=20261118-evo-themes1" defer></script>
+<script src="assets/calc-viewport.js?v=20261118-evo1" defer></script>
+<script src="assets/calc-offline.js?v=20261118-evo1" defer></script>
+<link rel="stylesheet" href="assets/calc-evo.css?v=20261118-evo1">
 <link rel="canonical" href="https://calc.gregle.uk/">
 </head><body>
 
@@ -78,7 +80,7 @@
 <section id="graphPanel" aria-label="Scientific calculator">
 <div class="calculator-resizer" id="calculatorSizer"><div class="calculator-fit" id="calculatorFit">
 <div class="graph-layout" id="graphCalculator" tabindex="-1">
-<div class="graph-brand"><span>GREGLE<span class="graph-brand-dot">.</span></span><div class="calculator-engine-controls"><label class="sr-only" for="calculatorEngine">Calculator model</label><select id="calculatorEngine" class="calculator-engine-select" aria-label="Calculator model"><option value="scientific">Calculator</option><option value="ti84">TI-84 CE</option><option value="ti89">TI-89 T</option><option value="tinspire">TI-Nspire CAS</option></select><div hidden aria-hidden="true"><button type="button" class="calculator-engine-switch" id="emulatorOpen" role="switch" aria-checked="false" aria-label="TI-84 CE mode" title="Switch between scientific and TI-84 CE calculators"><span>TI-84 CE</span><span class="engine-switch-track" aria-hidden="true"><span class="engine-switch-thumb"></span></span></button><button type="button" class="calculator-engine-switch" id="ti89Open" role="switch" aria-checked="false" aria-label="TI-89 mode" title="Switch between scientific and TI-89 calculators"><span>TI-89</span><span class="engine-switch-track" aria-hidden="true"><span class="engine-switch-thumb"></span></span></button><button type="button" class="calculator-engine-switch" id="tinspireOpen" role="switch" aria-checked="false" aria-label="TI-Nspire CX CAS mode" title="Switch between scientific and TI-Nspire CX CAS calculators"><span>CX CAS</span><span class="engine-switch-track" aria-hidden="true"><span class="engine-switch-thumb"></span></span></button></div></div></div>
+<div class="graph-brand"><span>GREGLE<span class="graph-brand-dot">.</span></span><div class="calculator-engine-controls"><label class="sr-only" for="calculatorEngine">Calculator model</label><select id="calculatorEngine" class="calculator-engine-select" aria-label="Calculator model"><option value="scientific">Calculator</option><option value="ti84">TI-84 CE</option><option value="evo">TI-84 Evo</option><option value="ti89">TI-89 T</option><option value="tinspire">TI-Nspire CAS</option></select><div hidden aria-hidden="true"><button type="button" class="calculator-engine-switch" id="evoOpen" role="switch" aria-checked="false" aria-label="TI-84 Evo mode">TI-84 Evo</button><button type="button" class="calculator-engine-switch" id="emulatorOpen" role="switch" aria-checked="false" aria-label="TI-84 CE mode" title="Switch between scientific and TI-84 CE calculators"><span>TI-84 CE</span><span class="engine-switch-track" aria-hidden="true"><span class="engine-switch-thumb"></span></span></button><button type="button" class="calculator-engine-switch" id="ti89Open" role="switch" aria-checked="false" aria-label="TI-89 mode" title="Switch between scientific and TI-89 calculators"><span>TI-89</span><span class="engine-switch-track" aria-hidden="true"><span class="engine-switch-thumb"></span></span></button><button type="button" class="calculator-engine-switch" id="tinspireOpen" role="switch" aria-checked="false" aria-label="TI-Nspire CX CAS mode" title="Switch between scientific and TI-Nspire CX CAS calculators"><span>CX CAS</span><span class="engine-switch-track" aria-hidden="true"><span class="engine-switch-thumb"></span></span></button></div></div></div>
 <div class="graph-display">
 <div class="graph-screen-status"><span id="graphScreenTitle" role="status" aria-live="polite">HOME</span><span><span id="graphAngleStatus">DEG</span> · <span id="graphFunctionStatus">REAL</span></span></div>
 <div class="graph-stage" id="graphStage">

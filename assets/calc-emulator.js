@@ -7,7 +7,7 @@ function createGregleEmulator(options) {
   const width=is89 ? 160 : 320, height=is89 ? 100 : 240;
   const magic=isNspire ? 'GREGNSPB' : is89 ? 'GREGLE89' : 'GREGLE84', extension=isNspire ? 'greglensp' : is89 ? 'gregle89' : 'gregle84';
   const $ = id => document.getElementById(id.replace(/^emulator/,prefix));
-  const modeButtons=() => document.querySelectorAll('#emulatorOpen,#ti89Open,#tinspireOpen');
+  const modeButtons=() => document.querySelectorAll('#emulatorOpen,#ti89Open,#tinspireOpen,#evoOpen');
   const setBusy=value => {busy=value; modeButtons().forEach(button => {button.disabled=value;});};
   const CORE_VERSION = isNspire ? 'firebird-f75e590f-gregle-1' : is89 ? 'ti68k-babdb7de-gregle-1' : 'e5ffbb2c-gregle-1', STORAGE_KEY = 'session';
   const scriptURL = new URL(document.currentScript.src);

@@ -3,7 +3,7 @@
   'use strict';
   const root = document.documentElement, page = document.getElementById('calcPage');
   const mobile = window.matchMedia('(max-width:700px), (pointer:coarse) and (max-height:600px)');
-  const native = () => page.matches('.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active)');
+  const native = () => page.matches('.scientific-only:not(.emulator-active):not(.ti89-active):not(.tinspire-active):not(.evo-active)');
   const enabled = () => root.classList.contains('calculator-standalone') && mobile.matches && native();
   let touchX = 0, touchY = 0;
 

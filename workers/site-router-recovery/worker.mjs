@@ -1,4 +1,5 @@
 import router from '../site-router/worker.mjs';
+import {evoAsset, isolateCalculator} from '../calculator/evo.mjs';
 
 // Serve app pages and Maps APIs with this Worker's own provider secrets.
 export default {
@@ -20,6 +21,11 @@ export default {
         status: config ? 200 : 503,
         headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'},
       });
+    }
+    if (url.hostname === 'calc.gregle.uk') {
+      const response = url.pathname.startsWith('/assets/ti84evo/vendor/')
+        ? await evoAsset(request) : await router.fetch(request, env);
+      return isolateCalculator(response);
     }
     return router.fetch(request, env);
   },

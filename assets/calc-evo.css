@@ -1,0 +1,12 @@
+.evo-active #graphCalculator > :not(.graph-brand):not(#evoView) {display:none!important}
+.evo-active .trace-form {display:none}
+.evo-active #graphCalculator {padding:14px 12px 10px;background:#fff;border-color:#b9dce3;border-radius:28px;color:#303d46}
+.evo-active .graph-brand {margin:0 8px 10px}
+.evo-active .graph-brand-dot {color:#087395}
+.evo-active .calculator-engine-select {color:#303d46;background-color:#edf7fa;border-color:#abc8d1}
+.evo-view {position:relative}
+.evo-frame {display:block;width:100%;aspect-ratio:361/838;border:0;background:transparent}
+.evo-toolbar {display:flex;align-items:center;gap:8px;padding:8px 5px 0;font:12px/1.4 system-ui,sans-serif;color:#3e5662}
+.evo-toolbar p {flex:1;margin:0;font:inherit}
+.evo-toolbar button {padding:5px 8px;min-height:32px;border:1px solid #a7c4ce;border-radius:6px;background:#eff7f9;color:#284553;font:inherit}
+.evo-error {color:#9b2929!important}

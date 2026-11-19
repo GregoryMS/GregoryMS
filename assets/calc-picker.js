@@ -4,6 +4,7 @@
   const picker = document.getElementById('calculatorEngine');
   const buttons = {
     ti84:document.getElementById('emulatorOpen'),
+    evo:document.getElementById('evoOpen'),
     ti89:document.getElementById('ti89Open'),
     tinspire:document.getElementById('tinspireOpen')
   };

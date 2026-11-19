@@ -4,12 +4,12 @@
   let registration, running, scheduled=false, appReady=false, romReady=false, romRemoved=false, ti89Ready=false, ti89Removed=false, nspireReady=false, nspireRemoved=false, setupError='';
   const installed=() => document.documentElement.classList.contains('calculator-standalone');
   const dedicated=window.location.hostname==='calc.gregle.uk';
-  const workerPath=dedicated ? '/calc-sw.js?v=20261118-evo-themes1' : '/gregle-sw.js?v=20261115-offline1';
+  const workerPath=dedicated ? '/calc-sw.js?v=20261118-evo2' : '/gregle-sw.js?v=20261115-offline1';
   const workerOptions={scope:'/',updateViaCache:'none'};
   function render() {
     let message;
     if (appReady) {
-      const ready=['scientific'];
+      const ready=['scientific','TI-84 Evo'];
       if (romReady) ready.push('TI-84 CE');
       if (ti89Ready) ready.push('TI-89');
       if (nspireReady) ready.push('CX CAS');

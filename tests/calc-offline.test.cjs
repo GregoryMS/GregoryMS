@@ -20,7 +20,8 @@ function environment({host='calc.gregle.uk',fail='',storage=new Map(),version,st
     const url=new URL(key(input)); requests.push(url.href);
     if (url.pathname===fail) throw Error('Interrupted connection');
     const file=path.join(root,url.pathname==='/' ? 'calc.html' : url.pathname);
-    let content=fs.readFileSync(file);
+    // The production router serves these fixed upstream assets; no vendor binary is committed.
+    let content=url.pathname.startsWith('/assets/ti84evo/vendor/') ? Buffer.from('vendor asset fixture') : fs.readFileSync(file);
     if (staleHTML && file.endsWith('calc.html')) content=content.toString().replace(/calc-offline\.js\?v=[^"']+/, 'calc-offline.js?v=another-release');
     const type=/\.wasm$/.test(file) ? 'application/wasm' : /\.(?:m?js)$/.test(file) ? 'text/javascript' : /\.html$/.test(file) ? 'text/html' : 'application/octet-stream';
     const response=new Response(content,{headers:{'content-type':type}});
@@ -48,9 +49,12 @@ test('offline install saves the complete calculator including a never-opened emu
   for (const file of ['worker.mjs','cemu.mjs','cemu.wasm']) assert(app.requests.some(url => url.endsWith('/assets/ti84/'+file)));
   for (const file of ['worker.js','ti68k.js','rom-source.mjs?v=20261102-ti89-6']) assert(app.requests.some(url => url.endsWith('/assets/ti89/'+file)));
   for (const file of ['worker.mjs','firebird.mjs','firebird.wasm','firmware.mjs']) assert(app.requests.some(url=>url.endsWith('/assets/tinspire/'+file)));
+  for (const file of ['tigraphing.min.js','ti84.js','ti84-7.0.0.4117.worker.js','ti84-7.0.0.4117.wasm','ti84-7.0.0.4117.data','styles.dfbb85698a29160d.css','lato-regular.woff2']) assert(app.requests.some(url=>url.endsWith('/assets/ti84evo/vendor/'+file)));
   assert(app.requests.every(url => url.startsWith('https://calc.gregle.uk/')),'no ROM or other third-party resource in the service-worker cache');
   const count=app.requests.length;
-  for (const url of ['/?engine=tinspire','/calc.html?engine=tinspire','/?engine=ti89','/calc.html?engine=ti89','/?engine=ti84','/?popout=1','/calc.html?engine=ti84','/calc.html?popout=1']) assert.match(await (await app.request(url)).text(),/Calculator · Gregle/);
+  for (const url of ['/?engine=evo','/?engine=tinspire','/calc.html?engine=tinspire','/?engine=ti89','/calc.html?engine=ti89','/?engine=ti84','/?popout=1','/calc.html?engine=ti84','/calc.html?popout=1']) assert.match(await (await app.request(url)).text(),/Calculator · Gregle/);
+  assert.match(await (await app.request('/assets/ti84evo/index.html?v=20261118-evo1')).text(),/TI-84 Evo/);
+  for (const file of ['ti84-7.0.0.4117.wasm','ti84-7.0.0.4117.data']) assert(await app.request('/assets/ti84evo/vendor/'+file,{mode:'cors'}));
   assert.equal(app.requests.length,count,'all launch URLs work without network');
 });
 test('calculator caching leaves other Gregle apps and unknown asset versions alone',async () => {

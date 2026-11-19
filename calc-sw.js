@@ -1,12 +1,24 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-evo-themes1';
+const VERSION='20261118-evo2';
 const PREFIX='gregle-calculator-';
 const refresh=self.location.hostname==='calc.gregle.uk' ? new URL(self.location.href).searchParams.get('calc-refresh') : '';
 const CACHE=PREFIX+VERSION+(/^[a-z0-9-]{1,40}$/.test(refresh || '') ? '-refresh-'+refresh : '');
 const DOCUMENT='/calc.html';
 const ASSETS=[
   '/calc.webmanifest',
+  '/assets/calc-evo.js?v=20261118-evo1',
+  '/assets/calc-evo.css?v=20261118-evo1',
+  '/assets/ti84evo/index.html?v=20261118-evo1',
+  '/assets/ti84evo/screen.js?v=20261118-evo1',
+  '/assets/ti84evo/screen.css?v=20261118-evo1',
+  '/assets/ti84evo/vendor/tigraphing.min.js',
+  '/assets/ti84evo/vendor/ti84.js',
+  '/assets/ti84evo/vendor/ti84-7.0.0.4117.worker.js',
+  '/assets/ti84evo/vendor/ti84-7.0.0.4117.wasm',
+  '/assets/ti84evo/vendor/ti84-7.0.0.4117.data',
+  '/assets/ti84evo/vendor/styles.dfbb85698a29160d.css',
+  '/assets/ti84evo/vendor/lato-regular.woff2',
   '/assets/installed-app.css?v=20261002-radio',
   '/assets/tools.css',
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',
@@ -17,10 +29,10 @@ const ASSETS=[
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
   '/assets/site-menu.js?v=20261117-app-theme2',
-  '/assets/calc-scientific.css?v=20261118-evo-themes1',
-  '/assets/calc-viewport.js?v=20261118-calculator-history1',
+  '/assets/calc-scientific.css?v=20261118-evo1',
+  '/assets/calc-viewport.js?v=20261118-evo1',
   '/assets/calc-haptics.js?v=20261117-haptics1',
-  '/assets/calc-picker.js?v=20261117-pointer1',
+  '/assets/calc-picker.js?v=20261118-evo1',
   '/assets/calc-scientific.js?v=20261118-theme-dropdown1',
   '/assets/calc-formula-math.js?v=20261118-offline-refresh1',
   '/assets/calc-formulas.js?v=20261118-offline-refresh1',
@@ -29,8 +41,8 @@ const ASSETS=[
   '/assets/calc.js?v=20261118-calculator-history1',
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
-  '/assets/calc-emulator.js?v=20261117-visible1',
-  '/assets/calc-offline.js?v=20261118-evo-themes1',
+  '/assets/calc-emulator.js?v=20261118-evo1',
+  '/assets/calc-offline.js?v=20261118-evo1',
   '/assets/calc-ti89.js?v=20261102-ti89-6',
   '/assets/calc-tinspire.js?v=20261115-nspire2',
   '/assets/tinspire/worker.mjs',
