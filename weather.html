@@ -135,7 +135,7 @@
       <div id="radarHDControls" class="radar-hd-controls" hidden>
         <div class="radar-source-field"><label for="radarStation">Radar source</label><span class="radar-select-wrap"><select id="radarStation"><option value="">US mosaic · MRMS</option></select></span></div>
         <div class="radar-station-actions"><label class="lightning-toggle high-res-toggle"><input id="radarStationsToggle" type="checkbox" role="switch" aria-label="Show radar stations on map" aria-controls="radarMap" checked><span class="lightning-toggle-body"><span class="lightning-toggle-label">Stations on map</span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label><span class="radar-meta">Tap a dot to select a station.</span></div>
-        <p class="radar-meta">US radar coverage. Switch High Res off for standard coverage.</p>
+        <p class="radar-meta">Station coverage varies. Switch High Res off for standard global radar.</p>
         <p id="radarStationStatus" class="radar-meta" role="status"></p>
       </div>
       <div class="radar-panel">
@@ -146,7 +146,7 @@
         <div class="radar-legend" aria-label="Rain: light blue through dark blue, yellow and red as intensity increases"><strong>Rain</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
         <div class="radar-legend radar-legend-snow" aria-label="Snow: pale cyan through bright blue as intensity increases"><strong>Snow</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
       </div>
-      <div id="radarHDLegend" class="radar-hd-legend" hidden><strong>Reflectivity · dBZ</strong><span> · Stronger echoes generally indicate heavier precipitation.</span><details class="radar-source-note"><summary>Reflectivity colour key</summary><img id="radarHDLegendImage" alt="NOAA radar reflectivity colour scale in dBZ" loading="lazy"></details></div>
+      <div id="radarHDLegend" class="radar-hd-legend" hidden><strong id="radarHDLegendTitle">Reflectivity · dBZ</strong><span id="radarHDLegendDescription"> · Stronger echoes generally indicate heavier precipitation.</span><details class="radar-source-note"><summary id="radarHDLegendSummary">Reflectivity colour key</summary><img id="radarHDLegendImage" alt="NOAA radar reflectivity colour scale in dBZ" loading="lazy"><div id="radarCanadaLegend" hidden><div class="radar-canada-scale" role="img" aria-label="ECCC rainfall rate scale, light blue through green, yellow, red and purple as rainfall increases" style="height:12px;max-width:420px;border-radius:6px;background:linear-gradient(90deg,#99ccff,#0099ff,#00ff66,#00cc00,#009900,#006600,#ffff33,#ffcc00,#ff9900,#ff6600,#ff0000,#ff0099,#9933cc,#660099)"></div><p class="radar-meta">0.1 · 1 · 4 · 12 · 24 · 50 · 100 · 200+ mm/h</p></div></details></div>
       <p id="lightningStatus" class="radar-meta" role="status">Lightning loads with the radar.</p>
       <details id="lightningKey" class="radar-source-note"><summary>Lightning key & coverage</summary>
         <figure class="lightning-legend" aria-label="Lightning flash density colour scale from 0 to 2 or more flashes per square kilometre per minute">
@@ -156,7 +156,7 @@
         </figure><p class="radar-meta">Observed lightning activity from Environment Canada, averaged over 2.5 km cells during the preceding 10 minutes. Colours show flash density, not individual strike locations. Coverage includes most of Canada and nearby border areas; a clear area can also mean no coverage. Lightning follows the radar timeline, using the nearest earlier observation (up to 20 minutes behind), with its own observation time shown above.</p><p class="radar-meta"><a href="https://eccc-msc.github.io/open-data/msc-data/lightning/readme_lightning_en/">About the Canadian Lightning Detection Network data ↗</a></p></details>
       <p id="radarStatus" class="radar-meta" role="status">Radar will load as you scroll into view.</p>
       <details id="radarStandardCredit" class="radar-source-note"><summary>About this map</summary><p class="radar-meta radar-credit">Recent rain and snow observations from <a href="https://www.rainviewer.com/">RainViewer</a>, not a forecast. Colours follow RainViewer’s classification. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p></details>
-      <details id="radarHDCredit" class="radar-source-note" hidden><summary>About high-resolution radar</summary><p class="radar-meta radar-credit">Reflectivity observations from <a href="https://opengeo.ncep.noaa.gov/geoserver/www/index.html">NOAA / NWS</a>. The MRMS mosaic combines US radar observations at 1 km resolution; individual stations provide super-resolution base reflectivity. This mode does not classify rain and snow. The timeline uses published observation times from the past two hours. Coverage varies, especially outside the US and behind terrain; blank areas can mean no coverage or missing data. Standard radar remains available with High Res off.</p></details>
+      <details id="radarHDCredit" class="radar-source-note" hidden><summary>About high-resolution radar</summary><p id="radarHDCreditText" class="radar-meta radar-credit">Reflectivity observations from <a href="https://opengeo.ncep.noaa.gov/geoserver/www/index.html">NOAA / NWS</a>. The MRMS mosaic combines US radar observations at 1 km resolution; individual stations provide super-resolution base reflectivity. This mode does not classify rain and snow. The timeline uses published observation times from the past two hours. Coverage varies, especially outside the US and behind terrain; blank areas can mean no coverage or missing data. Standard radar remains available with High Res off.</p></details>
       </div>
       <div id="radarPrecipType" hidden>
         <div class="radar-actions"><button class="pill" id="ptypeRecenter" type="button">◎ Recenter</button><button class="pill" id="ptypeRefresh" type="button">↻ Refresh</button></div>
@@ -229,9 +229,10 @@
   <script src="assets/weather-precip-type.js?v=20261110-transparency-slider"></script>
   <script src="assets/weather-map-layers.js?v=20261028-noaa"></script>
   <script src="assets/weather-lightning.js?v=20261022-timeline-24h"></script>
-  <script src="assets/weather-radar-hd.js?v=20261119-hd1"></script>
+  <script src="assets/weather-radar-canada.js?v=20261119-canada1"></script>
+  <script src="assets/weather-radar-hd.js?v=20261119-canada1"></script>
   <script src="assets/weather-radar-stations.js?v=20261119-stations1"></script>
-  <script src="assets/weather-radar.js?v=20261119-stations1"></script>
+  <script src="assets/weather-radar.js?v=20261119-canada1"></script>
   <script src="assets/tide-core.js"></script>
   <script src="assets/tide-data.js"></script>
   <script src="assets/tide-ui.js?v=20261022-timeline-24h"></script>

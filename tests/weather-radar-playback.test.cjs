@@ -37,7 +37,7 @@ async function setup(options={}) {
   const stationOverlay={visible:false,selected:'',attach(map,fn){this.choose=fn;},setSites(){},select(id){this.selected=id;},setVisible(value){this.visible=value;}};
   if(options.stationMarkers)context.GregleRadarStations=stationOverlay;
   if(options.hd)context.GregleHighResRadar={
-    distance:()=>0,sourceFor:station=>({endpoint:'https://opengeo.ncep.noaa.gov/geoserver/ows',layer:station || 'conus_bref_qcd'}),
+    distance:()=>0,sourceFor:station=>(station==='CASAG' || station==='CASHP')?{id:station,provider:'eccc'}:{endpoint:'https://opengeo.ncep.noaa.gov/geoserver/ows',layer:station || 'conus_bref_qcd'},
     async load(station,signal){
       hdCalls.push({station,signal});
       if(options.hdLoad)return options.hdLoad(station,signal);
@@ -233,5 +233,17 @@ test('a saved hidden station overlay stays hidden on a new visit',async()=>{
   const h=await setup({hd:true,stationMarkers:true,preference:{enabled:true,station:'KATX',stationsVisible:false}});
   assert.equal(h.element('radarStationsToggle').checked,false);
   assert.equal(h.stationOverlay.visible,false);assert.equal(h.stationOverlay.selected,'KATX');
+});
+
+test('Canadian station selection survives reload and shows rainfall-rate metadata',async()=>{
+  const h=await setup({hd:true,stationMarkers:true,preference:{enabled:true,station:'CASHP',stationsVisible:true}});
+  assert.equal(h.hdCalls[0].station,'CASHP');assert.equal(h.element('radarStation').value,'CASHP');
+  assert.match(h.element('radarMode').textContent,/CASHP.*ECCC/);
+  assert.equal(h.element('radarCanadaLegend').hidden,false);
+  assert.equal(h.element('radarHDLegendImage').hidden,true);
+  assert.match(h.element('radarHDLegendTitle').textContent,/mm\/h/);
+  h.stationOverlay.choose('KATX');await h.flush();
+  assert.equal(h.element('radarCanadaLegend').hidden,true);
+  assert.match(h.element('radarHDLegendTitle').textContent,/dBZ/);
 });
 

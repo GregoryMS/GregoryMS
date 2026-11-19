@@ -19,10 +19,11 @@
   let failed=false,baseFailed=false,imageFailed=false,buffering=false,playTimer=null,request=0;
   let hdEnabled=false,station='',displayedHD=false,displayedStation='',fetchVersion=0,refreshController=null,sourceFailed=false;
   let sites=[],siteRequest=null,stationsVisible=true;
+  const validStation=id=>/^(?:[KP][A-Z0-9]{3}|CASAG|CASHP)$/.test(id);
   try {
     const saved=JSON.parse(root.localStorage?.getItem('gregle-weather-radar-hd') || 'null');
     if(root.GregleHighResRadar && saved?.enabled===true)hdEnabled=true;
-    if(typeof saved?.station==='string' && /^[KP][A-Z0-9]{3}$/.test(saved.station))station=saved.station;
+    if(typeof saved?.station==='string' && validStation(saved.station))station=saved.station;
     if(saved?.stationsVisible===false)stationsVisible=false;
   } catch(_) {}
   function rememberMode() {
@@ -45,20 +46,26 @@
     $('radarHDCredit').hidden=!displayedHD;
     if(displayedHD) {
       const source=root.GregleHighResRadar.sourceFor(displayedStation);
-      $('radarHDLegendImage').src=`${source.endpoint}?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png&layer=${source.layer}`;
+      const canadian=source.provider==='eccc';
+      $('radarHDLegendImage').hidden=canadian;$('radarCanadaLegend').hidden=!canadian;
+      $('radarHDLegendSummary').textContent=canadian?'Rainfall-rate colour key':'Reflectivity colour key';
+      $('radarHDLegendTitle').textContent=canadian?'Rainfall rate · mm/h':'Reflectivity · dBZ';
+      $('radarHDLegendDescription').textContent=canadian?' · Estimated precipitation from this Canadian station.':' · Stronger echoes generally indicate heavier precipitation.';
+      if(!canadian)$('radarHDLegendImage').src=`${source.endpoint}?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png&layer=${source.layer}`;
+      $('radarHDCreditText').textContent=canadian?'Environment Canada station DPQPE rainfall-rate estimates at 1 km per source pixel, updated about every six minutes. Colours show a rain-equivalent estimate, including when precipitation may be snow. This is not Doppler velocity or raw super-resolution reflectivity. Range is up to 240 km; terrain, outages and source-image labels can leave gaps. Blank areas can mean dry weather or missing coverage.':'NOAA / NWS reflectivity observations. The MRMS mosaic combines US radar observations at 1 km resolution; individual US stations provide super-resolution base reflectivity. This mode does not classify rain and snow. The timeline uses published observation times from the past two hours. Coverage varies, especially outside the US and behind terrain; blank areas can mean no coverage or missing data. Standard radar remains available with High Res off.';
     }
-    if(!root.GregleWeatherLayers?.active())$('radarMode').textContent=displayedHD?(displayedStation?`${displayedStation} · High-resolution reflectivity`:'High-resolution reflectivity · NOAA MRMS'):'Observed precipitation';
+    if(!root.GregleWeatherLayers?.active())$('radarMode').textContent=displayedHD?((displayedStation==='CASAG' || displayedStation==='CASHP')?`${displayedStation} · Rainfall rate · ECCC`:displayedStation?`${displayedStation} · High-resolution reflectivity`:'High-resolution reflectivity · NOAA MRMS'):'Observed precipitation';
   }
   async function loadStations() {
     if(sites.length || siteRequest || !hdEnabled)return;
     const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
     siteRequest=controller;
     try {
-      const response=await fetch('assets/weather-radar-sites.json?v=20261119-hd1',{signal:controller.signal});
+      const response=await fetch('assets/weather-radar-sites.json?v=20261119-canada1',{signal:controller.signal});
       if(!response.ok)throw Error('Station list unavailable');
       const data=await response.json();
       if(!Array.isArray(data))throw Error('Invalid stations');
-      sites=data.filter(s=>/^[KP][A-Z0-9]{3}$/.test(s.id) && typeof s.name==='string' && Number.isFinite(s.lat) && Number.isFinite(s.lon));
+      sites=data.filter(s=>validStation(s.id) && typeof s.name==='string' && Number.isFinite(s.lat) && Number.isFinite(s.lon));
       populateStations();
       root.GregleRadarStations?.setSites(sites);
       $('radarStationStatus').textContent='';

@@ -2,6 +2,11 @@
   'use strict';
   const BASE='https://opengeo.ncep.noaa.gov/geoserver/';
   function sourceFor(station='') {
+    if(station==='CASAG' || station==='CASHP') {
+      const canadian=root.GregleCanadianRadar || (typeof module!=='undefined' && module.exports?require('./weather-radar-canada.js'):null);
+      if(!canadian)throw Error('Canadian radar unavailable');
+      return canadian.sourceFor(station);
+    }
     if(station && !/^[KP][A-Z0-9]{3}$/.test(station))throw Error('Invalid radar station');
     const workspace=station?station.toLowerCase():'conus';
     return {id:station || 'mrms',endpoint:`${BASE}${workspace}/ows`,
@@ -43,11 +48,13 @@
   root.GregleHighResRadar={...core,
     async load(station,signal) {
       const source=sourceFor(station);
+      if(source.provider==='eccc')return root.GregleCanadianRadar.load(station,signal);
       const response=await fetch(`${source.endpoint}?service=WMS&version=1.3.0&request=GetCapabilities`,{signal,cache:'no-cache'});
       if(!response.ok)throw Error('High-resolution radar unavailable');
       return {host:'',frames:framesFromXML(await response.text(),source)};
     },
     createLayer(frame) {
+      if(frame.hd.provider==='eccc')return root.GregleCanadianRadar.createLayer(frame);
       return root.L.tileLayer.wms(frame.hd.endpoint,{layers:frame.hd.layer,styles:'',format:'image/png',transparent:true,
         version:'1.1.1',time:frame.hd.time,tileSize:512,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,zIndex:300,
         attribution:'Radar: <a href="https://opengeo.ncep.noaa.gov/geoserver/www/index.html">NOAA / NWS</a>'});
