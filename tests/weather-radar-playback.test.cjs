@@ -34,6 +34,8 @@ async function setup(options={}) {
   if(options.preference)saved.set('gregle-weather-radar-hd',JSON.stringify(options.preference));
   context.localStorage={getItem:k=>saved.get(k),setItem:(k,v)=>saved.set(k,v)};
   const hdCalls=[];
+  const stationOverlay={visible:false,selected:'',attach(map,fn){this.choose=fn;},setSites(){},select(id){this.selected=id;},setVisible(value){this.visible=value;}};
+  if(options.stationMarkers)context.GregleRadarStations=stationOverlay;
   if(options.hd)context.GregleHighResRadar={
     distance:()=>0,sourceFor:station=>({endpoint:'https://opengeo.ncep.noaa.gov/geoserver/ows',layer:station || 'conus_bref_qcd'}),
     async load(station,signal){
@@ -64,7 +66,7 @@ async function setup(options={}) {
     now=end;await flush();
   }
   const visible=()=>layers().filter(l=>l.opacity>0).map(l=>Number(l.url.match(/radar\/(\d+)/)[1]));
-  return {element,context,events,mapEvents,layers,layer,load,click,scrub,advance,visible,flush,created,views,saved,hdCalls,
+  return {element,context,events,mapEvents,layers,layer,load,click,scrub,advance,visible,flush,created,views,saved,hdCalls,stationOverlay,
     async setHighRes(value){element('radarHighResToggle').checked=value;element('radarHighResToggle').events.change();await flush();},
     hdLayer:time=>created.find(l=>l.url.endsWith(`/hd/${time}`)&&!l.removed),setOpacity(value){opacity=value;changeOpacity(value);},failFetch:()=>{failFetch=true;}};
 }
@@ -208,6 +210,28 @@ test('saved high-resolution station is restored on a new visit',async()=>{
   h.hdLayer(1860).fire('load');await h.flush();
   assert.match(h.element('radarMode').textContent,/KATX/);
   await h.setHighRes(false);await h.load(1800);
-  assert.deepEqual(JSON.parse(h.saved.get('gregle-weather-radar-hd')),{enabled:false,station:'KATX'});
+  assert.deepEqual(JSON.parse(h.saved.get('gregle-weather-radar-hd')),{enabled:false,station:'KATX',stationsVisible:true});
+});
+
+test('map station clicks sync the source selector; visibility never reloads the radar',async()=>{
+  const h=await setup({hd:true,stationMarkers:true});await h.load(1800);
+  assert.equal(h.stationOverlay.visible,false);
+  await h.setHighRes(true);h.hdLayer(1860).fire('load');await h.flush();
+  assert.equal(h.stationOverlay.visible,true);
+  h.stationOverlay.choose('KATX');await h.flush();
+  assert.equal(h.element('radarStation').value,'KATX');
+  assert.equal(h.stationOverlay.selected,'KATX');assert.equal(h.hdCalls.at(-1).station,'KATX');
+  const calls=h.hdCalls.length;
+  h.element('radarStationsToggle').checked=false;h.element('radarStationsToggle').events.change();await h.flush();
+  assert.equal(h.stationOverlay.visible,false);assert.equal(h.hdCalls.length,calls);
+  assert.equal(JSON.parse(h.saved.get('gregle-weather-radar-hd')).stationsVisible,false);
+  await h.setHighRes(false);await h.load(1800);await h.setHighRes(true);
+  assert.equal(h.stationOverlay.visible,false,'the hidden preference survives switching modes');
+});
+
+test('a saved hidden station overlay stays hidden on a new visit',async()=>{
+  const h=await setup({hd:true,stationMarkers:true,preference:{enabled:true,station:'KATX',stationsVisible:false}});
+  assert.equal(h.element('radarStationsToggle').checked,false);
+  assert.equal(h.stationOverlay.visible,false);assert.equal(h.stationOverlay.selected,'KATX');
 });
 

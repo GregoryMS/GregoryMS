@@ -207,13 +207,27 @@
   background:color-mix(in srgb,var(--panel) 64%,transparent);
   -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
 }
-.high-res-toggle input:checked + .lightning-toggle-body { background:color-mix(in srgb,var(--glow) 68%,transparent); }
+.lightning-toggle.high-res-toggle input:checked + .lightning-toggle-body {
+  background:color-mix(in srgb,var(--rain) 12%,transparent);
+  border-color:color-mix(in srgb,var(--rain) 65%,var(--line));
+}
+.lightning-toggle.high-res-toggle input:checked + .lightning-toggle-body .lightning-toggle-track { background:var(--rain); }
 .radar-hd-controls { margin:0 0 12px; padding:12px 14px; border:1px solid var(--line); border-radius:16px; background:color-mix(in srgb,var(--panel) 72%,transparent); }
 .radar-hd-controls label { display:flex; align-items:center; flex-wrap:wrap; gap:8px 14px; color:var(--text); font-size:13px; }
 .radar-hd-controls select { box-sizing:border-box; flex:1; min-width:0; max-width:100%; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:12px; font:inherit; color:var(--text); background:var(--panel); }
 .radar-hd-controls select:focus-visible { outline:2px solid var(--rain); outline-offset:2px; }
+.radar-hd-controls select { border-color:color-mix(in srgb,var(--rain) 40%,var(--line)); background:color-mix(in srgb,var(--rain) 7%,var(--panel)); }
 .radar-hd-controls .radar-meta { margin-top:6px; }
 .radar-hd-controls .radar-meta:empty { display:none; }
+.radar-station-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-top:8px; }
+.radar-hd-controls .radar-station-actions .lightning-toggle { flex:0 0 auto; margin:0; }
+.radar-station-actions .lightning-toggle-body { min-height:40px; padding:7px 12px; }
+.radar-station-actions .radar-meta { flex:1; margin:0; }
+.radar-station-marker { display:grid; place-items:center; border:0; border-radius:50%; background:transparent; }
+.radar-station-marker > span { box-sizing:border-box; width:8px; height:8px; border:1px solid #fff; border-radius:50%; background:#526979c7; box-shadow:0 0 0 1px #263b4b4d; }
+.radar-station-marker:hover > span,.radar-station-marker.is-selected > span { width:10px; height:10px; background:var(--rain); box-shadow:0 0 0 3px color-mix(in srgb,var(--rain) 15%,transparent); }
+.radar-station-marker:focus-visible { outline:2px solid var(--rain); outline-offset:1px; }
+.radar-station-tooltip { padding:4px 7px; border-radius:8px; font-family:inherit; font-size:11px; line-height:1.5; color:var(--text); background:var(--panel); border:1px solid var(--line); box-shadow:0 2px 8px #0002; }
 .radar-hd-legend { margin-top:14px; font-size:12px; color:var(--muted); }
 .radar-hd-legend img { display:block; max-width:100%; height:auto; margin-top:8px; border-radius:8px; background:#fff; }
 @media (max-width:700px) {

@@ -18,20 +18,24 @@
   let location=null,map=null,marker=null,frames=[],host='',layers=new Map(),current=-1,playing=false,fetching=false,lastFetch=0,started=false;
   let failed=false,baseFailed=false,imageFailed=false,buffering=false,playTimer=null,request=0;
   let hdEnabled=false,station='',displayedHD=false,displayedStation='',fetchVersion=0,refreshController=null,sourceFailed=false;
-  let sites=[],siteRequest=null;
+  let sites=[],siteRequest=null,stationsVisible=true;
   try {
     const saved=JSON.parse(root.localStorage?.getItem('gregle-weather-radar-hd') || 'null');
     if(root.GregleHighResRadar && saved?.enabled===true)hdEnabled=true;
     if(typeof saved?.station==='string' && /^[KP][A-Z0-9]{3}$/.test(saved.station))station=saved.station;
+    if(saved?.stationsVisible===false)stationsVisible=false;
   } catch(_) {}
   function rememberMode() {
-    try {root.localStorage?.setItem('gregle-weather-radar-hd',JSON.stringify({enabled:hdEnabled,station}));}catch(_){}
+    try {root.localStorage?.setItem('gregle-weather-radar-hd',JSON.stringify({enabled:hdEnabled,station,stationsVisible}));}catch(_){}
   }
   function modeControls() {
     if(!$('radarHighResToggle'))return;
     $('radarHighResToggle').checked=hdEnabled;
     $('radarHDControls').hidden=!hdEnabled;
     $('radarStation').value=station;
+    if($('radarStationsToggle'))$('radarStationsToggle').checked=stationsVisible;
+    root.GregleRadarStations?.select(station);
+    root.GregleRadarStations?.setVisible(hdEnabled && stationsVisible);
   }
   function sourceDetails() {
     if(!$('radarHDLegend'))return;
@@ -56,6 +60,7 @@
       if(!Array.isArray(data))throw Error('Invalid stations');
       sites=data.filter(s=>/^[KP][A-Z0-9]{3}$/.test(s.id) && typeof s.name==='string' && Number.isFinite(s.lat) && Number.isFinite(s.lon));
       populateStations();
+      root.GregleRadarStations?.setSites(sites);
       $('radarStationStatus').textContent='';
     } catch(_) {$('radarStationStatus').textContent='Station list unavailable. The US mosaic is still available; try Refresh.';}
     finally {clearTimeout(timeout);siteRequest=null;}
@@ -200,6 +205,9 @@
     started=true;
     if(!root.L) { $('radarStatus').textContent='The radar map could not load. Refresh this page to retry, or open RainViewer below.';return; }
     map=root.L.map('radarMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
+    root.GregleRadarStations?.attach(map,id=>{if(station===id)return;station=id;changeSource();});
+    root.GregleRadarStations?.setSites(sites);
+    modeControls();
     root.GregleLightning?.attach(map);
     root.GregleWeatherTransparency?.attach(map,opacity=>{
       const visible=layers.get(frames[current]?.path);
@@ -223,6 +231,9 @@
       modeControls();loadStations();
       $('radarHighResToggle').addEventListener('change',()=>{hdEnabled=$('radarHighResToggle').checked;changeSource();});
       $('radarStation').addEventListener('change',()=>{station=$('radarStation').value;changeSource();});
+      $('radarStationsToggle')?.addEventListener('change',()=>{
+        stationsVisible=$('radarStationsToggle').checked;modeControls();rememberMode();
+      });
     }
     $('radarRecenter').addEventListener('click',recenter);
     $('radarTime').addEventListener('input',()=>{stop();show(Number($('radarTime').value));});
