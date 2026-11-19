@@ -53,7 +53,7 @@ test('offline install saves the complete calculator including a never-opened emu
   assert(app.requests.every(url => url.startsWith('https://calc.gregle.uk/')),'no ROM or other third-party resource in the service-worker cache');
   const count=app.requests.length;
   for (const url of ['/?engine=evo','/?engine=tinspire','/calc.html?engine=tinspire','/?engine=ti89','/calc.html?engine=ti89','/?engine=ti84','/?popout=1','/calc.html?engine=ti84','/calc.html?popout=1']) assert.match(await (await app.request(url)).text(),/Calculator · Gregle/);
-  assert.match(await (await app.request('/assets/ti84evo/index.html?v=20261118-evo-display2')).text(),/TI-84 Evo/);
+  assert.match(await (await app.request('/assets/ti84evo/index.html?v=20261118-evo-display3')).text(),/TI-84 Evo/);
   for (const file of ['ti84-7.0.0.4117.wasm','ti84-7.0.0.4117.data']) assert(await app.request('/assets/ti84evo/vendor/'+file,{mode:'cors'}));
   assert.equal(app.requests.length,count,'all launch URLs work without network');
 });
