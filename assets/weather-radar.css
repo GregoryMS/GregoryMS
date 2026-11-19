@@ -6,7 +6,26 @@
 .radar-panel { border:1px solid var(--line); border-radius:22px; overflow:hidden; background:var(--panel); box-shadow:var(--shadow); }
 .radar-map { height:460px; background:var(--soft); isolation:isolate; }
 .radar-map .leaflet-control-attribution { font-size:10px; }
-.radar-map .leaflet-control-zoom a { color:var(--text); background:var(--panel); }
+.radar-map .leaflet-control-zoom.leaflet-bar {
+  border:1px solid color-mix(in srgb,var(--weather-accent-text) 25%,transparent);
+  border-radius:14px; overflow:hidden;
+  background:color-mix(in srgb,var(--panel) 76%,transparent);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  box-shadow:0 3px 14px #1f12331f;
+}
+.radar-map .leaflet-control-zoom a {
+  width:36px; height:36px; line-height:36px; border:0;
+  color:var(--weather-accent-text); background:color-mix(in srgb,var(--weather-accent-text) 7%,transparent);
+  font-size:23px; font-weight:400;
+  transition:background .18s,color .18s;
+}
+.radar-map .leaflet-control-zoom a:first-child { border-radius:0; border-bottom:1px solid color-mix(in srgb,var(--weather-accent-text) 18%,transparent); }
+.radar-map .leaflet-control-zoom a:last-child { border-radius:0; }
+.radar-map .leaflet-control-zoom a:hover { background:color-mix(in srgb,var(--weather-accent-text) 18%,transparent); }
+.radar-map .leaflet-control-zoom a:focus-visible { outline:2px solid var(--weather-accent-text); outline-offset:-4px; }
+.radar-map .leaflet-control-zoom a.leaflet-disabled { color:color-mix(in srgb,var(--weather-accent-text) 40%,var(--muted)); background:transparent; opacity:.55; }
+@media(pointer:coarse) { .radar-map .leaflet-control-zoom a { width:40px; height:40px; line-height:40px; } }
+@media(prefers-reduced-motion:reduce) { .radar-map .leaflet-control-zoom a { transition:none; } }
 .radar-controls { padding:18px 22px; display:flex; align-items:center; gap:22px; }
 .radar-controls button { min-width:92px; }
 .radar-timeline { flex:1; min-width:0; }
