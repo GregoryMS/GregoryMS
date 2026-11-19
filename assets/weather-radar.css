@@ -214,6 +214,8 @@
 .lightning-toggle.high-res-toggle input:checked + .lightning-toggle-body .lightning-toggle-track { background:var(--rain); }
 .radar-hd-controls { margin:0 0 12px; padding:12px 14px; border:1px solid var(--line); border-radius:16px; background:color-mix(in srgb,var(--panel) 72%,transparent); }
 .radar-hd-controls label { display:flex; align-items:center; flex-wrap:wrap; gap:8px 14px; color:var(--text); font-size:13px; }
+.radar-source-field { display:flex; align-items:center; gap:12px; }
+.radar-source-field > label { flex:0 0 auto; }
 .radar-hd-controls select { box-sizing:border-box; flex:1; min-width:0; max-width:100%; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:12px; font:inherit; color:var(--text); background:var(--panel); }
 .radar-hd-controls select:focus-visible { outline:2px solid var(--rain); outline-offset:2px; }
 .radar-hd-controls select { border-color:color-mix(in srgb,var(--rain) 40%,var(--line)); background:color-mix(in srgb,var(--rain) 7%,var(--panel)); }
@@ -231,6 +233,15 @@
 .radar-hd-legend { margin-top:14px; font-size:12px; color:var(--muted); }
 .radar-hd-legend img { display:block; max-width:100%; height:auto; margin-top:8px; border-radius:8px; background:#fff; }
 @media (max-width:700px) {
+  .radar-hd-controls { padding:12px; }
+  .radar-source-field { display:grid; grid-template-columns:minmax(0,1fr); gap:6px; }
+  .radar-source-field > label { font-size:12px; color:var(--muted); }
+  .radar-source-field > select { width:100%; font-size:13px; }
+  .radar-station-actions { display:grid; grid-template-columns:minmax(0,1fr); gap:6px; }
+  .radar-hd-controls .radar-station-actions .lightning-toggle { width:100%; }
+  .radar-station-actions .lightning-toggle-body { min-height:40px; border-radius:12px; }
+  .radar-station-actions .radar-meta { font-size:12px; }
+  .radar-hd-controls > .radar-meta { font-size:12px; line-height:1.5; }
   .radar-toggle-group { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); flex-basis:100%; width:100%; margin:0; }
   .radar-toggle-group .lightning-toggle { width:100%; }
   .radar-toggle-group .lightning-toggle-body { padding:8px 10px; gap:7px; }
