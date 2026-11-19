@@ -130,21 +130,21 @@ test('expired push subscriptions are removed; failed sends remain retryable', as
 });
 
 const vm = require('node:vm');
-function settingsPage({ios=false, granted=false}={}) {
-  const ids=['weatherSettingsPanel','weatherSettingsTrigger','weatherSettingsClose','weatherSettingsTitle','weatherPushStatus','weatherNotifyLocationStatus','weatherPushRetry','weatherPushTest','gregleAppMenu','weatherNotifyEnabled','weatherNotifyCity','weatherNotifySunrise','weatherSunriseLead','weatherNotifySunset','weatherSunsetLead','weatherNotifyRain','weatherNotifyWarnings'];
-  const nodes=Object.fromEntries(ids.map(id=>[id,{id,hidden:id==='weatherSettingsPanel',type:/weatherNotify(Enabled|Sunrise|Sunset|Rain|Warnings)$/.test(id)?'checkbox':'select',value:'',listeners:{},style:{setProperty(){}},setAttribute(name,value){this[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;},contains(target){return target===this;},focus(){},getBoundingClientRect(){return {bottom:60};}}]));
-  const events={},requests=[],permissions=[]; let sub=null, gesture=false;
+function settingsPage({ios=false, granted=false, installed=false, savedEnabled=false, failFirst=false}={}) {
+  const ids=['weatherSettingsPanel','weatherSettingsTrigger','weatherSettingsClose','weatherSettingsTitle','weatherPushStatus','weatherPushActionStatus','weatherPushEnable','weatherNotifyLocationStatus','weatherPushRetry','weatherPushTest','gregleAppMenu','weatherNotifyEnabled','weatherNotifyCity','weatherNotifySunrise','weatherSunriseLead','weatherNotifySunset','weatherSunsetLead','weatherNotifyRain','weatherNotifyWarnings'];
+  const nodes=Object.fromEntries(ids.map(id=>[id,{id,hidden:['weatherSettingsPanel','weatherPushRetry'].includes(id),type:/weatherNotify(Enabled|Sunrise|Sunset|Rain|Warnings)$/.test(id)?'checkbox':'select',value:'',listeners:{},style:{setProperty(){}},setAttribute(name,value){this[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;},contains(target){return target===this;},focus(){},getBoundingClientRect(){return {bottom:60};}}]));
+  const events={},requests=[],permissions=[]; let sub=null, gesture=false, attempts=0;
   const publicKey=Buffer.concat([Buffer.from([4]),Buffer.alloc(64,1)]).toString('base64url');
   const Notification={permission:granted?'granted':'default',requestPermission(){permissions.push(gesture); Notification.permission='granted';return Promise.resolve('granted');}};
-  const manager={async getSubscription(){return sub;},async subscribe(){sub={options:{applicationServerKey:Buffer.from(publicKey,'base64url')},toJSON(){return {endpoint:'https://fcm.googleapis.com/fake',keys:{p256dh:'test',auth:'test'}};},async unsubscribe(){sub=null;return true;}};return sub;}};
+  const manager={async getSubscription(){return sub;},async subscribe(){permissions.push(gesture);if(!gesture)throw Error('subscribe requires a user gesture');if(failFirst && attempts++===0)throw Error('Push service unavailable');Notification.permission='granted';sub={options:{applicationServerKey:Buffer.from(publicKey,'base64url')},toJSON(){return {endpoint:'https://fcm.googleapis.com/fake',keys:{p256dh:'test',auth:'test'}};},async unsubscribe(){sub=null;return true;}};return sub;}};
   const window={isSecureContext:true,PushManager:{},Notification,matchMedia(){return {matches:false};},addEventListener(name,fn){events[name]=fn;},GregleWeatherSelectedLocation:loc};
   const document={readyState:'complete',getElementById(id){return nodes[id];},addEventListener(){}};
-  const context={window,globalThis:window,document,navigator:{userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(){},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return null;},setItem(){}},fetch:async(url,options)=>{requests.push({url,data:options.body?JSON.parse(options.body):null});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
+  const context={window,globalThis:window,document,navigator:{standalone:installed,userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(){},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return savedEnabled?JSON.stringify({weatherNotifyEnabled:true}):null;},setItem(){}},fetch:async(url,options)=>{requests.push({url,data:options.body?JSON.parse(options.body):null});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/weather-notification-settings.js'),'utf8'),context);
-  return {nodes,events,requests,permissions,window,async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
+  return {nodes,events,requests,permissions,window,async click(id){gesture=true;nodes[id].listeners.click();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
 }
 
-test('settings requests permission in the enabling gesture, syncs selected cities, and unregisters when disabled', async () => {
+test('settings subscribes in the enabling gesture, syncs selected cities, and unregisters when disabled', async () => {
   const page=settingsPage(); await page.flush();
   await page.change('weatherNotifyEnabled',true);
   assert.deepEqual(page.permissions,[true]);
@@ -161,4 +161,41 @@ test('iPhone browser explains Home Screen installation without requesting permis
   assert.equal(page.permissions.length,0); assert.equal(page.requests.length,0);
   assert.equal(page.nodes.weatherNotifyEnabled.checked,false);
   assert.match(page.nodes.weatherPushStatus.textContent,/Home Screen/);
+});
+
+test('disabled notifications offer an Enable action and hide the redundant Retry action', async () => {
+  const page=settingsPage({ios:true,installed:true}); await page.flush();
+  assert.equal(page.nodes.weatherPushEnable.hidden,false);
+  assert.equal(page.nodes.weatherPushEnable.disabled,false);
+  assert.equal(page.nodes.weatherPushRetry.hidden,true);
+  assert.equal(page.nodes.weatherPushTest.disabled,true);
+  assert.match(page.nodes.weatherPushActionStatus.textContent,/Notifications are off.*Enable notifications/);
+  await page.click('weatherPushEnable');
+  assert.deepEqual(page.permissions,[true]);
+  assert.equal(page.nodes.weatherPushEnable.hidden,true);
+  assert.equal(page.nodes.weatherPushRetry.hidden,true);
+  assert.equal(page.nodes.weatherPushTest.disabled,false);
+});
+
+test('an installed iPhone resumes a missing subscription through the Retry tap, not a background task', async () => {
+  const page=settingsPage({ios:true,installed:true,granted:true,savedEnabled:true}); await page.flush();
+  assert.equal(page.permissions.length,0);
+  assert.equal(page.nodes.weatherPushRetry.hidden,false);
+  assert.equal(page.nodes.weatherPushTest.disabled,true);
+  assert.match(page.nodes.weatherPushActionStatus.textContent,/Tap Retry connection/);
+  await page.click('weatherPushRetry');
+  assert.deepEqual(page.permissions,[true]);
+  assert.equal(page.nodes.weatherPushTest.disabled,false);
+  assert.equal(page.nodes.weatherPushRetry.hidden,true);
+});
+
+test('a failed iPhone subscription can be retried with a new user gesture', async () => {
+  const page=settingsPage({ios:true,installed:true,failFirst:true}); await page.flush();
+  await page.click('weatherPushEnable');
+  assert.equal(page.nodes.weatherPushRetry.hidden,false);
+  assert.equal(page.nodes.weatherPushTest.disabled,true);
+  assert.match(page.nodes.weatherPushActionStatus.textContent,/Push service unavailable/);
+  await page.click('weatherPushRetry');
+  assert.deepEqual(page.permissions,[true,true]);
+  assert.equal(page.nodes.weatherPushTest.disabled,false);
 });

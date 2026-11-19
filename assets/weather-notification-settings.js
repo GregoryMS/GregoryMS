@@ -18,8 +18,17 @@
     const prefs = {...defaults, ...(saved && typeof saved === 'object' ? saved : {})};
     let registration, publicKey, subscription, busy = false, connected = false;
     let selected = globalThis.GregleWeatherSelectedLocation;
-    let queue = Promise.resolve();
-    const status = message => { $('weatherPushStatus').textContent = message; };
+    let queue = Promise.resolve(), subscriptionTask;
+    const status = message => {
+      $('weatherPushStatus').textContent = message;
+      $('weatherPushActionStatus').textContent = message;
+    };
+    function updateActions() {
+      $('weatherPushEnable').hidden = Boolean(prefs.weatherNotifyEnabled);
+      $('weatherPushEnable').disabled = busy || !registration || !publicKey || Boolean(unsupported());
+      $('weatherPushTest').disabled = busy || !connected || !prefs.weatherNotifyEnabled;
+      $('weatherPushRetry').disabled = busy;
+    }
     const persist = () => { try { localStorage.setItem(key, JSON.stringify(prefs)); } catch (_) {} };
     const monitored = () => {
       const loc = cities[prefs.weatherNotifyCity] || selected;
@@ -51,15 +60,8 @@
       el.addEventListener('change', () => {
         prefs[id] = el.type === 'checkbox' ? el.checked : el.value;
         persist(); describeLocation();
-        // Request permission directly in this user gesture, before any network awaits (iOS).
-        let permission;
-        if (id === 'weatherNotifyEnabled' && prefs[id]) {
-          const reason = unsupported();
-          if (reason) { prefs[id] = el.checked = false; persist(); return status(reason); }
-          if (!registration || !publicKey) { prefs[id] = el.checked = false; persist(); return status('Notification service is connecting. Try Enable notifications again in a moment.'); }
-          permission = Notification.requestPermission();
-        }
-        enqueue(() => sync(permission));
+        if (id === 'weatherNotifyEnabled' && prefs[id]) return enable();
+        enqueue(() => sync());
       });
     }
     function unsupported() {
@@ -69,6 +71,26 @@
       if (Notification.permission === 'denied') return 'Notifications are blocked. Allow them in your browser or device settings, then try again.';
       return '';
     }
+    function beginSubscription() {
+      if (subscription) return Promise.resolve({subscription});
+      if (subscriptionTask) return subscriptionTask;
+      // Safari requires subscribe() itself in the tap handler. It also prompts for permission.
+      try {
+        subscriptionTask = Promise.resolve(registration.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:bytes(publicKey)}))
+          .then(value => ({subscription:value}), error => ({error}));
+        return subscriptionTask;
+      } catch (error) { return Promise.resolve({error}); }
+    }
+    function enable() {
+      const reason = unsupported();
+      if (reason || !registration || !publicKey) {
+        prefs.weatherNotifyEnabled = $('weatherNotifyEnabled').checked = false; persist();
+        status(reason || 'Notification service is connecting. Try Enable notifications again in a moment.'); updateActions(); return;
+      }
+      prefs.weatherNotifyEnabled = $('weatherNotifyEnabled').checked = true; persist();
+      const pending = beginSubscription();
+      enqueue(() => sync(pending));
+    }
     async function request(path, data) {
       const response = await fetch(API + path, {method:data ? 'POST' : 'GET', headers:data ? {'Content-Type':'application/json'} : {}, body:data ? JSON.stringify(data) : undefined, cache:'no-store', signal:AbortSignal.timeout(15000)});
       let result; try { result = await response.json(); } catch (_) { throw Error('Notification service is temporarily unavailable.'); }
@@ -76,14 +98,23 @@
       return result;
     }
     function enqueue(task) {
-      queue = queue.catch(() => {}).then(task).catch(error => { connected = false; status(error.message || 'Could not connect. Try again.'); $('weatherPushRetry').hidden = false; }).finally(() => { busy = false; $('weatherPushTest').disabled = !connected || !prefs.weatherNotifyEnabled; });
+      queue = queue.catch(() => {}).then(async () => { busy = true; updateActions(); await task(); }).catch(error => {
+        connected = false; status(error.message || 'Could not connect. Try again.'); $('weatherPushRetry').hidden = false;
+      }).finally(() => { busy = false; updateActions(); });
       return queue;
     }
-    async function sync(permission) {
-      busy = true; connected = false; $('weatherPushTest').disabled = true;
-      if (permission && await permission !== 'granted') {
-        prefs.weatherNotifyEnabled = $('weatherNotifyEnabled').checked = false; persist();
-        status('Notification permission was not granted. Enable notifications to try again.'); return;
+    async function sync(pending) {
+      connected = false; $('weatherPushTest').disabled = true;
+      if (pending) {
+        const result = await pending; subscriptionTask = null;
+        if (result.error) {
+          if (result.error.name === 'NotAllowedError') {
+            prefs.weatherNotifyEnabled = $('weatherNotifyEnabled').checked = false; persist();
+            throw Error('Notifications were not allowed. Check this app’s notification permission in device settings, then enable notifications again.');
+          }
+          throw result.error;
+        }
+        subscription = result.subscription;
       }
       if (!registration) return;
       subscription = await registration.pushManager.getSubscription();
@@ -93,24 +124,19 @@
           await request('/unsubscribe', {subscription:subscription.toJSON()});
           await subscription.unsubscribe(); subscription = null;
         }
-        $('weatherPushRetry').hidden = true; status('Notifications are off. Preferences are saved on this device.'); return;
+        $('weatherPushRetry').hidden = true;
+        status('Notifications are off. Turn on Enable notifications to send a test.'); return;
       }
-      if (Notification.permission !== 'granted') {
-        prefs.weatherNotifyEnabled = $('weatherNotifyEnabled').checked = false; persist();
-        status('Enable notifications to grant permission on this device.'); return;
+      if (!subscription) {
+        $('weatherPushRetry').hidden = false;
+        status('Tap Retry connection to finish enabling notifications on this device.'); return;
       }
       const location = monitored();
       if (!location) throw Error('Choose a location in Weather, then retry the connection.');
       status('Saving notification preferences…');
-      // A changed signing key requires replacing a subscription created by an older release.
-      const oldKey = subscription?.options?.applicationServerKey;
-      if (oldKey && Array.from(new Uint8Array(oldKey)).join() !== Array.from(bytes(publicKey)).join()) {
-        await subscription.unsubscribe(); subscription = null;
-      }
-      subscription ||= await registration.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:bytes(publicKey)});
       await request('/subscribe', {subscription:subscription.toJSON(), preferences:{...prefs}, location});
       connected = true; $('weatherPushRetry').hidden = true;
-      status(`Notifications are on for ${location.name}, including when Weather is closed.`);
+      status(`Notifications are on for ${location.name}. Send a test notification to check this device.`);
     }
     async function prepare() {
       const reason = unsupported();
@@ -123,9 +149,21 @@
       const config = await request('/public-key');
       if (!config.ready || !config.publicKey) throw Error('Notification service is temporarily unavailable. Retry connection.');
       publicKey = config.publicKey;
+      subscription = await registration.pushManager.getSubscription();
+      const oldKey = subscription?.options?.applicationServerKey;
+      if (oldKey && Array.from(new Uint8Array(oldKey)).join() !== Array.from(bytes(publicKey)).join()) {
+        await subscription.unsubscribe(); subscription = null;
+      }
       await sync();
     }
-    $('weatherPushRetry').addEventListener('click', () => { if (!busy) enqueue(() => publicKey && registration ? sync() : prepare()); });
+    $('weatherPushEnable').addEventListener('click', enable);
+    $('weatherPushRetry').addEventListener('click', () => {
+      if (busy) return;
+      if (!publicKey || !registration) return enqueue(prepare);
+      // Retrying a missing subscription is also a fresh user gesture on iPhone.
+      const pending = prefs.weatherNotifyEnabled && !subscription ? beginSubscription() : undefined;
+      enqueue(() => sync(pending));
+    });
     $('weatherPushTest').addEventListener('click', () => enqueue(async () => {
       if (!subscription || !connected) return;
       $('weatherPushTest').disabled = true;
@@ -137,7 +175,7 @@
       if (prefs.weatherNotifyEnabled && prefs.weatherNotifyCity === 'selected') enqueue(() => sync());
     }};
     window.addEventListener('online', () => enqueue(() => publicKey && registration ? sync() : prepare()));
-    describeLocation(); enqueue(prepare);
+    describeLocation(); updateActions(); enqueue(prepare);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
 })();
