@@ -199,3 +199,32 @@
 .weather-transparency-inner input:focus-visible { outline:2px solid var(--transparency-accent); outline-offset:1px; border-radius:8px; }
 @media(pointer:coarse) { .weather-transparency-button { width:38px; height:38px; } .weather-transparency-inner input { height:36px; } }
 @media(prefers-reduced-motion:reduce) { .radar-map .weather-transparency,.weather-transparency-panel,.weather-transparency-button { transition:none; } }
+
+/* Keep both radar switches together, including on narrow phone screens. */
+.radar-toggle-group { display:flex; align-items:center; gap:8px; margin-right:auto; }
+.radar-toggle-group .lightning-toggle { flex:0 1 auto; min-width:0; margin:0; }
+.high-res-toggle .lightning-toggle-body {
+  background:color-mix(in srgb,var(--panel) 64%,transparent);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+}
+.high-res-toggle input:checked + .lightning-toggle-body { background:color-mix(in srgb,var(--glow) 68%,transparent); }
+.radar-hd-controls { margin:0 0 12px; padding:12px 14px; border:1px solid var(--line); border-radius:16px; background:color-mix(in srgb,var(--panel) 72%,transparent); }
+.radar-hd-controls label { display:flex; align-items:center; flex-wrap:wrap; gap:8px 14px; color:var(--text); font-size:13px; }
+.radar-hd-controls select { box-sizing:border-box; flex:1; min-width:0; max-width:100%; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:12px; font:inherit; color:var(--text); background:var(--panel); }
+.radar-hd-controls select:focus-visible { outline:2px solid var(--rain); outline-offset:2px; }
+.radar-hd-controls .radar-meta { margin-top:6px; }
+.radar-hd-controls .radar-meta:empty { display:none; }
+.radar-hd-legend { margin-top:14px; font-size:12px; color:var(--muted); }
+.radar-hd-legend img { display:block; max-width:100%; height:auto; margin-top:8px; border-radius:8px; background:#fff; }
+@media (max-width:700px) {
+  .radar-toggle-group { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); flex-basis:100%; width:100%; margin:0; }
+  .radar-toggle-group .lightning-toggle { width:100%; }
+  .radar-toggle-group .lightning-toggle-body { padding:8px 10px; gap:7px; }
+  .radar-toggle-group .lightning-toggle-label { font-size:13px; white-space:nowrap; }
+  .radar-toggle-group .lightning-toggle-region { display:none; }
+}
+@media (max-width:350px) {
+  .radar-toggle-group .lightning-toggle-icon { display:none; }
+  .radar-toggle-group .lightning-toggle-body { padding:8px; gap:5px; }
+}
+

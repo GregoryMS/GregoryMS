@@ -17,6 +17,65 @@
   const $=id=>document.getElementById(id);
   let location=null,map=null,marker=null,frames=[],host='',layers=new Map(),current=-1,playing=false,fetching=false,lastFetch=0,started=false;
   let failed=false,baseFailed=false,imageFailed=false,buffering=false,playTimer=null,request=0;
+  let hdEnabled=false,station='',displayedHD=false,displayedStation='',fetchVersion=0,refreshController=null,sourceFailed=false;
+  let sites=[],siteRequest=null;
+  try {
+    const saved=JSON.parse(root.localStorage?.getItem('gregle-weather-radar-hd') || 'null');
+    if(root.GregleHighResRadar && saved?.enabled===true)hdEnabled=true;
+    if(typeof saved?.station==='string' && /^[KP][A-Z0-9]{3}$/.test(saved.station))station=saved.station;
+  } catch(_) {}
+  function rememberMode() {
+    try {root.localStorage?.setItem('gregle-weather-radar-hd',JSON.stringify({enabled:hdEnabled,station}));}catch(_){}
+  }
+  function modeControls() {
+    if(!$('radarHighResToggle'))return;
+    $('radarHighResToggle').checked=hdEnabled;
+    $('radarHDControls').hidden=!hdEnabled;
+    $('radarStation').value=station;
+  }
+  function sourceDetails() {
+    if(!$('radarHDLegend'))return;
+    $('radarStandardLegends').hidden=displayedHD;
+    $('radarHDLegend').hidden=!displayedHD;
+    $('radarStandardCredit').hidden=displayedHD;
+    $('radarHDCredit').hidden=!displayedHD;
+    if(displayedHD) {
+      const source=root.GregleHighResRadar.sourceFor(displayedStation);
+      $('radarHDLegendImage').src=`${source.endpoint}?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png&layer=${source.layer}`;
+    }
+    if(!root.GregleWeatherLayers?.active())$('radarMode').textContent=displayedHD?(displayedStation?`${displayedStation} · High-resolution reflectivity`:'High-resolution reflectivity · NOAA MRMS'):'Observed precipitation';
+  }
+  async function loadStations() {
+    if(sites.length || siteRequest || !hdEnabled)return;
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+    siteRequest=controller;
+    try {
+      const response=await fetch('assets/weather-radar-sites.json?v=20261119-hd1',{signal:controller.signal});
+      if(!response.ok)throw Error('Station list unavailable');
+      const data=await response.json();
+      if(!Array.isArray(data))throw Error('Invalid stations');
+      sites=data.filter(s=>/^[KP][A-Z0-9]{3}$/.test(s.id) && typeof s.name==='string' && Number.isFinite(s.lat) && Number.isFinite(s.lon));
+      populateStations();
+      $('radarStationStatus').textContent='';
+    } catch(_) {$('radarStationStatus').textContent='Station list unavailable. The US mosaic is still available; try Refresh.';}
+    finally {clearTimeout(timeout);siteRequest=null;}
+  }
+  function populateStations() {
+    if(!sites.length)return;
+    const select=$('radarStation');
+    while(select.options.length>1)select.remove(1);
+    const sorted=[...sites].sort((a,b)=>location?root.GregleHighResRadar.distance(a,location)-root.GregleHighResRadar.distance(b,location):a.id.localeCompare(b.id));
+    for(const site of sorted) {
+      const option=document.createElement('option');option.value=site.id;
+      option.textContent=`${site.id} · ${site.name}${location?' · '+Math.round(root.GregleHighResRadar.distance(site,location))+' km':''}`;
+      select.append(option);
+    }
+    select.value=station;
+  }
+  function changeSource() {
+    stop();lastFetch=0;sourceFailed=false;modeControls();rememberMode();loadStations();
+    if(map)refresh(true);
+  }
   function stop() {
     clearTimeout(playTimer);playTimer=null;playing=false;request++;buffering=false;
     $('radarPlay').textContent='▶ Play';$('radarPlay').setAttribute('aria-pressed','false');
@@ -28,7 +87,8 @@
     return new Date(frame.time*1000).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
   }
   function status() {
-    $('radarStatus').textContent=failed?'Radar refresh failed. Showing the previous images; try Refresh.':
+    $('radarStatus').textContent=sourceFailed?'The selected radar source is unavailable. Showing the previous source; try again.':
+      failed?'Radar refresh failed. Showing the previous images; try Refresh.':
       baseFailed?'The background map could not fully load. Try Refresh.':
       imageFailed?'The next radar image could not load. Try Refresh.':
       buffering?'Loading radar image…':
@@ -38,7 +98,7 @@
   function layerFor(frame) {
     let layer=layers.get(frame.path);
     if(layer)return layer;
-    layer=root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,zIndex:300,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
+    layer=frame.hd?root.GregleHighResRadar.createLayer(frame):root.L.tileLayer(tileURL(host,frame),{tileSize:512,zoomOffset:-1,maxNativeZoom:8,maxZoom:10,opacity:0,updateWhenIdle:true,keepBuffer:0,zIndex:300,attribution:'<a href="https://www.rainviewer.com/">RainViewer</a>'});
     // Load invisibly, then swap complete images in one turn. Prefetch only one
     // frame ahead during playback; cache viewed frames until the map moves.
     layer.radarReady=new Promise(resolve=>{
@@ -84,31 +144,53 @@
     layers.clear();
   }
   async function refresh(force=false) {
-    if(root.GregleWeatherLayers?.active() || !map || fetching || (!force && Date.now()-lastFetch<300000))return;
+    if(root.GregleWeatherLayers?.active() || !map || (fetching && !force) || (!force && Date.now()-lastFetch<(hdEnabled?120000:300000)))return;
+    refreshController?.abort();
+    const version=++fetchVersion,wantedHD=hdEnabled,wantedStation=station;
+    const changingSource=wantedHD!==displayedHD || (wantedHD && wantedStation!==displayedStation);
+    const previousTime=frames[current]?.time,wasLatest=current===frames.length-1;
     stop();fetching=true;$('radarRefresh').disabled=true;
     $('radarPlay').disabled=true;$('radarTime').disabled=true;
     $('radarStatus').textContent='Checking for radar images…';
     const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+    refreshController=controller;
     try {
-      const response=await fetch(ENDPOINT,{signal:controller.signal,cache:'no-cache'});
-      if(!response.ok)throw Error('Radar unavailable');
-      const data=framesFrom(await response.json());
-      clearLayers();current=-1;host=data.host;frames=data.frames;failed=false;lastFetch=Date.now();
+      let data;
+      if(wantedHD)data=await root.GregleHighResRadar.load(wantedStation,controller.signal);
+      else {
+        const response=await fetch(ENDPOINT,{signal:controller.signal,cache:'no-cache'});
+        if(!response.ok)throw Error('Radar unavailable');
+        data=framesFrom(await response.json());
+      }
+      if(version!==fetchVersion)return;
+      clearLayers();current=-1;host=data.host;frames=data.frames;failed=false;sourceFailed=false;lastFetch=Date.now();
+      displayedHD=wantedHD;displayedStation=wantedStation;sourceDetails();
+      $('radarTimestamp').textContent='Loading…';root.GregleLightning?.setFrame(null);
       $('radarTime').max=String(frames.length-1);$('radarTime').disabled=false;$('radarPlay').disabled=frames.length<2;
-      show(frames.length-1);
+      // Stay near the selected observation when changing feeds; latest follows latest.
+      const selected=!changingSource || wasLatest || !previousTime?frames.length-1:frames.reduce((best,f,i)=>Math.abs(f.time-previousTime)<Math.abs(frames[best].time-previousTime)?i:best,0);
+      show(selected);
     } catch(_) {
+      if(version!==fetchVersion)return;
       failed=true;
-      if(frames.length)status();
-      else { $('radarTimestamp').textContent='Unavailable';$('radarStatus').textContent='Radar is unavailable right now. Try Refresh, or open RainViewer below.'; }
+      if(frames.length) {
+        sourceFailed=wantedHD!==displayedHD || (wantedHD && wantedStation!==displayedStation);
+        if(sourceFailed){hdEnabled=displayedHD;station=displayedStation;modeControls();rememberMode();}
+        status();
+      } else { $('radarTimestamp').textContent='Unavailable';$('radarStatus').textContent=hdEnabled?'High-resolution radar is unavailable. Try Refresh or switch High Res off for standard radar.':'Radar is unavailable right now. Try Refresh.'; }
     } finally {
-      clearTimeout(timeout);fetching=false;$('radarRefresh').disabled=false;
-      $('radarPlay').disabled=frames.length<2;$('radarTime').disabled=!frames.length;
+      clearTimeout(timeout);
+      if(version===fetchVersion){
+        refreshController=null;fetching=false;$('radarRefresh').disabled=false;
+        $('radarPlay').disabled=frames.length<2;$('radarTime').disabled=!frames.length;
+      }
     }
   }
   function recenter() { if(map && location)map.setView([location.latitude,location.longitude],7); }
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
+    if(sites.length)populateStations();
     root.GregleLightning?.setLocation(value);
     root.GregleWeatherLayers?.setLocation(value);
     if(map) { stop();clearLayers();marker.setLatLng([value.latitude,value.longitude]);recenter();if(frames.length)show(frames.length-1); }
@@ -130,13 +212,18 @@
     // Dropping cached frames on a pan prevents hidden layers requesting many tiles.
     map.on('movestart',()=>{stop();clearLayers();});
     map.on('moveend',()=>{if(frames.length)show(current);});
-    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);root.GregleLightning?.refresh();});
+    $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);loadStations();root.GregleLightning?.refresh();});
     refresh(true);
   }
   root.GregleRadar={setLocation,pause:stop,resumeView(){
-    if(map){map.invalidateSize();if(frames.length)show(current);refresh();}
+    if(map){map.invalidateSize();sourceDetails();if(frames.length)show(current);refresh();}
   }};
   document.addEventListener('DOMContentLoaded',()=>{
+    if(root.GregleHighResRadar && $('radarHighResToggle')) {
+      modeControls();loadStations();
+      $('radarHighResToggle').addEventListener('change',()=>{hdEnabled=$('radarHighResToggle').checked;changeSource();});
+      $('radarStation').addEventListener('change',()=>{station=$('radarStation').value;changeSource();});
+    }
     $('radarRecenter').addEventListener('click',recenter);
     $('radarTime').addEventListener('input',()=>{stop();show(Number($('radarTime').value));});
     $('radarPlay').addEventListener('click',()=>{
@@ -163,3 +250,4 @@
     root.addEventListener('pagehide',stop);
   });
 })(globalThis);
+

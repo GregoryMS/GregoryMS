@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/weather.css?v=20261106-alert-placement">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20261110-translucent-controls">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20261119-hd1">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/vendor/suncalc.js" defer></script>
@@ -130,15 +130,21 @@
         <span id="radarMode" class="radar-mode">Observed precipitation</span>
       </div>
       <div id="radarObserved">
-      <div class="radar-actions"><label class="lightning-toggle"><input id="lightningToggle" type="checkbox" role="switch" aria-label="Lightning overlay for Canada" checked><span class="lightning-toggle-body"><svg class="lightning-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z"/></svg><span class="lightning-toggle-label">Lightning <span class="lightning-toggle-region">Canada</span></span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div>
+      <div class="radar-actions"><div class="radar-toggle-group"><label class="lightning-toggle"><input id="lightningToggle" type="checkbox" role="switch" aria-label="Lightning overlay for Canada" checked><span class="lightning-toggle-body"><svg class="lightning-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z"/></svg><span class="lightning-toggle-label">Lightning <span class="lightning-toggle-region">Canada</span></span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label><label class="lightning-toggle high-res-toggle"><input id="radarHighResToggle" type="checkbox" role="switch" aria-label="High-resolution radar" aria-controls="radarHDControls"><span class="lightning-toggle-body"><span class="lightning-toggle-label">High Res</span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label></div><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div>
+      <div id="radarHDControls" class="radar-hd-controls" hidden>
+        <label for="radarStation"><span>Radar source</span><select id="radarStation"><option value="">US mosaic · MRMS</option></select></label>
+        <p class="radar-meta">US radar coverage. Near Victoria, choose KATX for a detailed station view. Switch High Res off for standard radar coverage.</p>
+        <p id="radarStationStatus" class="radar-meta" role="status"></p>
+      </div>
       <div class="radar-panel">
         <div id="radarMap" class="radar-map" role="region" aria-label="Interactive precipitation radar and Canadian lightning map" tabindex="0"></div>
         <div class="radar-controls"><button class="pill" id="radarPlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline"><label for="radarTime">Radar history <output id="radarTimestamp" for="radarTime">Loading…</output></label><input id="radarTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="radarStart">Past two hours</span><span>Latest available</span></div></div></div>
       </div>
-      <div class="radar-legends" role="group" aria-label="Rain and snow intensity legends">
+      <div id="radarStandardLegends" class="radar-legends" role="group" aria-label="Rain and snow intensity legends">
         <div class="radar-legend" aria-label="Rain: light blue through dark blue, yellow and red as intensity increases"><strong>Rain</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
         <div class="radar-legend radar-legend-snow" aria-label="Snow: pale cyan through bright blue as intensity increases"><strong>Snow</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
       </div>
+      <div id="radarHDLegend" class="radar-hd-legend" hidden><strong>Reflectivity · dBZ</strong><span> · Stronger echoes generally indicate heavier precipitation.</span><details class="radar-source-note"><summary>Reflectivity colour key</summary><img id="radarHDLegendImage" alt="NOAA radar reflectivity colour scale in dBZ" loading="lazy"></details></div>
       <p id="lightningStatus" class="radar-meta" role="status">Lightning loads with the radar.</p>
       <details id="lightningKey" class="radar-source-note"><summary>Lightning key & coverage</summary>
         <figure class="lightning-legend" aria-label="Lightning flash density colour scale from 0 to 2 or more flashes per square kilometre per minute">
@@ -147,7 +153,8 @@
           <div class="lightning-legend-ticks" aria-hidden="true"><span>0</span><span>0.5</span><span>1</span><span>1.5</span><span>2+</span></div>
         </figure><p class="radar-meta">Observed lightning activity from Environment Canada, averaged over 2.5 km cells during the preceding 10 minutes. Colours show flash density, not individual strike locations. Coverage includes most of Canada and nearby border areas; a clear area can also mean no coverage. Lightning follows the radar timeline, using the nearest earlier observation (up to 20 minutes behind), with its own observation time shown above.</p><p class="radar-meta"><a href="https://eccc-msc.github.io/open-data/msc-data/lightning/readme_lightning_en/">About the Canadian Lightning Detection Network data ↗</a></p></details>
       <p id="radarStatus" class="radar-meta" role="status">Radar will load as you scroll into view.</p>
-      <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta radar-credit">Recent rain and snow observations from <a href="https://www.rainviewer.com/">RainViewer</a>, not a forecast. Colours follow RainViewer’s classification. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p></details>
+      <details id="radarStandardCredit" class="radar-source-note"><summary>About this map</summary><p class="radar-meta radar-credit">Recent rain and snow observations from <a href="https://www.rainviewer.com/">RainViewer</a>, not a forecast. Colours follow RainViewer’s classification. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p></details>
+      <details id="radarHDCredit" class="radar-source-note" hidden><summary>About high-resolution radar</summary><p class="radar-meta radar-credit">Reflectivity observations from <a href="https://opengeo.ncep.noaa.gov/geoserver/www/index.html">NOAA / NWS</a>. The MRMS mosaic combines US radar observations at 1 km resolution; individual stations provide super-resolution base reflectivity. This mode does not classify rain and snow. The timeline uses published observation times from the past two hours. Coverage varies, especially outside the US and behind terrain; blank areas can mean no coverage or missing data. Standard radar remains available with High Res off.</p></details>
       </div>
       <div id="radarPrecipType" hidden>
         <div class="radar-actions"><button class="pill" id="ptypeRecenter" type="button">◎ Recenter</button><button class="pill" id="ptypeRefresh" type="button">↻ Refresh</button></div>
@@ -220,7 +227,8 @@
   <script src="assets/weather-precip-type.js?v=20261110-transparency-slider"></script>
   <script src="assets/weather-map-layers.js?v=20261028-noaa"></script>
   <script src="assets/weather-lightning.js?v=20261022-timeline-24h"></script>
-  <script src="assets/weather-radar.js?v=20261110-transparency-slider"></script>
+  <script src="assets/weather-radar-hd.js?v=20261119-hd1"></script>
+  <script src="assets/weather-radar.js?v=20261119-hd1"></script>
   <script src="assets/tide-core.js"></script>
   <script src="assets/tide-data.js"></script>
   <script src="assets/tide-ui.js?v=20261022-timeline-24h"></script>
@@ -559,4 +567,5 @@
   </script>
 </body>
 </html>
+
 

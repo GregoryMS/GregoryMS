@@ -5,7 +5,7 @@ const vm=require('node:vm');
 
 // Exercise the browser controller with manually completed tile loads and a
 // deterministic clock, so slow/error/out-of-order responses are reproducible.
-async function setup() {
+async function setup(options={}) {
   let now=0,nextTimer=0;
   const timers=new Map(),elements=new Map(),events={},mapEvents={},created=[];
   const flush=async()=>{for(let i=0;i<8;i++)await Promise.resolve();};
@@ -14,7 +14,8 @@ async function setup() {
       setAttribute(k,v){this.attributes[k]=v;},addEventListener(k,fn){this.events[k]=fn;}});
     return elements.get(id);
   };
-  const map={on(k,fn){mapEvents[k]=fn;},setView(){},removeLayer(layer){layer.removed=true;}};
+  const views=[];
+  const map={on(k,fn){mapEvents[k]=fn;},setView(...args){views.push(args);},removeLayer(layer){layer.removed=true;}};
   const document={hidden:false,getElementById:element,addEventListener(k,fn){events[k]=fn;}};
   let failFetch=false;
   const context={document,URL,Intl,Date,AbortController,console,
@@ -28,6 +29,19 @@ async function setup() {
         fire(k){this.events[k]?.();}};
       created.push(layer);return layer;
     }}
+  };
+  const saved=new Map();
+  if(options.preference)saved.set('gregle-weather-radar-hd',JSON.stringify(options.preference));
+  context.localStorage={getItem:k=>saved.get(k),setItem:(k,v)=>saved.set(k,v)};
+  const hdCalls=[];
+  if(options.hd)context.GregleHighResRadar={
+    distance:()=>0,sourceFor:station=>({endpoint:'https://opengeo.ncep.noaa.gov/geoserver/ows',layer:station || 'conus_bref_qcd'}),
+    async load(station,signal){
+      hdCalls.push({station,signal});
+      if(options.hdLoad)return options.hdLoad(station,signal);
+      return {host:'',frames:[660,1260,1860].map(time=>({time,path:`hd:${station}:${time}`,hd:{station,time}}))};
+    },
+    createLayer(frame){return context.L.tileLayer(`https://opengeo.ncep.noaa.gov/hd/${frame.hd.time}`,{opacity:0});}
   };
   let opacity=.6,changeOpacity;
   context.GregleWeatherTransparency={opacity:()=>opacity,attach(map,fn){changeOpacity=fn;}};
@@ -50,7 +64,9 @@ async function setup() {
     now=end;await flush();
   }
   const visible=()=>layers().filter(l=>l.opacity>0).map(l=>Number(l.url.match(/radar\/(\d+)/)[1]));
-  return {element,context,events,mapEvents,layers,layer,load,click,scrub,advance,visible,flush,setOpacity(value){opacity=value;changeOpacity(value);},failFetch:()=>{failFetch=true;}};
+  return {element,context,events,mapEvents,layers,layer,load,click,scrub,advance,visible,flush,created,views,saved,hdCalls,
+    async setHighRes(value){element('radarHighResToggle').checked=value;element('radarHighResToggle').events.change();await flush();},
+    hdLayer:time=>created.find(l=>l.url.endsWith(`/hd/${time}`)&&!l.removed),setOpacity(value){opacity=value;changeOpacity(value);},failFetch:()=>{failFetch=true;}};
 }
 
 test('play retains the complete current image and timestamp until the next load finishes',async()=>{
@@ -146,3 +162,52 @@ test('transparency applies immediately, survives frame changes, and keeps prefet
   h.setOpacity(1);assert.equal(h.layer(1200).opacity,1);
   assert.equal(h.layer(600).opacity,0,'previous frame stays hidden');
 });
+
+test('high-resolution switches preserve map position and match a scrubbed observation across feeds',async()=>{
+  const h=await setup({hd:true});await h.load(1800);
+  const viewCount=h.views.length;
+  await h.setHighRes(true);h.hdLayer(1860).fire('load');await h.flush();
+  assert.equal(h.element('radarHDLegend').hidden,false);
+  assert.equal(h.element('radarStandardLegends').hidden,true);
+  assert.match(h.element('radarMode').textContent,/NOAA MRMS/);
+  assert.equal(h.views.length,viewCount);
+  await h.scrub(0);h.hdLayer(660).fire('load');await h.flush();
+  await h.setHighRes(false);await h.load(600);
+  assert.deepEqual(h.visible(),[600]);assert.equal(h.element('radarTime').value,'0');
+  assert.equal(h.element('radarHDControls').hidden,true);
+  assert.equal(h.element('radarStandardLegends').hidden,false);
+});
+
+test('late high-resolution metadata cannot replace standard radar after switching off',async()=>{
+  let resolveHD;
+  const pending=new Promise(resolve=>{resolveHD=resolve;});
+  const h=await setup({hd:true,hdLoad:()=>pending});await h.load(1800);
+  await h.setHighRes(true);await h.setHighRes(false);await h.load(1800);
+  assert.equal(h.hdCalls[0].signal.aborted,true);
+  resolveHD({host:'',frames:[{time:1860,path:'hd:late',hd:{time:1860}}]});await h.flush();
+  assert.deepEqual(h.visible(),[1800]);assert.equal(h.hdLayer(1860),undefined);
+  assert.equal(h.element('radarHDLegend').hidden,true);
+});
+
+test('failed source changes retain usable radar and restore the displayed source switch',async()=>{
+  const h=await setup({hd:true,hdLoad:async()=>{throw Error('offline');}});await h.load(1800);
+  await h.setHighRes(true);
+  assert.deepEqual(h.visible(),[1800]);
+  assert.equal(h.element('radarHighResToggle').checked,false);
+  assert.equal(h.element('radarHDControls').hidden,true);
+  assert.match(h.element('radarStatus').textContent,/selected radar source is unavailable/);
+  assert.equal(JSON.parse(h.saved.get('gregle-weather-radar-hd')).enabled,false);
+  assert.equal(h.element('radarPlay').disabled,false);
+});
+
+test('saved high-resolution station is restored on a new visit',async()=>{
+  const h=await setup({hd:true,preference:{enabled:true,station:'KATX'}});
+  assert.equal(h.hdCalls[0].station,'KATX');
+  assert.equal(h.element('radarHighResToggle').checked,true);
+  assert.equal(h.element('radarStation').value,'KATX');
+  h.hdLayer(1860).fire('load');await h.flush();
+  assert.match(h.element('radarMode').textContent,/KATX/);
+  await h.setHighRes(false);await h.load(1800);
+  assert.deepEqual(JSON.parse(h.saved.get('gregle-weather-radar-hd')),{enabled:false,station:'KATX'});
+});
+
