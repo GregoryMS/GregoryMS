@@ -106,3 +106,6 @@
 @media (max-width:600px) {
   .tide-chart .tide-axis-time { font-size:11px; }
 }
+.weather-app-back { gap:6px; min-height:44px; white-space:nowrap; }
+.weather-app-back svg { flex-shrink:0; width:16px; height:16px; }
+@media (max-width:380px) { .weather-app-back .weather-back-prefix { display:none; } }

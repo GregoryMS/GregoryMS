@@ -22,11 +22,17 @@
     host.append(node('p','details',`${data.model?'Estimated tides':'Predicted tides'} · ${data.datum} · Times in ${data.timezone.replaceAll('_',' ')}`));
   }
   let previewController=null,previewVersion=0,previewLocation=null,previewUpdated=0;
+  const appDisplay=root.matchMedia?.('(display-mode: standalone), (display-mode: minimal-ui)');
+  function updateWeatherLinks() {
+    const installed=Boolean(root.navigator?.standalone || appDisplay?.matches);
+    const url=core.weatherTideURL(root.location?.href,installed,previewLocation || root.GregleWeatherSelectedLocation);
+    for(const id of ['tidePreview','tideLink']) {const link=document.getElementById(id);if(link)link.href=url;}
+  }
   async function weatherPreview(location) {
     const link=document.getElementById('tidePreview'),host=document.getElementById('tidePreviewContent'),shortcut=document.getElementById('tideLink');
     if(!link || !host) return;
     previewLocation=location;previewUpdated=Date.now();
-    const url=core.locationURL('https://tides.gregle.uk/',location);link.href=url;if(shortcut)shortcut.href=url;
+    updateWeatherLinks();
     previewController?.abort(); const controller=new AbortController();previewController=controller;const version=++previewVersion;
     host.replaceChildren(node('p','location-note','Loading today’s tides…'));link.setAttribute('aria-busy','true');
     try { const data=await root.GregleTideData.load(location,controller.signal);if(version===previewVersion)summary(host,data,Date.now(),'h23'); }
@@ -35,6 +41,9 @@
   }
   function refreshPreview() { if(previewLocation && !document.hidden && Date.now()-previewUpdated>=900000) weatherPreview(previewLocation); }
   document.addEventListener('visibilitychange',refreshPreview);
+  document.addEventListener('DOMContentLoaded',updateWeatherLinks);
+  appDisplay?.addEventListener?.('change',updateWeatherLinks);
+  root.addEventListener?.('pageshow',updateWeatherLinks);
   setInterval(refreshPreview,60000);
   root.GregleTideUI={node,time,height,eventsList,summary,weatherPreview};
 })(globalThis);

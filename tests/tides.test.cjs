@@ -77,13 +77,13 @@ class Element {
  append(...v){this.children.push(...v);} appendChild(v){this.append(v);} replaceChildren(...v){this._text='';this.children=v;}
  setAttribute(k,v){this.attributes[k]=String(v);} addEventListener(k,v){this.listeners[k]=v;}
 }
-function app({page='tides',load=async()=>dataset(),fetch=async()=>response({}),href='https://gregle.uk/tides.html',geolocation={getCurrentPosition(){} },chartWidth=0}={}) {
+function app({page='tides',load=async()=>dataset(),fetch=async()=>response({}),href='https://gregle.uk/tides.html',geolocation={getCurrentPosition(){} },chartWidth=0,installed=false,ios=false}={}) {
  const nodes=new Map(),get=id=>{if(!nodes.has(id)){const node=new Element();if(id==='tideChart')node.clientWidth=chartWidth;nodes.set(id,node);}return nodes.get(id);};
  let geolocationCalls=0;
  const document={getElementById:get,createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag),querySelectorAll:()=>[],addEventListener(){},documentElement:new Element()};
  const c={GregleTides:core,GregleWeather:weather,GregleTideData:{load},document,fetch,URL,AbortController,Intl,console,
- Date:class extends Date{static now(){return now;}},setTimeout:()=>1,clearTimeout(){},setInterval(){},matchMedia:()=>({matches:false}),
- localStorage:{getItem:()=>null,setItem(){}},navigator:{geolocation:{getCurrentPosition(...args){geolocationCalls++;geolocation.getCurrentPosition(...args);}}},location:{href},history:{replaceState(_,__,url){c.location.href=new URL(url,c.location.href).href;}}};c.window=c;
+ Date:class extends Date{static now(){return now;}},setTimeout:()=>1,clearTimeout(){},setInterval(){},matchMedia:()=>({matches:installed}),
+ localStorage:{getItem:()=>null,setItem(){}},navigator:{standalone:ios,geolocation:{getCurrentPosition(...args){geolocationCalls++;geolocation.getCurrentPosition(...args);}}},location:{href},history:{replaceState(_,__,url){c.location.href=new URL(url,c.location.href).href;}}};c.window=c;
  vm.createContext(c);vm.runInContext(fs.readFileSync(require.resolve('../assets/tide-ui.js'),'utf8'),c);
  if(page==='tides') vm.runInContext(fs.readFileSync(require.resolve('../assets/tides.js'),'utf8'),c);
  if(page==='weather') {const html=fs.readFileSync(require.resolve('../weather.html'),'utf8');const inline=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');vm.runInContext(inline,c);}
@@ -120,6 +120,34 @@ test('new Weather and Tides roots preserve the selected location across origins 
  assert.equal(new URL(forecast.get('tideLink').href).origin,'https://tides.gregle.uk');
  assert.equal(core.locationFromURL(forecast.get('tideLink').href).latitude,victoria.latitude);
  assert.equal(forecast.geolocationCalls(),0);
+});
+test('installed Weather opens Tides in its own scope and returns the selected location to Weather',async()=>{
+ for(const display of [{installed:true},{ios:true}]) {
+  const forecast=app({page:'weather',href:core.locationURL('https://weather.gregle.uk/',victoria),...display});await flush();
+  const href=forecast.get('tideLink').href;
+  assert.equal(new URL(href).origin,'https://weather.gregle.uk');
+  assert.equal(new URL(href).pathname,'/tides/');
+  assert.deepEqual(core.locationFromURL(href),victoria);
+  assert.equal(forecast.get('tidePreview').href,href);
+  const tide=app({href,fetch:async()=>response({results:[{...london,country_code:'GB'}]})});await flush();
+  assert.equal(new URL(tide.c.location.href).pathname,'/tides/');
+  assert.equal(tide.geolocationCalls(),0);
+  tide.get('tideQuery').value='London';await tide.get('tideSearch').listeners.submit({preventDefault(){}});
+  tide.get('tideResults').children[0].listeners.click();await flush();
+  assert.equal(new URL(tide.c.location.href).pathname,'/tides/');
+  assert.equal(new URL(tide.get('weatherLink').href).origin,'https://weather.gregle.uk');
+  assert.equal(new URL(tide.get('weatherLink').href).pathname,'/');
+  assert.equal(core.locationFromURL(tide.get('weatherLink').href).name,'London');
+ }
+});
+test('browser Weather keeps standalone Tides links and only the exact Weather host uses the PWA route',()=>{
+ assert.equal(new URL(core.weatherTideURL('https://weather.gregle.uk/',false,victoria)).origin,'https://tides.gregle.uk');
+ for(const href of ['https://weather.gregle.uk.example/', 'https://tides.gregle.uk/', 'invalid']) {
+  assert.equal(new URL(core.weatherTideURL(href,true,victoria)).origin,'https://tides.gregle.uk');
+  assert.equal(core.isWeatherTides(href),false);
+ }
+ assert.equal(core.isWeatherTides('https://weather.gregle.uk/tides/?lat=48'),true);
+ assert.equal(core.isWeatherTides('https://weather.gregle.uk/'),false);
 });
 test('tide search treats names as text and retains selected location after service errors',async()=>{
  const a=app({fetch:async()=>response({results:[{name:'<Coast & Bay>',latitude:51.5,longitude:-.1,country_code:'GB',timezone:'Europe/London'}]})});await flush();

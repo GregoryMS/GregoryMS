@@ -5,6 +5,7 @@ import {mapsTomTom} from './maps-tomtom.mjs';
 import {sportsHeadlines} from './sports-headlines.mjs';
 import {mapsOffline} from './maps-offline.mjs';
 import {astroForecast} from './astro-forecast.mjs';
+import {weatherTidesView} from './weather-tides.mjs';
 
 const pageForHost = new Map(Object.entries(pages).map(([page, host]) => [host, page]));
 const pageForPath = new Map(Object.keys(pages).flatMap(page => [[`/${page}`, page], [`/${page.slice(0, -5)}`, page]]));
@@ -37,14 +38,19 @@ export default {
       url.protocol = 'https:';
       return new Response(null, {status: 308, headers: {Location: url.href}});
     }
-    if (url.pathname !== '/') {
+    const weatherTides = page === 'weather.html' && (url.pathname === '/tides/' || url.pathname === '/tides');
+    if (weatherTides && url.pathname === '/tides') {
+      url.pathname = '/tides/';
+      return new Response(null, {status: 308, headers: {Location: url.href, 'Cache-Control': 'public, max-age=300'}});
+    }
+    if (url.pathname !== '/' && !weatherTides) {
       const destination = pageForPath.get(url.pathname);
       if (destination) return redirect(pages[destination], url.search);
     }
 
     // The apex stays the GitHub Pages origin; no copied site or second build.
     const upstream = new URL('https://gregle.uk/');
-    upstream.pathname = url.pathname === '/' ? `/${page}` : url.pathname;
+    upstream.pathname = weatherTides ? '/tides.html' : url.pathname === '/' ? `/${page}` : url.pathname;
     upstream.search = url.search;
     const headers = new Headers();
     for (const name of ['Accept', 'Accept-Language', 'If-Modified-Since', 'If-None-Match', 'If-Range', 'Range']) {
@@ -98,6 +104,13 @@ export default {
       resultHeaders.set('Content-Type', 'application/manifest+json; charset=utf-8');
       for (const name of ['Content-Length', 'Content-Encoding', 'ETag', 'Last-Modified']) resultHeaders.delete(name);
       return new Response(JSON.stringify(manifest), {headers: resultHeaders});
+    }
+    if (weatherTides && response.status === 200) {
+      for (const name of ['Content-Length', 'Content-Encoding', 'ETag', 'Last-Modified']) resultHeaders.delete(name);
+      resultHeaders.set('Cache-Control', 'no-cache');
+      resultHeaders.set('Link', '<https://tides.gregle.uk/>; rel="canonical"');
+      const view = new Response(response.body, {status: response.status, headers: resultHeaders});
+      return request.method === 'HEAD' ? view : weatherTidesView(view, url.search);
     }
     if (url.pathname === '/' && response.status === 200) {
       resultHeaders.set('Link', `<https://${url.hostname}/>; rel="canonical"`);

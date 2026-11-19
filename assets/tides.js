@@ -1,6 +1,7 @@
 (function() {
   'use strict';
   const core=globalThis.GregleTides, ui=globalThis.GregleTideUI, weather=globalThis.GregleWeather, $=id=>document.getElementById(id);
+  const weatherApp=core.isWeatherTides(window.location.href) || document.body?.hasAttribute?.('data-weather-app-tides');
   let location=null,data=null,selectedDay=null,controller=null,version=0,lookupVersion=0,lookupController=null,loadedAt=0,chartSelection=null,chartDragging=false;
   function cancelLookup() { lookupVersion++;lookupController?.abort();$('tideSearchButton').disabled=false;$('locateTides').disabled=false; }
   function dayLabel(day) { return new Date(day+'T12:00:00Z').toLocaleDateString('en-CA',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}); }
@@ -165,8 +166,8 @@
     if(!weather.coordinates(value.latitude,value.longitude))return;
     cancelLookup();location=value;selectedDay=null;
     $('tideCity').textContent=value.name;$('tideRegion').textContent=value.region || 'Coastal tide forecast';document.title=value.name+' tides · Gregle';
-    $('weatherLink').href=core.locationURL('https://weather.gregle.uk/',value);
-    if(window.history?.replaceState) window.history.replaceState(null,'',core.locationURL(new URL(window.location.href).hostname === 'tides.gregle.uk' ? '/' : 'tides.html',value));
+    $('weatherLink').href=core.locationURL(weatherApp?new URL('/',window.location.href).href:'https://weather.gregle.uk/',value);
+    if(window.history?.replaceState) window.history.replaceState(null,'',core.locationURL(weatherApp?'/tides/':new URL(window.location.href).hostname === 'tides.gregle.uk' ? '/' : 'tides.html',value));
     $('tideResults').replaceChildren();$('tideLocationStatus').textContent='Showing tides for '+value.name+'.';
     return refresh();
   }

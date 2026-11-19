@@ -21,6 +21,14 @@
     }
     return page+url.search;
   }
+  function isWeatherTides(href) {
+    try {const url=new URL(href);return url.hostname==='weather.gregle.uk' && /^\/tides\/?$/.test(url.pathname);}catch(_){return false;}
+  }
+  function weatherTideURL(href,installed,location) {
+    let page='https://tides.gregle.uk/';
+    try {const url=new URL(href);if(installed && url.hostname==='weather.gregle.uk')page=url.origin+'/tides/';}catch(_){}
+    return locationURL(page,location);
+  }
   function dayKey(time,zone) { return new Intl.DateTimeFormat('en-CA',{timeZone:timezone(zone),year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(time)); }
   function dayKeys(now,zone,count=7) {
     const start=Date.parse(dayKey(now,zone)+'T12:00:00Z');
@@ -97,6 +105,6 @@
     const a=points[i-1],b=points[i],gap=b.time-a.time;
     return Number.isFinite(a.height)&&Number.isFinite(b.height)&&gap>0&&gap<=3600000?(b.height-a.height)*3600000/gap:null;
   }
-  const api={timezone,locationFromURL,locationURL,dayKey,dayKeys,nearestStation,predictions,extremes,marine,marineURL,current,daySummary,countdown,rate};
+  const api={timezone,locationFromURL,locationURL,isWeatherTides,weatherTideURL,dayKey,dayKeys,nearestStation,predictions,extremes,marine,marineURL,current,daySummary,countdown,rate};
   if(typeof module!=='undefined' && module.exports) module.exports=api; else root.GregleTides=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
