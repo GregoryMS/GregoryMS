@@ -17,7 +17,9 @@ test('every content page has the same valid app destinations and working icons',
     assert.equal((source.match(/id="themeToggle"/g) || []).length, 1, file);
     if (file === 'weather.html') {
       assert(!menu.includes('id="themeToggle"'), file);
-      assert.match(source, /class="weather-settings-head-actions"><div class="gregle-installed-theme-control"><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
+      assert.match(menu, /id="weatherMenuThemeHome" hidden><span>Dark mode<\/span>/, file);
+      assert.match(source, /id="weatherSettingsThemeRow"><span>Dark mode<\/span><div class="gregle-installed-theme-control" id="weatherSettingsThemeHome"><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
+      assert.match(source, /assets\/weather-theme-placement\.js\?/, file);
     } else {
   assert.match(menu, /<div class="gregle-menu-heading"><h2>Gregle apps<\/h2><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
     }
@@ -197,4 +199,5 @@ test('installed apps expose the original working theme switch and restore it in 
   assert.equal(themeSwitch.parentElement,header.children[0]);assert.equal(themeSwitch.attrs['aria-checked'],'false');
   assert.equal(launcher(null,false,{ios:true}).header.children[0].className,'gregle-installed-theme-control');
 });
+
 
