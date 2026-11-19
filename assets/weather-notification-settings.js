@@ -94,7 +94,11 @@
     async function request(path, data) {
       const response = await fetch(API + path, {method:data ? 'POST' : 'GET', headers:data ? {'Content-Type':'application/json'} : {}, body:data ? JSON.stringify(data) : undefined, cache:'no-store', signal:AbortSignal.timeout(15000)});
       let result; try { result = await response.json(); } catch (_) { throw Error('Notification service is temporarily unavailable.'); }
-      if (!response.ok) throw Error(result.error || 'Could not connect to the notification service.');
+      if (!response.ok) {
+        const error = Error(result.error || 'Could not connect to the notification service.');
+        error.status = response.status; error.code = result.code;
+        throw error;
+      }
       return result;
     }
     function enqueue(task) {
@@ -167,8 +171,19 @@
     $('weatherPushTest').addEventListener('click', () => enqueue(async () => {
       if (!subscription || !connected) return;
       $('weatherPushTest').disabled = true;
-      await request('/test', {subscription:subscription.toJSON()});
-      status('Test notification sent. Check this device’s notifications.');
+      try {
+        await request('/test', {subscription:subscription.toJSON()});
+        status('Test notification sent. Check this device’s notifications.');
+      } catch (error) {
+        if (error.status === 404 || error.status === 410) {
+          if (error.status === 410) { await subscription.unsubscribe(); subscription = null; }
+          connected = false; $('weatherPushRetry').hidden = false;
+          status('This notification subscription needs reconnecting. Tap Retry connection.');
+        } else {
+          // A delivery failure does not invalidate the saved subscription or preferences.
+          status('The test notification could not be delivered. Your connection is still saved. Try Send test notification again.');
+        }
+      }
     }));
     globalThis.GregleWeatherNotifications = {setLocation(location) {
       selected = location; describeLocation();

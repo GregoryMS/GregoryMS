@@ -25,24 +25,32 @@ export async function validateSubscription(value) {
 }
 export async function pushRequest(env, subscription, message) {
   if (!validEndpoint(subscription.endpoint)) throw Error('Invalid push endpoint');
-  const remotePublic = decode(subscription.p256dh), auth = decode(subscription.auth);
-  const pair = await crypto.subtle.generateKey({name:'ECDH', namedCurve:'P-256'}, true, ['deriveBits']);
-  const localPublic = new Uint8Array(await crypto.subtle.exportKey('raw', pair.publicKey));
-  const remote = await crypto.subtle.importKey('raw', remotePublic, {name:'ECDH', namedCurve:'P-256'}, false, []);
-  const shared = new Uint8Array(await crypto.subtle.deriveBits({name:'ECDH', public:remote}, pair.privateKey, 256));
-  const ikm = await hkdf(shared, auth, concat(encoder.encode('WebPush: info\0'), remotePublic, localPublic), 32);
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const key = await hkdf(ikm, salt, encoder.encode('Content-Encoding: aes128gcm\0'), 16);
-  const nonce = await hkdf(ikm, salt, encoder.encode('Content-Encoding: nonce\0'), 12);
-  const payload = encoder.encode(JSON.stringify(message));
-  if (payload.length > 3000) throw Error('Push message too large');
-  const aes = await crypto.subtle.importKey('raw', key, 'AES-GCM', false, ['encrypt']);
-  const cipher = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv:nonce}, aes, concat(payload, [2])));
-  const header = new Uint8Array(21); header.set(salt); new DataView(header.buffer).setUint32(16, 4096); header[20] = localPublic.length;
-  const head = encode(encoder.encode(JSON.stringify({typ:'JWT', alg:'ES256'})));
-  const claims = encode(encoder.encode(JSON.stringify({aud:new URL(subscription.endpoint).origin, exp:Math.floor(Date.now()/1000)+3600, sub:'mailto:notifications@gregle.uk'})));
-  const privateKey = await crypto.subtle.importKey('jwk', JSON.parse(env.VAPID_PRIVATE), {name:'ECDSA', namedCurve:'P-256'}, false, ['sign']);
-  const signature = encode(new Uint8Array(await crypto.subtle.sign({name:'ECDSA', hash:'SHA-256'}, privateKey, encoder.encode(head + '.' + claims))));
-  return new Request(subscription.endpoint, {method:'POST', redirect:'error', signal:AbortSignal.timeout(10000), headers:{TTL:'300', Urgency:'normal', 'Content-Encoding':'aes128gcm', 'Content-Type':'application/octet-stream', Authorization:`vapid t=${head}.${claims}.${signature}, k=${env.VAPID_PUBLIC}`}, body:concat(header, localPublic, cipher)});
+  let stage = 'key-agreement';
+  try {
+    const remotePublic = decode(subscription.p256dh), auth = decode(subscription.auth);
+    const pair = await crypto.subtle.generateKey({name:'ECDH', namedCurve:'P-256'}, true, ['deriveBits']);
+    const localPublic = new Uint8Array(await crypto.subtle.exportKey('raw', pair.publicKey));
+    const remote = await crypto.subtle.importKey('raw', remotePublic, {name:'ECDH', namedCurve:'P-256'}, false, []);
+    const shared = new Uint8Array(await crypto.subtle.deriveBits({name:'ECDH', public:remote}, pair.privateKey, 256));
+    stage = 'key-derivation';
+    const ikm = await hkdf(shared, auth, concat(encoder.encode('WebPush: info\0'), remotePublic, localPublic), 32);
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const key = await hkdf(ikm, salt, encoder.encode('Content-Encoding: aes128gcm\0'), 16);
+    const nonce = await hkdf(ikm, salt, encoder.encode('Content-Encoding: nonce\0'), 12);
+    const payload = encoder.encode(JSON.stringify(message));
+    if (payload.length > 3000) throw Error('Push message too large');
+    stage = 'payload-encryption';
+    const aes = await crypto.subtle.importKey('raw', key, 'AES-GCM', false, ['encrypt']);
+    const cipher = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv:nonce}, aes, concat(payload, [2])));
+    const header = new Uint8Array(21); header.set(salt); new DataView(header.buffer).setUint32(16, 4096); header[20] = localPublic.length;
+    const head = encode(encoder.encode(JSON.stringify({typ:'JWT', alg:'ES256'})));
+    const claims = encode(encoder.encode(JSON.stringify({aud:new URL(subscription.endpoint).origin, exp:Math.floor(Date.now()/1000)+3600, sub:'mailto:notifications@gregle.uk'})));
+    stage = 'signing-key-import';
+    const privateKey = await crypto.subtle.importKey('jwk', JSON.parse(env.VAPID_PRIVATE), {name:'ECDSA', namedCurve:'P-256'}, false, ['sign']);
+    stage = 'vapid-signature';
+    const signature = encode(new Uint8Array(await crypto.subtle.sign({name:'ECDSA', hash:'SHA-256'}, privateKey, encoder.encode(head + '.' + claims))));
+    stage = 'push-request';
+    return new Request(subscription.endpoint, {method:'POST', redirect:'manual', signal:AbortSignal.timeout(10000), headers:{TTL:'300', Urgency:'normal', 'Content-Encoding':'aes128gcm', 'Content-Type':'application/octet-stream', Authorization:`vapid t=${head}.${claims}.${signature}, k=${env.VAPID_PUBLIC}`}, body:concat(header, localPublic, cipher)});
+  } catch (error) { error.pushStage = stage; throw error; }
 }
 export async function send(env, subscription, message) { return fetch(await pushRequest(env, subscription, message)); }

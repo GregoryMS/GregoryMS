@@ -130,7 +130,7 @@ test('expired push subscriptions are removed; failed sends remain retryable', as
 });
 
 const vm = require('node:vm');
-function settingsPage({ios=false, granted=false, installed=false, savedEnabled=false, failFirst=false}={}) {
+function settingsPage({ios=false, granted=false, installed=false, savedEnabled=false, failFirst=false, failTest=false}={}) {
   const ids=['weatherSettingsPanel','weatherSettingsTrigger','weatherSettingsClose','weatherSettingsTitle','weatherPushStatus','weatherPushActionStatus','weatherPushEnable','weatherNotifyLocationStatus','weatherPushRetry','weatherPushTest','gregleAppMenu','weatherNotifyEnabled','weatherNotifyCity','weatherNotifySunrise','weatherSunriseLead','weatherNotifySunset','weatherSunsetLead','weatherNotifyRain','weatherNotifyWarnings'];
   const nodes=Object.fromEntries(ids.map(id=>[id,{id,hidden:['weatherSettingsPanel','weatherPushRetry'].includes(id),type:/weatherNotify(Enabled|Sunrise|Sunset|Rain|Warnings)$/.test(id)?'checkbox':'select',value:'',listeners:{},style:{setProperty(){}},setAttribute(name,value){this[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;},contains(target){return target===this;},focus(){},getBoundingClientRect(){return {bottom:60};}}]));
   const events={},requests=[],permissions=[]; let sub=null, gesture=false, attempts=0;
@@ -139,7 +139,7 @@ function settingsPage({ios=false, granted=false, installed=false, savedEnabled=f
   const manager={async getSubscription(){return sub;},async subscribe(){permissions.push(gesture);if(!gesture)throw Error('subscribe requires a user gesture');if(failFirst && attempts++===0)throw Error('Push service unavailable');Notification.permission='granted';sub={options:{applicationServerKey:Buffer.from(publicKey,'base64url')},toJSON(){return {endpoint:'https://fcm.googleapis.com/fake',keys:{p256dh:'test',auth:'test'}};},async unsubscribe(){sub=null;return true;}};return sub;}};
   const window={isSecureContext:true,PushManager:{},Notification,matchMedia(){return {matches:false};},addEventListener(name,fn){events[name]=fn;},GregleWeatherSelectedLocation:loc};
   const document={readyState:'complete',getElementById(id){return nodes[id];},addEventListener(){}};
-  const context={window,globalThis:window,document,navigator:{standalone:installed,userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(){},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return savedEnabled?JSON.stringify({weatherNotifyEnabled:true}):null;},setItem(){}},fetch:async(url,options)=>{requests.push({url,data:options.body?JSON.parse(options.body):null});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
+  const context={window,globalThis:window,document,navigator:{standalone:installed,userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(){},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return savedEnabled?JSON.stringify({weatherNotifyEnabled:true}):null;},setItem(){}},fetch:async(url,options)=>{requests.push({url,data:options.body?JSON.parse(options.body):null});if(failTest && url.endsWith('/test'))return Response.json({error:'Test delivery unavailable',code:'PUSH_DELIVERY_FAILED'},{status:503});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/weather-notification-settings.js'),'utf8'),context);
   return {nodes,events,requests,permissions,window,async click(id){gesture=true;nodes[id].listeners.click();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
 }
@@ -198,4 +198,29 @@ test('a failed iPhone subscription can be retried with a new user gesture', asyn
   await page.click('weatherPushRetry');
   assert.deepEqual(page.permissions,[true,true]);
   assert.equal(page.nodes.weatherPushTest.disabled,false);
+});
+
+test('push requests use the redirect mode supported by the Cloudflare runtime', async () => {
+  const {env,sub}=await setup(), {pushRequest}=await import('../workers/weather-notifications/webpush.mjs');
+  const NativeRequest=global.Request;
+  global.Request=class extends NativeRequest {
+    constructor(url,init) {
+      if(init?.redirect==='error')throw TypeError('Cloudflare Workers does not support redirect:error');
+      super(url,init);
+    }
+  };
+  try {
+    const req=await pushRequest(env,{endpoint:sub.endpoint,...sub.keys},{title:'Gregle Weather',body:'Test'});
+    assert.equal(req.redirect,'manual');
+  } finally { global.Request=NativeRequest; }
+});
+
+test('a failed test delivery leaves the saved notification connection and test button usable', async () => {
+  const page=settingsPage({ios:true,installed:true,failTest:true});await page.flush();
+  await page.click('weatherPushEnable');assert.equal(page.nodes.weatherPushTest.disabled,false);
+  await page.click('weatherPushTest');
+  assert.equal(page.nodes.weatherNotifyEnabled.checked,true);
+  assert.equal(page.nodes.weatherPushTest.disabled,false);
+  assert.equal(page.nodes.weatherPushRetry.hidden,true);
+  assert.match(page.nodes.weatherPushActionStatus.textContent,/connection is still saved.*Send test notification again/);
 });

@@ -106,7 +106,13 @@ async function deliver(env, row, event, now) {
     }
     const response = await send(env, row, {title:event.title, body:event.body, url:event.url, tag:event.id});
     if ([404,410].includes(response.status)) { await remove(env, row.endpoint); return false; }
-    if (!response.ok) { await response.body?.cancel(); throw Error('Push service status ' + response.status); }
+    if (!response.ok) {
+      let reason;
+      try { const result = await response.json(); if (/^[A-Za-z]{1,80}$/.test(result?.reason || '')) reason = result.reason; } catch (_) {}
+      const error = Error('Push service rejected delivery');
+      error.pushStage = 'push-service'; error.pushStatus = response.status; error.pushReason = reason;
+      throw error;
+    }
     await response.body?.cancel();
     await env.DB.prepare('UPDATE deliveries SET status=1 WHERE endpoint=? AND event_id=?').bind(row.endpoint, event.id).run();
     return true;
@@ -201,7 +207,10 @@ export default {
       const json = JSON.stringify(loc), now = Date.now();
       await env.DB.prepare('INSERT INTO subscriptions(endpoint,p256dh,auth,prefs,location,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(endpoint) DO UPDATE SET prefs=excluded.prefs,location=excluded.location,updated_at=excluded.updated_at,pending=CASE WHEN subscriptions.location=excluded.location THEN subscriptions.pending ELSE NULL END').bind(sub.endpoint,sub.keys.p256dh,sub.keys.auth,JSON.stringify(prefs),json,now).run();
       return reply({ok:true});
-    } catch (_) { console.error(JSON.stringify({event:'notification_request_failed', path})); return reply({error:'Notification service temporarily unavailable. Retry connection.'},503); }
+    } catch (error) {
+      console.error(JSON.stringify({event:'notification_request_failed', path, stage:error.pushStage || 'storage', errorName:error.name, pushStatus:error.pushStatus, pushReason:error.pushReason}));
+      return reply({error:path === '/test' ? 'The test notification could not be delivered. Your device registration is still saved.' : 'Notification service temporarily unavailable. Retry connection.', code:path === '/test' ? 'PUSH_DELIVERY_FAILED' : 'NOTIFICATION_REQUEST_FAILED'},503);
+    }
   },
   async scheduled(event, env, ctx) { ctx.waitUntil(tick(env, event.scheduledTime)); },
 };
