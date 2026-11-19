@@ -33,7 +33,7 @@ function setup({vibration = 'supported', savedTheme = null} = {}) {
     hasAttribute(name) {return this[name];},
     toggleAttribute(name,value) {this[name] = value;}
   };
-  const themes = ['gregle','graphite','chalk','silver'].map(value => ({value,checked:value === 'gregle'}));
+  const themes = ['gregle','graphite','chalk','silver','evo','evo-dark'].map(value => ({value,checked:value === 'gregle'}));
   const menu = {
     querySelectorAll() {return themes;},
     addEventListener(type,callback) {menuEvents[type] = callback;},
@@ -110,6 +110,9 @@ test('Menu restores a saved theme and applies and stores a new selection without
   assert(app.calls.some(call => call[0] === 'menu blur'));
   assert(!app.calls.some(call => call[0] === 'menu focus'));
   assert(!app.calls.some(call => call[0] === 'reset'));
+  assert.equal(setup({savedTheme:'evo-dark'}).page.dataset.scientificTheme,'evo-dark');
+  app.menuEvents.change({target:app.themes[4]});
+  assert.equal(app.storage.get('gregle-calc-scientific-theme'),'evo');
   assert.equal(setup({savedTheme:'unknown'}).page.dataset.scientificTheme,undefined);
 });
 

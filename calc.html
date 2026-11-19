@@ -27,7 +27,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/calc-app/favicon-32.png">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/calc-app/icon.svg">
 <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
-<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-thin-caret1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
+<link rel="stylesheet" href="assets/tools.css"><link rel="stylesheet" href="assets/calc.css?v=20261102-heading1"><link rel="stylesheet" href="assets/calc-graph.css?v=20261101-dpad-restored1"><link rel="stylesheet" href="assets/calc-scientific.css?v=20261118-evo-themes1"><link rel="stylesheet" href="assets/calc-emulator.css?v=20261117-pointer1"><link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
 <script src="assets/theme.js?v=20261113-shared-device1" defer></script><script src="assets/site-menu.js?v=20261117-app-theme2" defer></script>
 <script src="assets/calc-core.js?v=20261117-fractions1" defer></script><script src="assets/calc.js?v=20261118-calculator-history1" defer></script>
 <script src="assets/calc-graph-core.js?v=20261029-graph" defer></script><script src="assets/calc-graph.js?v=20261031-clean-labels" defer></script>
@@ -41,7 +41,7 @@
 <script src="assets/calc-units.js?v=20261118-unit-converter1" defer></script>
 <script src="assets/calc-haptics.js?v=20261117-haptics1" defer></script>
 <script src="assets/calc-viewport.js?v=20261118-calculator-history1" defer></script>
-<script src="assets/calc-offline.js?v=20261118-thin-caret1" defer></script>
+<script src="assets/calc-offline.js?v=20261118-evo-themes1" defer></script>
 <link rel="canonical" href="https://calc.gregle.uk/">
 </head><body>
 
@@ -109,7 +109,7 @@
 <dialog id="scientificMenu" class="scientific-menu" aria-labelledby="scientificMenuTitle">
 <form method="dialog">
   <div id="scientificMenuSettings">
-    <div class="scientific-menu-heading"><h2 id="scientificMenuTitle">Calculator menu</h2><button type="submit" autofocus>Done</button></div>
+    <div class="scientific-menu-heading"><h2 id="scientificMenuTitle" tabindex="-1" autofocus>Calculator menu</h2><button type="submit">Done</button></div>
     <button type="button" class="formula-launch scientific-theme-toggle" id="scientificThemeToggle" aria-expanded="false" aria-controls="scientificThemePanel">Themes <span class="scientific-theme-chevron" aria-hidden="true">›</span></button>
     <div class="scientific-theme-panel" id="scientificThemePanel" inert>
       <div class="scientific-theme-clip">
@@ -118,6 +118,8 @@
           <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="graphite"><span class="scientific-theme-swatch" data-swatch="graphite" aria-hidden="true"></span><span>Graphite</span></label>
           <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="chalk"><span class="scientific-theme-swatch" data-swatch="chalk" aria-hidden="true"></span><span>Chalk</span></label>
           <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="silver"><span class="scientific-theme-swatch" data-swatch="silver" aria-hidden="true"></span><span>Silver</span></label>
+          <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="evo"><span class="scientific-theme-swatch" data-swatch="evo" aria-hidden="true"></span><span>Gregle EVO</span></label>
+          <label class="scientific-theme-option"><input type="radio" name="scientific-theme" value="evo-dark"><span class="scientific-theme-swatch" data-swatch="evo-dark" aria-hidden="true"></span><span>Gregle EVO Dark</span></label>
         </fieldset>
       </div>
     </div>

@@ -246,6 +246,72 @@
   --sci-edit-ink: #352602;
 }
 
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active))[data-scientific-theme="evo"] {
+  --sci-shell: #eef2f7;
+  --sci-shell-top: #fff;
+  --sci-shell-ink: #0d203d;
+  --sci-frame: #aab6c4;
+  --sci-screen: #dceee6;
+  --sci-screen-ink: #102a43;
+  --sci-scheme: light;
+  --sci-key: linear-gradient(#fff,#f1f4f8);
+  --sci-key-border: #a8b3c1;
+  --sci-key-ink: #0d203d;
+  --sci-accent: #145bab;
+  --sci-focus: #0053ab;
+  --sci-shift-hint: #064fa5;
+  --sci-pad-frame: #d6dfe8;
+  --sci-pad: #f9fbfd;
+  --sci-pad-ink: #0d203d;
+  --sci-pad-centre: #213c59;
+  --sci-pad-centre-ink: #e1effb;
+  --evo-blue-key: linear-gradient(#1766b7,#0a4388);
+  --evo-green-key: linear-gradient(#388218,#27640e);
+  --evo-green-active: #2b6910;
+}
+
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active))[data-scientific-theme="evo-dark"] {
+  --sci-shell: #10151c;
+  --sci-shell-top: #1a2330;
+  --sci-shell-ink: #f3f7ff;
+  --sci-frame: #3a4753;
+  --sci-screen: #182728;
+  --sci-screen-ink: #c7e9d6;
+  --sci-scheme: dark;
+  --sci-key: linear-gradient(#2a333d,#20272f);
+  --sci-key-border: #4b5867;
+  --sci-key-ink: #f3f7ff;
+  --sci-accent: #0064b1;
+  --sci-focus: #71c9ff;
+  --sci-shift-hint: #48b7fb;
+  --sci-pad-frame: #252f3a;
+  --sci-pad: #455364;
+  --sci-pad-ink: #f3f7ff;
+  --sci-pad-centre: #1a2737;
+  --sci-pad-centre-ink: #b9d8ec;
+  --evo-blue-key: linear-gradient(#006bc0,#064987);
+  --evo-green-key: linear-gradient(#3a8413,#28680d);
+  --evo-green-active: #2e7211;
+}
+
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active)):is([data-scientific-theme="evo"],[data-scientific-theme="evo-dark"]) {
+  --sci-function: var(--sci-key);
+  --sci-function-ink: var(--sci-key-ink);
+  --sci-number: var(--sci-key);
+  --sci-number-ink: var(--sci-key-ink);
+  --sci-operator: var(--evo-blue-key);
+  --sci-operator-ink: #fff;
+  --sci-shift: var(--evo-green-key);
+  --sci-shift-ink: #fff;
+  --sci-accent-ink: #fff;
+  --sci-edit: var(--evo-green-key);
+  --sci-clear: var(--evo-green-key);
+  --sci-edit-ink: #fff;
+}
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active)):is([data-scientific-theme="evo"],[data-scientific-theme="evo-dark"]) .scientific-number-keys .equals {background:var(--evo-green-key)}
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active)):is([data-scientific-theme="evo"],[data-scientific-theme="evo-dark"]) .scientific-shift[aria-pressed="true"] {background:var(--evo-green-active);border-color:var(--evo-green-active)}
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active)):is([data-scientific-theme="evo"],[data-scientific-theme="evo-dark"]) .calculator-resizer {background:#0754a5}
+
 :where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active))[data-scientific-theme]:not([data-scientific-theme="gregle"]) #graphCalculator {
   --screen: var(--sci-screen);
   --ink: var(--sci-screen-ink);
@@ -288,6 +354,8 @@
 .scientific-menu-heading h2 {margin:0;font-size:18px;line-height:1.2}
 .scientific-menu-heading button {min-height:44px;border:1px solid currentColor;border-radius:9px;background:transparent;color:inherit;padding:0 12px;font:inherit}
 .scientific-menu :focus-visible {outline:2px solid var(--sci-focus,#deb6ff);outline-offset:2px}
+#scientificMenuTitle:focus {outline:none}
+.scientific-menu-heading button[type="submit"]:focus-visible {outline:2px solid currentColor;outline-offset:-4px}
 .scientific-menu fieldset {min-width:0;display:grid;gap:6px;margin:0;padding:0;border:0}
 .scientific-menu legend {margin:0 0 8px;padding:0;font-weight:600}
 .scientific-theme-option {
@@ -313,6 +381,8 @@
 .scientific-theme-swatch[data-swatch="graphite"] {--swatch-shell:#21282a;--swatch-screen:#bccdb9;--swatch-accent:#b9dc9a}
 .scientific-theme-swatch[data-swatch="chalk"] {--swatch-shell:#eae6e0;--swatch-screen:#fbf6ee;--swatch-accent:#a84425}
 .scientific-theme-swatch[data-swatch="silver"] {--swatch-shell:#cbd0dd;--swatch-screen:#bdd8ce;--swatch-accent:#5d4d8b}
+.scientific-theme-swatch[data-swatch="evo"] {--swatch-shell:#eef2f7;--swatch-screen:#145bab;--swatch-accent:#388218}
+.scientific-theme-swatch[data-swatch="evo-dark"] {--swatch-shell:#10151c;--swatch-screen:#0064b1;--swatch-accent:#3a8413}
 
 /* Formula reference inside the scientific calculator menu. */
 .formula-launch,.scientific-offline-update {
