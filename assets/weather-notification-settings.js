@@ -129,10 +129,10 @@
       await request('/test', {subscription:subscription.toJSON()});
       status('Test notification sent. Check this device’s notifications.');
     }));
-    window.addEventListener('gregle-weather-location', event => {
-      selected = event.detail; describeLocation();
+    globalThis.GregleWeatherNotifications = {setLocation(location) {
+      selected = location; describeLocation();
       if (prefs.weatherNotifyEnabled && prefs.weatherNotifyCity === 'selected') enqueue(() => sync());
-    });
+    }};
     window.addEventListener('online', () => enqueue(() => publicKey && registration ? sync() : prepare()));
     describeLocation(); enqueue(prepare);
   }

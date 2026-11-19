@@ -473,7 +473,7 @@
       if(!weatherCore.coordinates(location.latitude,location.longitude)) return;
       cancelLocationLookup(); selectedCity=key; selectedLocation=location;
       globalThis.GregleWeatherSelectedLocation={...location};
-      window.dispatchEvent(new CustomEvent('gregle-weather-location', {detail:{...location}}));
+      globalThis.GregleWeatherNotifications?.setLocation({...location});
       selectedStationId=null; availableStations=[]; $('stationControl').hidden=true; $('weatherStation').replaceChildren();
       $('cityResults').replaceChildren(); $('cityName').textContent=location.name;
       $('locationMeta').textContent=`${location.region || location.country || 'Local forecast'}`;

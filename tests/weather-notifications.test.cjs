@@ -141,7 +141,7 @@ function settingsPage({ios=false, granted=false}={}) {
   const document={readyState:'complete',getElementById(id){return nodes[id];},addEventListener(){}};
   const context={window,globalThis:window,document,navigator:{userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(){},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return null;},setItem(){}},fetch:async(url,options)=>{requests.push({url,data:options.body?JSON.parse(options.body):null});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/weather-notification-settings.js'),'utf8'),context);
-  return {nodes,events,requests,permissions,async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
+  return {nodes,events,requests,permissions,window,async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
 }
 
 test('settings requests permission in the enabling gesture, syncs selected cities, and unregisters when disabled', async () => {
@@ -149,7 +149,7 @@ test('settings requests permission in the enabling gesture, syncs selected citie
   await page.change('weatherNotifyEnabled',true);
   assert.deepEqual(page.permissions,[true]);
   const subscribed=page.requests.find(r=>r.url.endsWith('/subscribe')); assert.equal(subscribed.data.location.name,'Victoria');
-  page.events['gregle-weather-location']({detail:{...loc,name:'Vancouver',latitude:49.24,longitude:-123.12}}); await page.flush();
+  page.window.GregleWeatherNotifications.setLocation({...loc,name:'Vancouver',latitude:49.24,longitude:-123.12}); await page.flush();
   assert.equal(page.requests.filter(r=>r.url.endsWith('/subscribe')).at(-1).data.location.name,'Vancouver');
   await page.change('weatherNotifyEnabled',false);
   assert.ok(page.requests.some(r=>r.url.endsWith('/unsubscribe')));
