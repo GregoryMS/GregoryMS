@@ -21,6 +21,15 @@
   globalThis._0xd853516=15; globalThis._0xd1a3c76=23;
   window.addEventListener('error',() => fail('Evo could not start. Reopen online and choose Update offline copy from the calculator menu.'));
   const calculator=new TI84();
-  calculator.init({calcmodel:'TI84EVO',elementId:'calculatorDiv',onInitialized:() => report('gregle-evo-ready'),
+  calculator.init({calcmodel:'TI84EVO',elementId:'calculatorDiv',onInitialized:() => {
+    const canvas=document.getElementById('display');
+    const keypad=canvas?.closest('.tiwc_container_keypad');
+    if (!keypad) {fail('The Evo display could not be prepared. Reopen the calculator online.'); return;}
+    canvas.setAttribute('role','img'); canvas.setAttribute('aria-label','TI-84 Evo display');
+    const display=document.createElement('div'); display.className='evo-lcd-overlay';
+    // Move the actual renderer canvas, retaining its WebAssembly context.
+    display.append(canvas); keypad.append(display);
+    report('gregle-evo-ready');
+  },
     KeyHistBufferLength:'10',DisplayMode:'MATHPRINT',AngleMode:'RAD',journee:window.lJour,language:'en'});
 })();

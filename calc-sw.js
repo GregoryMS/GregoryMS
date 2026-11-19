@@ -1,17 +1,17 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-evo3';
+const VERSION='20261118-evo-display2';
 const PREFIX='gregle-calculator-';
 const refresh=self.location.hostname==='calc.gregle.uk' ? new URL(self.location.href).searchParams.get('calc-refresh') : '';
 const CACHE=PREFIX+VERSION+(/^[a-z0-9-]{1,40}$/.test(refresh || '') ? '-refresh-'+refresh : '');
 const DOCUMENT='/calc.html';
 const ASSETS=[
   '/calc.webmanifest',
-  '/assets/calc-evo.js?v=20261118-evo1',
+  '/assets/calc-evo.js?v=20261118-evo-display2',
   '/assets/calc-evo.css?v=20261118-evo1',
-  '/assets/ti84evo/index.html?v=20261118-evo1',
-  '/assets/ti84evo/screen.js?v=20261118-evo1',
-  '/assets/ti84evo/screen.css?v=20261118-evo1',
+  '/assets/ti84evo/index.html?v=20261118-evo-display2',
+  '/assets/ti84evo/screen.js?v=20261118-evo-display2',
+  '/assets/ti84evo/screen.css?v=20261118-evo-display2',
   ...(['calc.gregle.uk','localhost','127.0.0.1'].includes(self.location.hostname) ? [
   '/assets/ti84evo/vendor/tigraphing.min.js',
   '/assets/ti84evo/vendor/ti84.js',
@@ -44,7 +44,7 @@ const ASSETS=[
   '/assets/calc-graph-core.js?v=20261029-graph',
   '/assets/calc-graph.js?v=20261031-clean-labels',
   '/assets/calc-emulator.js?v=20261118-evo1',
-  '/assets/calc-offline.js?v=20261118-evo1',
+  '/assets/calc-offline.js?v=20261118-evo-display2',
   '/assets/calc-ti89.js?v=20261102-ti89-6',
   '/assets/calc-tinspire.js?v=20261115-nspire2',
   '/assets/tinspire/worker.mjs',

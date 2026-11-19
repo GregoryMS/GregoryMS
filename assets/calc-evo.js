@@ -18,7 +18,7 @@
   function remember(value) {try {localStorage.setItem('gregle-calc-engine',value);} catch (_) {}}
   function start() {
     started=true; status.textContent='Starting TI-84 Evo…'; status.classList.remove('evo-error'); retry.hidden=true;
-    frame.src='assets/ti84evo/index.html?v=20261118-evo1';
+    frame.src='assets/ti84evo/index.html?v=20261118-evo-display2';
     clearTimeout(timer); timer=setTimeout(() => {
       status.textContent='Still starting. Reopen online if offline setup has not finished.'; retry.hidden=false;
     },45000);

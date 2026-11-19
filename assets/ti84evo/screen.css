@@ -1,5 +1,10 @@
 html,body {margin:0!important;padding:0!important;min-height:0!important;width:100%;height:100%;overflow:hidden;background:transparent!important}
 #calculatorDiv {position:absolute;inset:0;margin:0!important;width:100%!important;height:100%!important;max-width:none!important;min-width:0!important}
-#calculatorDiv .tiwc_container_keypad {width:100%!important;height:100%!important}
+#calculatorDiv .tiwc_container_keypad {position:relative;width:100%!important;height:100%!important}
 #calculatorDiv svg.TI84EVO {display:block;width:100%!important;height:100%!important}
+/* Keep the live canvas out of SVG foreignObject: transformed foreignObject
+   descendants can render at their unscaled HTML coordinates in WebKit. These
+   percentages are the LCD's x/y/width/height in the 361 by 838 SVG viewBox. */
+#calculatorDiv .evo-lcd-overlay {position:absolute;left:5.540166%;top:4.534606%;width:89.196676%;height:28.878282%;overflow:hidden;background:#fff;pointer-events:none}
+#calculatorDiv .evo-lcd-overlay canvas {display:block;position:static!important;width:100%!important;height:100%!important;max-width:none;max-height:none;margin:0;padding:0;border:0;z-index:auto!important}
 #evoError {position:absolute;inset:10px;margin:0;padding:20px;border-radius:12px;background:white;color:#263641;font:16px/1.5 system-ui,sans-serif}
