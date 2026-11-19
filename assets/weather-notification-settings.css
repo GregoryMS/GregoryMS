@@ -5,7 +5,8 @@
 .weather-settings-panel[hidden],.weather-settings-panel [hidden]{display:none!important}
 .weather-settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
 .weather-settings-head h2{margin:4px 0;font-size:1.35rem}
-.weather-settings-head #weatherSettingsClose{width:36px;height:36px;border:0;border-radius:50%;background:var(--soft);color:var(--text);font-size:26px;line-height:1}
+.weather-settings-head #weatherSettingsClose{display:grid;place-items:center;flex:0 0 36px;box-sizing:border-box;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:50%;background:var(--soft);color:var(--text);line-height:1;appearance:none}
+#weatherSettingsClose svg{display:block;width:18px;height:18px;pointer-events:none}
 .weather-settings-note{font-size:.82rem;line-height:1.55;color:var(--muted);margin:8px 0 16px}
 .weather-settings-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-weight:500}
 .weather-settings-line input{width:20px;height:20px;accent-color:var(--weather-accent)}
