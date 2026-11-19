@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-evo2';
+const VERSION='20261118-evo3';
 const PREFIX='gregle-calculator-';
 const refresh=self.location.hostname==='calc.gregle.uk' ? new URL(self.location.href).searchParams.get('calc-refresh') : '';
 const CACHE=PREFIX+VERSION+(/^[a-z0-9-]{1,40}$/.test(refresh || '') ? '-refresh-'+refresh : '');
@@ -12,6 +12,7 @@ const ASSETS=[
   '/assets/ti84evo/index.html?v=20261118-evo1',
   '/assets/ti84evo/screen.js?v=20261118-evo1',
   '/assets/ti84evo/screen.css?v=20261118-evo1',
+  ...(['calc.gregle.uk','localhost','127.0.0.1'].includes(self.location.hostname) ? [
   '/assets/ti84evo/vendor/tigraphing.min.js',
   '/assets/ti84evo/vendor/ti84.js',
   '/assets/ti84evo/vendor/ti84-7.0.0.4117.worker.js',
@@ -19,6 +20,7 @@ const ASSETS=[
   '/assets/ti84evo/vendor/ti84-7.0.0.4117.data',
   '/assets/ti84evo/vendor/styles.dfbb85698a29160d.css',
   '/assets/ti84evo/vendor/lato-regular.woff2',
+  ] : []),
   '/assets/installed-app.css?v=20261002-radio',
   '/assets/tools.css',
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',

@@ -5,12 +5,13 @@ function environment(host='maps.gregle.uk',{storage=new Map(),fail='',version=''
   const key=x=>new URL(typeof x==='string'?x:x.url||x.href,origin).href;
   const caches={async open(name){if(!storage.has(name))storage.set(name,new Map());const files=storage.get(name);return{async put(k,r){files.set(key(k),r.clone());},async match(k,{ignoreSearch=false}={}){const target=key(k);if(!ignoreSearch)return files.get(target)?.clone();for(const [url,response] of files)if(url.split('?')[0]===target.split('?')[0])return response.clone();},async keys(){return[...files.keys()];}};},async keys(){return[...storage.keys()];},async delete(k){return storage.delete(k);}};
   let claims=0;
-  const self={clients:{async claim(){claims++;}},location:new URL(origin+'/gregle-sw.js'),addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
+  const self={async skipWaiting(){},clients:{async claim(){claims++;}},location:new URL(origin+'/gregle-sw.js'),addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
   const context=vm.createContext({self,caches,URL,Request,Response,Set,Promise,Error,fetch:async input=>{
     const url=new URL(key(input));requests.push(url.href);if(url.pathname===fail)throw Error('Interrupted connection');
     const file=path.join(root,url.pathname==='/'?(host==='maps.gregle.uk'?'maps.html':'calc.html'):url.pathname);
     const type=file.endsWith('.js')||file.endsWith('.mjs')?'text/javascript':file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.wasm')?'application/wasm':'application/octet-stream';
-    const response=new Response(fs.readFileSync(file),{headers:{'content-type':type}});Object.defineProperty(response,'url',{value:url.href});return response;
+    const content=url.pathname.startsWith('/assets/ti84evo/vendor/')?Buffer.from('vendor asset fixture'):fs.readFileSync(file);
+    const response=new Response(content,{headers:{'content-type':type}});Object.defineProperty(response,'url',{value:url.href});return response;
   }});
   context.importScripts=(...files)=>files.forEach(file=>{let source=fs.readFileSync(path.join(root,file),'utf8');if(version&&file.endsWith('maps-offline-shell.js'))source=source.replace(/"version":"[^"]+"/,`"version":"${version}"`);vm.runInContext(source,context);});
   vm.runInContext(fs.readFileSync(path.join(root,'gregle-sw.js'),'utf8'),context);
@@ -28,6 +29,7 @@ test('maps shell install failure keeps previous complete app cache and downloade
 });
 test('shared apex service worker preserves Maps, Calculator and common assets without double handling',async()=>{
   const app=environment('gregle.uk');await app.lifecycle('install');assert.equal((await app.status()).ready,true);assert.equal((await app.status('calculator-offline-status')).ready,true);
+  assert(!app.requests.some(url=>url.includes('/assets/ti84evo/vendor/')),'Evo downloads stay on the isolated calculator origin');
   for(const url of ['/maps.html','/calc.html','/assets/tools.css'])assert(await app.request(url,{mode:url.endsWith('html')?'navigate':'cors'}));assert.equal(await app.request('/'),undefined);
   const calculator=environment('calc.gregle.uk');await calculator.lifecycle('install');assert.equal(await calculator.status(),undefined);assert.equal((await calculator.status('calculator-offline-status')).ready,true);
 });

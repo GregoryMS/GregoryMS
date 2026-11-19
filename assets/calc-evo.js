@@ -24,6 +24,11 @@
     },45000);
   }
   async function open() {
+    if (!['calc.gregle.uk','localhost','127.0.0.1'].includes(location.hostname)) {
+      const url=new URL('https://calc.gregle.uk/'); url.searchParams.set('engine','evo');
+      if (new URLSearchParams(location.search).get('popout')==='1') url.searchParams.set('popout','1');
+      location.assign(url.href); return;
+    }
     button.disabled=true;
     try {
       for (const [id,peer] of Object.entries(window.GregleEmulators || {})) if (id!=='evo') await peer.deactivate();
