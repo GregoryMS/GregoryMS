@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-19T02:01:36+00:00",
-  "fetchedAt": "2026-11-19T02:01:48.566113+00:00",
+  "feedUpdatedAt": "2026-11-19T10:07:39+00:00",
+  "fetchedAt": "2026-11-19T10:07:45.097521+00:00",
   "items": [
     {
-      "title": "Inside the old gas pipeline where Ukraine is fighting an underground war with Russia",
-      "link": "https://www.bbc.co.uk/news/videos/c8p3vw4q6nzzo?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Trump greets 'my friend' Putin as pair shake hands",
+      "link": "https://www.bbc.co.uk/news/videos/c6j9m19llmv3o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "McDonald's sex abuse: 'They were waiting for the younger girls to turn 18'",
       "link": "https://www.bbc.co.uk/news/articles/c6x2eve321jno?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Claude-maker Anthropic poised for more than $1.4tn stock market debut",
-      "link": "https://www.bbc.co.uk/news/articles/c6742m39xgzxo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Can Anthropic's record-breaking IPO stop the AI bubble bursting?",
-      "link": "https://www.bbc.co.uk/news/articles/cj4gnpzll020o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Crew unaware of risks before Bayesian yacht accident, say investigators",
-      "link": "https://www.bbc.co.uk/news/articles/c6e9kn15z9d7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Prince Harry says he would rejoin army as he warns of Russia threat",
-      "link": "https://www.bbc.co.uk/news/articles/cm0qjw3edzkko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Gamers react as New Zealand first to see Grand Theft Auto 6",
-      "link": "https://www.bbc.co.uk/news/videos/cmg4652xzexvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "William and Kate meet PM Modi as they wrap up India tour",
-      "link": "https://www.bbc.co.uk/news/articles/cq62ped2ypy4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Israeli military launches rare ground operation in Gaza beyond Yellow Line",
-      "link": "https://www.bbc.co.uk/news/articles/cw8r7510degno?at_medium=RSS&at_campaign=rss"
+      "title": "Leasehold system set to be scrapped in England and Wales",
+      "link": "https://www.bbc.co.uk/news/articles/cw987ynpd0n1o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Google rejects UK request for Russell Brand YouTube video to be removed, sources say",
       "link": "https://www.bbc.co.uk/news/articles/cmgrenln8p29o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Anthropic valued at $1.5 trillion ahead of AI giant's stock market debut",
+      "link": "https://www.bbc.co.uk/news/articles/c6742m39xgzxo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "UK to provide Ukraine with 1,000 long-range strike drones",
+      "link": "https://www.bbc.co.uk/news/articles/c5n4em9mkkzeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Crew unaware of risks before Mike Lynch's yacht Bayesian sank, say investigators",
+      "link": "https://www.bbc.co.uk/news/articles/c6e9kn15z9d7o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Van Gogh painting sells for record $190.4m after row over its Nazi history",
+      "link": "https://www.bbc.co.uk/news/articles/c5dj1dkwzvzwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Dozens missing after boat carrying 100 migrants sinks off Senegal's coast",
+      "link": "https://www.bbc.co.uk/news/articles/c58j484089ewo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Is your child lying to you? That might not be a bad thing",
+      "link": "https://www.bbc.co.uk/news/articles/cwvg2mp0de2jo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
