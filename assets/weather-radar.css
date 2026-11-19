@@ -216,6 +216,9 @@
 .radar-hd-controls label { display:flex; align-items:center; flex-wrap:wrap; gap:8px 14px; color:var(--text); font-size:13px; }
 .radar-source-field { display:flex; align-items:center; gap:12px; }
 .radar-source-field > label { flex:0 0 auto; }
+.radar-select-wrap { position:relative; display:block; flex:1; min-width:0; width:100%; }
+.radar-select-wrap::after { content:""; position:absolute; right:16px; top:50%; width:7px; height:7px; margin-top:-5px; border-right:1.5px solid var(--rain); border-bottom:1.5px solid var(--rain); transform:rotate(45deg); pointer-events:none; }
+.radar-select-wrap #radarStation { display:block; width:100%; padding-right:42px; -webkit-appearance:none; appearance:none; }
 .radar-hd-controls select { box-sizing:border-box; flex:1; min-width:0; max-width:100%; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:12px; font:inherit; color:var(--text); background:var(--panel); }
 .radar-hd-controls select:focus-visible { outline:2px solid var(--rain); outline-offset:2px; }
 .radar-hd-controls select { border-color:color-mix(in srgb,var(--rain) 40%,var(--line)); background:color-mix(in srgb,var(--rain) 7%,var(--panel)); }
@@ -236,7 +239,7 @@
   .radar-hd-controls { padding:12px; }
   .radar-source-field { display:grid; grid-template-columns:minmax(0,1fr); gap:6px; }
   .radar-source-field > label { font-size:12px; color:var(--muted); }
-  .radar-source-field > select { width:100%; font-size:13px; }
+  .radar-source-field select { width:100%; font-size:13px; }
   .radar-station-actions { display:grid; grid-template-columns:minmax(0,1fr); gap:6px; }
   .radar-hd-controls .radar-station-actions .lightning-toggle { width:100%; }
   .radar-station-actions .lightning-toggle-body { min-height:40px; border-radius:12px; }
