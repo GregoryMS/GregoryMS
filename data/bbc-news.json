@@ -1,35 +1,31 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-18T20:41:27+00:00",
-  "fetchedAt": "2026-11-18T20:41:36.314854+00:00",
+  "feedUpdatedAt": "2026-11-19T02:01:36+00:00",
+  "fetchedAt": "2026-11-19T02:01:48.566113+00:00",
   "items": [
     {
       "title": "Inside the old gas pipeline where Ukraine is fighting an underground war with Russia",
       "link": "https://www.bbc.co.uk/news/videos/c8p3vw4q6nzzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'The drones don't fly here' - BBC reports from Ukraine's new front line",
-      "link": "https://www.bbc.co.uk/news/articles/c32l507ev4v4o?at_medium=RSS&at_campaign=rss"
+      "title": "McDonald's sex abuse: 'They were waiting for the younger girls to turn 18'",
+      "link": "https://www.bbc.co.uk/news/articles/c6x2eve321jno?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Steve Rosenberg: Historic talks with Xi and Trump are a coup for Putin",
-      "link": "https://www.bbc.co.uk/news/articles/c9n70gd320mpo?at_medium=RSS&at_campaign=rss"
+      "title": "Claude-maker Anthropic poised for more than $1.4tn stock market debut",
+      "link": "https://www.bbc.co.uk/news/articles/c6742m39xgzxo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Typical energy bill forecast to go up by £443 a year from January as inflation rate rises again",
-      "link": "https://www.bbc.co.uk/news/articles/cmy498kdkx3xo?at_medium=RSS&at_campaign=rss"
+      "title": "Can Anthropic's record-breaking IPO stop the AI bubble bursting?",
+      "link": "https://www.bbc.co.uk/news/articles/cj4gnpzll020o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Heating bills, chocolate and cat food: What the inflation figures mean for you",
-      "link": "https://www.bbc.co.uk/news/articles/ckq6eg55n221o?at_medium=RSS&at_campaign=rss"
+      "title": "Crew unaware of risks before Bayesian yacht accident, say investigators",
+      "link": "https://www.bbc.co.uk/news/articles/c6e9kn15z9d7o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Council wins legal fight against flags on lamp-posts",
-      "link": "https://www.bbc.co.uk/news/articles/ckq5vg81805qo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Police investigate death of boy, 3, after nursery incident",
-      "link": "https://www.bbc.co.uk/news/articles/cm8x0q1p2q8jo?at_medium=RSS&at_campaign=rss"
+      "title": "Prince Harry says he would rejoin army as he warns of Russia threat",
+      "link": "https://www.bbc.co.uk/news/articles/cm0qjw3edzkko?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Gamers react as New Zealand first to see Grand Theft Auto 6",
@@ -40,8 +36,12 @@
       "link": "https://www.bbc.co.uk/news/articles/cq62ped2ypy4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Regulator mistakenly sent complaints about doctors to newspaper",
-      "link": "https://www.bbc.co.uk/news/articles/c8wy5erexq0ko?at_medium=RSS&at_campaign=rss"
+      "title": "Israeli military launches rare ground operation in Gaza beyond Yellow Line",
+      "link": "https://www.bbc.co.uk/news/articles/cw8r7510degno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Google rejects UK request for Russell Brand YouTube video to be removed, sources say",
+      "link": "https://www.bbc.co.uk/news/articles/cmgrenln8p29o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
