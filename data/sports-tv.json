@@ -3,32 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-18T19:37:29.443478+00:00",
+      "checkedAt": "2026-11-19T01:30:05.972360+00:00",
       "listings": [
-        {
-          "home": "BK Häcken (W)",
-          "away": "Manchester City (W)",
-          "start": "2026-11-18T17:45:00+00:00",
-          "channels": [
-            "Disney+ (UK)"
-          ]
-        },
-        {
-          "home": "London City Lionesses (W)",
-          "away": "Brighton (W)",
-          "start": "2026-11-18T19:00:00+00:00",
-          "channels": [
-            "WSL YouTube"
-          ]
-        },
-        {
-          "home": "Chelsea (W)",
-          "away": "Paris Saint Germain (W)",
-          "start": "2026-11-18T20:00:00+00:00",
-          "channels": [
-            "Disney+ (UK)"
-          ]
-        },
         {
           "home": "Austria Wien (W)",
           "away": "Bayern München (W)",
@@ -174,29 +150,22 @@
             "TNT Sports 1",
             "TNT Sports Ultimate"
           ]
+        },
+        {
+          "home": "Lille",
+          "away": "Bayern München",
+          "start": "2026-11-25T20:00:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 6"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-18T19:37:29.443478+00:00",
+      "checkedAt": "2026-11-19T01:30:05.972360+00:00",
       "listings": [
-        {
-          "home": "BK Häcken (W)",
-          "away": "Manchester City (W)",
-          "start": "2026-11-18T17:45:00+00:00",
-          "channels": [
-            "OneSoccer"
-          ]
-        },
-        {
-          "home": "Chelsea (W)",
-          "away": "Paris Saint Germain (W)",
-          "start": "2026-11-18T20:00:00+00:00",
-          "channels": [
-            "OneSoccer"
-          ]
-        },
         {
           "home": "Austria Wien (W)",
           "away": "Bayern München (W)",
@@ -317,37 +286,21 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Lille",
+          "away": "Bayern München",
+          "start": "2026-11-25T20:00:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-18T19:37:29.443478+00:00",
+      "checkedAt": "2026-11-19T01:30:05.972360+00:00",
       "listings": [
-        {
-          "home": "BK Häcken (W)",
-          "away": "Manchester City (W)",
-          "start": "2026-11-18T17:45:00+00:00",
-          "channels": [
-            "Disney+ Norge"
-          ]
-        },
-        {
-          "home": "London City Lionesses (W)",
-          "away": "Brighton (W)",
-          "start": "2026-11-18T19:00:00+00:00",
-          "channels": [
-            "VG TV"
-          ]
-        },
-        {
-          "home": "Chelsea (W)",
-          "away": "Paris Saint Germain (W)",
-          "start": "2026-11-18T20:00:00+00:00",
-          "channels": [
-            "Disney+ Norge"
-          ]
-        },
         {
           "home": "Austria Wien (W)",
           "away": "Bayern München (W)",
@@ -468,31 +421,21 @@
           "channels": [
             "TV 2 Play (NO)"
           ]
+        },
+        {
+          "home": "Lille",
+          "away": "Bayern München",
+          "start": "2026-11-25T20:00:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-18T19:37:29.443478+00:00",
+      "checkedAt": "2026-11-19T01:30:05.972360+00:00",
       "listings": [
-        {
-          "home": "BK Häcken (W)",
-          "away": "Manchester City (W)",
-          "start": "2026-11-18T17:45:00+00:00",
-          "channels": [
-            "Disney+ Sverige",
-            "TV12",
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Chelsea (W)",
-          "away": "Paris Saint Germain (W)",
-          "start": "2026-11-18T20:00:00+00:00",
-          "channels": [
-            "Disney+ Sverige"
-          ]
-        },
         {
           "home": "Austria Wien (W)",
           "away": "Bayern München (W)",
@@ -613,29 +556,22 @@
             "V Sport Football",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Lille",
+          "away": "Bayern München",
+          "start": "2026-11-25T20:00:00+00:00",
+          "channels": [
+            "V Sport Extra",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-18T19:37:29.443478+00:00",
+      "checkedAt": "2026-11-19T01:30:05.972360+00:00",
       "listings": [
-        {
-          "home": "BK Häcken (W)",
-          "away": "Manchester City (W)",
-          "start": "2026-11-18T17:45:00+00:00",
-          "channels": [
-            "Disney+ (DE)"
-          ]
-        },
-        {
-          "home": "Chelsea (W)",
-          "away": "Paris Saint Germain (W)",
-          "start": "2026-11-18T20:00:00+00:00",
-          "channels": [
-            "Disney+ (DE)"
-          ]
-        },
         {
           "home": "Austria Wien (W)",
           "away": "Bayern München (W)",
@@ -754,6 +690,14 @@
           "home": "Manchester City",
           "away": "Napoli",
           "start": "2026-11-24T20:00:00+00:00",
+          "channels": [
+            "DAZN Deutschland"
+          ]
+        },
+        {
+          "home": "Lille",
+          "away": "Bayern München",
+          "start": "2026-11-25T20:00:00+00:00",
           "channels": [
             "DAZN Deutschland"
           ]
