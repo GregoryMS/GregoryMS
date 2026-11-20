@@ -78,18 +78,18 @@ test('background checks deduplicate earthquake alerts, retry delivery failures, 
     sql.prepare('DELETE FROM quake_deliveries').run();status=410;await tick(env,now);assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM quake_subscriptions').get().n,0);
   } finally {global.fetch=native;}
 });
-function settingsPage({ios=false, granted=false, installed=false, savedEnabled=false, failFirst=false, failTest=false}={}) {
+function settingsPage({ios=false, granted=false, installed=false, savedEnabled=false, failFirst=false, failTest=false, hostname='earthquakes.gregle.uk', failConfigOnce=false}={}) {
   const ids=['quakeSettingsPanel','quakeSettingsTrigger','quakeSettingsClose','quakeSettingsTitle','quakePushStatus','quakePushActionStatus','quakePushEnable','quakePushRetry','quakePushTest','gregleAppMenu','quakeNotifyEnabled','quakeNotifyRegional','quakeRegionalMagnitude','quakeNotifyWorldwide','quakeWorldwideMagnitude','quakeNotifyTsunami'];
   const nodes=Object.fromEntries(ids.map(id=>[id,{id,hidden:['quakeSettingsPanel','quakePushRetry'].includes(id),type:/quakeNotify(Enabled|Regional|Worldwide|Tsunami)$/.test(id)?'checkbox':'select',value:'',listeners:{},style:{setProperty(){}},setAttribute(name,value){this[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;},contains(target){return target===this;},focus(){},getBoundingClientRect(){return {bottom:60};}}]));
-  const events={},requests=[],permissions=[]; let sub=null, gesture=false, attempts=0;
+  const events={},requests=[],permissions=[]; let sub=null, gesture=false, attempts=0,unsubscriptions=0;const registrations=[];
   const publicKey=Buffer.concat([Buffer.from([4]),Buffer.alloc(64,1)]).toString('base64url');
   const Notification={permission:granted?'granted':'default',requestPermission(){permissions.push(gesture); Notification.permission='granted';return Promise.resolve('granted');}};
-  const manager={async getSubscription(){return sub;},async subscribe(){permissions.push(gesture);if(!gesture)throw Error('subscribe requires a user gesture');if(failFirst && attempts++===0)throw Error('Push service unavailable');Notification.permission='granted';sub={options:{applicationServerKey:Buffer.from(publicKey,'base64url')},toJSON(){return {endpoint:'https://fcm.googleapis.com/fake',keys:{p256dh:'test',auth:'test'}};},async unsubscribe(){sub=null;return true;}};return sub;}};
-  const window={isSecureContext:true,PushManager:{},Notification,matchMedia(){return {matches:false};},addEventListener(name,fn){events[name]=fn;},};
+  const manager={async getSubscription(){return sub;},async subscribe(){permissions.push(gesture);if(!gesture)throw Error('subscribe requires a user gesture');if(failFirst && attempts++===0)throw Error('Push service unavailable');Notification.permission='granted';sub={options:{applicationServerKey:Buffer.from(publicKey,'base64url')},toJSON(){return {endpoint:'https://fcm.googleapis.com/fake',keys:{p256dh:'test',auth:'test'}};},async unsubscribe(){unsubscriptions++;sub=null;return true;}};return sub;}};
+  const window={location:{hostname},isSecureContext:true,PushManager:{},Notification,matchMedia(){return {matches:false};},addEventListener(name,fn){events[name]=fn;},};
   const document={readyState:'complete',getElementById(id){return nodes[id];},addEventListener(){}};
-  const context={window,globalThis:window,document,navigator:{standalone:installed,userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(){},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return savedEnabled?JSON.stringify({quakeNotifyEnabled:true}):null;},setItem(){}},fetch:async(url,options)=>{requests.push({url,data:options.body?JSON.parse(options.body):null});if(failTest && url.endsWith('/test'))return Response.json({error:'Test delivery unavailable',code:'PUSH_DELIVERY_FAILED'},{status:503});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
+  const context={window,globalThis:window,document,navigator:{standalone:installed,userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(script){registrations.push(script);},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return savedEnabled?JSON.stringify({quakeNotifyEnabled:true}):null;},setItem(){}},fetch:async(url,options)=>{if(failConfigOnce && url.endsWith('/public-key')){failConfigOnce=false;throw new TypeError('Load failed');}requests.push({url,data:options.body?JSON.parse(options.body):null});if(failTest && url.endsWith('/test'))return Response.json({error:'Test delivery unavailable',code:'PUSH_DELIVERY_FAILED'},{status:503});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/earthquake-notification-settings.js'),'utf8'),context);
-  return {nodes,events,requests,permissions,window,async click(id){gesture=true;nodes[id].listeners.click();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
+  return {nodes,events,requests,permissions,window,registrations,unsubscriptions:()=>unsubscriptions,async click(id){gesture=true;nodes[id].listeners.click();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
 }
 
 
@@ -138,4 +138,36 @@ test('combined scheduler checks earthquakes each minute and preserves the five-m
     tasks=[];await worker.scheduled({scheduledTime:now},env,{waitUntil:p=>tasks.push(p)});await Promise.all(tasks);assert.equal(tasks.length,2);
     assert.equal(sql.prepare("SELECT COUNT(*) AS n FROM service_state WHERE key='last_check'").get().n,1);
   }finally{global.fetch=original;}
+});
+
+test('older installed apps use the shared worker and keep other apps subscribed when switched off',async()=>{
+  const page=settingsPage({ios:true,installed:true,hostname:'gregle.uk'});await page.flush();
+  assert.deepEqual(page.registrations,['/gregle-sw.js']);
+  assert.equal(page.requests[0].url,'/api/earthquake-notifications/public-key');
+  await page.click('quakePushEnable');await page.change('quakeNotifyEnabled',false);
+  assert.equal(page.unsubscriptions(),0);assert.ok(page.requests.some(r=>r.url.endsWith('/unsubscribe')));
+});
+test('a failed service connection recovers through Retry without prompting outside a tap',async()=>{
+  const page=settingsPage({ios:true,installed:true,failConfigOnce:true});await page.flush();
+  assert.equal(page.nodes.quakePushEnable.disabled,true);assert.match(page.nodes.quakePushStatus.textContent,/Could not reach/);
+  await page.click('quakePushRetry');assert.equal(page.nodes.quakePushEnable.disabled,false);assert.equal(page.permissions.length,0);
+  await page.click('quakePushEnable');assert.deepEqual(page.permissions,[true]);
+});
+test('original and current app origins work with the same-origin API and original endpoint',async()=>{
+  const {env,sub}=await setup(),{default:worker}=await import('../workers/weather-notifications/worker.mjs');
+  for(const origin of ['https://earthquakes.gregle.uk','https://gregle.uk','https://www.gregle.uk']){
+    const config=await worker.fetch(new Request(origin+'/api/earthquake-notifications/public-key'),env);assert.equal(config.status,200);
+    const response=await worker.fetch(new Request(origin+'/api/earthquake-notifications/subscribe',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({subscription:sub,preferences:basePrefs})}),env);assert.equal(response.status,200);assert.equal(response.headers.get('Access-Control-Allow-Origin'),origin);
+    const legacy=await worker.fetch(new Request('https://push.example/earthquakes/public-key',{headers:{Origin:origin}}),env);assert.equal(legacy.status,200);
+  }
+});
+test('the shared original-origin worker distinguishes earthquake and weather pushes',async()=>{
+  const listeners={},notifications=[];
+  const self={location:{origin:'https://gregle.uk'},addEventListener(name,fn){listeners[name]=fn;},registration:{async showNotification(title,options){notifications.push({title,...options});}}};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../weather-sw.js'),'utf8'),{self,URL});
+  const push=message=>new Promise((resolve,reject)=>listeners.push({data:{json:()=>message},waitUntil:p=>p.then(resolve,reject)}));
+  await push({app:'earthquakes',title:'M6.1 earthquake',url:'https://earthquake.usgs.gov/event'});
+  await push({title:'Rain expected soon',url:'https://weather.gregle.uk/'});
+  assert.equal(notifications[0].icon,'/assets/earthquakes-app/icon-192.png');assert.equal(notifications[0].data.url,'https://gregle.uk/earthquakes.html');
+  assert.equal(notifications[1].icon,'/assets/weather-app/icon-192.png');assert.equal(notifications[1].data.url,'https://gregle.uk/weather.html');
 });

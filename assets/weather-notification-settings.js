@@ -126,7 +126,9 @@
         if (subscription) {
           // Remove server data first. Retain the subscription if offline so Retry can remove it.
           await request('/unsubscribe', {subscription:subscription.toJSON()});
-          await subscription.unsubscribe(); subscription = null;
+          // Older Home Screen apps share this origin's push subscription.
+          if (!['gregle.uk','www.gregle.uk'].includes(window.location?.hostname)) await subscription.unsubscribe();
+          subscription = null;
         }
         $('weatherPushRetry').hidden = true;
         status('Notifications are off. Turn on Enable notifications to send a test.'); return;
@@ -194,3 +196,4 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
 })();
+

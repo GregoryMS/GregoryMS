@@ -26,5 +26,19 @@
   },
   "vars": {
     "VAPID_PUBLIC": "BEIlShTqyxOcVVeHn4bBWuRzrqh7ZuQw-KBFXh7R9T7iORGVaGr3Gg7ymp8Rm58Efe3kSIzUoANMoDiSuMTDAt4"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "earthquakes.gregle.uk/api/earthquake-notifications/*",
+      "zone_name": "gregle.uk"
+    },
+    {
+      "pattern": "gregle.uk/api/earthquake-notifications/*",
+      "zone_name": "gregle.uk"
+    },
+    {
+      "pattern": "www.gregle.uk/api/earthquake-notifications/*",
+      "zone_name": "gregle.uk"
+    }
+  ]
 }

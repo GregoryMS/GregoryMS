@@ -1,7 +1,7 @@
 import core from '../../assets/earthquake-core.js';
 import {send, validateSubscription} from './webpush.mjs';
 
-const ORIGINS = ['https://earthquakes.gregle.uk'];
+const ORIGINS = ['https://earthquakes.gregle.uk', 'https://gregle.uk', 'https://www.gregle.uk'];
 const MINUTE = 60000;
 const defaults = {quakeNotifyEnabled:false, quakeNotifyRegional:true, quakeRegionalMagnitude:3, quakeNotifyWorldwide:true, quakeWorldwideMagnitude:6, quakeNotifyTsunami:true};
 export function preferences(input = {}) {
@@ -74,7 +74,7 @@ async function deliver(env, row, event, now) {
     if (!current || current.updated_at !== row.updated_at) {
       await env.DB.prepare('DELETE FROM quake_deliveries WHERE endpoint=? AND event_id=? AND status=0').bind(row.endpoint,event.id).run(); return false;
     }
-    const response = await send(env,row,{title:event.title,body:event.body,url:event.url,tag:event.id});
+    const response = await send(env,row,{app:'earthquakes',title:event.title,body:event.body,url:event.url,tag:event.id});
     if ([404,410].includes(response.status)) { await response.body?.cancel(); await remove(env,row.endpoint); return false; }
     await response.body?.cancel();
     if (!response.ok) throw Error('Push service rejected delivery');
@@ -135,7 +135,7 @@ async function readBody(req) {
   return new TextDecoder().decode(bytes);
 }
 async function handle(req, env) {
-  const origin = req.headers.get('origin'), path = new URL(req.url).pathname.replace(/^\/earthquakes/,'');
+  const origin = req.headers.get('origin'), path = new URL(req.url).pathname.replace(/^\/(?:earthquakes|api\/earthquake-notifications)/,'');
   const reply = (data,status=200) => Response.json(data,{status,headers:{'Cache-Control':'no-store',Vary:'Origin',...(ORIGINS.includes(origin)?{'Access-Control-Allow-Origin':origin}:{})}});
   if (origin && !ORIGINS.includes(origin)) return reply({error:'Origin not allowed'},403);
   if (req.method === 'OPTIONS') return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':origin || ORIGINS[0],'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type',Vary:'Origin'}});

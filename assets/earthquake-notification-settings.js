@@ -1,6 +1,7 @@
 (() => {
   'use strict';
-  const API = 'https://gregle-weather-notifications.square-rain-5ded.workers.dev/earthquakes';
+  const API = '/api/earthquake-notifications';
+  const sharedOrigin = ['gregle.uk','www.gregle.uk'].includes(window.location?.hostname);
   const key = 'gregle-earthquake-notification-preferences-v1';
   const defaults = {quakeNotifyEnabled:false, quakeNotifyRegional:true, quakeRegionalMagnitude:'3', quakeNotifyWorldwide:true, quakeWorldwideMagnitude:'6', quakeNotifyTsunami:true};
   const bytes = value => Uint8Array.from(atob(value.replace(/-/g,'+').replace(/_/g,'/') + '='.repeat((4-value.length%4)%4)), c => c.charCodeAt(0));
@@ -78,7 +79,9 @@
       enqueue(() => sync(pending));
     }
     async function request(path, data) {
-      const response = await fetch(API + path, {method:data ? 'POST' : 'GET', headers:data ? {'Content-Type':'application/json'} : {}, body:data ? JSON.stringify(data) : undefined, cache:'no-store', signal:AbortSignal.timeout(15000)});
+      let response;
+      try { response = await fetch(API + path, {method:data ? 'POST' : 'GET', headers:data ? {'Content-Type':'application/json'} : {}, body:data ? JSON.stringify(data) : undefined, cache:'no-store', signal:AbortSignal.timeout(15000)}); }
+      catch (_) { throw Error('Could not reach the notification service. Tap Retry connection to reconnect.'); }
       let result; try { result = await response.json(); } catch (_) { throw Error('Notification service is temporarily unavailable.'); }
       if (!response.ok) {
         const error = Error(result.error || 'Could not connect to the notification service.');
@@ -113,7 +116,8 @@
           const existing = subscription;
           let serverError;
           try { await request('/unsubscribe', {subscription:existing.toJSON()}); } catch (error) { serverError = error; }
-          await existing.unsubscribe(); subscription = null;
+          if (!sharedOrigin) await existing.unsubscribe();
+          subscription = null;
           if (serverError) throw Error('Notifications are off on this device. Retry connection to check the service.');
         }
         $('quakePushRetry').hidden = true;
@@ -132,7 +136,7 @@
       const reason = unsupported();
       if (reason) { status(reason); return; }
       status('Connecting notification service…');
-      await navigator.serviceWorker.register('/earthquakes-sw.js', {scope:'/', updateViaCache:'none'});
+      await navigator.serviceWorker.register(sharedOrigin ? '/gregle-sw.js' : '/earthquakes-sw.js', {scope:'/', updateViaCache:'none'});
       let timeout;
       try { registration = await Promise.race([navigator.serviceWorker.ready, new Promise((_, reject) => { timeout = setTimeout(() => reject(Error('Notification setup timed out. Retry connection.')), 15000); })]); }
       finally { clearTimeout(timeout); }
