@@ -68,8 +68,9 @@ def menu(page):
     extra_links = EXTRAS if page == 'index.html' else MAP_EXTRAS if page == 'maps.html' else [('FotMob News', 'https://www.fotmob.com/news'), ('BBC Sport', 'https://www.bbc.co.uk/sport/my')] if page == 'sports.html' else []
     if extra_links:
         extras = '<section class="gregle-menu-more" aria-label="More links"><h3>More links</h3><div>' + ''.join(f'<a href="{canonical(href)}" rel="noreferrer">{label}</a>' for label, href in extra_links) + '</div></section>'
-    # Weather moves its existing switch between this slot and mobile Settings.
-    theme_switch = '<div class="weather-menu-theme" id="weatherMenuThemeHome" hidden><span>Dark mode</span></div>' if page == 'weather.html' else '<button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button>'
+    # Weather and Earthquakes move their switch between this slot and mobile Settings.
+    prefix = {'weather.html': 'weather', 'earthquakes.html': 'quake'}.get(page)
+    theme_switch = f'<div class="{prefix}-menu-theme" id="{prefix}MenuThemeHome" hidden><span>Dark mode</span></div>' if prefix else '<button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button>' 
     return '\n'.join([
         '<!-- Gregle app menu -->',
         '<details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>',
@@ -104,5 +105,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 

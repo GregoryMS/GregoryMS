@@ -15,11 +15,12 @@ test('every content page has the same valid app destinations and working icons',
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
     const menu = source.match(/<!-- Gregle app menu -->([\s\S]*?)<!-- \/Gregle app menu -->/)[1];
     assert.equal((source.match(/id="themeToggle"/g) || []).length, 1, file);
-    if (file === 'weather.html') {
+    if (file === 'weather.html' || file === 'earthquakes.html') {
+      const prefix = file === 'weather.html' ? 'weather' : 'quake';
       assert(!menu.includes('id="themeToggle"'), file);
-      assert.match(menu, /id="weatherMenuThemeHome" hidden><span>Dark mode<\/span>/, file);
-      assert.match(source, /id="weatherSettingsThemeRow"><span>Dark mode<\/span><div class="gregle-installed-theme-control" id="weatherSettingsThemeHome"><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
-      assert.match(source, /assets\/weather-theme-placement\.js\?/, file);
+      assert.match(menu, new RegExp('id=\"'+prefix+'MenuThemeHome\" hidden><span>Dark mode</span>'), file);
+      assert.match(source, new RegExp('id="'+prefix+'SettingsThemeRow"><span>Dark mode</span><div class="gregle-installed-theme-control" id="'+prefix+'SettingsThemeHome"><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"'), file);
+      assert.match(source, new RegExp('assets/'+(prefix === 'quake' ? 'earthquake' : 'weather')+'-theme-placement\\.js\\?'), file);
     } else {
   assert.match(menu, /<div class="gregle-menu-heading"><h2>Gregle apps<\/h2><button class="gregle-theme-switch" id="themeToggle"[^>]*role="switch"[^>]*aria-label="Dark mode"[^>]*aria-checked="false"/, file);
     }
@@ -199,5 +200,6 @@ test('installed apps expose the original working theme switch and restore it in 
   assert.equal(themeSwitch.parentElement,header.children[0]);assert.equal(themeSwitch.attrs['aria-checked'],'false');
   assert.equal(launcher(null,false,{ios:true}).header.children[0].className,'gregle-installed-theme-control');
 });
+
 
 

@@ -1,5 +1,5 @@
 :root{--quake-accent:#7637cc;--quake-accent-text:#7637cc}
-:root.dark-mode{--quake-accent-text:#bf93ff}
+:root.dark-mode{--quake-accent-text:#c7a4f5}
 .quake-settings-trigger{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--text);cursor:pointer}
 .quake-settings-trigger:hover,.quake-settings-trigger[aria-expanded="true"]{background:var(--soft);color:var(--quake-accent-text)}
 .quake-settings-trigger svg{display:block;width:22px;height:22px}
@@ -11,14 +11,14 @@
 .quake-settings-head #quakeSettingsClose:hover{color:var(--quake-accent-text)}
 .quake-settings-head #quakeSettingsClose:focus-visible{outline:2px solid var(--quake-accent-text);outline-offset:2px}
 #quakeSettingsClose svg{display:block;width:18px;height:18px;pointer-events:none}
-.quake-settings-note{font-size:.875rem;line-height:1.55;color:var(--muted);margin:8px 0 16px}
+.quake-settings-note{font-size:.82rem;line-height:1.55;color:var(--muted);margin:8px 0 16px}
 .quake-settings-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-weight:500}
 .quake-settings-line input{width:20px;height:20px;accent-color:var(--quake-accent)}
 .quake-settings-section{display:grid;gap:7px;padding:7px 0 13px}
-.quake-settings-section label{font-size:.875rem;color:var(--muted)}
+.quake-settings-section label{font-size:.84rem;color:var(--muted)}
 .quake-settings-section select{width:100%;padding:11px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);font:inherit;font-size:.9rem}
 .quake-settings-buttons{display:flex;gap:8px;flex-wrap:wrap}
-.quake-settings-buttons .pill{font-size:.875rem}
+.quake-settings-buttons .pill{font-size:.82rem}
 .quake-settings-panel button:disabled{opacity:.55;cursor:wait}
 
 .quake-settings-buttons .quake-settings-enable{border-color:var(--quake-accent);background:var(--quake-accent);color:#fff}
@@ -30,6 +30,11 @@
 .quake-menu-theme{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--gm-muted)}
 
 
-.quake-settings-section select{padding-right:36px}
-.quake-settings-panel .eyebrow{font-size:.75rem}
+/* Match Weather's settings typography independently of the earthquake page styles. */
+.quake-settings-panel{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+.quake-settings-head h2{font-family:Montserrat,sans-serif;font-weight:500;letter-spacing:-.5px}
+.quake-settings-panel .eyebrow{margin:0 0 10px;font-size:11px;letter-spacing:.16em}
 @media(max-width:480px){.topbar .breadcrumb{max-width:130px;font-size:12px;padding-left:12px;line-height:1.4}.topbar .brand-wrap{gap:12px}}
+.quake-settings-panel,.quake-settings-trigger{--soft:#eef1f5;--line:rgba(0,0,0,.09)}
+.dark-mode .quake-settings-panel,.dark-mode .quake-settings-trigger{--soft:#353535;--line:rgba(255,255,255,.1)}
+.quake-settings-buttons .pill{min-height:42px}
