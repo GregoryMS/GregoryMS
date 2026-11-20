@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261118-evo-display3';
+const VERSION='20261120-gregle-night1';
 const PREFIX='gregle-calculator-';
 const refresh=self.location.hostname==='calc.gregle.uk' ? new URL(self.location.href).searchParams.get('calc-refresh') : '';
 const CACHE=PREFIX+VERSION+(/^[a-z0-9-]{1,40}$/.test(refresh || '') ? '-refresh-'+refresh : '');
@@ -31,7 +31,7 @@ const ASSETS=[
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',
   '/assets/site-menu.js?v=20261117-app-theme2',
-  '/assets/calc-scientific.css?v=20261118-evo1',
+  '/assets/calc-scientific.css?v=20261120-gregle-night1',
   '/assets/calc-viewport.js?v=20261118-evo1',
   '/assets/calc-haptics.js?v=20261117-haptics1',
   '/assets/calc-picker.js?v=20261118-evo1',
