@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-20T08:33:18.475772+00:00",
+      "checkedAt": "2026-11-20T17:18:17.658049+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -11,7 +11,8 @@
           "start": "2026-11-20T19:30:00+00:00",
           "channels": [
             "BBC Sport online",
-            "BBC iPlayer"
+            "BBC iPlayer",
+            "Bundesliga App"
           ]
         },
         {
@@ -100,7 +101,7 @@
         },
         {
           "home": "Vancouver Whitecaps",
-          "away": "Seattle Sounders FC/Real Salt Lake",
+          "away": "Real Salt Lake",
           "start": "2026-11-23T01:30:00+00:00",
           "channels": [
             "Apple TV (UK)"
@@ -154,7 +155,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-20T08:33:18.475772+00:00",
+      "checkedAt": "2026-11-20T17:18:17.658049+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -238,6 +239,17 @@
           ]
         },
         {
+          "home": "Vancouver Whitecaps",
+          "away": "Real Salt Lake",
+          "start": "2026-11-23T01:30:00+00:00",
+          "channels": [
+            "Apple TV (US)",
+            "RDS",
+            "TSN",
+            "TSN+"
+          ]
+        },
+        {
           "home": "Bayern München (W)",
           "away": "TSG 1899 Hoffenheim (W)",
           "start": "2026-11-23T17:00:00+00:00",
@@ -281,7 +293,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-20T08:33:18.475772+00:00",
+      "checkedAt": "2026-11-20T17:18:17.658049+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -362,6 +374,14 @@
           ]
         },
         {
+          "home": "Vancouver Whitecaps",
+          "away": "Real Salt Lake",
+          "start": "2026-11-23T01:30:00+00:00",
+          "channels": [
+            "Apple TV (NO)"
+          ]
+        },
+        {
           "home": "Bayern München (W)",
           "away": "TSG 1899 Hoffenheim (W)",
           "start": "2026-11-23T17:00:00+00:00",
@@ -408,7 +428,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-20T08:33:18.475772+00:00",
+      "checkedAt": "2026-11-20T17:18:17.658049+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -489,6 +509,14 @@
           ]
         },
         {
+          "home": "Vancouver Whitecaps",
+          "away": "Real Salt Lake",
+          "start": "2026-11-23T01:30:00+00:00",
+          "channels": [
+            "Apple TV (SE)"
+          ]
+        },
+        {
           "home": "Bayern München (W)",
           "away": "TSG 1899 Hoffenheim (W)",
           "start": "2026-11-23T17:00:00+00:00",
@@ -536,7 +564,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-20T08:33:18.475772+00:00",
+      "checkedAt": "2026-11-20T17:18:17.658049+00:00",
       "listings": [
         {
           "home": "Bayern München",
@@ -614,6 +642,14 @@
           "channels": [
             "Sportdigital+",
             "Sportdigital1+"
+          ]
+        },
+        {
+          "home": "Vancouver Whitecaps",
+          "away": "Real Salt Lake",
+          "start": "2026-11-23T01:30:00+00:00",
+          "channels": [
+            "Apple TV (DE)"
           ]
         },
         {
