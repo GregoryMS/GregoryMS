@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-20T08:36:51+00:00",
-  "fetchedAt": "2026-11-20T08:37:03.434865+00:00",
+  "feedUpdatedAt": "2026-11-20T17:13:36+00:00",
+  "fetchedAt": "2026-11-20T17:13:41.805138+00:00",
   "items": [
     {
-      "title": "What the Brussels summit could mean for the Brexit deal",
-      "link": "https://www.bbc.co.uk/news/videos/c6lymr5x4ye5o?at_medium=RSS&at_campaign=rss"
+      "title": "Faisal Islam: This cost-cutting UK-EU deal doesn't mean lower prices will follow",
+      "link": "https://www.bbc.co.uk/news/articles/cm1wr029evnqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Tens of thousands of UK fridges secured from hackers in secret nationwide operation",
+      "title": "Russian missile hits Poland as Kyiv's allies hold military exercise, says Tusk",
+      "link": "https://www.bbc.co.uk/news/articles/cqx2x9dklxnro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "What we know about the latest Russian missile strikes on Ukraine",
+      "link": "https://www.bbc.co.uk/news/videos/c65y19wy3xl8o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Daniel Thomas jailed for 15 months for slashing dinghy",
+      "link": "https://www.bbc.co.uk/news/articles/c6lywjpn5levo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Secret UK cyber operation protected tens of thousands of fridges from hackers",
       "link": "https://www.bbc.co.uk/news/articles/c6eq49zyx7p4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Massive hope for pancreatic cancer pill after trial saw tumours vanish",
-      "link": "https://www.bbc.co.uk/news/articles/cqrmgjnzz9l0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Calls for law change after Joanne Young rape case",
+      "title": "Calls for consent defence change after Joanne Young rape case",
       "link": "https://www.bbc.co.uk/news/articles/cqy4jvprxyrdo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mouldy, infested housing for vulnerable people sold as ethical investments abroad",
-      "link": "https://www.bbc.co.uk/news/articles/c6evre8j12vno?at_medium=RSS&at_campaign=rss"
+      "title": "'Dishonest' police officers sacked for lying over fatal crash searches",
+      "link": "https://www.bbc.co.uk/news/articles/cm2klg8512z0o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Anthropic shares fall a day after blockbuster opening",
+      "link": "https://www.bbc.co.uk/news/articles/c6808ym10vzgo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "UK braces for coldest night of autumn so far with temperature of -10C forecast",
       "link": "https://www.bbc.co.uk/weather/articles/c30rkzwvwy49o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'I tell my son it's just fireworks': Life inside Yemeni city besieged by Houthis",
-      "link": "https://www.bbc.co.uk/news/articles/cx7v2d8q879eo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "GTA 6 breaks records as estimated sales top $2.3bn",
-      "link": "https://www.bbc.co.uk/news/articles/c9zr5nyv5dj2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Three Kyiv bridges hit during major Russian missile attack",
-      "link": "https://www.bbc.co.uk/news/articles/c6x29gn4pdn9o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Next round of BBC cuts will be more noticeable to audiences, report warns",
-      "link": "https://www.bbc.co.uk/news/articles/cmpdwev0jgp6o?at_medium=RSS&at_campaign=rss"
+      "title": "Texas death-row inmate screams as execution takes more than one hour",
+      "link": "https://www.bbc.co.uk/news/articles/ck20vl1dd8qzo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
