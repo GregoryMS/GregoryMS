@@ -46,8 +46,8 @@ export function tsunamiEvents(bulletins, prefs) {
   }));
 }
 async function readFeed(url, json = true) {
-  const response = await fetch(url, {signal:AbortSignal.timeout(12000), cf:{cacheTtl:30, cacheEverything:true}});
-  if (!response.ok) { await response.body?.cancel(); throw Error('Earthquake or tsunami feed unavailable'); }
+  const response = await fetch(url, {headers:{'User-Agent':'GregleEarthquakeNotifications/1.0 (https://earthquakes.gregle.uk/)'},signal:AbortSignal.timeout(12000), cf:{cacheTtl:30, cacheEverything:true}});
+  if (!response.ok) { await response.body?.cancel(); throw Error('Earthquake or tsunami feed unavailable (HTTP '+response.status+')'); }
   const reader = response.body.getReader(), chunks = []; let size = 0;
   while (true) {
     const {done,value} = await reader.read(); if (done) break;

@@ -65,9 +65,10 @@ test('background checks deduplicate earthquake alerts, retry delivery failures, 
   await worker.fetch(request('/subscribe',{subscription:sub,preferences:basePrefs}),env);
   sql.prepare('UPDATE quake_subscriptions SET started_at=?').run(now-60000);
   const native=global.fetch;let pushes=0,status=201;
-  global.fetch=async(url)=>{
+  global.fetch=async(url,options)=>{
     if(url instanceof Request){pushes++;return new Response(null,{status});}
     if(url.includes('earthquake.usgs.gov'))return Response.json({type:'FeatureCollection',metadata:{generated:now},features:[{id:'bc',geometry:{type:'Point',coordinates:[-126,49,10]},properties:{mag:7,time:now-1000,place:'BC',type:'earthquake'}}]});
+    assert.match(options.headers['User-Agent'],/GregleEarthquakeNotifications/);
     const product=url.match(/([A-Z0-9]+)\.js$/)[1];return new Response('var '+product+' = '+JSON.stringify(bulletin('Information',product))+';');
   };
   try {
