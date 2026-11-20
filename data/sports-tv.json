@@ -3,27 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
+      "checkedAt": "2026-11-20T00:55:27.032246+00:00",
       "listings": [
-        {
-          "home": "Austria Wien (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-19T17:45:00+00:00",
-          "channels": [
-            "Disney+ (UK)"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "OL Lyonnes (W)",
-          "start": "2026-11-19T20:00:00+00:00",
-          "channels": [
-            "BBC Sport online",
-            "BBC Three",
-            "BBC iPlayer",
-            "Disney+ (UK)"
-          ]
-        },
         {
           "home": "Bayern München",
           "away": "1. FC Köln",
@@ -159,29 +140,22 @@
             "HBO Max (UK)",
             "TNT Sports 6"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Universitatea Craiova",
+          "start": "2026-11-26T17:45:00+00:00",
+          "channels": [
+            "HBO Max (UK)",
+            "TNT Sports 2"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
+      "checkedAt": "2026-11-20T00:55:27.032246+00:00",
       "listings": [
-        {
-          "home": "Austria Wien (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-19T17:45:00+00:00",
-          "channels": [
-            "OneSoccer"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "OL Lyonnes (W)",
-          "start": "2026-11-19T20:00:00+00:00",
-          "channels": [
-            "OneSoccer"
-          ]
-        },
         {
           "home": "Bayern München",
           "away": "1. FC Köln",
@@ -294,31 +268,21 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Universitatea Craiova",
+          "start": "2026-11-26T17:45:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
+      "checkedAt": "2026-11-20T00:55:27.032246+00:00",
       "listings": [
-        {
-          "home": "Austria Wien (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-19T17:45:00+00:00",
-          "channels": [
-            "Disney+ Norge"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "OL Lyonnes (W)",
-          "start": "2026-11-19T20:00:00+00:00",
-          "channels": [
-            "Disney+ Norge",
-            "TV 2 Play (NO)",
-            "TV 2 Sport 1"
-          ]
-        },
         {
           "home": "Bayern München",
           "away": "1. FC Köln",
@@ -429,29 +393,23 @@
           "channels": [
             "TV 2 Play (NO)"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Universitatea Craiova",
+          "start": "2026-11-26T17:45:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)",
+            "V sport 3 NO",
+            "Viaplay NO"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
+      "checkedAt": "2026-11-20T00:55:27.032246+00:00",
       "listings": [
-        {
-          "home": "Austria Wien (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-19T17:45:00+00:00",
-          "channels": [
-            "Disney+ Sverige"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "OL Lyonnes (W)",
-          "start": "2026-11-19T20:00:00+00:00",
-          "channels": [
-            "Disney+ Sverige"
-          ]
-        },
         {
           "home": "Bayern München",
           "away": "1. FC Köln",
@@ -565,30 +523,21 @@
             "V Sport Extra",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Universitatea Craiova",
+          "start": "2026-11-26T17:45:00+00:00",
+          "channels": [
+            "Disney+ Sverige"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-19T18:40:48.502854+00:00",
+      "checkedAt": "2026-11-20T00:55:27.032246+00:00",
       "listings": [
-        {
-          "home": "Austria Wien (W)",
-          "away": "Bayern München (W)",
-          "start": "2026-11-19T17:45:00+00:00",
-          "channels": [
-            "Disney+ (DE)",
-            "ZDF Livestream"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "OL Lyonnes (W)",
-          "start": "2026-11-19T20:00:00+00:00",
-          "channels": [
-            "Disney+ (DE)"
-          ]
-        },
         {
           "home": "Bayern München",
           "away": "1. FC Köln",
@@ -700,6 +649,15 @@
           "start": "2026-11-25T20:00:00+00:00",
           "channels": [
             "DAZN Deutschland"
+          ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Universitatea Craiova",
+          "start": "2026-11-26T17:45:00+00:00",
+          "channels": [
+            "Sky Sport 4",
+            "WOW"
           ]
         }
       ],
