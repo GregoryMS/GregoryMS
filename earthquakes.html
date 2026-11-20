@@ -27,15 +27,18 @@
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <link rel="stylesheet" href="assets/site-menu.css?v=20261117-app-theme2">
   <script src="assets/site-menu.js?v=20261117-app-theme2" defer></script>
+  <link rel="stylesheet" href="assets/earthquake-notification-settings.css?v=20261119-push1">
+  <script src="assets/earthquake-notification-settings.js?v=20261119-push1" defer></script>
+  <script src="assets/earthquake-theme-placement.js?v=20261119-push1" defer></script>
   <link rel="canonical" href="https://earthquakes.gregle.uk/">
 </head>
 <body>
   <header class="gregle-menu-header topbar">
     <div class="brand-wrap"><a class="brand" href="https://gregle.uk/" aria-label="Gregle home">Gregle</a><span class="breadcrumb">Earthquakes &amp; tsunamis</span></div>
-    <div class="top-actions"><!-- Gregle app menu -->
+    <div class="top-actions"><button class="quake-settings-trigger" id="quakeSettingsTrigger" type="button" aria-label="Earthquake settings" aria-expanded="false" aria-controls="quakeSettingsPanel" title="Earthquake settings"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.97 7.81Q18.37 8.33 18.61 8.93L18.85 9.50Q19.10 10.10 19.75 10.08L20.64 10.05Q21.29 10.02 21.29 10.67L21.29 13.33Q21.29 13.98 20.64 13.95L19.75 13.92Q19.10 13.90 18.85 14.50L18.61 15.07Q18.37 15.67 17.97 16.19L17.59 16.68Q17.20 17.20 17.54 17.75L18.01 18.51Q18.36 19.06 17.79 19.38L15.50 20.71Q14.94 21.04 14.63 20.46L14.21 19.67Q13.90 19.10 13.26 19.18L12.64 19.27Q12.00 19.35 11.36 19.27L10.74 19.18Q10.10 19.10 9.79 19.67L9.37 20.46Q9.06 21.04 8.50 20.71L6.21 19.38Q5.64 19.06 5.99 18.51L6.46 17.75Q6.80 17.20 6.41 16.68L6.03 16.19Q5.63 15.67 5.39 15.07L5.15 14.50Q4.90 13.90 4.25 13.92L3.36 13.95Q2.71 13.98 2.71 13.33L2.71 10.67Q2.71 10.02 3.36 10.05L4.25 10.08Q4.90 10.10 5.15 9.50L5.39 8.93Q5.63 8.32 6.03 7.81L6.41 7.32Q6.80 6.80 6.46 6.25L5.99 5.49Q5.64 4.94 6.21 4.62L8.50 3.29Q9.06 2.96 9.37 3.54L9.79 4.33Q10.10 4.90 10.74 4.82L11.36 4.73Q12.00 4.65 12.64 4.73L13.26 4.82Q13.90 4.90 14.21 4.33L14.63 3.54Q14.94 2.96 15.50 3.29L17.79 4.62Q18.36 4.94 18.01 5.49L17.54 6.25Q17.20 6.80 17.59 7.32Z"/><circle cx="12" cy="12" r="3.1"/></svg></button><!-- Gregle app menu -->
 <details class="gregle-app-menu" id="gregleAppMenu" data-gregle-menu>
 <summary class="gregle-menu-toggle" aria-label="Gregle apps" aria-controls="gregleMenuPanel" aria-expanded="false" title="Gregle apps"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></svg></summary>
-<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div>
+<nav class="gregle-menu-panel" id="gregleMenuPanel" aria-label="Gregle apps"><div class="gregle-menu-heading"><h2>Gregle apps</h2><div class="quake-menu-theme" id="quakeMenuThemeHome" hidden><span>Dark mode</span></div></div>
 <p class="gregle-menu-sr-only" id="gregleAppHelp">Drag apps to rearrange them. On a touch screen, hold an app before dragging. With an app focused, use Alt and the arrow keys to move it.</p>
 <div class="gregle-app-grid" aria-describedby="gregleAppHelp"><a class="gregle-app" href="https://gregle.uk/" data-gregle-app-id="/"><img src="/favicons/favicon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Gregle</span></a>
 <a class="gregle-app" href="https://maps.gregle.uk/" data-gregle-app-id="/maps.html"><img src="/assets/maps-app/icon.svg" width="44" height="44" alt="" loading="lazy" decoding="async"><span>Maps</span></a>
@@ -58,6 +61,23 @@
 </nav></details>
 <!-- /Gregle app menu --></div>
   </header>
+  <section class="quake-settings-panel" id="quakeSettingsPanel" role="dialog" aria-labelledby="quakeSettingsTitle" hidden>
+    <div class="quake-settings-head"><div><p class="eyebrow">Personalise your alerts</p><h2 id="quakeSettingsTitle">Settings</h2></div><div class="quake-settings-head-actions"><button type="button" id="quakeSettingsClose" aria-label="Close settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div>
+    <div class="quake-settings-appearance" id="quakeSettingsThemeRow"><span>Dark mode</span><div class="gregle-installed-theme-control" id="quakeSettingsThemeHome"><button class="gregle-theme-switch" id="themeToggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Dark mode"></button></div></div>
+    <h3 class="quake-settings-subheading">Notifications</h3>
+    <p class="quake-settings-note" id="quakePushStatus" role="status" aria-live="polite">Checking notification support…</p>
+    <label class="quake-settings-line"><span>Enable notifications</span><input type="checkbox" id="quakeNotifyEnabled" role="switch"></label>
+    <label class="quake-settings-line"><span>BC / Pacific coast</span><input type="checkbox" id="quakeNotifyRegional" role="switch"></label>
+    <div class="quake-settings-section"><label for="quakeRegionalMagnitude">Minimum magnitude · BC / Pacific</label><select id="quakeRegionalMagnitude"><option value="1">M1.0 and above</option><option value="1.5">M1.5 and above</option><option value="2">M2.0 and above</option><option value="2.5">M2.5 and above</option><option value="3">M3.0 and above</option><option value="3.5">M3.5 and above</option><option value="4">M4.0 and above</option><option value="4.5">M4.5 and above</option><option value="5">M5.0 and above</option><option value="5.5">M5.5 and above</option><option value="6">M6.0 and above</option><option value="6.5">M6.5 and above</option><option value="7">M7.0 and above</option><option value="7.5">M7.5 and above</option><option value="8">M8.0 and above</option><option value="8.5">M8.5 and above</option><option value="9">M9.0 and above</option></select></div>
+    <p class="quake-settings-note">BC and the northeast Pacific coast: 40–65°N, 115–160°W.</p>
+    <label class="quake-settings-line"><span>Worldwide earthquakes</span><input type="checkbox" id="quakeNotifyWorldwide" role="switch"></label>
+    <div class="quake-settings-section"><label for="quakeWorldwideMagnitude">Minimum magnitude · worldwide</label><select id="quakeWorldwideMagnitude"><option value="1">M1.0 and above</option><option value="1.5">M1.5 and above</option><option value="2">M2.0 and above</option><option value="2.5">M2.5 and above</option><option value="3">M3.0 and above</option><option value="3.5">M3.5 and above</option><option value="4">M4.0 and above</option><option value="4.5">M4.5 and above</option><option value="5">M5.0 and above</option><option value="5.5">M5.5 and above</option><option value="6">M6.0 and above</option><option value="6.5">M6.5 and above</option><option value="7">M7.0 and above</option><option value="7.5">M7.5 and above</option><option value="8">M8.0 and above</option><option value="8.5">M8.5 and above</option><option value="9">M9.0 and above</option></select></div>
+    <label class="quake-settings-line"><span>Global tsunami alerts</span><input type="checkbox" id="quakeNotifyTsunami" role="switch"></label>
+    <p class="quake-settings-note">NOAA warnings, watches, advisories and threat bulletins worldwide. Tsunami alerts are independent of earthquake magnitude settings.</p>
+    <p class="quake-settings-note">USGS earthquakes and NOAA bulletins are checked every minute in the background. Reports and delivery can be delayed. Follow local authorities for emergency instructions.</p>
+    <p class="quake-settings-note" id="quakePushActionStatus">Checking notification support…</p>
+    <div class="quake-settings-buttons"><button class="pill quake-settings-enable" type="button" id="quakePushEnable" disabled>Enable notifications</button><button class="pill" type="button" id="quakePushRetry" hidden>Retry connection</button><button class="pill" type="button" id="quakePushTest" aria-describedby="quakePushActionStatus" disabled>Send test notification</button></div>
+  </section>
   <main class="page seismic-page">
     <div class="seismic-heading"><div><p class="eyebrow">A moving planet</p><h1>Earthquakes &amp; tsunamis<span class="accent-dot">.</span></h1><p class="intro">Recent activity, with a view of the coast and beyond.</p></div><button class="pill" id="refresh" type="button">↻ Refresh</button></div>
     <noscript><p>Enable JavaScript for the live map, or visit <a href="https://earthquake.usgs.gov/earthquakes/map/">USGS earthquakes</a> and <a href="https://www.tsunami.gov/">NOAA tsunami warnings</a>.</p></noscript>
@@ -84,4 +104,5 @@
   </main>
 </body>
 </html>
+
 

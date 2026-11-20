@@ -1,0 +1,35 @@
+:root{--quake-accent:#7637cc;--quake-accent-text:#7637cc}
+:root.dark-mode{--quake-accent-text:#bf93ff}
+.quake-settings-trigger{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--text);cursor:pointer}
+.quake-settings-trigger:hover,.quake-settings-trigger[aria-expanded="true"]{background:var(--soft);color:var(--quake-accent-text)}
+.quake-settings-trigger svg{display:block;width:22px;height:22px}
+.quake-settings-panel{position:fixed;z-index:10000;right:max(14px,env(safe-area-inset-right));top:var(--quake-settings-top,80px);width:min(390px,calc(100vw - 28px));max-height:calc(100dvh - var(--quake-settings-top,80px) - 14px - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain;padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--text);box-shadow:0 18px 55px #0003}
+.quake-settings-panel[hidden],.quake-settings-panel [hidden]{display:none!important}
+.quake-settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.quake-settings-head h2{margin:4px 0;font-size:1.35rem}
+.quake-settings-head #quakeSettingsClose{display:grid;place-items:center;flex:0 0 36px;box-sizing:border-box;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:var(--text);line-height:1;appearance:none;cursor:pointer}
+.quake-settings-head #quakeSettingsClose:hover{color:var(--quake-accent-text)}
+.quake-settings-head #quakeSettingsClose:focus-visible{outline:2px solid var(--quake-accent-text);outline-offset:2px}
+#quakeSettingsClose svg{display:block;width:18px;height:18px;pointer-events:none}
+.quake-settings-note{font-size:.875rem;line-height:1.55;color:var(--muted);margin:8px 0 16px}
+.quake-settings-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-weight:500}
+.quake-settings-line input{width:20px;height:20px;accent-color:var(--quake-accent)}
+.quake-settings-section{display:grid;gap:7px;padding:7px 0 13px}
+.quake-settings-section label{font-size:.875rem;color:var(--muted)}
+.quake-settings-section select{width:100%;padding:11px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);font:inherit;font-size:.9rem}
+.quake-settings-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.quake-settings-buttons .pill{font-size:.875rem}
+.quake-settings-panel button:disabled{opacity:.55;cursor:wait}
+
+.quake-settings-buttons .quake-settings-enable{border-color:var(--quake-accent);background:var(--quake-accent);color:#fff}
+
+.quake-settings-head-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.quake-settings-appearance{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px;padding:4px 0 12px;margin-bottom:18px;border-bottom:1px solid var(--line);font-size:.9rem;font-weight:500}
+.quake-settings-appearance[hidden],.quake-menu-theme[hidden]{display:none!important}
+.quake-settings-subheading{margin:0 0 8px;font-size:.95rem;font-weight:600}
+.quake-menu-theme{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--gm-muted)}
+
+
+.quake-settings-section select{padding-right:36px}
+.quake-settings-panel .eyebrow{font-size:.75rem}
+@media(max-width:480px){.topbar .breadcrumb{max-width:130px;font-size:12px;padding-left:12px;line-height:1.4}.topbar .brand-wrap{gap:12px}}

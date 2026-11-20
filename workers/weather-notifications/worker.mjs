@@ -2,6 +2,7 @@ import SunCalc from '../../assets/vendor/suncalc.js';
 import alerts from '../../assets/weather-alerts.js';
 import weather from '../../assets/weather-core.js';
 import {send, validateSubscription} from './webpush.mjs';
+import seismic from './earthquakes.mjs';
 
 const ORIGINS = ['https://weather.gregle.uk', 'https://gregle.uk'];
 const MINUTE = 60000;
@@ -173,6 +174,7 @@ async function body(req) {
 }
 export default {
   async fetch(req, env) {
+    if (new URL(req.url).pathname.startsWith('/earthquakes/')) return seismic.fetch(req,env);
     const origin = req.headers.get('origin'), path = new URL(req.url).pathname;
     const reply = (data, status = 200) => Response.json(data, {status, headers:{'Cache-Control':'no-store', Vary:'Origin', ...(ORIGINS.includes(origin) ? {'Access-Control-Allow-Origin':origin} : {})}});
     if (origin && !ORIGINS.includes(origin)) return reply({error:'Origin not allowed'},403);
@@ -212,5 +214,9 @@ export default {
       return reply({error:path === '/test' ? 'The test notification could not be delivered. Your device registration is still saved.' : 'Notification service temporarily unavailable. Retry connection.', code:path === '/test' ? 'PUSH_DELIVERY_FAILED' : 'NOTIFICATION_REQUEST_FAILED'},503);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(tick(env, event.scheduledTime)); },
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(seismic.tick(env,event.scheduledTime));
+    if (Math.floor(event.scheduledTime / MINUTE) % 5 === 0) ctx.waitUntil(tick(env,event.scheduledTime));
+  },
 };
+
