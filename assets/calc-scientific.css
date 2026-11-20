@@ -149,6 +149,58 @@
 [data-offline-retry][hidden] {display:none!important}
 
 /* Optional finishes for the scientific calculator. */
+body:has(> #calcPage.scientific-only[data-scientific-theme="gregle-night"]:not(.emulator-active,.ti89-active,.tinspire-active,.evo-active)) {
+  color-scheme: dark;
+  --bg: #100607;
+  --panel: #210b0d;
+  --text: #ec8980;
+  --muted: #ce726b;
+  --line: #5d2b2c;
+  --soft: #321114;
+  background: var(--bg);
+}
+
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active,.evo-active))[data-scientific-theme="gregle-night"] {
+  --sci-shell: #1d090b;
+  --sci-shell-top: #2c0e11;
+  --sci-shell-ink: #ec8980;
+  --sci-frame: #361416;
+  --sci-screen: #120507;
+  --sci-screen-ink: #f18478;
+  --sci-scheme: dark;
+  --sci-key: #2d1113;
+  --sci-key-border: #663134;
+  --sci-key-ink: #ee9187;
+  --sci-function: #251013;
+  --sci-function-ink: var(--sci-key-ink);
+  --sci-number: #321416;
+  --sci-number-ink: var(--sci-key-ink);
+  --sci-operator: #45181a;
+  --sci-operator-ink: #f4a093;
+  --sci-shift: #481b1c;
+  --sci-shift-ink: #f4a093;
+  --sci-shift-hint: #e88776;
+  --sci-accent: #d76a60;
+  --sci-accent-ink: #1b0809;
+  --sci-focus: #f49d90;
+  --sci-pad-frame: #160709;
+  --sci-pad: #351518;
+  --sci-pad-ink: var(--sci-key-ink);
+  --sci-pad-centre: #241013;
+  --sci-pad-centre-ink: var(--sci-accent);
+  --sci-edit: #3c1518;
+  --sci-clear: #4b1b1e;
+  --sci-edit-ink: var(--sci-key-ink);
+}
+
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active,.evo-active))[data-scientific-theme="gregle-night"] .calculator-resizer {
+  background: var(--sci-shell);
+}
+
+:where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active,.evo-active))[data-scientific-theme="gregle-night"] .home-transcript {
+  scrollbar-color: var(--sci-accent) transparent;
+}
+
 :where(.scientific-only:not(.emulator-active,.ti89-active,.tinspire-active,.evo-active))[data-scientific-theme="graphite"] {
   --sci-shell: #21282a;
   --sci-shell-top: #374143;
@@ -378,6 +430,7 @@
   background: linear-gradient(110deg,var(--swatch-shell) 33%,var(--swatch-screen) 33% 66%,var(--swatch-accent) 66%);
 }
 .scientific-theme-swatch[data-swatch="gregle"] {--swatch-shell:#343441;--swatch-screen:#dce7df;--swatch-accent:#b998ed}
+.scientific-theme-swatch[data-swatch="gregle-night"] {--swatch-shell:#2c0e11;--swatch-screen:#120507;--swatch-accent:#d76a60}
 .scientific-theme-swatch[data-swatch="graphite"] {--swatch-shell:#21282a;--swatch-screen:#bccdb9;--swatch-accent:#b9dc9a}
 .scientific-theme-swatch[data-swatch="chalk"] {--swatch-shell:#eae6e0;--swatch-screen:#fbf6ee;--swatch-accent:#a84425}
 .scientific-theme-swatch[data-swatch="silver"] {--swatch-shell:#cbd0dd;--swatch-screen:#bdd8ce;--swatch-accent:#5d4d8b}
