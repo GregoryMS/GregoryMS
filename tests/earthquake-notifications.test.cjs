@@ -81,15 +81,15 @@ test('background checks deduplicate earthquake alerts, retry delivery failures, 
 function settingsPage({ios=false, granted=false, installed=false, savedEnabled=false, failFirst=false, failTest=false, hostname='earthquakes.gregle.uk', failConfigOnce=false}={}) {
   const ids=['quakeSettingsPanel','quakeSettingsTrigger','quakeSettingsClose','quakeSettingsTitle','quakePushStatus','quakePushActionStatus','quakePushEnable','quakePushRetry','quakePushTest','gregleAppMenu','quakeNotifyEnabled','quakeNotifyRegional','quakeRegionalMagnitude','quakeNotifyWorldwide','quakeWorldwideMagnitude','quakeNotifyTsunami'];
   const nodes=Object.fromEntries(ids.map(id=>[id,{id,hidden:['quakeSettingsPanel','quakePushRetry'].includes(id),type:/quakeNotify(Enabled|Regional|Worldwide|Tsunami)$/.test(id)?'checkbox':'select',value:'',listeners:{},style:{setProperty(){}},setAttribute(name,value){this[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;},contains(target){return target===this;},focus(){},getBoundingClientRect(){return {bottom:60};}}]));
-  const events={},requests=[],permissions=[]; let sub=null, gesture=false, attempts=0,unsubscriptions=0;const registrations=[];
+  const events={},requests=[],permissions=[]; let sub=null, gesture=false, attempts=0,unsubscriptions=0;const registrations=[],registrationOptions=[];
   const publicKey=Buffer.concat([Buffer.from([4]),Buffer.alloc(64,1)]).toString('base64url');
   const Notification={permission:granted?'granted':'default',requestPermission(){permissions.push(gesture); Notification.permission='granted';return Promise.resolve('granted');}};
   const manager={async getSubscription(){return sub;},async subscribe(){permissions.push(gesture);if(!gesture)throw Error('subscribe requires a user gesture');if(failFirst && attempts++===0)throw Error('Push service unavailable');Notification.permission='granted';sub={options:{applicationServerKey:Buffer.from(publicKey,'base64url')},toJSON(){return {endpoint:'https://fcm.googleapis.com/fake',keys:{p256dh:'test',auth:'test'}};},async unsubscribe(){unsubscriptions++;sub=null;return true;}};return sub;}};
   const window={location:{hostname},isSecureContext:true,PushManager:{},Notification,matchMedia(){return {matches:false};},addEventListener(name,fn){events[name]=fn;},};
   const document={readyState:'complete',getElementById(id){return nodes[id];},addEventListener(){}};
-  const context={window,globalThis:window,document,navigator:{standalone:installed,userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(script){registrations.push(script);},ready:Promise.resolve({pushManager:manager})}},Notification,localStorage:{getItem(){return savedEnabled?JSON.stringify({quakeNotifyEnabled:true}):null;},setItem(){}},fetch:async(url,options)=>{if(failConfigOnce && url.endsWith('/public-key')){failConfigOnce=false;throw new TypeError('Load failed');}requests.push({url,data:options.body?JSON.parse(options.body):null});if(failTest && url.endsWith('/test'))return Response.json({error:'Test delivery unavailable',code:'PUSH_DELIVERY_FAILED'},{status:503});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
+  const context={window,globalThis:window,document,navigator:{standalone:installed,userAgent:ios?'iPhone':'Chrome',platform:ios?'iPhone':'Linux',serviceWorker:{async register(script,options){registrations.push(script);registrationOptions.push(options);return {active:{state:'activated'},pushManager:manager};},ready:new Promise(()=>{})}},Notification,localStorage:{getItem(){return savedEnabled?JSON.stringify({quakeNotifyEnabled:true}):null;},setItem(){}},fetch:async(url,options)=>{if(failConfigOnce && url.endsWith('/public-key')){failConfigOnce=false;throw new TypeError('Load failed');}requests.push({url,data:options.body?JSON.parse(options.body):null});if(failTest && url.endsWith('/test'))return Response.json({error:'Test delivery unavailable',code:'PUSH_DELIVERY_FAILED'},{status:503});return Response.json({ready:true,publicKey,ok:true});},AbortSignal,setTimeout,clearTimeout,atob,Uint8Array};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/earthquake-notification-settings.js'),'utf8'),context);
-  return {nodes,events,requests,permissions,window,registrations,unsubscriptions:()=>unsubscriptions,async click(id){gesture=true;nodes[id].listeners.click();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
+  return {nodes,events,requests,permissions,window,registrations,registrationOptions,unsubscriptions:()=>unsubscriptions,async click(id){gesture=true;nodes[id].listeners.click();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async change(id,value){gesture=true;if(nodes[id].type==='checkbox')nodes[id].checked=value;else nodes[id].value=value;nodes[id].listeners.change();gesture=false;await new Promise(resolve=>setImmediate(resolve));},async flush(){await new Promise(resolve=>setImmediate(resolve));}};
 }
 
 
@@ -120,7 +120,7 @@ test('theme control moves between desktop app menu and mobile settings without r
 });
 test('earthquake SW is isolated on its origin and shows earthquake icons with a safe click URL',async()=>{
   const listeners={},notifications=[];
-  const self={location:{origin:'https://earthquakes.gregle.uk'},addEventListener(name,fn){listeners[name]=fn;},registration:{async showNotification(title,options){notifications.push({title,...options});}}};
+  const self={location:{origin:'https://earthquakes.gregle.uk',hostname:'earthquakes.gregle.uk'},addEventListener(name,fn){listeners[name]=fn;},registration:{async showNotification(title,options){notifications.push({title,...options});}}};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../earthquakes-sw.js'),'utf8'),{self,URL});
   await new Promise((resolve,reject)=>listeners.push({data:{json:()=>({title:'M6 earthquake',url:'https://evil.example/'})},waitUntil:p=>p.then(resolve,reject)}));
   assert.equal(notifications[0].icon,'/assets/earthquakes-app/icon-192.png');assert.equal(notifications[0].data.url,'https://earthquakes.gregle.uk/');
@@ -140,12 +140,12 @@ test('combined scheduler checks earthquakes each minute and preserves the five-m
   }finally{global.fetch=original;}
 });
 
-test('older installed apps use the shared worker and keep other apps subscribed when switched off',async()=>{
+test('older installed apps get a page-scoped registration without waiting for the unrelated root worker',async()=>{
   const page=settingsPage({ios:true,installed:true,hostname:'gregle.uk'});await page.flush();
-  assert.deepEqual(page.registrations,['/gregle-sw.js']);
+  assert.deepEqual(page.registrations,['/earthquakes-sw.js']);assert.equal(page.registrationOptions[0].scope,'/earthquakes');
   assert.equal(page.requests[0].url,'/api/earthquake-notifications/public-key');
   await page.click('quakePushEnable');await page.change('quakeNotifyEnabled',false);
-  assert.equal(page.unsubscriptions(),0);assert.ok(page.requests.some(r=>r.url.endsWith('/unsubscribe')));
+  assert.equal(page.unsubscriptions(),1);assert.ok(page.requests.some(r=>r.url.endsWith('/unsubscribe')));
 });
 test('a failed service connection recovers through Retry without prompting outside a tap',async()=>{
   const page=settingsPage({ios:true,installed:true,failConfigOnce:true});await page.flush();

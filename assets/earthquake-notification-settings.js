@@ -116,8 +116,7 @@
           const existing = subscription;
           let serverError;
           try { await request('/unsubscribe', {subscription:existing.toJSON()}); } catch (error) { serverError = error; }
-          if (!sharedOrigin) await existing.unsubscribe();
-          subscription = null;
+          await existing.unsubscribe(); subscription = null;
           if (serverError) throw Error('Notifications are off on this device. Retry connection to check the service.');
         }
         $('quakePushRetry').hidden = true;
@@ -136,10 +135,24 @@
       const reason = unsupported();
       if (reason) { status(reason); return; }
       status('Connecting notification service…');
-      await navigator.serviceWorker.register(sharedOrigin ? '/gregle-sw.js' : '/earthquakes-sw.js', {scope:'/', updateViaCache:'none'});
-      let timeout;
-      try { registration = await Promise.race([navigator.serviceWorker.ready, new Promise((_, reject) => { timeout = setTimeout(() => reject(Error('Notification setup timed out. Retry connection.')), 15000); })]); }
-      finally { clearTimeout(timeout); }
+      // The original Gregle address shares a root worker with other apps. Give
+      // this page a more specific registration and use that exact registration.
+      const registered = await navigator.serviceWorker.register('/earthquakes-sw.js', {scope:sharedOrigin ? '/earthquakes' : '/', updateViaCache:'none'});
+      const worker = registered.active || registered.installing || registered.waiting;
+      if (!worker) throw Error('Notification setup could not start. Retry connection.');
+      if (worker.state !== 'activated') {
+        await new Promise((resolve, reject) => {
+          const finish = error => { clearTimeout(timer); worker.removeEventListener('statechange', changed); error ? reject(error) : resolve(); };
+          const changed = () => {
+            if (worker.state === 'activated') finish();
+            else if (worker.state === 'redundant') finish(Error('Notification setup failed. Retry connection.'));
+          };
+          const timer = setTimeout(() => finish(Error('Notification setup timed out. Retry connection.')), 20000);
+          worker.addEventListener('statechange', changed);
+          changed();
+        });
+      }
+      registration = registered;
       const config = await request('/public-key');
       if (!config.ready || !config.publicKey) throw Error('Notification service is temporarily unavailable. Retry connection.');
       publicKey = config.publicKey;

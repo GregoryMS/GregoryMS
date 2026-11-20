@@ -11,7 +11,7 @@ self.addEventListener('push', event => {
     body: message.body || 'Open Earthquakes for the latest activity.',
     icon: '/assets/earthquakes-app/icon-192.png', badge: '/assets/earthquakes-app/icon-192.png',
     tag: message.tag || 'gregle-earthquakes',
-    data: {url: url.origin === self.location.origin ? url.href : self.location.origin + '/'},
+    data: {url: url.origin === self.location.origin ? url.href : self.location.origin + (self.location.hostname === 'earthquakes.gregle.uk' ? '/' : '/earthquakes.html')},
   }));
 });
 self.addEventListener('notificationclick', event => {
