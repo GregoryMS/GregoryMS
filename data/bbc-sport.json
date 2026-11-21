@@ -1,11 +1,15 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-20T23:04:02+00:00",
-  "fetchedAt": "2026-11-20T23:04:07.888432+00:00",
+  "feedUpdatedAt": "2026-11-21T03:56:55+00:00",
+  "fetchedAt": "2026-11-21T03:57:05.785730+00:00",
   "items": [
     {
-      "title": "Man Utd fan criticism has gone too far at times - Berrada",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cwz0k32j9kr9o?at_medium=RSS&at_campaign=rss"
+      "title": "Price beats Kotaskova to become undisputed champion",
+      "link": "https://www.bbc.co.uk/sport/boxing/articles/cw808y2lrkzxo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Cost of Man Utd hiring and firing managers nears £100m",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cwd01n9z23x5o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Stacked England aim to pile on style and add to All Black misery",
@@ -20,10 +24,6 @@
       "link": "https://www.bbc.co.uk/sport/darts/articles/ck7928yjd1dgo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Filming training by drones should be illegal - Iraola",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqdr1xmekmg5o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Osimhen keen on Man Utd move - Saturday's gossip",
       "link": "https://www.bbc.co.uk/sport/football/articles/c60qj1924wyeo?at_medium=RSS&at_campaign=rss"
     },
@@ -32,12 +32,12 @@
       "link": "https://www.bbc.co.uk/sport/tennis/articles/cqrkgn17emr2o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Shevchenko lying about drugs test claims - Mudryk",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cjn502n9vqp4o?at_medium=RSS&at_campaign=rss"
+      "title": "Man Utd fan criticism has gone too far at times - Berrada",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cwz0k32j9kr9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'Right time' for Smith exit - but Murray not ready for role",
-      "link": "https://www.bbc.co.uk/sport/tennis/articles/cvze7d03880ko?at_medium=RSS&at_campaign=rss"
+      "title": "Shevchenko lying about drugs test claims - Mudryk",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cjn502n9vqp4o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "A men's netball World Cup - not a question of if, but when?",
