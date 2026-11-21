@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-20T23:21:20.748275+00:00",
+      "checkedAt": "2026-11-21T04:17:31.267497+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -140,12 +140,25 @@
             "HBO Max (UK)",
             "TNT Sports 2"
           ]
+        },
+        {
+          "home": "Nottingham Forest",
+          "away": "Chelsea",
+          "start": "2026-11-27T20:00:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports Premier League",
+            "Sky Sports UHD 1",
+            "Sky Sports+ app"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-20T23:21:20.748275+00:00",
+      "checkedAt": "2026-11-21T04:17:31.267497+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -270,12 +283,21 @@
           "channels": [
             "DAZN Canada"
           ]
+        },
+        {
+          "home": "Nottingham Forest",
+          "away": "Chelsea",
+          "start": "2026-11-27T20:00:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-20T23:21:20.748275+00:00",
+      "checkedAt": "2026-11-21T04:17:31.267497+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -395,12 +417,21 @@
             "V sport 3 NO",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Nottingham Forest",
+          "away": "Chelsea",
+          "start": "2026-11-27T20:00:00+00:00",
+          "channels": [
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-20T23:21:20.748275+00:00",
+      "checkedAt": "2026-11-21T04:17:31.267497+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -522,12 +553,22 @@
           "channels": [
             "Disney+ Sverige"
           ]
+        },
+        {
+          "home": "Nottingham Forest",
+          "away": "Chelsea",
+          "start": "2026-11-27T20:00:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "V Ultra HD",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-20T23:21:20.748275+00:00",
+      "checkedAt": "2026-11-21T04:17:31.267497+00:00",
       "listings": [
         {
           "home": "Manchester City",
@@ -643,6 +684,15 @@
           "start": "2026-11-26T17:45:00+00:00",
           "channels": [
             "Sky Sport 4",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Nottingham Forest",
+          "away": "Chelsea",
+          "start": "2026-11-27T20:00:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
             "WOW"
           ]
         }
