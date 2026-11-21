@@ -3,44 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-21T13:02:00.142040+00:00",
+      "checkedAt": "2026-11-21T20:06:01.493531+00:00",
       "listings": [
-        {
-          "home": "Manchester City",
-          "away": "Fulham",
-          "start": "2026-11-21T12:30:00+00:00",
-          "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 1",
-            "TNT Sports Ultimate"
-          ]
-        },
-        {
-          "home": "Liverpool (W)",
-          "away": "Chelsea (W)",
-          "start": "2026-11-21T12:45:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky One",
-            "Sky Sports Mix",
-            "Sky Sports Premier League",
-            "Sky Sports UHD 1",
-            "Sky Sports+ app"
-          ]
-        },
-        {
-          "home": "Newcastle United",
-          "away": "Arsenal",
-          "start": "2026-11-21T17:30:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports Main Event",
-            "Sky Sports Main Event UHD",
-            "Sky Sports Premier League",
-            "Sky Sports UHD 1",
-            "Sky Sports+ app"
-          ]
-        },
         {
           "home": "Manchester City (W)",
           "away": "Tottenham Hotspur (W)",
@@ -158,44 +122,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-21T13:02:00.142040+00:00",
+      "checkedAt": "2026-11-21T20:06:01.493531+00:00",
       "listings": [
-        {
-          "home": "Manchester City",
-          "away": "Fulham",
-          "start": "2026-11-21T12:30:00+00:00",
-          "channels": [
-            "DAZN Canada",
-            "Fubo Sports CA"
-          ]
-        },
-        {
-          "home": "Liverpool (W)",
-          "away": "Chelsea (W)",
-          "start": "2026-11-21T12:45:00+00:00",
-          "channels": [
-            "Sportsnet NOW",
-            "Sportsnet One"
-          ]
-        },
-        {
-          "home": "Chelsea",
-          "away": "Leeds United",
-          "start": "2026-11-21T15:00:00+00:00",
-          "channels": [
-            "DAZN Canada",
-            "Fubo Sports CA"
-          ]
-        },
-        {
-          "home": "Newcastle United",
-          "away": "Arsenal",
-          "start": "2026-11-21T17:30:00+00:00",
-          "channels": [
-            "DAZN Canada",
-            "Fubo Sports CA"
-          ]
-        },
         {
           "home": "Manchester City (W)",
           "away": "Tottenham Hotspur (W)",
@@ -297,43 +225,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-21T13:02:00.142040+00:00",
+      "checkedAt": "2026-11-21T20:06:01.493531+00:00",
       "listings": [
-        {
-          "home": "Manchester City",
-          "away": "Fulham",
-          "start": "2026-11-21T12:30:00+00:00",
-          "channels": [
-            "V sport Premier League NO",
-            "Viaplay NO"
-          ]
-        },
-        {
-          "home": "Liverpool (W)",
-          "away": "Chelsea (W)",
-          "start": "2026-11-21T12:45:00+00:00",
-          "channels": [
-            "VG TV"
-          ]
-        },
-        {
-          "home": "Chelsea",
-          "away": "Leeds United",
-          "start": "2026-11-21T15:00:00+00:00",
-          "channels": [
-            "V sport Premier League NO",
-            "Viaplay NO"
-          ]
-        },
-        {
-          "home": "Newcastle United",
-          "away": "Arsenal",
-          "start": "2026-11-21T17:30:00+00:00",
-          "channels": [
-            "V sport Premier League NO",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Manchester City (W)",
           "away": "Tottenham Hotspur (W)",
@@ -431,43 +324,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-21T13:02:00.142040+00:00",
+      "checkedAt": "2026-11-21T20:06:01.493531+00:00",
       "listings": [
-        {
-          "home": "Manchester City",
-          "away": "Fulham",
-          "start": "2026-11-21T12:30:00+00:00",
-          "channels": [
-            "Prime Video (SE)"
-          ]
-        },
-        {
-          "home": "Liverpool (W)",
-          "away": "Chelsea (W)",
-          "start": "2026-11-21T12:45:00+00:00",
-          "channels": [
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Chelsea",
-          "away": "Leeds United",
-          "start": "2026-11-21T15:00:00+00:00",
-          "channels": [
-            "V Sport Premium",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Newcastle United",
-          "away": "Arsenal",
-          "start": "2026-11-21T17:30:00+00:00",
-          "channels": [
-            "V Sport Premium",
-            "V Ultra HD",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Manchester City (W)",
           "away": "Tottenham Hotspur (W)",
@@ -568,45 +426,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-21T13:02:00.142040+00:00",
+      "checkedAt": "2026-11-21T20:06:01.493531+00:00",
       "listings": [
-        {
-          "home": "Manchester City",
-          "away": "Fulham",
-          "start": "2026-11-21T12:30:00+00:00",
-          "channels": [
-            "RTL+",
-            "Sky Sport Premier League",
-            "WOW"
-          ]
-        },
-        {
-          "home": "Liverpool (W)",
-          "away": "Chelsea (W)",
-          "start": "2026-11-21T12:45:00+00:00",
-          "channels": [
-            "Sportdigital+",
-            "Sportdigital1+"
-          ]
-        },
-        {
-          "home": "Chelsea",
-          "away": "Leeds United",
-          "start": "2026-11-21T15:00:00+00:00",
-          "channels": [
-            "Sky Sport Premier League",
-            "WOW"
-          ]
-        },
-        {
-          "home": "Newcastle United",
-          "away": "Arsenal",
-          "start": "2026-11-21T17:30:00+00:00",
-          "channels": [
-            "Sky Sport Premier League",
-            "WOW"
-          ]
-        },
         {
           "home": "Manchester City (W)",
           "away": "Tottenham Hotspur (W)",
