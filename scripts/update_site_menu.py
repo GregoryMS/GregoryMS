@@ -25,6 +25,7 @@ APPS = [
     ('Finance', '/finance.html', 'assets/finance-app/icon-192.png'),
     ('News', '/news.html', 'assets/news-app/icon-192.png'),
     ('Cloud', 'https://cloud.gregle.uk', 'assets/cloud-app/icon.svg'),
+    ('Notes', 'https://notes.gregle.uk/', 'assets/notes-app/icon.svg?v=20261121-notes'),
     ('Calendar', 'https://cloud.gregle.uk/apps/calendar/', 'assets/calendar-app/icon.svg'),
     ('Earthquakes', '/earthquakes.html', 'assets/earthquakes-app/icon-192.png'),
     ('Satellites', 'https://satellites.gregle.uk/', 'assets/satellites-app/icon.svg'),
@@ -36,7 +37,7 @@ APPS = [
     ('More', '/links.html', 'assets/tools-app.svg'),
 ]
 EXTRAS = [
-    ('Portal', 'https://portal.gregle.de'), ('Notes', 'https://web.bear.app'),
+    ('Portal', 'https://portal.gregle.de'), ('Bear Notes', 'https://web.bear.app'),
     ('Apple Maps', 'https://maps.apple.com'), ('Dictionary', '/dictionary.html'),
     ('Music', 'https://music.apple.com'),
     ('Web', 'https://42.gsuth.uk'), ('SpaceWeather', 'https://spaceweather.com'),

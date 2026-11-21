@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<title>Gregle Notes</title>
+<rect width="512" height="512" fill="#232323"/>
+<rect x="122" y="88" width="280" height="336" rx="34" fill="none" stroke="#faf9f6" stroke-width="24"/>
+<path d="M184 93v326" stroke="#faf9f6" stroke-width="18"/>
+<path d="M304 100v98l30-20 30 20v-98" fill="#9850ff"/>
+<g fill="none" stroke="#faf9f6" stroke-width="18" stroke-linecap="round">
+<path d="M234 264h116M234 310h116M234 356h72"/>
+<path d="M104 166h38M104 234h38M104 302h38M104 370h38"/>
+</g>
+</svg>

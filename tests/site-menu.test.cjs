@@ -9,7 +9,7 @@ const routes = require('../assets/site-routes.json');
 const destination = page => `https://${routes[page]}/`;
 
 test('every content page has the same valid app destinations and working icons', () => {
-  const expected = ['index.html', 'maps.html', 'weather.html', 'sports.html', 'astro.html', 'finance.html', 'news.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://cloud.gregle.uk/apps/calendar/'], [destination('earthquakes.html'), 'https://satellites.gregle.uk/', destination('radio.html'), destination('dictionary.html'), destination('translate.html'), destination('calc.html'), 'https://cloud.gregle.uk/apps/files/files', destination('links.html')]);
+  const expected = ['index.html', 'maps.html', 'weather.html', 'sports.html', 'astro.html', 'finance.html', 'news.html'].map(destination).concat(['https://cloud.gregle.uk', 'https://notes.gregle.uk/', 'https://cloud.gregle.uk/apps/calendar/'], [destination('earthquakes.html'), 'https://satellites.gregle.uk/', destination('radio.html'), destination('dictionary.html'), destination('translate.html'), destination('calc.html'), 'https://cloud.gregle.uk/apps/files/files', destination('links.html')]);
   for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'environment-canada.html')) {
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     assert.equal((source.match(/id="gregleAppMenu"/g) || []).length, 1, file);
@@ -32,7 +32,7 @@ test('every content page has the same valid app destinations and working icons',
     assert.match(menu, /href="https:\/\/cloud\.gregle\.uk\/apps\/calendar\/" data-gregle-app-id="calendar"><img src="\/assets\/calendar-app\/icon\.svg"[^>]*><span>Calendar<\/span>/, file);
     for (const [,href,icon] of apps) {
       const host = new URL(href).hostname;
-      const external = ['cloud.gregle.uk', 'satellites.gregle.uk'].includes(host);
+      const external = ['cloud.gregle.uk', 'notes.gregle.uk', 'satellites.gregle.uk'].includes(host);
       assert(external || Object.values(routes).includes(host), href);
       if (!external) assert(fs.existsSync(path.join(root, Object.keys(routes).find(page => routes[page] === host))), href);
       assert(fs.existsSync(path.join(root, new URL(icon, 'https://gregle.uk').pathname.slice(1))), icon);
