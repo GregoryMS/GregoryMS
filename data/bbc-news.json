@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-20T23:07:05+00:00",
-  "fetchedAt": "2026-11-20T23:07:08.464742+00:00",
+  "feedUpdatedAt": "2026-11-21T03:54:40+00:00",
+  "fetchedAt": "2026-11-21T03:54:45.507144+00:00",
   "items": [
     {
       "title": "UK to explore even closer ties with EU after agreeing deal, says Burnham",
@@ -12,36 +12,36 @@
       "link": "https://www.bbc.co.uk/news/articles/cm1wr029evnqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Russian missile hits Poland as Kyiv's allies hold military exercise, says Tusk",
-      "link": "https://www.bbc.co.uk/news/articles/cqx2x9dklxnro?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "What we know about the latest Russian missile strikes on Ukraine",
-      "link": "https://www.bbc.co.uk/news/videos/c65y19wy3xl8o?at_medium=RSS&at_campaign=rss"
+      "title": "Tech stock sell-off drags markets down as Anthropic shares slide",
+      "link": "https://www.bbc.co.uk/news/articles/c6808ym10vzgo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Man guilty of murdering woman he groomed on fetish site",
       "link": "https://www.bbc.co.uk/news/articles/cmy49lekdkkzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Tech stock sell-off drags markets down as Anthropic shares slide",
-      "link": "https://www.bbc.co.uk/news/articles/c6808ym10vzgo?at_medium=RSS&at_campaign=rss"
+      "title": "Russian missile hits Poland as Kyiv's allies hold military exercise, says Tusk",
+      "link": "https://www.bbc.co.uk/news/articles/cqx2x9dklxnro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Sales of baby sleeping bag halted by Next after new mum raises alarm",
+      "link": "https://www.bbc.co.uk/news/articles/cw9874p114dro?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Daniel Thomas jailed for 15 months for slashing dinghy",
       "link": "https://www.bbc.co.uk/news/articles/c6lywjpn5levo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Gérard Depardieu and French author investigated over sexual allegations",
-      "link": "https://www.bbc.co.uk/news/articles/c9ly43pj10mvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "French police officers sentenced for beating of music producer Michel Zecler",
-      "link": "https://www.bbc.co.uk/news/articles/ck9d7e9wvvweo?at_medium=RSS&at_campaign=rss"
+      "title": "Denmark accuses Russia of plotting to assassinate US-Ukrainian rapper",
+      "link": "https://www.bbc.co.uk/news/articles/cmde1lj4yjxno?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Trump threatens ban on US firms building AI data centres overseas",
       "link": "https://www.bbc.co.uk/news/articles/cmde1lw9y54ko?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "French police officers sentenced for beating of music producer Michel Zecler",
+      "link": "https://www.bbc.co.uk/news/articles/ck9d7e9wvvweo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
