@@ -1,35 +1,35 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-21T12:23:45+00:00",
-  "fetchedAt": "2026-11-21T12:23:46.210198+00:00",
+  "feedUpdatedAt": "2026-11-21T19:41:02+00:00",
+  "fetchedAt": "2026-11-21T19:41:06.771690+00:00",
   "items": [
     {
-      "title": "Zelensky says Crimean Bridge strikes 'fair response' as he meets UK's Streeting",
+      "title": "Zelensky says Crimean Bridge strikes 'fair response' as he meets Wes Streeting",
       "link": "https://www.bbc.co.uk/news/articles/c6wy0qj7w5zqo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Streeting calls Putin a 'cold-blooded killer' as he meets Zelensky in Kyiv",
+      "link": "https://www.bbc.co.uk/news/videos/cqevrddp91z8o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Catherine talks openly about how cancer changed her in documentary on BBC",
       "link": "https://www.bbc.co.uk/news/articles/c85y14zvexz9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Deal with EU not dependent on tuition fees agreement, Miliband says",
-      "link": "https://www.bbc.co.uk/news/articles/cm9w9p4geke8o?at_medium=RSS&at_campaign=rss"
+      "title": "'We're not meant to carry life's challenges alone', Catherine says in first clip",
+      "link": "https://www.bbc.co.uk/news/videos/cwe85gyedjp5o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Fight over fossil fuels leaves COP31 climate talks in deadlock",
       "link": "https://www.bbc.co.uk/news/articles/c6ly5w40eg07o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Man convicted of starting Palisades fire in Los Angeles",
-      "link": "https://www.bbc.co.uk/news/articles/c64gn0gy8rj3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Who will be Robert Pattinson's 'Bond girl' - and does the role need to change?",
       "link": "https://www.bbc.co.uk/news/articles/cr4g1l7x52jno?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Phoebe Bridgers banned phones at her gigs, so fans are using art to remember them",
-      "link": "https://www.bbc.co.uk/news/articles/cq7821d0pv49o?at_medium=RSS&at_campaign=rss"
+      "title": "England run up record win over New Zealand in rugby union's Nations Championship",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cwm2jxd8k15mo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Can AI really help spot Black Friday deals? We put it to the test",
@@ -40,8 +40,8 @@
       "link": "https://www.bbc.co.uk/news/articles/cmn502ek17yvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "What is the EU-UK youth experience scheme and when will it start?",
-      "link": "https://www.bbc.co.uk/news/articles/c6jeqv9nv5eqo?at_medium=RSS&at_campaign=rss"
+      "title": "How Phoebe Bridgers banning phones at concerts sparked a wave of fan artwork",
+      "link": "https://www.bbc.co.uk/news/articles/cq7821d0pv49o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
