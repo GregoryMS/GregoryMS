@@ -1,8 +1,32 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-22T00:00:03+00:00",
-  "fetchedAt": "2026-11-22T00:00:14.092659+00:00",
+  "feedUpdatedAt": "2026-11-22T06:41:08+00:00",
+  "fetchedAt": "2026-11-22T06:41:17.136129+00:00",
   "items": [
+    {
+      "title": "Verstappen wins extraordinary race as Ferraris collide",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cqx2ex25pvn9o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'He will see what Man Utd are made of' - Pulis on Pochettino's first game",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ckqx5w58dgv7o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Can win over All Blacks finally break England's boom-bust cycle?",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6gregx71gjro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Australia hold on for narrow win against Wales",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cwm25ev1z8y8o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Raya set to have scan on injury - how much would Arsenal miss him?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ckx28w9ree9vo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Ireland remind themselves that the best are beatable",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c820qxx2k7y2o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Leeds dominate Chelsea for first Stamford Bridge win since 1999",
       "link": "https://www.bbc.co.uk/sport/football/videos/c3ewvkk4qgxjo?at_medium=RSS&at_campaign=rss"
@@ -18,30 +42,6 @@
     {
       "title": "Coventry beat Palace in Frank's first game after late own goal",
       "link": "https://www.bbc.co.uk/sport/football/videos/c8wy5ddky5n9o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Man City drop points to Fulham despite superb Anderson volley",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c30rkq9xyk8eo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Evanilson strikes again as Bournemouth beat Forest",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cm4gn997yry2o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Villa's home woes continue as Sunderland earn point",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c5j9m227l42do?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Can win over All Blacks finally break England's boom-bust cycle?",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6gregx71gjro?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Australia hold on for narrow win against Wales",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cwm25ev1z8y8o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Raya set to have scan on injury - how much would Arsenal miss him?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ckx28w9ree9vo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
