@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-22T00:20:29.526129+00:00",
+      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
       "listings": [
         {
           "home": "Manchester City (W)",
@@ -130,7 +130,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-22T00:20:29.526129+00:00",
+      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
       "listings": [
         {
           "home": "Manchester City (W)",
@@ -174,8 +174,6 @@
           "start": "2026-11-23T01:30:00+00:00",
           "channels": [
             "Apple TV (US)",
-            "RDS",
-            "TSN",
             "TSN+",
             "TSN5"
           ]
@@ -259,7 +257,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-22T00:20:29.526129+00:00",
+      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
       "listings": [
         {
           "home": "Manchester City (W)",
@@ -375,7 +373,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-22T00:20:29.526129+00:00",
+      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
       "listings": [
         {
           "home": "Manchester City (W)",
@@ -494,7 +492,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-22T00:20:29.526129+00:00",
+      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
       "listings": [
         {
           "home": "Manchester City (W)",
