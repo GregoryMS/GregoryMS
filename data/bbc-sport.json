@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-22T14:59:15+00:00",
-  "fetchedAt": "2026-11-22T14:59:17.760145+00:00",
+  "feedUpdatedAt": "2026-11-22T21:01:45+00:00",
+  "fetchedAt": "2026-11-22T21:01:54.781506+00:00",
   "items": [
     {
-      "title": "England will not get carried away by beating All Blacks",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/ckr5gdpm1q5no?at_medium=RSS&at_campaign=rss"
+      "title": "Ngumoha stars as Liverpool thrash 10-man Man Utd",
+      "link": "https://www.bbc.co.uk/sport/football/videos/c933g77knz00o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "The red card that changed Liverpool-Man Utd: correct call?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cq7827p8emmxo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Alcaraz outplays Zverev for first ATP Finals triumph",
+      "link": "https://www.bbc.co.uk/sport/tennis/articles/c60evlendg0jo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Yoro sees red as Ngumoha shines - Liverpool v Man Utd player ratings",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c933gzxk66yyo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "From conceding seven to Hull heroics - how Tzolakis recovered to defy Brighton",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm4gn7npqe8yo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Bundesliga",
+      "link": "https://www.bbc.co.uk/iplayer/episode/l0059298?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "McBurnie stoppage-time double earns Hull win over 10-man Brighton",
+      "link": "https://www.bbc.co.uk/sport/football/videos/ck62pzzezqz2o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Verstappen a constant amid chaos as he says Russell is 'so far below my level'",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/c3n0l5p5x5x5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Hamilton-Leclerc collision completely unacceptable, says Ferrari boss",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c6j9mepj0j1go?at_medium=RSS&at_campaign=rss"
+      "title": "Did beaten Wales still show they have come a long way?",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cjr4gn7yd9d5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Injured Jacks out of T20 Australia tour",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c8p3v1p45360o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'He will see what Man Utd are made of' - Pulis on Pochettino's first game",
-      "link": "https://www.bbc.co.uk/sport/football/articles/ckqx5w58dgv7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watford seek sixth manager in 18 months after sacking Dionisi",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cyvz6r4g1jqo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Leeds dominate Chelsea for first Stamford Bridge win since 1999",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c3ewvkk4qgxjo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Arsenal go six points clear after lively draw at Newcastle",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cm702zzl66l6o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Teenager Williams-Barnett shines as Spurs beat Ipswich",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c3174qq2j82zo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Coventry beat Palace in Frank's first game after late own goal",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c8wy5ddky5n9o?at_medium=RSS&at_campaign=rss"
+      "title": "England will not get carried away by beating All Blacks",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/ckr5gdpm1q5no?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
