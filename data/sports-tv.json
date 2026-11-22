@@ -3,43 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
+      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
       "listings": [
-        {
-          "home": "Everton (W)",
-          "away": "Brighton (W)",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports+ app",
-            "WSL YouTube"
-          ]
-        },
-        {
-          "home": "Hull City",
-          "away": "Brighton & Hove Albion",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports Main Event",
-            "Sky Sports Main Event UHD",
-            "Sky Sports Premier League",
-            "Sky Sports UHD 1",
-            "Sky Sports+ app"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "West Ham United (W)",
-          "start": "2026-11-22T14:30:00+00:00",
-          "channels": [
-            "BBC Sport online",
-            "BBC Two",
-            "BBC Two Northern Ireland",
-            "BBC Two Wales",
-            "BBC iPlayer"
-          ]
-        },
         {
           "home": "Vancouver Whitecaps",
           "away": "Real Salt Lake",
@@ -117,35 +82,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
+      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
       "listings": [
-        {
-          "home": "Everton (W)",
-          "away": "Brighton (W)",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "Sportsnet NOW",
-            "Sportsnet+"
-          ]
-        },
-        {
-          "home": "Hull City",
-          "away": "Brighton & Hove Albion",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "DAZN Canada",
-            "Fubo Sports CA"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "West Ham United (W)",
-          "start": "2026-11-22T14:30:00+00:00",
-          "channels": [
-            "Sportsnet NOW",
-            "Sportsnet One"
-          ]
-        },
         {
           "home": "Vancouver Whitecaps",
           "away": "Real Salt Lake",
@@ -235,33 +173,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
+      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
       "listings": [
-        {
-          "home": "Everton (W)",
-          "away": "Brighton (W)",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "VG TV"
-          ]
-        },
-        {
-          "home": "Hull City",
-          "away": "Brighton & Hove Albion",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "V sport Premier League 1 NO",
-            "Viaplay NO"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "West Ham United (W)",
-          "start": "2026-11-22T14:30:00+00:00",
-          "channels": [
-            "VG TV"
-          ]
-        },
         {
           "home": "Vancouver Whitecaps",
           "away": "Real Salt Lake",
@@ -343,33 +256,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
+      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
       "listings": [
-        {
-          "home": "Everton (W)",
-          "away": "Brighton (W)",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "TV4 Play Sport"
-          ]
-        },
-        {
-          "home": "Hull City",
-          "away": "Brighton & Hove Albion",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "V Sport Football",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "West Ham United (W)",
-          "start": "2026-11-22T14:30:00+00:00",
-          "channels": [
-            "TV4 Play Sport"
-          ]
-        },
         {
           "home": "Vancouver Whitecaps",
           "away": "Real Salt Lake",
@@ -453,27 +341,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
+      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
       "listings": [
-        {
-          "home": "Hull City",
-          "away": "Brighton & Hove Albion",
-          "start": "2026-11-22T14:00:00+00:00",
-          "channels": [
-            "Sky Sport Premier League",
-            "Sky Ultra HD",
-            "WOW"
-          ]
-        },
-        {
-          "home": "Arsenal (W)",
-          "away": "West Ham United (W)",
-          "start": "2026-11-22T14:30:00+00:00",
-          "channels": [
-            "Sportdigital+",
-            "Sportdigital1+"
-          ]
-        },
         {
           "home": "Vancouver Whitecaps",
           "away": "Real Salt Lake",
