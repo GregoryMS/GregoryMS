@@ -1,10 +1,14 @@
 import router from '../site-router/worker.mjs';
 import {evoAsset, isolateCalculator} from '../calculator/evo.mjs';
+import {weatherBulletin} from './weather-bulletin.mjs';
 
 // Serve app pages and Maps APIs with this Worker's own provider secrets.
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.origin === 'https://weather.gregle.uk' && url.pathname === '/api/weather/bulletin') {
+      return weatherBulletin(request);
+    }
     if (url.hostname.endsWith('.workers.dev')) {
       return new Response('Gregle app router ready', {headers: {'Cache-Control': 'no-store'}});
     }

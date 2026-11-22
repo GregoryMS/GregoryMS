@@ -58,7 +58,7 @@ function harness() {
     fetch(url,opts){calls.push({url,...opts});return fetchImpl(url,opts);},
     setTimeout(fn,ms){timers.set(++nextTimer,{fn,ms});return nextTimer;}, clearTimeout(id){timers.delete(id);}};
   const controller=createController(win);
-  return {controller,node,document,listeners,timers,calls,
+  return {controller,node,document,listeners,timers,calls,win,
     setFetch(fn){fetchImpl=fn;},advance(ms){clock+=ms;},
     fire(ms){const entry=[...timers].find(([,timer])=>timer.ms===ms);assert.ok(entry,`timer ${ms} exists`);timers.delete(entry[0]);return entry[1].fn();}};
 }
@@ -291,6 +291,34 @@ test('Canadian details load on expansion, preserve plain text, and remain open a
   await h.controller.refresh();
   details=h.node('weatherAlertList').children[0].children[0];assert.equal(details.open,true);
   await details.ontoggle();assert.equal(details.children[3].textContent,text);
+});
+test('Canadian details fall back to the matching official report when GeoMet has no record',async()=>{
+  const h=harness();
+  h.win.location={hostname:'weather.gregle.uk'};
+  h.win.DOMParser=class {
+    parseFromString(markup,type){
+      assert.equal(type,'text/html');
+      assert.equal(markup,'<p>Wind &amp; rain');
+      return {body:{textContent:'Wind & rain'}};
+    }
+  };
+  let issued=iso(NOW-3600000+240);
+  h.setFetch(async url=>{
+    if(url.includes('/weather-alerts/')) return response({features:[]});
+    if(url.startsWith('/api/weather/bulletin?')) return response({issued,text:'Wind &amp; rain'});
+    return response(feed([alert({url:{en:bulletinURL}})]));
+  });
+  await h.controller.setLocation(victoria);
+  let details=h.node('weatherAlertList').children[0].children[0];
+  details.open=true;await details.ontoggle();
+  assert.equal(h.calls.at(-1).url,'/api/weather/bulletin?region=bc43&id='+bulletinId);
+  assert.equal(details.children[3].textContent,'Wind & rain');
+  assert.equal(details.children[3].innerHTML,'');
+  issued=iso(NOW-7200000);
+  await h.controller.refresh();
+  details=h.node('weatherAlertList').children[0].children[0];
+  await details.ontoggle();
+  assert.match(details.children[3].textContent,/could not be loaded/);
 });
 test('Canadian detail failures retain the warning and allow retry; location changes cancel pending text',async()=>{
   const h=harness(); let fail=true;

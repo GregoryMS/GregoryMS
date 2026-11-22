@@ -76,6 +76,13 @@
     return unique[0];
   }
 
+  function canadianReportURL(alert) {
+    const link = new URL(alert.url);
+    const region = link.search.match(/^\?([a-z]{2}[a-z0-9]{1,12})=?$/i)?.[1];
+    if (link.pathname !== '/warnings/report_e.html' || !region) return null;
+    return '/api/weather/bulletin?' + new URLSearchParams({region, id:link.hash.slice(1)});
+  }
+
   function ukAlertsURL(location) {
     if (!Number.isFinite(location?.latitude) || Math.abs(location.latitude) > 90 ||
         !Number.isFinite(location.longitude) || Math.abs(location.longitude) > 180) throw Error('Invalid warning location');
@@ -151,11 +158,21 @@
         const current = version, request = new win.AbortController();
         detailRequests.add(request); loading = true;
         content.textContent = 'Loading the Environment Canada bulletin…';
-        const timeout = win.setTimeout(() => request.abort(), 10000);
+        const timeout = win.setTimeout(() => request.abort(), 15000);
         try {
-          const data = await fetchJSON(url, request.signal);
+          let text;
+          try {
+            text = canadianAlertText(await fetchJSON(url, request.signal), alert, now());
+          } catch (error) {
+            const reportURL = win.location?.hostname === 'weather.gregle.uk' && canadianReportURL(alert);
+            if (!reportURL || request.signal.aborted || alert.expires <= now()) throw error;
+            const report = await fetchJSON(reportURL, request.signal);
+            if (Math.floor(Date.parse(report.issued) / 1000) !== Math.floor(alert.issued / 1000) ||
+                typeof report.text !== 'string' || !report.text.trim()) throw Error('Matching bulletin unavailable');
+            text = new win.DOMParser().parseFromString('<p>' + report.text.replace(/</g, '&lt;'), 'text/html').body.textContent;
+          }
           if (current !== version || alert.expires <= now()) return;
-          content.textContent = canadianAlertText(data, alert, now()); loaded = true;
+          content.textContent = text; loaded = true;
         } catch (_) {
           if (current === version) content.textContent = 'The bulletin text could not be loaded. Use the Environment Canada link below, or close and reopen these details to retry.';
         } finally {
