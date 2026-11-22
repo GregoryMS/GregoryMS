@@ -3,21 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
+      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
       "listings": [
-        {
-          "home": "Manchester City (W)",
-          "away": "Tottenham Hotspur (W)",
-          "start": "2026-11-22T12:00:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Mix",
-            "Sky Sports Main Event",
-            "Sky Sports Main Event UHD",
-            "Sky Sports Mix",
-            "Sky Sports+ app"
-          ]
-        },
         {
           "home": "Everton (W)",
           "away": "Brighton (W)",
@@ -130,17 +117,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
+      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
       "listings": [
-        {
-          "home": "Manchester City (W)",
-          "away": "Tottenham Hotspur (W)",
-          "start": "2026-11-22T12:00:00+00:00",
-          "channels": [
-            "Sportsnet NOW",
-            "Sportsnet+"
-          ]
-        },
         {
           "home": "Everton (W)",
           "away": "Brighton (W)",
@@ -257,16 +235,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
+      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
       "listings": [
-        {
-          "home": "Manchester City (W)",
-          "away": "Tottenham Hotspur (W)",
-          "start": "2026-11-22T12:00:00+00:00",
-          "channels": [
-            "VG TV"
-          ]
-        },
         {
           "home": "Everton (W)",
           "away": "Brighton (W)",
@@ -373,17 +343,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
+      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
       "listings": [
-        {
-          "home": "Manchester City (W)",
-          "away": "Tottenham Hotspur (W)",
-          "start": "2026-11-22T12:00:00+00:00",
-          "channels": [
-            "SVT Play",
-            "TV4 Play Sport"
-          ]
-        },
         {
           "home": "Everton (W)",
           "away": "Brighton (W)",
@@ -492,17 +453,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-22T07:28:55.082854+00:00",
+      "checkedAt": "2026-11-22T15:41:08.494138+00:00",
       "listings": [
-        {
-          "home": "Manchester City (W)",
-          "away": "Tottenham Hotspur (W)",
-          "start": "2026-11-22T12:00:00+00:00",
-          "channels": [
-            "Sportdigital+",
-            "Sportdigital1+"
-          ]
-        },
         {
           "home": "Hull City",
           "away": "Brighton & Hove Albion",
