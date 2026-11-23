@@ -1,11 +1,19 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-23T01:09:08+00:00",
-  "fetchedAt": "2026-11-23T01:09:17.891540+00:00",
+  "feedUpdatedAt": "2026-11-23T09:09:49+00:00",
+  "fetchedAt": "2026-11-23T09:09:53.043747+00:00",
   "items": [
     {
-      "title": "COP31 fails to reach major climate deal as talks expose deep divisions",
-      "link": "https://www.bbc.co.uk/news/articles/cqwy06zrd26lo?at_medium=RSS&at_campaign=rss"
+      "title": "Manchester's Co-op Live evacuated after 'unknown substance' let off in crowd",
+      "link": "https://www.bbc.co.uk/news/articles/c9e851dn8516o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "NHS launches world's largest AI breast cancer screening trial",
+      "link": "https://www.bbc.co.uk/news/articles/cmpdwnw3nvzjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Five takeaways from the failed climate talks COP31",
+      "link": "https://www.bbc.co.uk/news/articles/cm75237wlp3lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "What's next after no deal at COP31 climate talks?",
@@ -16,32 +24,24 @@
       "link": "https://www.bbc.co.uk/news/articles/cmde1dy82lepo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Can AI spot breast cancer earlier? NHS launches world's largest trial to find out",
-      "link": "https://www.bbc.co.uk/news/articles/cmpdwnw3nvzjo?at_medium=RSS&at_campaign=rss"
+      "title": "Russian ships hit by Ukrainian drones off Libya coast, Zelensky says",
+      "link": "https://www.bbc.co.uk/news/articles/cr894gjz0j0yo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'I want to destroy capitalism, not France': On the streets with the French ultra left",
+      "link": "https://www.bbc.co.uk/news/articles/cw074km48myeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Pip assessments need 'fundamental overhaul', report to say",
+      "link": "https://www.bbc.co.uk/news/articles/cvlyj3rn201xo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Mild Atlantic air collides with cold air across the UK, a recipe for some snow",
+      "link": "https://www.bbc.co.uk/weather/articles/c5dj1l21w9pmo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Boy, 7, pulled alive from rubble hours after Russian strike on Ukraine, rescuers say",
       "link": "https://www.bbc.co.uk/news/articles/cqdr15l32d3go?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Boss of British Gas owner Centrica 'hugely concerned' over impact of soaring energy bills",
-      "link": "https://www.bbc.co.uk/news/articles/c6jre7gpdw13o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Explosion on Russian ship at Libya port caused by suspected drone attack, officials say",
-      "link": "https://www.bbc.co.uk/news/articles/cr894gjz0j0yo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Will it snow this week? Mild Atlantic air collides with cold air across the UK",
-      "link": "https://www.bbc.co.uk/weather/articles/c5dj1l21w9pmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Miley Cyrus marries Maxx Morando in California ceremony",
-      "link": "https://www.bbc.co.uk/news/articles/cq8e0p87l89lo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Democrats win largest House majority since 1992 after flipping North Carolina seat",
-      "link": "https://www.bbc.co.uk/news/articles/c6vg29g7dlyno?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
