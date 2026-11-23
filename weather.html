@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/weather.css?v=20261106-alert-placement">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20261123-map-fullscreen1">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20261123-map-controls">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/vendor/suncalc.js" defer></script>
@@ -142,7 +142,7 @@
       </div>
       <div class="radar-panel" id="radarPanel">
         <div id="radarMap" class="radar-map" role="region" aria-label="Interactive precipitation radar and Canadian lightning map" tabindex="0"></div>
-        <div class="radar-controls"><button class="pill weather-glass" id="radarPlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="radarTime">Radar history <output id="radarTimestamp" for="radarTime">Loading…</output></label><input id="radarTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="radarStart">Past two hours</span><span>Latest available</span></div></div></div>
+        <div class="radar-controls"><button class="pill weather-glass" id="radarPlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="radarTime"><span>Radar history</span> <output id="radarTimestamp" for="radarTime">Loading…</output></label><input id="radarTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="radarStart">Past two hours</span><span>Latest available</span></div></div></div>
       </div>
       <div id="radarStandardLegends" class="radar-legends" role="group" aria-label="Rain and snow intensity legends">
         <div class="radar-legend" aria-label="Rain: light blue through dark blue, yellow and red as intensity increases"><strong>Rain</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
@@ -164,7 +164,7 @@
         <div class="radar-actions"><button class="pill" id="ptypeRecenter" type="button">◎ Recenter</button><button class="pill" id="ptypeRefresh" type="button">↻ Refresh</button></div>
         <div class="radar-panel">
           <div id="ptypeMap" class="radar-map" role="region" aria-label="Environment Canada precipitation type map" tabindex="0"></div>
-          <div class="radar-controls"><button class="pill weather-glass" id="ptypePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="ptypeTime">Precipitation history <output id="ptypeTimestamp" for="ptypeTime">Loading…</output></label><input id="ptypeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="ptypeStart">Past three hours</span><span>Latest available</span></div></div></div>
+          <div class="radar-controls"><button class="pill weather-glass" id="ptypePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="ptypeTime"><span>Precipitation history</span> <output id="ptypeTimestamp" for="ptypeTime">Loading…</output></label><input id="ptypeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="ptypeStart">Past three hours</span><span>Latest available</span></div></div></div>
         </div>
         <div class="ptype-legend" role="group" aria-label="Precipitation types; colour shades progress from light to heavy">
           <span><i class="ptype-snow" aria-hidden="true"></i>Snow</span>
@@ -182,7 +182,7 @@
         <div class="radar-actions"><button class="pill" id="smokeRecenter" type="button">◎ Recenter</button><button class="pill" id="smokeRefresh" type="button">↻ Refresh</button></div>
         <div class="radar-panel">
           <div id="smokeMap" class="radar-map smoke-map" role="region" aria-label="Wildfire smoke forecast map" tabindex="0"></div>
-          <div class="radar-controls"><button class="pill weather-glass" id="smokePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="smokeTime">Smoke forecast <output id="smokeTimestamp" for="smokeTime">Loading…</output></label><input id="smokeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="smokeStart">Forecast start</span><span id="smokeEnd">Forecast end</span></div></div></div>
+          <div class="radar-controls"><button class="pill weather-glass" id="smokePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="smokeTime"><span>Smoke forecast</span> <output id="smokeTimestamp" for="smokeTime">Loading…</output></label><input id="smokeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="smokeStart">Forecast start</span><span id="smokeEnd">Forecast end</span></div></div></div>
         </div>
         <div class="smoke-legend" aria-label="Forecast smoke PM2.5 concentration in micrograms per cubic metre"><strong>Smoke PM₂.₅ · µg/m³</strong><div class="smoke-scale"><span>1</span><span>10</span><span>28</span><span>60</span><span>120</span><span>250+</span></div></div>
         <p id="smokeStatus" class="radar-meta" role="status">Smoke forecast loads when you open this tab.</p>
@@ -197,10 +197,10 @@
         <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta">Wind, cloud and fog forecasts are provided by Windy using ECMWF. Satellite imagery is provided by NOAA's Earth in Real-Time viewer, using observations from weather satellites. The Clouds view also shows forecast rain. Use the map’s colour key and timeline to explore the forecast. Radar shows past precipitation observations. Windy receives the selected map coordinates when you open a forecast layer. The embedded map has its own pan, zoom and forecast controls; Recenter returns to your selected city.</p></details>
       </div>
       <div class="weather-map-tools" id="weatherMapTools" hidden>
-        <button class="weather-glass weather-map-icon" id="weatherMapPickerToggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="weatherMapPicker" title="Map layers" hidden>
+        <button class="weather-map-icon" id="weatherMapPickerToggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="weatherMapPicker" title="Map layers" hidden>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></svg>
         </button>
-        <button class="weather-glass weather-map-icon" id="weatherMapFullscreenToggle" type="button" aria-label="Full screen" title="Full screen">
+        <button class="weather-map-icon" id="weatherMapFullscreenToggle" type="button" aria-label="Full screen" title="Full screen">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg>
         </button>
         <div class="weather-glass weather-map-picker" id="weatherMapPicker" role="group" aria-label="Map layers and radar options" hidden></div>
