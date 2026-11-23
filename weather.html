@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/weather.css?v=20261106-alert-placement">
   <link rel="stylesheet" href="assets/tides.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/weather-radar.css?v=20261122-fullscreen2">
+  <link rel="stylesheet" href="assets/weather-radar.css?v=20261123-map-fullscreen1">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="assets/installed-app.css?v=20261002-radio">
   <script src="assets/vendor/suncalc.js" defer></script>
@@ -120,7 +120,7 @@
     <section id="weather-map" class="radar-section" aria-labelledby="radarHeading">
       <div class="radar-heading"><div><h2 id="radarHeading">Weather map</h2></div></div>
       <div class="radar-map-toolbar">
-        <div class="radar-layer-switches" role="radiogroup" aria-label="Weather map layer">
+        <div id="weatherLayerSwitches" class="radar-layer-switches" role="radiogroup" aria-label="Weather map layer">
           <label><input id="radarLayer-radar" type="radio" name="weatherMapLayer" checked disabled><span>Radar</span></label>
           <label><input id="radarLayer-ptype" type="radio" name="weatherMapLayer" disabled><span>Precip type</span></label>
           <label><input id="radarLayer-satellite" type="radio" name="weatherMapLayer"><span>Satellite</span></label>
@@ -131,8 +131,9 @@
         </div>
         <span id="radarMode" class="radar-mode">Observed precipitation</span>
       </div>
-      <div id="radarObserved">
-      <div class="radar-actions"><div class="radar-toggle-group"><label class="lightning-toggle"><input id="lightningToggle" type="checkbox" role="switch" aria-label="Lightning overlay for Canada" checked><span class="lightning-toggle-body"><svg class="lightning-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z"/></svg><span class="lightning-toggle-label">Lightning <span class="lightning-toggle-region">Canada</span></span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label><label class="lightning-toggle high-res-toggle"><input id="radarHighResToggle" type="checkbox" role="switch" aria-label="High-resolution radar" aria-controls="radarHDControls"><span class="lightning-toggle-body"><span class="lightning-toggle-label">High Res</span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label></div><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div>
+      <div class="weather-map-viewport" id="weatherMapViewport">
+      <div class="weather-map-layer" id="radarObserved">
+      <div class="radar-actions"><div id="radarOverlaySwitches" class="radar-toggle-group"><label class="lightning-toggle"><input id="lightningToggle" type="checkbox" role="switch" aria-label="Lightning overlay for Canada" checked><span class="lightning-toggle-body"><svg class="lightning-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z"/></svg><span class="lightning-toggle-label">Lightning <span class="lightning-toggle-region">Canada</span></span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label><label class="lightning-toggle high-res-toggle"><input id="radarHighResToggle" type="checkbox" role="switch" aria-label="High-resolution radar" aria-controls="radarHDControls"><span class="lightning-toggle-body"><span class="lightning-toggle-label">High Res</span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label></div><button class="pill" id="radarRecenter" type="button">◎ Recenter</button><button class="pill" id="radarRefresh" type="button">↻ Refresh</button></div>
       <div id="radarHDControls" class="radar-hd-controls" hidden>
         <div class="radar-source-field"><label for="radarStation">Radar source</label><span class="radar-select-wrap"><select id="radarStation"><option value="">US mosaic · MRMS</option></select></span></div>
         <div class="radar-station-actions"><label class="lightning-toggle high-res-toggle"><input id="radarStationsToggle" type="checkbox" role="switch" aria-label="Show radar stations on map" aria-controls="radarMap" checked><span class="lightning-toggle-body"><span class="lightning-toggle-label">Stations on map</span><span class="lightning-toggle-track" aria-hidden="true"></span></span></label><span class="radar-meta">Tap a dot to select a station.</span></div>
@@ -141,9 +142,8 @@
       </div>
       <div class="radar-panel" id="radarPanel">
         <div id="radarMap" class="radar-map" role="region" aria-label="Interactive precipitation radar and Canadian lightning map" tabindex="0"></div>
-        <div class="radar-controls"><button class="pill" id="radarPlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline"><label for="radarTime">Radar history <output id="radarTimestamp" for="radarTime">Loading…</output></label><input id="radarTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="radarStart">Past two hours</span><span>Latest available</span></div></div></div>
+        <div class="radar-controls"><button class="pill weather-glass" id="radarPlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="radarTime">Radar history <output id="radarTimestamp" for="radarTime">Loading…</output></label><input id="radarTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="radarStart">Past two hours</span><span>Latest available</span></div></div></div>
       </div>
-      <dialog id="radarFullscreenDialog" aria-label="Full-screen weather radar"></dialog>
       <div id="radarStandardLegends" class="radar-legends" role="group" aria-label="Rain and snow intensity legends">
         <div class="radar-legend" aria-label="Rain: light blue through dark blue, yellow and red as intensity increases"><strong>Rain</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
         <div class="radar-legend radar-legend-snow" aria-label="Snow: pale cyan through bright blue as intensity increases"><strong>Snow</strong><span>Light</span><i aria-hidden="true"></i><span>Heavy</span></div>
@@ -160,11 +160,11 @@
       <details id="radarStandardCredit" class="radar-source-note"><summary>About this map</summary><p class="radar-meta radar-credit">Recent rain and snow observations from <a href="https://www.rainviewer.com/">RainViewer</a>, not a forecast. Colours follow RainViewer’s classification. Times show when each composite was generated. Coverage varies; a clear map can also mean missing coverage. Map areas are requested from OpenStreetMap and RainViewer.</p></details>
       <details id="radarHDCredit" class="radar-source-note" hidden><summary>About high-resolution radar</summary><p id="radarHDCreditText" class="radar-meta radar-credit">Reflectivity observations from <a href="https://opengeo.ncep.noaa.gov/geoserver/www/index.html">NOAA / NWS</a>. The MRMS mosaic combines US radar observations at 1 km resolution; individual stations provide super-resolution base reflectivity. This mode does not classify rain and snow. The timeline uses published observation times from the past two hours. Coverage varies, especially outside the US and behind terrain; blank areas can mean no coverage or missing data. Standard radar remains available with High Res off.</p></details>
       </div>
-      <div id="radarPrecipType" hidden>
+      <div class="weather-map-layer" id="radarPrecipType" hidden>
         <div class="radar-actions"><button class="pill" id="ptypeRecenter" type="button">◎ Recenter</button><button class="pill" id="ptypeRefresh" type="button">↻ Refresh</button></div>
         <div class="radar-panel">
           <div id="ptypeMap" class="radar-map" role="region" aria-label="Environment Canada precipitation type map" tabindex="0"></div>
-          <div class="radar-controls"><button class="pill" id="ptypePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline"><label for="ptypeTime">Precipitation history <output id="ptypeTimestamp" for="ptypeTime">Loading…</output></label><input id="ptypeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="ptypeStart">Past three hours</span><span>Latest available</span></div></div></div>
+          <div class="radar-controls"><button class="pill weather-glass" id="ptypePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="ptypeTime">Precipitation history <output id="ptypeTimestamp" for="ptypeTime">Loading…</output></label><input id="ptypeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="ptypeStart">Past three hours</span><span>Latest available</span></div></div></div>
         </div>
         <div class="ptype-legend" role="group" aria-label="Precipitation types; colour shades progress from light to heavy">
           <span><i class="ptype-snow" aria-hidden="true"></i>Snow</span>
@@ -178,24 +178,35 @@
         <div class="radar-forecast-caption"><a href="https://weather.gc.ca/" target="_blank" rel="noopener noreferrer">Open Environment Canada ↗</a></div>
         <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta">Environment Canada’s surface precipitation-type composite combines radar observations and modelled surface temperatures to estimate what is reaching the ground. It updates every six minutes at 1 km resolution, with up to three hours of history. This is a recent estimate, not a forecast. Coverage varies across North America; blank areas may mean no precipitation or missing radar coverage. Times use the selected location’s time zone. Map areas are requested from OpenStreetMap and Environment Canada. <a href="https://eccc-msc.github.io/open-data/msc-data/obs_radar/readme_radar_geomet_en/">About the data ↗</a></p></details>
       </div>
-      <div id="radarSmoke" hidden>
+      <div class="weather-map-layer" id="radarSmoke" hidden>
         <div class="radar-actions"><button class="pill" id="smokeRecenter" type="button">◎ Recenter</button><button class="pill" id="smokeRefresh" type="button">↻ Refresh</button></div>
         <div class="radar-panel">
           <div id="smokeMap" class="radar-map smoke-map" role="region" aria-label="Wildfire smoke forecast map" tabindex="0"></div>
-          <div class="radar-controls"><button class="pill" id="smokePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline"><label for="smokeTime">Smoke forecast <output id="smokeTimestamp" for="smokeTime">Loading…</output></label><input id="smokeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="smokeStart">Forecast start</span><span id="smokeEnd">Forecast end</span></div></div></div>
+          <div class="radar-controls"><button class="pill weather-glass" id="smokePlay" type="button" aria-pressed="false" disabled>▶ Play</button><div class="radar-timeline weather-glass"><label for="smokeTime">Smoke forecast <output id="smokeTimestamp" for="smokeTime">Loading…</output></label><input id="smokeTime" type="range" min="0" max="0" value="0" step="1" disabled><div class="radar-range"><span id="smokeStart">Forecast start</span><span id="smokeEnd">Forecast end</span></div></div></div>
         </div>
         <div class="smoke-legend" aria-label="Forecast smoke PM2.5 concentration in micrograms per cubic metre"><strong>Smoke PM₂.₅ · µg/m³</strong><div class="smoke-scale"><span>1</span><span>10</span><span>28</span><span>60</span><span>120</span><span>250+</span></div></div>
         <p id="smokeStatus" class="radar-meta" role="status">Smoke forecast loads when you open this tab.</p>
         <div class="radar-forecast-caption"><span>Data: <a href="https://firesmoke.ca/" title="Data supplied by BlueSky Canada">BlueSky Canada / FireSmoke.ca</a> · Map by Gregle</span><a id="smokeSourceLink" href="https://firesmoke.ca/forecasts/current/" target="_blank" rel="noopener noreferrer">Open FireSmoke map ↗</a></div>
         <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta">Forecast ground-level wildfire smoke, shown every three hours. This is a model estimate of smoke PM₂.₅, not measured air quality or AQHI. Clear areas may have less than 1 µg/m³ of modelled smoke; forecasts can miss fires and local conditions. Coverage is limited to the outlined forecast area. Gregle creates this map from BlueSky Canada’s raw forecast data, checked hourly for updates. Times use the selected location’s time zone. <a href="https://firesmoke.ca/faq/">About the data ↗</a></p></details>
       </div>
-      <div id="radarForecast" hidden>
+      <div class="weather-map-layer" id="radarForecast" hidden>
         <div class="radar-actions"><button class="pill" id="radarForecastRecenter" type="button">◎ Recenter</button><button class="pill" id="radarForecastRefresh" type="button">↻ Refresh</button></div>
         <div class="radar-panel radar-forecast-panel"><div id="radarForecastMap" class="radar-forecast-map"></div></div>
         <div class="radar-forecast-caption"><span>Forecast · Windy / ECMWF</span><a id="radarWindyLink" href="https://www.windy.com/" target="_blank" rel="noopener noreferrer">Open full map ↗</a></div>
         <p id="radarLayerStatus" class="radar-meta" role="status" hidden></p>
         <details class="radar-source-note"><summary>About this map</summary><p class="radar-meta">Wind, cloud and fog forecasts are provided by Windy using ECMWF. Satellite imagery is provided by NOAA's Earth in Real-Time viewer, using observations from weather satellites. The Clouds view also shows forecast rain. Use the map’s colour key and timeline to explore the forecast. Radar shows past precipitation observations. Windy receives the selected map coordinates when you open a forecast layer. The embedded map has its own pan, zoom and forecast controls; Recenter returns to your selected city.</p></details>
       </div>
+      <div class="weather-map-tools" id="weatherMapTools" hidden>
+        <button class="weather-glass weather-map-icon" id="weatherMapPickerToggle" type="button" aria-label="Map layers" aria-expanded="false" aria-controls="weatherMapPicker" title="Map layers" hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></svg>
+        </button>
+        <button class="weather-glass weather-map-icon" id="weatherMapFullscreenToggle" type="button" aria-label="Full screen" title="Full screen">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg>
+        </button>
+        <div class="weather-glass weather-map-picker" id="weatherMapPicker" role="group" aria-label="Map layers and radar options" hidden></div>
+      </div>
+      </div>
+      <dialog id="weatherMapFullscreenDialog" aria-label="Full-screen weather map"></dialog>
     </section>
     <a class="tide-preview" id="tidePreview" href="https://tides.gregle.uk/"><div class="tide-preview-heading"><h2>Today’s tides</h2><span>View tide tracker ↗</span></div><div id="tidePreviewContent" aria-live="polite"></div></a>
     <section id="photography" class="photography-section" aria-labelledby="photoHeading">
@@ -226,15 +237,15 @@
   <script src="assets/weather-context.js?v=20261022-timeline-24h"></script>
   <script src="assets/weather-alerts.js?v=20261122-bulletin"></script>
   <script src="assets/weather-transparency.js?v=20261110-transparency-slider"></script>
-  <script src="assets/weather-basemap.js?v=20261110-stadia"></script>
+  <script src="assets/weather-basemap.js?v=20261123-map-fullscreen1"></script>
   <script src="assets/weather-smoke.js?v=20261110-stadia"></script>
   <script src="assets/weather-precip-type.js?v=20261110-transparency-slider"></script>
-  <script src="assets/weather-map-layers.js?v=20261028-noaa"></script>
+  <script src="assets/weather-map-layers.js?v=20261123-map-fullscreen1"></script>
   <script src="assets/weather-lightning.js?v=20261022-timeline-24h"></script>
   <script src="assets/weather-radar-canada.js?v=20261119-canada1"></script>
   <script src="assets/weather-radar-hd.js?v=20261119-canada1"></script>
   <script src="assets/weather-radar-stations.js?v=20261119-stations1"></script>
-  <script src="assets/weather-radar.js?v=20261122-fullscreen2"></script>
+  <script src="assets/weather-radar.js?v=20261123-map-fullscreen1"></script>
   <script src="assets/tide-core.js?v=20261119-weather-pwa1"></script>
   <script src="assets/tide-data.js"></script>
   <script src="assets/tide-ui.js?v=20261119-weather-pwa1"></script>

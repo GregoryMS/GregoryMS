@@ -11,6 +11,13 @@
       const html=win.document.documentElement;
       let dark=html?.classList.contains('dark-mode')===true;
       const layer=win.L.tileLayer(tileURL(dark),{maxZoom:20,attribution:attribution+(credit?' · '+credit:''),updateWhenIdle:true,keepBuffer:1}).addTo(map);
+      if(win.ResizeObserver) {
+        const observer=new win.ResizeObserver(([{contentRect:{width,height}}])=>{
+          if(width && height)map.invalidateSize({debounceMoveend:true});
+        });
+        observer.observe(map.getContainer());
+        map.on('unload',()=>observer.disconnect());
+      }
       // Change only the background tiles, leaving weather colours and playback intact.
       if(win.MutationObserver && html) {
         const observer=new win.MutationObserver(()=>{

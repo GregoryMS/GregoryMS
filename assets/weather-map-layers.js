@@ -12,7 +12,87 @@
   }
   if(typeof module!=='undefined' && module.exports){module.exports={embedURL};return;}
   const $=id=>document.getElementById(id);
+  const layerNames=['radar','ptype','satellite','wind','clouds','smoke','fog'];
   let selected='radar',location=null,frame=null,timer=null,version=0,ready=false;
+  let placeTools=()=>{};
+  function setupFullscreen() {
+    const viewport=$('weatherMapViewport'), dialog=$('weatherMapFullscreenDialog');
+    if(!viewport || !dialog || (!viewport.requestFullscreen && !dialog.showModal))return;
+    const tools=$('weatherMapTools'), toggle=$('weatherMapFullscreenToggle');
+    const picker=$('weatherMapPicker'), pickerToggle=$('weatherMapPickerToggle');
+    const layerSwitches=$('weatherLayerSwitches'), overlaySwitches=$('radarOverlaySwitches');
+    const inlineControls=[layerSwitches,overlaySwitches,$('radarHDControls')].map(element=>({
+      element,parent:element.parentElement,next:element.nextElementSibling
+    }));
+    const icon=toggle.querySelector('path'), enterPath=icon.getAttribute('d');
+    tools.hidden=false;
+    placeTools=()=>{
+      if(!viewport.classList.contains('is-fullscreen')){
+        const panel=viewport.querySelector('.weather-map-layer:not([hidden]) > .radar-panel');
+        if(tools.parentElement!==panel)panel.append(tools);
+      }
+    };
+    let requesting=false;
+    function setPickerOpen(open) {
+      picker.hidden=!open;
+      pickerToggle.setAttribute('aria-expanded',String(open));
+    }
+    function syncFullscreen() {
+      const active=document.fullscreenElement===viewport || dialog.open;
+      if(viewport.classList.contains('is-fullscreen')===active)return;
+      viewport.classList.toggle('is-fullscreen',active);
+      const label=active?'Exit full screen':'Full screen';
+      toggle.title=label;
+      toggle.setAttribute('aria-label',label);
+      icon.setAttribute('d',active?'M9 3v6H3m12-6v6h6M3 15h6v6m12-6h-6v6':enterPath);
+      pickerToggle.hidden=!active;
+      if(active) {
+        viewport.append(tools);
+        for(const {element} of inlineControls)picker.append(element);
+      } else {
+        setPickerOpen(false);
+        for(const {element,parent,next} of inlineControls)parent.insertBefore(element,next);
+        placeTools();
+      }
+      toggle.focus({preventScroll:true});
+    }
+    pickerToggle.addEventListener('click',()=>setPickerOpen(picker.hidden));
+    picker.addEventListener('change',event=>{
+      if(!layerSwitches.contains(event.target) && selected!=='radar')select('radar');
+    });
+    document.addEventListener('pointerdown',event=>{
+      if(!picker.hidden && !tools.contains(event.target))setPickerOpen(false);
+    });
+    tools.addEventListener('keydown',event=>{
+      if(event.key!=='Escape' || picker.hidden)return;
+      event.preventDefault();
+      setPickerOpen(false);
+      pickerToggle.focus({preventScroll:true});
+    });
+    document.addEventListener('fullscreenchange',syncFullscreen);
+    dialog.addEventListener('close',()=>{
+      dialog.before(viewport);
+      syncFullscreen();
+    });
+    toggle.addEventListener('click',async ()=>{
+      if(requesting)return;
+      if(dialog.open){dialog.close();return;}
+      if(document.fullscreenElement===viewport){
+        await document.exitFullscreen();
+        return;
+      }
+      if(document.fullscreenEnabled && viewport.requestFullscreen){
+        requesting=true;
+        try {await viewport.requestFullscreen();return;}
+        catch(_) {} // Browsers without element fullscreen can use an in-page dialog.
+        finally {requesting=false;}
+      }
+      if(!dialog.showModal)return;
+      dialog.append(viewport);
+      dialog.showModal();
+      syncFullscreen();
+    });
+  }
   function unload() {
     version++;clearTimeout(timer);timer=null;
     if(frame){frame.remove();frame=null;}
@@ -39,11 +119,12 @@
   function select(layer) {
     selected=layer;
     const radar=layer==='radar';
-    for(const name of ['radar','ptype','wind','clouds','smoke','fog','satellite'])$(`radarLayer-${name}`).checked=name===layer;
+    for(const name of layerNames)$(`radarLayer-${name}`).checked=name===layer;
     $('radarObserved').hidden=!radar;
     $('radarForecast').hidden=radar || layer==='smoke' || layer==='ptype';
     $('radarSmoke').hidden=layer!=='smoke';
     $('radarPrecipType').hidden=layer!=='ptype';
+    placeTools();
     root.GreglePrecipType?.setActive(layer==='ptype');
     root.GregleSmoke?.setActive(layer==='smoke');
     root.GregleLightning?.setActive(radar);
@@ -62,12 +143,13 @@
   };
   document.addEventListener('DOMContentLoaded',()=>{
     ready=true;
-    for(const name of ['radar','ptype','wind','clouds','smoke','fog','satellite']) {
+    for(const name of layerNames) {
       const input=$(`radarLayer-${name}`);input.disabled=false;
       input.addEventListener('change',()=>{if(input.checked)select(name);});
     }
     $('radarForecastRefresh').addEventListener('click',load);
     $('radarForecastRecenter').addEventListener('click',load);
+    setupFullscreen();
     // Reset restored form state to match the initial visible panel.
     select('radar');
   });

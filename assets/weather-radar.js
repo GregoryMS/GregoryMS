@@ -199,50 +199,6 @@
     }
   }
   function recenter() { if(map && location)map.setView([location.latitude,location.longitude],7); }
-  function setupFullscreen() {
-    const panel=$('radarPanel'), dialog=$('radarFullscreenDialog');
-    if(!panel.requestFullscreen && !dialog.showModal)return;
-    const button=document.createElement('button');
-    button.type='button';
-    button.className='radar-fullscreen-toggle';
-    button.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path/></svg>';
-    const icon=button.querySelector('path');
-    let requesting=false;
-    const updateButton=()=>{
-      const active=document.fullscreenElement===panel || dialog.open;
-      const label=active?'Exit full screen':'Full screen';
-      button.title=label;
-      button.setAttribute('aria-label',label);
-      icon.setAttribute('d',active?'M9 3v6H3m12-6v6h6M3 15h6v6m12-6h-6v6':'M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6');
-    };
-    updateButton();
-    map.zoomControl.getContainer().prepend(button);
-    document.addEventListener('fullscreenchange',updateButton);
-    dialog.addEventListener('close',()=>{
-      dialog.before(panel);
-      updateButton();
-      button.focus({preventScroll:true});
-    });
-    button.addEventListener('click',async ()=>{
-      if(requesting)return;
-      if(dialog.open){dialog.close();return;}
-      if(document.fullscreenElement===panel){
-        await document.exitFullscreen();
-        return;
-      }
-      if(document.fullscreenEnabled && panel.requestFullscreen){
-        requesting=true;
-        try {await panel.requestFullscreen();return;}
-        catch(_) {} // Use an in-page full-screen view where the browser blocks native fullscreen.
-        finally {requesting=false;}
-      }
-      if(!dialog.showModal)return;
-      dialog.append(panel);
-      dialog.showModal();
-      updateButton();
-      button.focus({preventScroll:true});
-    });
-  }
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
@@ -256,7 +212,6 @@
     started=true;
     if(!root.L) { $('radarStatus').textContent='The radar map could not load. Refresh this page to retry, or open RainViewer below.';return; }
     map=root.L.map('radarMap',{scrollWheelZoom:true,minZoom:2,maxZoom:10,fadeAnimation:false});
-    setupFullscreen();
     root.GregleRadarStations?.attach(map,id=>{if(station===id)return;station=id;changeSource();});
     root.GregleRadarStations?.setSites(sites);
     modeControls();
@@ -272,11 +227,6 @@
     // Dropping cached frames on a pan prevents hidden layers requesting many tiles.
     map.on('movestart',()=>{stop();clearLayers();});
     map.on('moveend',()=>{if(frames.length)show(current);});
-    if('ResizeObserver' in root) {
-      new ResizeObserver(([{contentRect}])=>{
-        if(contentRect.width && contentRect.height)map.invalidateSize({debounceMoveend:true});
-      }).observe($('radarMap'));
-    }
     $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);loadStations();root.GregleLightning?.refresh();});
     refresh(true);
   }
