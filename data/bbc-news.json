@@ -1,7 +1,7 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-22T20:50:24+00:00",
-  "fetchedAt": "2026-11-22T20:50:31.619723+00:00",
+  "feedUpdatedAt": "2026-11-23T01:09:08+00:00",
+  "fetchedAt": "2026-11-23T01:09:17.891540+00:00",
   "items": [
     {
       "title": "COP31 fails to reach major climate deal as talks expose deep divisions",
@@ -12,6 +12,18 @@
       "link": "https://www.bbc.co.uk/news/videos/cr1ewge81q4qo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Burnham to tell MPs 'landmark' EU deal could make next decade 'much better'",
+      "link": "https://www.bbc.co.uk/news/articles/cmde1dy82lepo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Can AI spot breast cancer earlier? NHS launches world's largest trial to find out",
+      "link": "https://www.bbc.co.uk/news/articles/cmpdwnw3nvzjo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Boy, 7, pulled alive from rubble hours after Russian strike on Ukraine, rescuers say",
+      "link": "https://www.bbc.co.uk/news/articles/cqdr15l32d3go?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Boss of British Gas owner Centrica 'hugely concerned' over impact of soaring energy bills",
       "link": "https://www.bbc.co.uk/news/articles/c6jre7gpdw13o?at_medium=RSS&at_campaign=rss"
     },
@@ -20,28 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/cr894gjz0j0yo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'Danger seems greater all the time': Ukrainians search for missing after Russian strikes",
-      "link": "https://www.bbc.co.uk/news/videos/cre3dvd1k9y1o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "RAF's next fighter jet could be last crewed combat plane, air chief says",
-      "link": "https://www.bbc.co.uk/news/articles/c68x08nzpk9no?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Russell Brand's wife says she'll honour prison rules after message row",
-      "link": "https://www.bbc.co.uk/news/articles/cq8e0pzp43w4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "BBC apologises after noise disruption during Strictly",
-      "link": "https://www.bbc.co.uk/news/videos/ck782j066elvo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Democrats win largest House majority since 1992 after flipping North Carolina seat",
-      "link": "https://www.bbc.co.uk/news/articles/c6vg29g7dlyno?at_medium=RSS&at_campaign=rss"
+      "title": "Will it snow this week? Mild Atlantic air collides with cold air across the UK",
+      "link": "https://www.bbc.co.uk/weather/articles/c5dj1l21w9pmo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Miley Cyrus marries Maxx Morando in California ceremony",
       "link": "https://www.bbc.co.uk/news/articles/cq8e0p87l89lo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Democrats win largest House majority since 1992 after flipping North Carolina seat",
+      "link": "https://www.bbc.co.uk/news/articles/c6vg29g7dlyno?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
