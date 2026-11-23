@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
+      "checkedAt": "2026-11-23T01:58:35.772338+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -77,12 +77,44 @@
           "channels": [
             "Apple TV (UK)"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Newcastle United",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Premier League",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Hull City",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Cricket",
+            "Sky Sports+ app"
+          ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Manchester City",
+          "start": "2026-11-29T16:30:00+00:00",
+          "channels": [
+            "NOW",
+            "Sky Sports Main Event",
+            "Sky Sports Main Event UHD",
+            "Sky Sports Premier League",
+            "Sky Sports+ app"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
+      "checkedAt": "2026-11-23T01:58:35.772338+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -168,12 +200,39 @@
             "TSN1",
             "TSN4"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Newcastle United",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Hull City",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Manchester City",
+          "start": "2026-11-29T16:30:00+00:00",
+          "channels": [
+            "DAZN Canada",
+            "Fubo Sports CA"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
+      "checkedAt": "2026-11-23T01:58:35.772338+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -251,12 +310,39 @@
             "TV 2 Play (NO)",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Newcastle United",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "V sport Premier League 2 NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Hull City",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "V sport Premier League 4 NO",
+            "Viaplay NO"
+          ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Manchester City",
+          "start": "2026-11-29T16:30:00+00:00",
+          "channels": [
+            "V sport Premier League NO",
+            "Viaplay NO"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
+      "checkedAt": "2026-11-23T01:58:35.772338+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -336,12 +422,39 @@
             "V Sport Extra",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Newcastle United",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "V Sport 1",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Hull City",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "V Sport Extra",
+            "Viaplay SE"
+          ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Manchester City",
+          "start": "2026-11-29T16:30:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-22T21:17:13.959422+00:00",
+      "checkedAt": "2026-11-23T01:58:35.772338+00:00",
       "listings": [
         {
           "home": "Vancouver Whitecaps",
@@ -420,6 +533,34 @@
             "Sky Bundesliga",
             "Sky Bundesliga 1",
             "Sky Bundesliga UHD",
+            "Sky Top Event",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Brighton & Hove Albion",
+          "away": "Newcastle United",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "Sky Sport 6",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Crystal Palace",
+          "away": "Hull City",
+          "start": "2026-11-29T14:05:00+00:00",
+          "channels": [
+            "Sky Sport 8",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Arsenal",
+          "away": "Manchester City",
+          "start": "2026-11-29T16:30:00+00:00",
+          "channels": [
+            "Sky Sport Premier League",
             "Sky Top Event",
             "WOW"
           ]
