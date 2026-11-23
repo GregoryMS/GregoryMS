@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-23T10:46:26.241330+00:00",
+      "checkedAt": "2026-11-23T22:15:42.924347+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "TSG 1899 Hoffenheim (W)",
-          "start": "2026-11-23T17:00:00+00:00",
-          "channels": [
-            "DAZN UK"
-          ]
-        },
         {
           "home": "Arsenal",
           "away": "Borussia Dortmund",
@@ -77,6 +69,7 @@
           "channels": [
             "NOW",
             "Sky Sports Premier League",
+            "Sky Sports UHD 1",
             "Sky Sports+ app"
           ]
         },
@@ -99,6 +92,7 @@
             "Sky Sports Main Event",
             "Sky Sports Main Event UHD",
             "Sky Sports Premier League",
+            "Sky Sports UHD 1",
             "Sky Sports+ app"
           ]
         }
@@ -106,16 +100,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-23T10:46:26.241330+00:00",
+      "checkedAt": "2026-11-23T22:15:42.924347+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "TSG 1899 Hoffenheim (W)",
-          "start": "2026-11-23T17:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Arsenal",
           "away": "Borussia Dortmund",
@@ -145,7 +131,8 @@
           "away": "Universitatea Craiova",
           "start": "2026-11-26T17:45:00+00:00",
           "channels": [
-            "DAZN Canada"
+            "DAZN Canada",
+            "OneSoccer"
           ]
         },
         {
@@ -170,7 +157,8 @@
           "away": "Bayern München",
           "start": "2026-11-28T14:30:00+00:00",
           "channels": [
-            "DAZN Canada"
+            "DAZN Canada",
+            "OneSoccer"
           ]
         },
         {
@@ -214,17 +202,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-23T10:46:26.241330+00:00",
+      "checkedAt": "2026-11-23T22:15:42.924347+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "TSG 1899 Hoffenheim (W)",
-          "start": "2026-11-23T17:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Arsenal",
           "away": "Borussia Dortmund",
@@ -316,16 +295,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-23T10:46:26.241330+00:00",
+      "checkedAt": "2026-11-23T22:15:42.924347+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "TSG 1899 Hoffenheim (W)",
-          "start": "2026-11-23T17:00:00+00:00",
-          "channels": [
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Arsenal",
           "away": "Borussia Dortmund",
@@ -420,19 +391,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-23T10:46:26.241330+00:00",
+      "checkedAt": "2026-11-23T22:15:42.924347+00:00",
       "listings": [
-        {
-          "home": "Bayern München (W)",
-          "away": "TSG 1899 Hoffenheim (W)",
-          "start": "2026-11-23T17:00:00+00:00",
-          "channels": [
-            "DAZN Deutschland",
-            "Magenta Sport",
-            "OneFootball Deutschland",
-            "Sport1"
-          ]
-        },
         {
           "home": "Arsenal",
           "away": "Borussia Dortmund",
