@@ -1,10 +1,11 @@
 (function(root,factory) {
   'use strict';
-  const api=factory();
+  const api=factory(typeof module==='object' && module.exports ? require('./weather-core.js') : root.GregleWeather);
   if(typeof module==='object' && module.exports) module.exports=api;
   else root.GregleWeatherHourly=api.createController(root);
-})(globalThis,function() {
+})(globalThis,function(weatherCore) {
   'use strict';
+  const {createTimeFormatter} = weatherCore;
   const fields=['temperature_2m','apparent_temperature','weather_code','is_day','precipitation_probability','wind_speed_10m'];
   function forecastURL(location) {
     if(!Number.isFinite(location?.latitude) || !Number.isFinite(location.longitude) || Math.abs(location.latitude)>90 || Math.abs(location.longitude)>180) throw Error('Invalid coordinates');
@@ -15,9 +16,9 @@
     if(data?.error || !h || !Array.isArray(h.time) || !h.time.length || fields.filter(f=>f!=='apparent_temperature').some(f=>!Array.isArray(h[f]) || h[f].length!==h.time.length)) throw Error('Incomplete hourly forecast');
     const timezone=data.timezone;
     if(typeof timezone!=='string' || !timezone) throw Error('Missing time zone');
-    const time=new Intl.DateTimeFormat('en-CA',{hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:timezone});
-    const day=new Intl.DateTimeFormat('en-CA',{weekday:'short',month:'short',day:'numeric',timeZone:timezone});
-    const full=new Intl.DateTimeFormat('en-CA',{weekday:'long',month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZoneName:'short',timeZone:timezone});
+    const time=createTimeFormatter(timezone,{hour:'2-digit',hourCycle:'h23',minute:'2-digit'});
+    const day=createTimeFormatter(timezone,{weekday:'short',month:'short',day:'numeric'});
+    const full=createTimeFormatter(timezone,{weekday:'long',month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZoneName:'short'});
     const start=Math.floor(now/3600000)*3600000;
     let previous=-Infinity;
     const hours=h.time.flatMap((seconds,i)=>{
@@ -26,7 +27,7 @@
       previous=timestamp;
       if(timestamp<start || timestamp>=start+24*3600000) return [];
       const chance=h.precipitation_probability[i],wind=h.wind_speed_10m[i];
-      return [{timestamp,time:time.format(timestamp),day:day.format(timestamp),label:full.format(timestamp),temperature:h.temperature_2m[i],feelsLike:Number.isFinite(h.apparent_temperature?.[i])?h.apparent_temperature[i]:null,code:h.weather_code[i],night:h.is_day[i]===0,
+      return [{timestamp,time:time(timestamp),day:day(timestamp),label:full(timestamp),temperature:h.temperature_2m[i],feelsLike:Number.isFinite(h.apparent_temperature?.[i])?h.apparent_temperature[i]:null,code:h.weather_code[i],night:h.is_day[i]===0,
         chance:Number.isFinite(chance)&&chance>=0&&chance<=100?chance:null,wind:Number.isFinite(wind)&&wind>=0?wind:null}];
     });
     if(!hours.length || !hours.some(h=>Number.isFinite(h.temperature))) throw Error('Hourly forecast unavailable');
@@ -39,7 +40,7 @@
         const timestamp=seconds*1000,key=kind+':'+timestamp;
         if(!Number.isFinite(seconds) || !Number.isFinite(new Date(timestamp).getTime()) || timestamp<start || timestamp>=start+24*3600000 || seen.has(key)) continue;
         seen.add(key);
-        events.push({kind,name,timestamp,time:time.format(timestamp),day:day.format(timestamp),label:name+' · '+full.format(timestamp)});
+        events.push({kind,name,timestamp,time:time(timestamp),day:day(timestamp),label:name+' · '+full(timestamp)});
       }
     }
     events.sort((a,b)=>a.timestamp-b.timestamp);

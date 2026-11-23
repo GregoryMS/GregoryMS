@@ -96,7 +96,7 @@
     if(!frame)return '';
     let zone=location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     try { new Intl.DateTimeFormat('en',{timeZone:zone}); } catch(_) { zone='UTC'; }
-    return new Date(frame.time*1000).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',hourCycle:'h23',minute:'2-digit',timeZone:zone,timeZoneName:'short'});
+    return root.GregleWeather.formatTimestamp(frame.time*1000,zone);
   }
   function status() {
     $('radarStatus').textContent=sourceFailed?'The selected radar source is unavailable. Showing the previous source; try again.':

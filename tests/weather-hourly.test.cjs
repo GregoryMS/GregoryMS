@@ -11,6 +11,21 @@ test('hourly timestamps use destination timezone across midnight and DST, with z
   const tokyo={...fixture(),timezone:'Asia/Tokyo'};assert.match(core.parseHours(tokyo,now).hours.at(-1).day,/Nov 3/);
   assert.equal(core.parseHours(fixture(),now+3600000).hours[0].timestamp,now-1800000+3600000);
 });
+test('B.C. Pacific forecasts show PCT at UTC−7 in winter and summer',()=>{
+  const {formatTimestamp}=require('../assets/weather-core.js');
+  for(const date of ['2026-11-23','2027-07-01']) {
+    const start=Date.parse(date+'T19:00:00Z');
+    const data=fixture();
+    data.hourly.time=data.hourly.time.map((_,i)=>start/1000+i*3600);
+    const {hours}=core.parseHours(data,start);
+    assert.equal(hours[0].time,'12:00');
+    assert.match(hours[0].label,/12:00 PCT$/);
+    assert.match(formatTimestamp(start,'America/Vancouver'),/12:00 PCT$/);
+    for(const zone of ['America/Los_Angeles','America/Edmonton','America/Creston']) {
+      assert.doesNotMatch(formatTimestamp(start,zone),/PCT/);
+    }
+  }
+});
 test('malformed, stale and empty forecasts are rejected; missing measurements stay missing',()=>{
   for(const data of [{}, {...fixture(),timezone:'invalid'}, {...fixture(),hourly:{time:[]}}])assert.throws(()=>core.parseHours(data,now));
   assert.throws(()=>core.parseHours(fixture(),now+28*3600000));

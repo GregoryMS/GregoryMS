@@ -1,5 +1,23 @@
 (function(root) {
   'use strict';
+  const pacificTimeStart = Date.parse('2026-03-09T07:00:00Z');
+  function createTimeFormatter(timeZone, options) {
+    const formatter = new Intl.DateTimeFormat('en-CA', {...options, timeZone});
+    if (!['America/Vancouver', 'Canada/Pacific'].includes(formatter.resolvedOptions().timeZone)) return formatter.format;
+
+    // B.C. observes UTC−7 year-round. Use the fixed offset even on older browsers.
+    const pacific = new Intl.DateTimeFormat('en-CA', {...options, timeZone:'Etc/GMT+7'});
+    return value => {
+      if (Number(value) < pacificTimeStart) return formatter.format(value);
+      if (!options.timeZoneName) return pacific.format(value);
+      return pacific.formatToParts(value).map(part => part.type === 'timeZoneName' ? 'PCT' : part.value).join('');
+    };
+  }
+  function formatTimestamp(value, timeZone) {
+    return createTimeFormatter(timeZone, {
+      month:'short', day:'numeric', hour:'2-digit', hourCycle:'h23', minute:'2-digit', timeZoneName:'short'
+    })(value);
+  }
   const coordinates = (latitude,longitude) => Number.isFinite(latitude) && Number.isFinite(longitude) && Math.abs(latitude)<=90 && Math.abs(longitude)<=180;
   function distance(a,b) {
     const rad=Math.PI/180, dLat=(b.latitude-a.latitude)*rad, dLon=(b.longitude-a.longitude)*rad;
@@ -97,7 +115,7 @@
     else { art = cloud; if (kind === 'rain') art += '<path class="rain-stroke" d="m22 51-3 6m15-6-3 6m15-6-3 6"/>'; if (kind === 'snow') art += '<path class="rain-stroke" d="M22 51v8m-4-4h8m-7-3 6 6m0-6-6 6m23-7v8m-4-4h8m-7-3 6 6m0-6-6 6"/>'; if (kind === 'sleet') art += '<path class="rain-stroke" d="m22 51-3 6m16-6v8m-4-4h8m7-4-3 6"/>'; if (kind === 'storm') art += '<path class="sun-stroke" d="m34 43-9 11h8l-3 8"/>'; }
     return `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${art}</svg>`;
   }
-  const api={iconKind,weatherIcon,coordinates,distance,nearestStation,stationChoices,searchLocations,condition,globalWeather,forecastURL};
+  const api={createTimeFormatter,formatTimestamp,iconKind,weatherIcon,coordinates,distance,nearestStation,stationChoices,searchLocations,condition,globalWeather,forecastURL};
   if(typeof module!=='undefined' && module.exports) module.exports=api; else root.GregleWeather=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
 

@@ -1,12 +1,13 @@
 (function (root, factory) {
-  const api = factory();
+  const api = factory(typeof module === 'object' && module.exports ? require('./weather-core.js') : root.GregleWeather);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else {
     root.GregleWeatherAlertsCore = api;
     if (root.document.getElementById('weatherAlerts')) root.GregleWeatherAlerts = api.createController(root);
   }
-})(typeof window === 'object' ? window : globalThis, function () {
+})(typeof window === 'object' ? window : globalThis, function (weatherCore) {
   'use strict';
+  const {formatTimestamp} = weatherCore;
   const REFRESH_MS = 5 * 60 * 1000;
   const UK_REFRESH_MS = 2 * 60 * 1000;
   const UK_WARNINGS_URL = 'https://weather.metoffice.gov.uk/warnings-and-advice/uk-warnings';
@@ -183,7 +184,7 @@
       return details;
     }
     function timestamp(value) {
-      return new win.Date(value).toLocaleString('en-CA', {month:'short', day:'numeric', hour:'2-digit',hourCycle:'h23', minute:'2-digit', timeZoneName:'short', timeZone:location.timezone || (isUK() ? 'Europe/London' : 'America/Vancouver')});
+      return formatTimestamp(value, location.timezone || (isUK() ? 'Europe/London' : 'America/Vancouver'));
     }
     function render() {
       alerts = alerts.filter(alert => alert.expires > now());

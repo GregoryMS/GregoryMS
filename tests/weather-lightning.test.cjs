@@ -22,6 +22,7 @@ async function setup({stale=false}={}) {
     L:{tileLayer:{wms(url,options){const layer={url,options,events:{},opacity:0,on(k,f){this.events[k]=f;return this;},off(){this.events={};},setOpacity(v){this.opacity=v;},addTo(){this.events.loading?.();return this;}};layers.push(layer);return layer;}}}
   };
   const flush=async()=>{for(let i=0;i<10;i++)await Promise.resolve();};
+  context.GregleWeather=require('../assets/weather-core.js');
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/weather-lightning.js'),'utf8'),context);
   events.DOMContentLoaded();
   context.GregleLightning.setLocation({timezone:'America/Vancouver'});

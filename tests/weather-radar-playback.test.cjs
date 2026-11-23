@@ -48,6 +48,7 @@ async function setup(options={}) {
   let opacity=.6,changeOpacity;
   context.GregleWeatherTransparency={opacity:()=>opacity,attach(map,fn){changeOpacity=fn;}};
   context.GregleWeatherBasemap=require('../assets/weather-basemap.js').create(context);
+  context.GregleWeather=require('../assets/weather-core.js');
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/weather-radar.js'),'utf8'),context);
   context.GregleRadar.setLocation({latitude:49.24,longitude:-123.12,name:'Vancouver',timezone:'America/Vancouver'});
   events.DOMContentLoaded();await flush();
