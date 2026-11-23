@@ -199,6 +199,40 @@
     }
   }
   function recenter() { if(map && location)map.setView([location.latitude,location.longitude],7); }
+  function setupFullscreen() {
+    const panel=$('radarPanel'), button=$('radarFullscreenToggle'), dialog=$('radarFullscreenDialog');
+    if(!panel.requestFullscreen && !dialog.showModal)return;
+    button.hidden=false;
+    let requesting=false;
+    const updateButton=()=>{
+      button.textContent=document.fullscreenElement===panel || dialog.open?'Exit full screen':'Full screen';
+    };
+    document.addEventListener('fullscreenchange',updateButton);
+    dialog.addEventListener('close',()=>{
+      dialog.before(panel);
+      updateButton();
+      button.focus({preventScroll:true});
+    });
+    button.addEventListener('click',async ()=>{
+      if(requesting)return;
+      if(dialog.open){dialog.close();return;}
+      if(document.fullscreenElement===panel){
+        await document.exitFullscreen();
+        return;
+      }
+      if(document.fullscreenEnabled && panel.requestFullscreen){
+        requesting=true;
+        try {await panel.requestFullscreen();return;}
+        catch(_) {} // Use an in-page full-screen view where the browser blocks native fullscreen.
+        finally {requesting=false;}
+      }
+      if(!dialog.showModal)return;
+      dialog.append(panel);
+      dialog.showModal();
+      updateButton();
+      button.focus({preventScroll:true});
+    });
+  }
   function setLocation(value) {
     if(!Number.isFinite(value?.latitude)||!Number.isFinite(value?.longitude))return;
     location=value;
@@ -227,6 +261,11 @@
     // Dropping cached frames on a pan prevents hidden layers requesting many tiles.
     map.on('movestart',()=>{stop();clearLayers();});
     map.on('moveend',()=>{if(frames.length)show(current);});
+    if('ResizeObserver' in root) {
+      new ResizeObserver(([{contentRect}])=>{
+        if(contentRect.width && contentRect.height)map.invalidateSize({debounceMoveend:true});
+      }).observe($('radarMap'));
+    }
     $('radarRefresh').addEventListener('click',()=>{baseFailed=false;base.redraw();refresh(true);loadStations();root.GregleLightning?.refresh();});
     refresh(true);
   }
@@ -234,6 +273,7 @@
     if(map){map.invalidateSize();sourceDetails();if(frames.length)show(current);refresh();}
   }};
   document.addEventListener('DOMContentLoaded',()=>{
+    setupFullscreen();
     if(root.GregleHighResRadar && $('radarHighResToggle')) {
       modeControls();loadStations();
       $('radarHighResToggle').addEventListener('change',()=>{hdEnabled=$('radarHighResToggle').checked;changeSource();});
