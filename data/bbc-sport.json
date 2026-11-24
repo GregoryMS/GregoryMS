@@ -1,23 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-23T21:51:50+00:00",
-  "fetchedAt": "2026-11-23T21:51:55.393047+00:00",
+  "feedUpdatedAt": "2026-11-24T05:44:02+00:00",
+  "fetchedAt": "2026-11-24T05:44:09.425283+00:00",
   "items": [
+    {
+      "title": "Tarkowski's first Premier League red ruins Moyes' night - was it deserved?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmqx5eynvpqno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Janelt scores stunner as Brentford beat 10-man Everton",
+      "link": "https://www.bbc.co.uk/sport/football/videos/c5gm3jlw7l7xo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "'No-one's coming to save us' - but how can Man Utd save themselves?",
       "link": "https://www.bbc.co.uk/sport/football/articles/ck9d7qxxl7w8o?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Who has made Troy's Premier League team of the week?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c34gn2p5d0zwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "De Bruyne's feelings for Man City will 'never change'",
       "link": "https://www.bbc.co.uk/sport/football/articles/cxq6e9vlp39jo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "England, Northern Ireland, Scotland & Wales to host 2035 Women's World Cup",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cx30g83716lzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Raya to miss Dortmund game but injury 'not serious'",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cjx2rqpr7l9lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "England's tearaway quick bowler reinvented as a top-order batter",
@@ -28,20 +32,16 @@
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6n4kq78yj93o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "De Villiers claims ball-tampering from first 2018 Test",
-      "link": "https://www.bbc.co.uk/sport/cricket/articles/c607418zlpz4o?at_medium=RSS&at_campaign=rss"
+      "title": "Arsenal and PSG keen on Nusa - Tuesday's gossip",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm8x0grpder5o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Fury reveals schizophrenia diagnosis",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/c6y80n3dn15yo?at_medium=RSS&at_campaign=rss"
+      "title": "England, Northern Ireland, Scotland & Wales to host 2035 Women's World Cup",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cx30g83716lzo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "'You don't win 345 matches by defending' - Simeone breaks La Liga record",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c5pv9kkwn3y3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Wilder to fight Bakole on Fury-Joshua undercard",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/cmvg2v0rlzeko?at_medium=RSS&at_campaign=rss"
+      "title": "Raya to miss Dortmund game but injury 'not serious'",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cjx2rqpr7l9lo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
