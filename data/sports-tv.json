@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-24T06:07:40.810446+00:00",
+      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
       "listings": [
         {
           "home": "Arsenal",
@@ -100,7 +100,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-24T06:07:40.810446+00:00",
+      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
       "listings": [
         {
           "home": "Arsenal",
@@ -166,6 +166,7 @@
           "away": "Panama (W)",
           "start": "2026-11-28T18:00:00+00:00",
           "channels": [
+            "OneSoccer",
             "TSN+",
             "TSN1",
             "TSN4"
@@ -202,7 +203,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-24T06:07:40.810446+00:00",
+      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
       "listings": [
         {
           "home": "Arsenal",
@@ -295,7 +296,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-24T06:07:40.810446+00:00",
+      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
       "listings": [
         {
           "home": "Arsenal",
@@ -391,7 +392,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-24T06:07:40.810446+00:00",
+      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
       "listings": [
         {
           "home": "Arsenal",
