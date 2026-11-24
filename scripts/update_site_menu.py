@@ -37,7 +37,7 @@ APPS = [
     ('More', '/links.html', 'assets/tools-app.svg'),
 ]
 EXTRAS = [
-    ('Portal', 'https://portal.gregle.de'), ('Bear Notes', 'https://web.bear.app'),
+    ('Portal', 'https://portal.gregle.uk'), ('Bear Notes', 'https://web.bear.app'),
     ('Apple Maps', 'https://maps.apple.com'), ('Dictionary', '/dictionary.html'),
     ('Music', 'https://music.apple.com'),
     ('Web', 'https://42.gsuth.uk'), ('SpaceWeather', 'https://spaceweather.com'),
