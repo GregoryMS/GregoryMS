@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-23T21:28:33+00:00",
-  "fetchedAt": "2026-11-23T21:28:44.064894+00:00",
+  "feedUpdatedAt": "2026-11-24T05:28:16+00:00",
+  "fetchedAt": "2026-11-24T05:28:28.837668+00:00",
   "items": [
     {
-      "title": "My approach to EU is pragmatic, says Burnham",
-      "link": "https://www.bbc.co.uk/news/articles/c6vg2v9xkr40o?at_medium=RSS&at_campaign=rss"
+      "title": "How Nvidia is reacting to Jensen Huang's return as CEO",
+      "link": "https://www.bbc.co.uk/news/videos/ckedq2edqegzo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Benefits review to suggest quicker payment for some disabled people",
+      "link": "https://www.bbc.co.uk/news/articles/cvx2xjed2r3ro?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Chris Mason: Can Burnham turn volume down on EU debate?",
+      "link": "https://www.bbc.co.uk/news/articles/c6pw47jyyz5no?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "What strike on Russian ship in Libya says about spread of Ukraine war",
       "link": "https://www.bbc.co.uk/news/articles/cm894p88jzxpo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "How Ukraine attacked Russian ships in Libya",
-      "link": "https://www.bbc.co.uk/news/videos/cmz6q3001pw6o?at_medium=RSS&at_campaign=rss"
+      "title": "Why I don't always tell potential employers I'm dyslexic",
+      "link": "https://www.bbc.co.uk/news/articles/c6rmgjynynero?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Life is not infinite': Catherine talks about 'mortality' in new documentary clip",
+      "link": "https://www.bbc.co.uk/news/videos/c920x1534e31o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Nato chief vows defence against space threat after Russian nuclear satellite reports",
+      "link": "https://www.bbc.co.uk/news/articles/c9x2er1ry2mzo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Coldest spell of autumn continues with risk of hill snow, ice and heavy rain",
+      "link": "https://www.bbc.co.uk/weather/articles/cmz9dyk4y8xdo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "BBC secret filming shows dog breeder selling sick puppies for £2k each",
+      "link": "https://www.bbc.co.uk/news/articles/c8d36d43y8po?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "US rapper Don Toliver postpones two arena shows after Manchester evacuation",
       "link": "https://www.bbc.co.uk/news/articles/ck3rgp4gv9pxo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "UK to host 2035 Women's World Cup, Fifa confirms",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cx30g83716lzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Andrew Mountbatten-Windsor received £750,000 from Turkish millionaire, court told",
-      "link": "https://www.bbc.co.uk/news/articles/c9gkldn06l87o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "UK sanctions top Myanmar military leaders after Rohingya genocide ruling",
-      "link": "https://www.bbc.co.uk/news/articles/c6wy4ng1rznxo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Teenage girl stabbed multiple times by 14-year-old boy, murder trial told",
-      "link": "https://www.bbc.co.uk/news/articles/cmlydn1zye23o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Iranian authorities flog singer who performed without hijab, lawyers say",
-      "link": "https://www.bbc.co.uk/news/articles/cq1j6585l5g6o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Pip assessments need 'fundamental overhaul', report to say",
-      "link": "https://www.bbc.co.uk/news/articles/cvlyj3rn201xo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
