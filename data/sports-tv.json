@@ -3,26 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
+      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
       "listings": [
-        {
-          "home": "Arsenal",
-          "away": "Borussia Dortmund",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "Prime Video (UK)"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Napoli",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 1",
-            "TNT Sports Ultimate"
-          ]
-        },
         {
           "home": "Lille",
           "away": "Bayern München",
@@ -100,24 +82,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
+      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
       "listings": [
-        {
-          "home": "Arsenal",
-          "away": "Borussia Dortmund",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Napoli",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "DAZN Canada"
-          ]
-        },
         {
           "home": "Lille",
           "away": "Bayern München",
@@ -198,29 +164,21 @@
             "DAZN Canada",
             "Fubo Sports CA"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Hertha BSC",
+          "start": "2026-12-01T19:45:00+00:00",
+          "channels": [
+            "DAZN Canada"
+          ]
         }
       ],
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
+      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
       "listings": [
-        {
-          "home": "Arsenal",
-          "away": "Borussia Dortmund",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Napoli",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)"
-          ]
-        },
         {
           "home": "Lille",
           "away": "Bayern München",
@@ -291,32 +249,38 @@
             "V sport Premier League NO",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Wales (W)",
+          "away": "Norway (W)",
+          "start": "2026-12-01T19:15:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)"
+          ]
+        },
+        {
+          "home": "Scotland (W)",
+          "away": "Sweden (W)",
+          "start": "2026-12-01T19:25:00+00:00",
+          "channels": [
+            "SVT1",
+            "SVT2"
+          ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Hertha BSC",
+          "start": "2026-12-01T19:45:00+00:00",
+          "channels": [
+            "VG TV"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
+      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
       "listings": [
-        {
-          "home": "Arsenal",
-          "away": "Borussia Dortmund",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "V Sport Premium",
-            "V Ultra HD",
-            "Viaplay SE"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Napoli",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "V Sport Football",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Lille",
           "away": "Bayern München",
@@ -387,29 +351,23 @@
             "V Sport Premium",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Scotland (W)",
+          "away": "Sweden (W)",
+          "start": "2026-12-01T19:25:00+00:00",
+          "channels": [
+            "SVT Play",
+            "SVT1",
+            "SVT2"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-24T17:45:14.733546+00:00",
+      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
       "listings": [
-        {
-          "home": "Arsenal",
-          "away": "Borussia Dortmund",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "Prime Video (DE)"
-          ]
-        },
-        {
-          "home": "Manchester City",
-          "away": "Napoli",
-          "start": "2026-11-24T20:00:00+00:00",
-          "channels": [
-            "DAZN Deutschland"
-          ]
-        },
         {
           "home": "Lille",
           "away": "Bayern München",
@@ -481,6 +439,18 @@
           "channels": [
             "Sky Sport Premier League",
             "Sky Top Event",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Hertha BSC",
+          "start": "2026-12-01T19:45:00+00:00",
+          "channels": [
+            "RTL",
+            "RTL+",
+            "Sky Sport 2",
+            "Sky Sport News",
             "WOW"
           ]
         }
