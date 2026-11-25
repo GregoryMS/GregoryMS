@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
+      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -77,12 +77,43 @@
             "Sky Sports UHD 1",
             "Sky Sports+ app"
           ]
+        },
+        {
+          "home": "Ukraine (W)",
+          "away": "England (W)",
+          "start": "2026-12-01T17:00:00+00:00",
+          "channels": [
+            "ITV1",
+            "ITVX",
+            "STV",
+            "STV Player"
+          ]
+        },
+        {
+          "home": "Wales (W)",
+          "away": "Norway (W)",
+          "start": "2026-12-01T19:15:00+00:00",
+          "channels": [
+            "BBC One Wales",
+            "BBC Sport online",
+            "BBC iPlayer"
+          ]
+        },
+        {
+          "home": "Scotland (W)",
+          "away": "Sweden (W)",
+          "start": "2026-12-01T19:25:00+00:00",
+          "channels": [
+            "BBC Scotland",
+            "BBC Sport online",
+            "BBC iPlayer"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
+      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -177,7 +208,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
+      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -279,7 +310,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
+      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -366,7 +397,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-25T01:37:52.486997+00:00",
+      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -451,6 +482,7 @@
             "RTL+",
             "Sky Sport 2",
             "Sky Sport News",
+            "Sky Ultra HD",
             "WOW"
           ]
         }
