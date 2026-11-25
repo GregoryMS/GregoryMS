@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
+      "checkedAt": "2026-11-25T20:12:21.442446+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -113,7 +113,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
+      "checkedAt": "2026-11-25T20:12:21.442446+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -208,7 +208,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
+      "checkedAt": "2026-11-25T20:12:21.442446+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -310,7 +310,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
+      "checkedAt": "2026-11-25T20:12:21.442446+00:00",
       "listings": [
         {
           "home": "Lille",
@@ -397,7 +397,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-25T10:30:57.631266+00:00",
+      "checkedAt": "2026-11-25T20:12:21.442446+00:00",
       "listings": [
         {
           "home": "Lille",
