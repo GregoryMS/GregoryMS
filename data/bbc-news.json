@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-25T00:48:16+00:00",
-  "fetchedAt": "2026-11-25T00:48:23.105934+00:00",
+  "feedUpdatedAt": "2026-11-25T09:15:43+00:00",
+  "fetchedAt": "2026-11-25T09:15:53.503526+00:00",
   "items": [
+    {
+      "title": "Energy bills to rise by 26% from January",
+      "link": "https://www.bbc.co.uk/news/articles/cm20qnq33e90o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Young Brits sexting and watching porn but third have never had sex, survey finds",
+      "link": "https://www.bbc.co.uk/news/articles/cw0737zzn50mo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Nuclear test veterans will get full truth, says Burnham, as he confirms independent panel",
       "link": "https://www.bbc.co.uk/news/articles/c6808k8dxvgko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Nuclear test veterans speak to BBC about search for justice",
+      "title": "Nuclear test veterans speak to BBC about 'search for justice'",
       "link": "https://www.bbc.co.uk/news/videos/c6jrel8e50w9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Thomas Markle indicted by federal grand jury in US for possessing child sex abuse images",
-      "link": "https://www.bbc.co.uk/news/articles/crwy4egxn592o?at_medium=RSS&at_campaign=rss"
+      "title": "Racism, misogyny and homophobia remain in Met force, report finds",
+      "link": "https://www.bbc.co.uk/news/articles/cvwy0rg343j7o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Third of young Brits have never had sex, but many are sexting and watching porn",
-      "link": "https://www.bbc.co.uk/news/articles/cw0737zzn50mo?at_medium=RSS&at_campaign=rss"
+      "title": "UK sent sex offender refugee to African country in undisclosed deal",
+      "link": "https://www.bbc.co.uk/news/articles/c6z7407zrgwvo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Households braced for soaring energy bills with new price cap to be announced",
-      "link": "https://www.bbc.co.uk/news/articles/cm20qnq33e90o?at_medium=RSS&at_campaign=rss"
+      "title": "Four years after huge asteroid crash, a spacecraft has now returned to assess the damage",
+      "link": "https://www.bbc.co.uk/news/articles/cw8dv112r5gmo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "US attorney general dodges questions about Nvidia investigation",
-      "link": "https://www.bbc.co.uk/news/articles/crpdw1qx7jgxo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Two arrested on suspicion of burglary at Prince and Princess of Wales's Norfolk home",
-      "link": "https://www.bbc.co.uk/news/articles/cr9d7qdg24vno?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Substance released at Manchester concert could be linked to robberies, police say",
-      "link": "https://www.bbc.co.uk/news/articles/cqrmgvnzwrm3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "China-linked network using AI fakes to smear Taiwan election candidates, BBC Verify finds",
-      "link": "https://www.bbc.co.uk/news/articles/cv702rw7dzx5o?at_medium=RSS&at_campaign=rss"
+      "title": "Anthony Zurcher: Trump's rescue of Nvidia's Huang brings political risks",
+      "link": "https://www.bbc.co.uk/news/articles/ckj05m2zdyryo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Ministers ask public for views on changing age of consent",
       "link": "https://www.bbc.co.uk/news/articles/cwgkl31kmnddo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Russia's own figures show it has lost almost 500,000 people in Ukraine war",
+      "link": "https://www.bbc.co.uk/news/articles/cmx27g533zwyo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
