@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-26T02:51:44.112616+00:00",
+      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
@@ -165,7 +165,7 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-26T02:51:44.112616+00:00",
+      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
@@ -306,7 +306,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-26T02:51:44.112616+00:00",
+      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
@@ -446,6 +446,7 @@
           "away": "Manchester United",
           "start": "2026-12-02T20:15:00+00:00",
           "channels": [
+            "V sport Premier League NO",
             "Viaplay NO"
           ]
         }
@@ -453,7 +454,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-26T02:51:44.112616+00:00",
+      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
@@ -584,7 +585,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-26T02:51:44.112616+00:00",
+      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
       "listings": [
         {
           "home": "Brighton & Hove Albion",
