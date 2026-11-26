@@ -3,17 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
+      "checkedAt": "2026-11-26T21:56:34.668925+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Universitatea Craiova",
-          "start": "2026-11-26T17:45:00+00:00",
-          "channels": [
-            "HBO Max (UK)",
-            "TNT Sports 2"
-          ]
-        },
         {
           "home": "Nottingham Forest",
           "away": "Chelsea",
@@ -101,6 +92,15 @@
           ]
         },
         {
+          "home": "Bayern München",
+          "away": "Hertha BSC",
+          "start": "2026-12-01T19:45:00+00:00",
+          "channels": [
+            "Premier Sports 2 UK",
+            "Premier Sports Player"
+          ]
+        },
+        {
           "home": "Chelsea",
           "away": "Crystal Palace",
           "start": "2026-12-02T19:30:00+00:00",
@@ -165,17 +165,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
+      "checkedAt": "2026-11-26T21:56:34.668925+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Universitatea Craiova",
-          "start": "2026-11-26T17:45:00+00:00",
-          "channels": [
-            "DAZN Canada",
-            "OneSoccer"
-          ]
-        },
         {
           "home": "Nottingham Forest",
           "away": "Chelsea",
@@ -306,18 +297,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
+      "checkedAt": "2026-11-26T21:56:34.668925+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Universitatea Craiova",
-          "start": "2026-11-26T17:45:00+00:00",
-          "channels": [
-            "TV 2 Play (NO)",
-            "V sport 3 NO",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Nottingham Forest",
           "away": "Chelsea",
@@ -376,7 +357,8 @@
           "away": "Norway (W)",
           "start": "2026-12-01T19:15:00+00:00",
           "channels": [
-            "TV 2 Play (NO)"
+            "TV 2 Play (NO)",
+            "TV 2 Sport 1"
           ]
         },
         {
@@ -454,16 +436,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
+      "checkedAt": "2026-11-26T21:56:34.668925+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Universitatea Craiova",
-          "start": "2026-11-26T17:45:00+00:00",
-          "channels": [
-            "Disney+ Sverige"
-          ]
-        },
         {
           "home": "Nottingham Forest",
           "away": "Chelsea",
@@ -585,17 +559,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-26T12:34:52.447339+00:00",
+      "checkedAt": "2026-11-26T21:56:34.668925+00:00",
       "listings": [
-        {
-          "home": "Brighton & Hove Albion",
-          "away": "Universitatea Craiova",
-          "start": "2026-11-26T17:45:00+00:00",
-          "channels": [
-            "Sky Sport 4",
-            "WOW"
-          ]
-        },
         {
           "home": "Nottingham Forest",
           "away": "Chelsea",
