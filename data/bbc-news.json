@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-25T19:20:48+00:00",
-  "fetchedAt": "2026-11-25T19:20:54.332906+00:00",
+  "feedUpdatedAt": "2026-11-26T02:17:23+00:00",
+  "fetchedAt": "2026-11-26T02:17:31.905275+00:00",
   "items": [
+    {
+      "title": "Stalking law simplified to become one offence",
+      "link": "https://www.bbc.co.uk/news/articles/c8lydnlkq7xno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "US approves SpaceX plan to send a million data satellites to space",
+      "link": "https://www.bbc.co.uk/news/articles/cwp836l8n1jgo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "UK government set to publish new treaties agreed with EU",
+      "link": "https://www.bbc.co.uk/news/articles/c98r7p65edvgo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Expect fewer frosts and more hot days as UK seasons shift, says Met Office",
+      "link": "https://www.bbc.co.uk/weather/articles/cr3eg1py3gv5o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "BBC launches partnership with Met Office for weather coverage",
+      "link": "https://www.bbc.co.uk/news/articles/ckjrel5vdj9zo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Duran Duran guitarist Andy Taylor dies aged 65",
+      "link": "https://www.bbc.co.uk/news/articles/cmp3vk6vr44po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Moment Nasa spacecraft hit asteroid - and what happened next",
+      "link": "https://www.bbc.co.uk/news/videos/cwe9kxpgz2kpo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Thirty-one killed in massive fire as fuel tanker crashes on Cairo highway",
+      "link": "https://www.bbc.co.uk/news/articles/cqy7rn30v314o?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Poundland collapses putting 11,000 jobs at risk",
       "link": "https://www.bbc.co.uk/news/articles/cm3vgdn037z4o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Why has Poundland collapsed and what happens next?",
-      "link": "https://www.bbc.co.uk/news/videos/ckregn0gq2ydo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "US announces new tariff proposals on EU, China, and other trade partners",
-      "link": "https://www.bbc.co.uk/news/articles/c893r9ke5p97o?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Wife drugged and raped by husband asked police if she was to blame, mass sexual offence trial hears",
       "link": "https://www.bbc.co.uk/news/articles/c38x0vd2yyx5o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Gordon Ramsay to host Top Gear as show revived after Flintoff crash",
-      "link": "https://www.bbc.co.uk/news/articles/cjr4gw100d52o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Images of asteroid targeted to test Earth's defences reveal stadium-sized crater",
-      "link": "https://www.bbc.co.uk/news/articles/cw8dv112r5gmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Raheem Sterling given suspended jail sentence for dangerous driving and nitrous oxide possession",
-      "link": "https://www.bbc.co.uk/news/articles/cv8e04ll9dd3o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Energy bills to rise by 26% from January after gas prices surge",
-      "link": "https://www.bbc.co.uk/news/articles/cm20qnq33e90o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "US stocks fall further as fears over AI intensify",
-      "link": "https://www.bbc.co.uk/news/articles/cq0md8g14zryo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Hundreds complain about I'm A Celebrity after Mariella Frostrup called AJ Odudu 'aggressive'",
-      "link": "https://www.bbc.co.uk/news/articles/c6ly5v11q194o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
