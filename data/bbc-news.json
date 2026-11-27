@@ -1,35 +1,27 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-27T02:45:02+00:00",
-  "fetchedAt": "2026-11-27T02:45:13.893553+00:00",
+  "feedUpdatedAt": "2026-11-27T11:26:34+00:00",
+  "fetchedAt": "2026-11-27T11:26:42.645385+00:00",
   "items": [
     {
-      "title": "US too focused on Middle East and not pushing Russia hard enough, Zelensky tells BBC",
+      "title": "Zelensky criticises 'strange' Trump-Putin friendship in BBC interview",
       "link": "https://www.bbc.co.uk/news/articles/c820q9wgrpyyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Huntingdon train attacker found guilty of all 14 counts of attempted murder",
-      "link": "https://www.bbc.co.uk/news/articles/ck053j37yr9lo?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Zelensky on Trump and Putin",
+      "link": "https://www.bbc.co.uk/news/videos/cm9309nwk7x9o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Knifeman told doctor his psychosis drugs weren't working days before Huntingdon attack",
-      "link": "https://www.bbc.co.uk/news/articles/ck62p4pzg4qyo?at_medium=RSS&at_campaign=rss"
+      "title": "'I wouldn't be here today without you': Student's praise for man who stopped Huntingdon train attacker",
+      "link": "https://www.bbc.co.uk/news/articles/ck792lq4xrero?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Major Thanksgiving storm brings flooding, flight delays across US",
-      "link": "https://www.bbc.co.uk/news/articles/ckm2mz3prq77o?at_medium=RSS&at_campaign=rss"
+      "title": "Watch: Student describes moment passenger 'threw himself' at attacker and saved her life",
+      "link": "https://www.bbc.co.uk/news/videos/cqzr566llz4no?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Drug rape husband says wife 'would have been terrified', court hears",
-      "link": "https://www.bbc.co.uk/news/articles/ck053epz2ppmo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Met Police ruined my life, says Kenyan man wrongly sentenced over attack on UK couple",
+      "title": "Met Police ruined my life, says Kenyan man wrongly convicted over attack on UK couple",
       "link": "https://www.bbc.co.uk/news/articles/cqvg2nlr8kd8o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "My dad's watch stopped the moment he died - I found it in the ashes of Hong Kong tower fire",
-      "link": "https://www.bbc.co.uk/news/videos/c6evr2y40v0jo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "NHS boss warns of 'horrible spike' in flu as hospital admissions surge",
@@ -40,8 +32,16 @@
       "link": "https://www.bbc.co.uk/news/articles/ck2057x387ego?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Huw Edwards gives first interviews since child abuse image conviction",
-      "link": "https://www.bbc.co.uk/news/articles/c38x05jrjnx7o?at_medium=RSS&at_campaign=rss"
+      "title": "Hundreds of thousands still without power after storms hit US on Thanksgiving",
+      "link": "https://www.bbc.co.uk/news/articles/cre3dj5n7dpwo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Leaders clash in final Spain election debate as housing dominates run-in",
+      "link": "https://www.bbc.co.uk/news/articles/ckr5gr4g8gn5o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'It's impossible': Spain's young people on housing ahead of Sunday's election",
+      "link": "https://www.bbc.co.uk/news/videos/cm9w9y8947xqo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
