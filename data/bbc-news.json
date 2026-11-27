@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/news/rss.xml",
-  "feedUpdatedAt": "2026-11-26T20:03:40+00:00",
-  "fetchedAt": "2026-11-26T20:03:43.302682+00:00",
+  "feedUpdatedAt": "2026-11-27T02:45:02+00:00",
+  "fetchedAt": "2026-11-27T02:45:13.893553+00:00",
   "items": [
+    {
+      "title": "US too focused on Middle East and not pushing Russia hard enough, Zelensky tells BBC",
+      "link": "https://www.bbc.co.uk/news/articles/c820q9wgrpyyo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Huntingdon train attacker found guilty of all 14 counts of attempted murder",
       "link": "https://www.bbc.co.uk/news/articles/ck053j37yr9lo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Watch: How knife attack on train unfolded",
-      "link": "https://www.bbc.co.uk/news/videos/cq36gjw04pgjo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Knifeman told doctor his psychosis drugs weren't working days before Huntingdon attack",
       "link": "https://www.bbc.co.uk/news/articles/ck62p4pzg4qyo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "UK net migration at lowest level since 1997 as asylum claims also fall",
-      "link": "https://www.bbc.co.uk/news/articles/cq36gj12n0l3o?at_medium=RSS&at_campaign=rss"
+      "title": "Major Thanksgiving storm brings flooding, flight delays across US",
+      "link": "https://www.bbc.co.uk/news/articles/ckm2mz3prq77o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Drug rape husband says wife 'would have been terrified', court hears",
       "link": "https://www.bbc.co.uk/news/articles/ck053epz2ppmo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Nearly 100 Labour MPs including ministerial aides oppose Rosebank oil field",
-      "link": "https://www.bbc.co.uk/news/articles/cw24ez32d1n4o?at_medium=RSS&at_campaign=rss"
+      "title": "Met Police ruined my life, says Kenyan man wrongly sentenced over attack on UK couple",
+      "link": "https://www.bbc.co.uk/news/articles/cqvg2nlr8kd8o?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Burnham joined by former PMs at Ann Widdecombe service",
-      "link": "https://www.bbc.co.uk/news/articles/cvglrn4p1np0o?at_medium=RSS&at_campaign=rss"
+      "title": "My dad's watch stopped the moment he died - I found it in the ashes of Hong Kong tower fire",
+      "link": "https://www.bbc.co.uk/news/videos/c6evr2y40v0jo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Mandelson kept shares as ambassador despite conflict of interest fears, documents show",
-      "link": "https://www.bbc.co.uk/news/articles/c6808dv4e817o?at_medium=RSS&at_campaign=rss"
+      "title": "NHS boss warns of 'horrible spike' in flu as hospital admissions surge",
+      "link": "https://www.bbc.co.uk/news/articles/cwvg2ndxdjr2o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "UK to pay 'participation' fee to deliver EU deals",
+      "link": "https://www.bbc.co.uk/news/articles/ck2057x387ego?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Huw Edwards gives first interviews since child abuse image conviction",
       "link": "https://www.bbc.co.uk/news/articles/c38x05jrjnx7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Boxing chiefs to assess Fury mental health before fight",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/cwj3klxj10edo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
