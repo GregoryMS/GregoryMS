@@ -3,21 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
+      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
       "listings": [
-        {
-          "home": "Nottingham Forest",
-          "away": "Chelsea",
-          "start": "2026-11-27T20:00:00+00:00",
-          "channels": [
-            "NOW",
-            "Sky Sports Main Event",
-            "Sky Sports Main Event UHD",
-            "Sky Sports Premier League",
-            "Sky Sports UHD 1",
-            "Sky Sports+ app"
-          ]
-        },
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
@@ -166,17 +153,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
+      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
       "listings": [
-        {
-          "home": "Nottingham Forest",
-          "away": "Chelsea",
-          "start": "2026-11-27T20:00:00+00:00",
-          "channels": [
-            "DAZN Canada",
-            "Fubo Sports CA"
-          ]
-        },
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
@@ -298,17 +276,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
+      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
       "listings": [
-        {
-          "home": "Nottingham Forest",
-          "away": "Chelsea",
-          "start": "2026-11-27T20:00:00+00:00",
-          "channels": [
-            "V sport Premier League NO",
-            "Viaplay NO"
-          ]
-        },
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
@@ -437,18 +406,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
+      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
       "listings": [
-        {
-          "home": "Nottingham Forest",
-          "away": "Chelsea",
-          "start": "2026-11-27T20:00:00+00:00",
-          "channels": [
-            "V Sport Premium",
-            "V Ultra HD",
-            "Viaplay SE"
-          ]
-        },
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
@@ -560,17 +519,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
+      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
       "listings": [
-        {
-          "home": "Nottingham Forest",
-          "away": "Chelsea",
-          "start": "2026-11-27T20:00:00+00:00",
-          "channels": [
-            "Sky Sport Premier League",
-            "WOW"
-          ]
-        },
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
