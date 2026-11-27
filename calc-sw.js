@@ -1,6 +1,6 @@
 /* Calculator-only offline cache. ROMs and user data stay in IndexedDB/localStorage. */
 'use strict';
-const VERSION='20261120-gregle-night1';
+const VERSION='20261126-hardware-colours1';
 const PREFIX='gregle-calculator-';
 const refresh=self.location.hostname==='calc.gregle.uk' ? new URL(self.location.href).searchParams.get('calc-refresh') : '';
 const CACHE=PREFIX+VERSION+(/^[a-z0-9-]{1,40}$/.test(refresh || '') ? '-refresh-'+refresh : '');
@@ -26,7 +26,7 @@ const ASSETS=[
   '/assets/fonts/gregle-wordmark-300.woff?v=20261102-heading1',
   '/assets/calc.css?v=20261102-heading1',
   '/assets/calc-graph.css?v=20261101-dpad-restored1',
-  '/assets/calc-emulator.css?v=20261117-pointer1',
+  '/assets/calc-emulator.css?v=20261126-hardware-colours1',
   '/assets/site-menu.css?v=20261117-app-theme2',
   '/assets/preferences.js?v=20261113-shared-device1',
   '/assets/theme.js?v=20261113-shared-device1',

@@ -132,3 +132,86 @@
 
 .calculator-engine-select {-webkit-tap-highlight-color:transparent}
 .calculator-engine-select.pointer-focused:focus {outline:none;box-shadow:none}
+
+/* Hardware-inspired palettes for the two classic emulator keypads. */
+[data-engine="ti84"] {
+  --emu-second-legend: #80c8ef;
+  --emu-alpha-legend: #b4d77b;
+  --emu-button: linear-gradient(#303236, #242528);
+  --emu-button-edge: #505256;
+  --emu-button-ink: #f5f6f7;
+  --emu-pad-face: linear-gradient(135deg, #e8eaec, #c5c8cd);
+  --emu-pad-ink: #202329;
+}
+
+[data-engine="ti89"] {
+  --emu-second-legend: #8ac8e8;
+  --emu-alpha-legend: #dedede;
+  --emu-button: linear-gradient(#6b6d70, #4e5053);
+  --emu-button-edge: #838589;
+  --emu-button-ink: #f9f9fa;
+  --emu-pad-face: linear-gradient(135deg, #323437, #1e2023);
+  --emu-pad-ink: #f9f9fa;
+}
+
+:is([data-engine="ti84"], [data-engine="ti89"]) .hardware-key:not(.emu-pad button) {
+  background: var(--emu-button);
+  border-color: var(--emu-button-edge);
+  border-bottom-color: #191a20;
+  color: var(--emu-button-ink);
+}
+
+:is([data-engine="ti84"], [data-engine="ti89"]) .second-key {
+  --emu-button: linear-gradient(#82c6ed, #60afd9);
+  --emu-button-edge: #acd9f4;
+  --emu-button-ink: #152b39;
+}
+
+[data-engine="ti84"] :is(.emu-menu-keys .hardware-key, .emu-number, .emu-operator, .emu-enter, [data-emu-key="negative"]) {
+  --emu-button: linear-gradient(#f0f1f3, #c9ccd0);
+  --emu-button-edge: #f4f5f6;
+  --emu-button-ink: #181b1f;
+}
+
+[data-engine="ti84"] .alpha-key {
+  --emu-button: linear-gradient(#b4d275, #8cae4f);
+  --emu-button-edge: #bfd98a;
+  --emu-button-ink: #202d13;
+}
+
+[data-engine="ti89"] [data-emu-key="diamond"] {
+  --emu-button: linear-gradient(#f5ecad, #d8cd84);
+  --emu-button-edge: #f5edbb;
+  --emu-button-ink: #2c2818;
+}
+
+[data-engine="ti89"] .alpha-key {
+  --emu-button: linear-gradient(#eeeef0, #c9cacc);
+  --emu-button-edge: #e5e5e8;
+  --emu-button-ink: #242428;
+}
+
+[data-engine="ti89"] :is(.emu-number, [data-emu-key="negative"], [data-emu-key="esc"], [data-emu-key="apps"]) {
+  --emu-button: linear-gradient(#303135, #1c1d21);
+  --emu-button-edge: #48494d;
+}
+
+:is([data-engine="ti84"], [data-engine="ti89"]) .emu-legend {
+  color: var(--emu-second-legend);
+}
+
+:is([data-engine="ti84"], [data-engine="ti89"]) .emu-legend b {
+  color: var(--emu-alpha-legend);
+}
+
+[data-engine="ti89"] .emu-diamond-legend {
+  color: #e3d789;
+}
+
+:is([data-engine="ti84"], [data-engine="ti89"]) .emu-pad button {
+  color: var(--emu-pad-ink);
+}
+
+:is([data-engine="ti84"], [data-engine="ti89"]) .emu-pad button:not(:focus-visible)::before {
+  background: var(--emu-pad-face);
+}
