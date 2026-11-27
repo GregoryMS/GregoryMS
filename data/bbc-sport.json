@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-26T20:46:32+00:00",
-  "fetchedAt": "2026-11-26T20:46:44.965719+00:00",
+  "feedUpdatedAt": "2026-11-27T03:25:06+00:00",
+  "fetchedAt": "2026-11-27T03:25:11.646509+00:00",
   "items": [
     {
-      "title": "Boxing chiefs to assess Fury mental health before fight",
+      "title": "Australia's sandpapergate probe to also include 2017-18 Ashes",
+      "link": "https://www.bbc.co.uk/sport/cricket/articles/cxdd1335nyj0o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Fury 'never received' schizophrenia diagnosis",
       "link": "https://www.bbc.co.uk/sport/boxing/articles/cwj3klxj10edo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Russell says Verstappen's criticism 'quite amusing'",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c5lykr98yd88o?at_medium=RSS&at_campaign=rss"
+      "title": "Bournemouth 'allowed to dream' as fans book Europa League final hotels",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmq5v84vw818o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "India's Pant joins New Zealand club match under false name",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/crx27984p14jo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Not even making a 12-man bench - what next for Garnacho?",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cr3wgd5exl0do?at_medium=RSS&at_campaign=rss"
+      "title": "Taylor and Lewis lose all five pairs matches on return",
+      "link": "https://www.bbc.co.uk/sport/darts/articles/cm9q8y09xgdno?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'Priceless' Duran proves 'the man' but is he papering over cracks at Celtic?",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c62klz1wwdn7o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "No post-match drug testing in South Africa v New Zealand series",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c69309lz275wo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Russell says Verstappen's criticism 'quite amusing'",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c5lykr98yd88o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "GB win decider to reach Davis Cup semis for first time since 2019",
       "link": "https://www.bbc.co.uk/sport/tennis/articles/c5m2lvevrk1mo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Lammens - the Man Utd goalkeeper under scrutiny like never before",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmn4k7v93gvzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Germany's Freigang given 16-month ban over drugs test issues",
       "link": "https://www.bbc.co.uk/sport/football/articles/cqlym4rd3y52o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Former England scrum-half and commentator Starmer-Smith dies aged 81",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/c6rrg20xdq2vo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Skupski and Patten win to send GB into Davis Cup semi-finals",
-      "link": "https://www.bbc.co.uk/sport/tennis/videos/cmn0lrjdd9n5o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Sublime Bellingham strike lights up Real's rout of PSV",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c5evr0y83197o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
