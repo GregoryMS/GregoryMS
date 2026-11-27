@@ -3,7 +3,7 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-27T04:15:28.867433+00:00",
+      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
       "listings": [
         {
           "home": "Nottingham Forest",
@@ -158,14 +158,15 @@
           "channels": [
             "NOW",
             "Sky Sports Premier League",
-            "Sky Sports UHD 1"
+            "Sky Sports UHD 1",
+            "Sky Sports+ app"
           ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-27T04:15:28.867433+00:00",
+      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
       "listings": [
         {
           "home": "Nottingham Forest",
@@ -297,7 +298,7 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-27T04:15:28.867433+00:00",
+      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
       "listings": [
         {
           "home": "Nottingham Forest",
@@ -436,7 +437,7 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-27T04:15:28.867433+00:00",
+      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
       "listings": [
         {
           "home": "Nottingham Forest",
@@ -559,7 +560,7 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-27T04:15:28.867433+00:00",
+      "checkedAt": "2026-11-27T13:56:59.439497+00:00",
       "listings": [
         {
           "home": "Nottingham Forest",
@@ -623,6 +624,7 @@
           "away": "Hertha BSC",
           "start": "2026-12-01T19:45:00+00:00",
           "channels": [
+            "OneFootball Deutschland",
             "RTL",
             "RTL+",
             "Sky Sport 2",
