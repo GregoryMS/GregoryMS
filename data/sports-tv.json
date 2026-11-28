@@ -3,16 +3,8 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
+      "checkedAt": "2026-11-28T13:10:50.187299+00:00",
       "listings": [
-        {
-          "home": "Real Salt Lake",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:30:00+00:00",
-          "channels": [
-            "Apple TV (UK)"
-          ]
-        },
         {
           "home": "Brighton & Hove Albion",
           "away": "Newcastle United",
@@ -162,16 +154,8 @@
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
+      "checkedAt": "2026-11-28T13:10:50.187299+00:00",
       "listings": [
-        {
-          "home": "Real Salt Lake",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:30:00+00:00",
-          "channels": [
-            "Apple TV (US)"
-          ]
-        },
         {
           "home": "Hamburger SV",
           "away": "Bayern München",
@@ -285,16 +269,8 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
+      "checkedAt": "2026-11-28T13:10:50.187299+00:00",
       "listings": [
-        {
-          "home": "Real Salt Lake",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:30:00+00:00",
-          "channels": [
-            "Apple TV (NO)"
-          ]
-        },
         {
           "home": "Hamburger SV",
           "away": "Bayern München",
@@ -424,16 +400,8 @@
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
+      "checkedAt": "2026-11-28T13:10:50.187299+00:00",
       "listings": [
-        {
-          "home": "Real Salt Lake",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:30:00+00:00",
-          "channels": [
-            "Apple TV (SE)"
-          ]
-        },
         {
           "home": "Hamburger SV",
           "away": "Bayern München",
@@ -546,16 +514,8 @@
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
+      "checkedAt": "2026-11-28T13:10:50.187299+00:00",
       "listings": [
-        {
-          "home": "Real Salt Lake",
-          "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:30:00+00:00",
-          "channels": [
-            "Apple TV (DE)"
-          ]
-        },
         {
           "home": "Hamburger SV",
           "away": "Bayern München",
