@@ -3,12 +3,12 @@
   "source": "FotMob",
   "countries": {
     "GB": {
-      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
+      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
       "listings": [
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:00:00+00:00",
+          "start": "2026-11-28T03:30:00+00:00",
           "channels": [
             "Apple TV (UK)"
           ]
@@ -148,17 +148,26 @@
             "Sky Sports UHD 1",
             "Sky Sports+ app"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Paderborn",
+          "start": "2026-12-04T19:30:00+00:00",
+          "channels": [
+            "BBC Sport online",
+            "BBC iPlayer"
+          ]
         }
       ],
       "error": false
     },
     "CA": {
-      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
+      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
       "listings": [
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:00:00+00:00",
+          "start": "2026-11-28T03:30:00+00:00",
           "channels": [
             "Apple TV (US)"
           ]
@@ -276,12 +285,12 @@
       "error": false
     },
     "NO": {
-      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
+      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
       "listings": [
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:00:00+00:00",
+          "start": "2026-11-28T03:30:00+00:00",
           "channels": [
             "Apple TV (NO)"
           ]
@@ -401,17 +410,26 @@
             "V sport Premier League NO",
             "Viaplay NO"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Paderborn",
+          "start": "2026-12-04T19:30:00+00:00",
+          "channels": [
+            "TV 2 Play (NO)",
+            "Viaplay NO"
+          ]
         }
       ],
       "error": false
     },
     "SE": {
-      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
+      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
       "listings": [
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:00:00+00:00",
+          "start": "2026-11-28T03:30:00+00:00",
           "channels": [
             "Apple TV (SE)"
           ]
@@ -514,17 +532,26 @@
             "V Sport Football",
             "Viaplay SE"
           ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Paderborn",
+          "start": "2026-12-04T19:30:00+00:00",
+          "channels": [
+            "V Sport Premium",
+            "Viaplay SE"
+          ]
         }
       ],
       "error": false
     },
     "DE": {
-      "checkedAt": "2026-11-27T22:42:34.798352+00:00",
+      "checkedAt": "2026-11-28T04:15:50.897173+00:00",
       "listings": [
         {
           "home": "Real Salt Lake",
           "away": "Vancouver Whitecaps",
-          "start": "2026-11-28T03:00:00+00:00",
+          "start": "2026-11-28T03:30:00+00:00",
           "channels": [
             "Apple TV (DE)"
           ]
@@ -632,6 +659,19 @@
           "start": "2026-12-02T20:15:00+00:00",
           "channels": [
             "Sky Sport 8",
+            "WOW"
+          ]
+        },
+        {
+          "home": "Bayern München",
+          "away": "Paderborn",
+          "start": "2026-12-04T19:30:00+00:00",
+          "channels": [
+            "Sky Bundesliga",
+            "Sky Bundesliga 1",
+            "Sky Bundesliga UHD",
+            "Sky Showcase",
+            "Sky Top Event",
             "WOW"
           ]
         }
