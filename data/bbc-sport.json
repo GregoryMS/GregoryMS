@@ -1,47 +1,47 @@
 {
   "source": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "feedUpdatedAt": "2026-11-27T21:57:25+00:00",
-  "fetchedAt": "2026-11-27T21:57:28.246375+00:00",
+  "feedUpdatedAt": "2026-11-28T03:53:06+00:00",
+  "fetchedAt": "2026-11-28T03:53:11.252256+00:00",
   "items": [
+    {
+      "title": "Five-try Ireland beat Australia in autumn finale",
+      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cw987l0ej11mo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Decline of deities - the long game the All Blacks cannot afford to lose",
       "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cmkgkl7de60go?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Gibbs-White stars, Fofana struggles - player ratings for Forest v Chelsea",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmwy85xxjgxvo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Mercedes set pace in eventful Qatar second practice",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/cqpv903y40jko?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Why snooker could be the most mentally challenging sport",
-      "link": "https://www.bbc.co.uk/sport/snooker/articles/cm174wqxk8lpo?at_medium=RSS&at_campaign=rss"
-    },
-    {
       "title": "Cricket Australia may not like sandpaper forum findings - Vaughan",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/c5pv903jvy2po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Wilshere v Ramsey - Arsenal legends treading similar managerial paths",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm1dvn9w1px4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "Why snooker could be the most mentally challenging sport",
+      "link": "https://www.bbc.co.uk/sport/snooker/articles/cm174wqxk8lpo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Man Utd trigger Fernandes' one-year contract extension",
       "link": "https://www.bbc.co.uk/sport/football/articles/c6d91j5geepqo?at_medium=RSS&at_campaign=rss"
     },
     {
-      "title": "Head coach Slegers leaves Arsenal 18 months after Champions League win",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmy49d5kpw78o?at_medium=RSS&at_campaign=rss"
+      "title": "'You're not welcome here' - Chelsea fans turn on Fofana",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cmqlqeqd4wg5o?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "England outclass Australia again to take series lead",
       "link": "https://www.bbc.co.uk/sport/cricket/articles/cm9d704g26z4o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Champions League to be a factor in Paz move - Saturday's gossip",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cqvg23jg6x78o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Wales aim to finish historic campaign with Japan win",
-      "link": "https://www.bbc.co.uk/sport/rugby-union/articles/cr0jx98elggxo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Fury cleared to fight Joshua after wife retracts schizophrenia claim",
-      "link": "https://www.bbc.co.uk/sport/boxing/articles/c539gd2x2ye1o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
